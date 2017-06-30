@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{9a133918-01e3-4c04-98d6-ad5f8a442955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib">
+      <UniqueIdentifier>{da4faa44-c8d6-4c0c-bf11-164ae5926ad1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\src">
+      <UniqueIdentifier>{4823abcd-7855-48f0-970c-e76a4a1ca9cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\src\legacy_dx">
+      <UniqueIdentifier>{101147fb-4553-49d0-81ac-37402d422f64}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\lib\src\legacy_dx\d3d.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\d3dcaps.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\d3drm.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\d3drmdef.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\d3drmobj.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\d3drmwin.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\d3dtypes.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\ddraw.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dinput.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dinputd.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dmdls.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dmerror.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dmksctrl.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dmplugin.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dmusbuff.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dmusicc.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dmusicf.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dmusici.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dmusics.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dsconf.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dsound.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\dvoice.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\multimon.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\rmxfguid.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\rmxftmpl.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\src\legacy_dx\strsafe.h">
+      <Filter>lib\src\legacy_dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kknd.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\_unsorted_data.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\_unsorted_functions.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\hexrays-defs.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\kknd.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\_unsorted_data.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\lib\src\legacy_dx\d3dvec.inl">
+      <Filter>lib\src\legacy_dx</Filter>
+    </None>
+  </ItemGroup>
+</Project>
