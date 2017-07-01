@@ -3,6 +3,8 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
+#include "src/Random.h"
+
 //----- (00435A40) --------------------------------------------------------
 void UNIT_DmgHandler_Sapper(Script *a1)
 {
@@ -66,7 +68,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
     v26 = v14 + v13->accuracy;
     if (v15 >= 100)
         v26 = 99;
-    v17 = rand2(__FILE__, __LINE__);
+    v17 = kknd_rand_debug(__FILE__, __LINE__);
     v18 = _465640_accuracy_bonus[v4->_98_465610_accuracy_dmg_bonus_idx];
     v19 = 16 * (v17 % (100 - v16) - (100 - v26) / 2);
     v20 = v4->stats->accuracy;
@@ -76,7 +78,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
     v21 = v18 + v20;
     if (v18 + v20 >= 100)
         v21 = 99;
-    v22 = rand2(__FILE__, __LINE__);
+    v22 = kknd_rand_debug(__FILE__, __LINE__);
     v1->field_1C_speed = v19 + *(_DWORD *)(v10 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v29 + 1]];
     v1->field_20_neg_speed = 16 * (v22 % (100 - v27) - (100 - v21) / 2)
         - *(_DWORD *)(v10 + 16) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v29 + 1]];
@@ -86,7 +88,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
         v1->field_30 = -512 / (a3 / 2);
     else
         v1->field_30 = -512;
-    v1->_60_mobd_field_0_int = (rand2(__FILE__, __LINE__) % 3 + 1) << 28;
+    v1->_60_mobd_field_0_int = (kknd_rand_debug(__FILE__, __LINE__) % 3 + 1) << 28;
     script_445370_yield(a1, 0x80000000, a3);
     v1->z_index = 1;
     v1->field_1C_speed = 0;
@@ -97,7 +99,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
     {
         v1->z_index = 255;
         v23 = _4690A8_unit_sounds_volume;
-        v24 = rand2(__FILE__, __LINE__);
+        v24 = kknd_rand_debug(__FILE__, __LINE__);
         sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v24 % -2)], v23, 0);
         v1->mobd_id = MOBD_EXPLOSIONS;
         sprite_4272A0_load_mobd_item(v1, *(_DWORD *)(v10 + 12));
@@ -238,7 +240,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
     v16 = v13 + _465640_accuracy_bonus[v36->_98_465610_accuracy_dmg_bonus_idx];
     if (v14 >= 100)
         v16 = 99;
-    v17 = rand2(__FILE__, __LINE__);
+    v17 = kknd_rand_debug(__FILE__, __LINE__);
     v18 = _465640_accuracy_bonus[v36->_98_465610_accuracy_dmg_bonus_idx];
     v19 = 16 * (v17 % (100 - v15) - (100 - v16) / 2);
     v20 = v36->stats->accuracy;
@@ -248,7 +250,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
     v22 = v18 + v20;
     if (v18 + v20 >= 100)
         v22 = 99;
-    v23 = rand2(__FILE__, __LINE__);
+    v23 = kknd_rand_debug(__FILE__, __LINE__);
     v2->pstru7 = &_479D48_stru7;
     v24 = 16 * (v23 % (100 - v21) - (100 - v22) / 2);
     sprite_408800_play_sound(v2, SOUND_14_dmg, _4690A8_unit_sounds_volume, 0);
@@ -279,7 +281,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
     if (*((_DWORD *)v34 + 3) != -1)
     {
         v26 = _4690A8_unit_sounds_volume;
-        v27 = rand2(__FILE__, __LINE__);
+        v27 = kknd_rand_debug(__FILE__, __LINE__);
         sprite_408800_play_sound(v2, _46BB80_dmg_handler_sounds[(unsigned __int8)(v27 % -2)], v26, 0);
         v2->mobd_id = MOBD_EXPLOSIONS;
         sprite_4272A0_load_mobd_item(v2, *((_DWORD *)v34 + 3));
@@ -342,10 +344,10 @@ void script_436140_flamethrower_dmg_handler(Script *a1)
     v8 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v7, v6);
     sprite_408800_play_sound(v1, (SOUND_ID)((int)SOUND_70 | 0x10), _4690A8_unit_sounds_volume, 0);
     sprite_4272A0_load_mobd_item(v1, 496);
-    v1->field_1C_speed = (rand2(__FILE__, __LINE__) & 0xF)
+    v1->field_1C_speed = (kknd_rand_debug(__FILE__, __LINE__) & 0xF)
         + *(_DWORD *)(v3 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v8 + 1]]
         - 8;
-    v1->field_20_neg_speed = (rand2(__FILE__, __LINE__) & 0xF)
+    v1->field_20_neg_speed = (kknd_rand_debug(__FILE__, __LINE__) & 0xF)
         - *(_DWORD *)(v3 + 16) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v8 + 1]]
         - 8;
     v9 = math_42D64D_prolly_vec_length(v7, v6);
@@ -457,7 +459,7 @@ void script_4363C0_giant_bettle_dmg(Script *a1)
         v3->field_30 = -512 / (v7 / 2);
     else
         v3->field_30 = -512;
-    v8 = rand2(__FILE__, __LINE__) % 3;
+    v8 = kknd_rand_debug(__FILE__, __LINE__) % 3;
     v9 = v3->z_index;
     v3->_60_mobd_field_0_int = (v8 + 1) << 28;
     if (v9 >= 0)
@@ -552,7 +554,7 @@ void UNIT_DmgHandler_Beetle(Script *a1)
         v21 = v10 + v9->accuracy;
         if (v11 >= 100)
             v21 = 99;
-        v26 = 4 * (rand2(__FILE__, __LINE__) % (100 - v19) - (100 - v21) / 2);
+        v26 = 4 * (kknd_rand_debug(__FILE__, __LINE__) % (100 - v19) - (100 - v21) / 2);
         v12 = _465640_accuracy_bonus[v3->_98_465610_accuracy_dmg_bonus_idx];
         v13 = v3->stats->accuracy;
         v22 = v12 + v13;
@@ -561,7 +563,7 @@ void UNIT_DmgHandler_Beetle(Script *a1)
         v20 = v12 + v13;
         if (v12 + v13 >= 100)
             v20 = 99;
-        v14 = rand2(__FILE__, __LINE__);
+        v14 = kknd_rand_debug(__FILE__, __LINE__);
         v7->field_1C_speed = v26 + *(_DWORD *)(v2 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v23 + 1]];
         v7->field_20_neg_speed = 4 * (v14 % (100 - v22) - (100 - v20) / 2)
             - *(_DWORD *)(v2 + 16) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v23 + 1]];
@@ -594,8 +596,8 @@ void UNIT_DmgHandler_Beetle(Script *a1)
                 v15->field_90_building_damage = *(_WORD *)(v2 + 28)
                     + (*(_DWORD *)(v2 + 28)
                         * _465610_damage_multipliers[v3->_98_465610_accuracy_dmg_bonus_idx] >> 8);
-                v15->field_1C_speed = v24->field_1C_speed + 4 * (rand2(__FILE__, __LINE__) & 0x1F) - 64;
-                v15->field_20_neg_speed = v24->field_20_neg_speed + 4 * (rand2(__FILE__, __LINE__) & 0x1F) - 64;
+                v15->field_1C_speed = v24->field_1C_speed + 4 * (kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 64;
+                v15->field_20_neg_speed = v24->field_20_neg_speed + 4 * (kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 64;
             }
             ++v25;
             script_445370_yield(a1, 0x80000000, 2);
@@ -645,7 +647,7 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     v1->field_30 = 0;
     v1->z_index = 255;
     v10 = _4690A8_unit_sounds_volume;
-    v11 = rand2(__FILE__, __LINE__);
+    v11 = kknd_rand_debug(__FILE__, __LINE__);
     sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v11 % -2)], v10, 0);
     v1->mobd_id = MOBD_PLASMA_TANK;
     sprite_4272A0_load_mobd_item(v1, 2084);
@@ -752,7 +754,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         v11 = v9 + _465640_accuracy_bonus[v4->_98_465610_accuracy_dmg_bonus_idx];
         if (v10 >= 100)
             v11 = 99;
-        v57 = 8 * (rand2(__FILE__, __LINE__) % (100 - v51) - (100 - v11) / 2);
+        v57 = 8 * (kknd_rand_debug(__FILE__, __LINE__) % (100 - v51) - (100 - v11) / 2);
         v12 = _465640_accuracy_bonus[v4->_98_465610_accuracy_dmg_bonus_idx];
         v13 = v4->stats->accuracy;
         v14 = v12 + v13;
@@ -761,7 +763,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         v52 = v12 + v13;
         if (v12 + v13 >= 100)
             v52 = 99;
-        v15 = rand2(__FILE__, __LINE__);
+        v15 = kknd_rand_debug(__FILE__, __LINE__);
         v1->z_index = v4->sprite->z_index + 2560;
         v16 = 8 * (v15 % (100 - v14) - (100 - v52) / 2);
         sprite_408800_play_sound(v4->sprite, SOUND_LASER_DMG, _4690A8_unit_sounds_volume, 0);
@@ -774,7 +776,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         if (*(_DWORD *)(v55 + 12) != -1)
         {
             v18 = _4690A8_unit_sounds_volume;
-            v19 = rand2(__FILE__, __LINE__);
+            v19 = kknd_rand_debug(__FILE__, __LINE__);
             sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v19 % -2)], v18, 0);
             v1->mobd_id = MOBD_EXPLOSIONS;
             sprite_4272A0_load_mobd_item(v1, 2084);
@@ -820,7 +822,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         v33 = v30 + v29->accuracy;
         if (v31 >= 100)
             v33 = 99;
-        v34 = rand2(__FILE__, __LINE__);
+        v34 = kknd_rand_debug(__FILE__, __LINE__);
         v35 = _465640_accuracy_bonus[v4->_98_465610_accuracy_dmg_bonus_idx];
         v36 = 16 * (v34 % (100 - v32) - (100 - v33) / 2);
         v37 = v4->stats->accuracy;
@@ -830,7 +832,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         v39 = v35 + v37;
         if (v35 + v37 >= 100)
             v39 = 99;
-        v40 = rand2(__FILE__, __LINE__);
+        v40 = kknd_rand_debug(__FILE__, __LINE__);
         v1->pstru7 = &_479D48_stru7;
         v41 = 16 * (v40 % (100 - v38) - (100 - v39) / 2);
         sprite_408800_play_sound(v1, SOUND_14_dmg, _4690A8_unit_sounds_volume, 0);
@@ -861,7 +863,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         if (*(_DWORD *)(v55 + 12) != -1)
         {
             v43 = _4690A8_unit_sounds_volume;
-            v44 = rand2(__FILE__, __LINE__);
+            v44 = kknd_rand_debug(__FILE__, __LINE__);
             sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v44 % -2)], v43, 0);
             v1->mobd_id = MOBD_EXPLOSIONS;
             sprite_4272A0_load_mobd_item(v1, *(_DWORD *)(v55 + 12));
@@ -1130,25 +1132,25 @@ void UNIT_DmgHandler_Rifle(Script *a1)
         v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448510_aircraft;
     v2->field_88 = 1;
     v1->sprite->field_88 = 1;
-    v2->x = v1->sprite->x + (((rand2(__FILE__, __LINE__) & 0x1F) - 16) << 8);
+    v2->x = v1->sprite->x + (((kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 16) << 8);
     v2->field_88 = 1;
-    v2->y = v1->sprite->y + (((rand2(__FILE__, __LINE__) & 0x1F) - 16) << 8);
+    v2->y = v1->sprite->y + (((kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 16) << 8);
     v2->z_index = v1->sprite->z_index + 256;
     script_445370_yield(a1, 0x80000000, 10);
     v2->field_1C_speed = 0;
     v2->field_20_neg_speed = 0;
     v2->mobd_id = MOBD_EXPLOSIONS;
-    v12 = rand2(__FILE__, __LINE__);
+    v12 = kknd_rand_debug(__FILE__, __LINE__);
     sprite_4272A0_load_mobd_item(v2, _46BB60_dmg_handler_mobd_offsets[v12 % 3]);
-    if (!(rand2(__FILE__, __LINE__) % 3))
+    if (!(kknd_rand_debug(__FILE__, __LINE__) % 3))
     {
         v13 = _4690A8_unit_sounds_volume;
-        v14 = rand2(__FILE__, __LINE__);
+        v14 = kknd_rand_debug(__FILE__, __LINE__);
         sprite_408800_play_sound(v2, _46BB70_dmg_handler_sounds[v14 % 3], v13, 0);
     }
     v15 = v3->unit_id;
     if ((v15 == UNIT_STATS_SURV_RIFLEMAN || v15 == UNIT_STATS_MUTE_SHOTGUNNER || v15 == UNIT_STATS_MUTE_DIRE_WOLF)
-        && !(rand2(__FILE__, __LINE__) % 3))
+        && !(kknd_rand_debug(__FILE__, __LINE__) % 3))
     {
         sprite_408800_play_sound(v2, SOUND_SHOTGUN_FIRE_2, _4690A8_unit_sounds_volume, 0);
     }
@@ -1159,7 +1161,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
         v16 = v3->stats->accuracy + _465640_accuracy_bonus[v3->_98_465610_accuracy_dmg_bonus_idx];
         if (v16 >= 100)
             v16 = 99;
-        if (rand2(__FILE__, __LINE__) % 100 < v16)
+        if (kknd_rand_debug(__FILE__, __LINE__) % 100 < v16)
             script_trigger_event(a1, EVT_MSG_DAMAGE, v2, v1->script);
     }
     script_445370_yield(a1, 0x10000000, 0);
@@ -1208,7 +1210,7 @@ int sub_437690(Script *a1)
     v10 = *(_DWORD *)(v7 + 40) + _465640_accuracy_bonus[v6];
     if (v8 >= 100)
         v10 = 99;
-    v11 = rand2(__FILE__, __LINE__);
+    v11 = kknd_rand_debug(__FILE__, __LINE__);
     v12 = _465640_accuracy_bonus[*((_DWORD *)v3 + 38)];
     v13 = 8 * (v11 % (100 - v9) - (100 - v10) / 2);
     v14 = *(_DWORD *)(*((_DWORD *)v3 + 6) + 40);
@@ -1218,7 +1220,7 @@ int sub_437690(Script *a1)
     v18 = v12 + v14;
     if (v12 + v14 >= 100)
         v18 = 99;
-    v16 = 8 * (rand2(__FILE__, __LINE__) % (100 - v15) - (100 - v18) / 2);
+    v16 = 8 * (kknd_rand_debug(__FILE__, __LINE__) % (100 - v15) - (100 - v18) / 2);
     if (v19[4])
     {
         sprite_408800_play_sound(*((Sprite **)v3 + 23), SOUND_LASER_DMG, _4690A8_unit_sounds_volume, 0);
@@ -1286,7 +1288,7 @@ void UNIT_DmgHandler_Bow(Script *a1)
     v22 = v9 + v8->accuracy;
     if (v10 >= 100)
         v22 = 99;
-    v25 = 8 * (rand2(__FILE__, __LINE__) % (100 - v20) - (100 - v22) / 2);
+    v25 = 8 * (kknd_rand_debug(__FILE__, __LINE__) % (100 - v20) - (100 - v22) / 2);
     v11 = _465640_accuracy_bonus[v3->_98_465610_accuracy_dmg_bonus_idx];
     v12 = v3->stats->accuracy;
     v23 = v11 + v12;
@@ -1295,7 +1297,7 @@ void UNIT_DmgHandler_Bow(Script *a1)
     v21 = v11 + v12;
     if (v11 + v12 >= 100)
         v21 = 99;
-    v13 = rand2(__FILE__, __LINE__) % (100 - v23);
+    v13 = kknd_rand_debug(__FILE__, __LINE__) % (100 - v23);
     v14 = *(_DWORD *)(v19 + 16);
     v15 = 8 * (v13 - (100 - v21) / 2);
     if (v14)
@@ -1316,7 +1318,7 @@ void UNIT_DmgHandler_Bow(Script *a1)
     v18 = _465640_accuracy_bonus[v3->_98_465610_accuracy_dmg_bonus_idx] + v3->stats->accuracy;
     if (v18 >= 100)
         v18 = 99;
-    if (rand2(__FILE__, __LINE__) % 100 < v18 && !v26->destroyed)
+    if (kknd_rand_debug(__FILE__, __LINE__) % 100 < v18 && !v26->destroyed)
         script_trigger_event(v17, EVT_MSG_DAMAGE, v1, v26->script);
     script_445370_yield(v17, 0x10000000, 0);
     sprite_list_remove(v1);
@@ -1381,7 +1383,7 @@ void UNIT_DmgHandler_Projectile(Script *a1)
     v28 = v10->accuracy + _465640_accuracy_bonus[v9];
     if (v11 >= 100)
         v28 = 99;
-    v27 = 8 * (rand2(__FILE__, __LINE__) % (100 - v26) - (100 - v28) / 2);
+    v27 = 8 * (kknd_rand_debug(__FILE__, __LINE__) % (100 - v26) - (100 - v28) / 2);
     v12 = _465640_accuracy_bonus[v3->_98_465610_accuracy_dmg_bonus_idx];
     v13 = v3->stats->accuracy;
     v14 = v12 + v13;
@@ -1390,7 +1392,7 @@ void UNIT_DmgHandler_Projectile(Script *a1)
     v29 = v12 + v13;
     if (v12 + v13 >= 100)
         v29 = 99;
-    v15 = rand2(__FILE__, __LINE__) % (100 - v14) - (100 - v29) / 2;
+    v15 = kknd_rand_debug(__FILE__, __LINE__) % (100 - v14) - (100 - v29) / 2;
     v16 = v30;
     v17 = 8 * v15;
     v1->z_index = v30->sprite->z_index + 2560;
@@ -1430,7 +1432,7 @@ void UNIT_DmgHandler_Projectile(Script *a1)
         else
         {
             v21 = _4690A8_unit_sounds_volume;
-            v22 = _46BB80_dmg_handler_sounds[(unsigned __int8)((char)rand2(__FILE__, __LINE__) % -2)];
+            v22 = _46BB80_dmg_handler_sounds[(unsigned __int8)((char)kknd_rand_debug(__FILE__, __LINE__) % -2)];
             sprite_408800_play_sound(v1, v22, v21, 0);
         }
         v1->mobd_id = MOBD_EXPLOSIONS;

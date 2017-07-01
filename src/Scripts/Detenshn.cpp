@@ -3,6 +3,8 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
+#include "src/Random.h"
+
 
 //----- (004072A0) --------------------------------------------------------
 void EventHandler_Prison(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
@@ -229,7 +231,7 @@ void entity_407690_techbunker_spawn(Entity *a1)
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
     if (v1->_12C_prison_bunker_spawn_type == 9)
     {
-        v3 = rand2(__FILE__, __LINE__) % 6;
+        v3 = kknd_rand_debug(__FILE__, __LINE__) % 6;
         v1->_12C_prison_bunker_spawn_type = v3;
         if (_47C6D8_use__466098_cost_multipliers)
         {
@@ -474,7 +476,7 @@ void entity_mode_407A90_techbunker(Entity *a1)
     else
         v1->mode = entity_mode_407950_techbunker_spawn_generic;
     if (!single_player_game || _47C6D8_use__466098_cost_multipliers)
-        v1->_134_param__unitstats_after_mobile_outpost_plant = rand2(__FILE__, __LINE__) % 25200 + 28800;
+        v1->_134_param__unitstats_after_mobile_outpost_plant = kknd_rand_debug(__FILE__, __LINE__) % 25200 + 28800;
     else
         v1->_134_param__unitstats_after_mobile_outpost_plant = 5;
     script_445370_yield(v1->script, 0x80000000, 1);

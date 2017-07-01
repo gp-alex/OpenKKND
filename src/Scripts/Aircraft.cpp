@@ -3,6 +3,9 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
+#include "src/Random.h"
+#include "src/Render.h"
+
 
 //----- (00401110) --------------------------------------------------------
 void entity_401110_aircraft(Entity *a1)
@@ -113,7 +116,7 @@ void UNIT_Handler_Aircraft(Script *a1)
     if (!v2)
     {
         v3 = &_47A010_mapd_item_being_drawn[0]->draw_job->job_details;
-        a1a = rand2(__FILE__, __LINE__) & 3;
+        a1a = kknd_rand_debug(__FILE__, __LINE__) & 3;
         v2 = entity_list_create(v1);
         v4 = stru31_list_free_pool;                 // INLINED entity_401070_stru31
         if (stru31_list_free_pool)
@@ -134,7 +137,7 @@ void UNIT_Handler_Aircraft(Script *a1)
         v2->sprite_height = v5->y;
         if (a1a > 1)
         {
-            v9 = rand2(__FILE__, __LINE__);
+            v9 = kknd_rand_debug(__FILE__, __LINE__);
             v8 = (v9 % (render_call_draw_handler_mode2(v3) - 64) + 32) << 8;
             if (a1a & 1)
                 v7 = -8192;
@@ -143,7 +146,7 @@ void UNIT_Handler_Aircraft(Script *a1)
         }
         else
         {
-            v6 = rand2(__FILE__, __LINE__);
+            v6 = kknd_rand_debug(__FILE__, __LINE__);
             v7 = (v6 % (render_call_draw_handler_mode1(v3) - 64) + 32) << 8;
             if (a1a & 1)
                 v8 = -8192;

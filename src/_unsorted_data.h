@@ -5,6 +5,8 @@
 #include "src/_unsorted_data.h"
 #include "src/_unsorted_functions.h"
 
+extern void *__EAX__;
+
 extern _UNKNOWN loc_45D19B; // weak
 extern _UNKNOWN loc_45D1A4; // weak
 extern _UNKNOWN loc_45D267; // weak
@@ -224,7 +226,6 @@ extern int netz_468B50_available_units_denom; // weak
 extern int dword_468B54;
 extern void *__47CA80_array_idx_and_netz_player_side; // idb
 extern int single_player_game; // weak
-extern int dword_468B60; // weak
 extern int netz_468B6C_providers_idx; // weak
 extern netz_provider netz_468B6C_providers[3];
 extern char aDirectxModem[]; // idb
@@ -817,9 +818,6 @@ extern int _478FF0_map_height_shl_13; // weak
 extern int dword_478FF4; // weak
 extern int _4793F8_map_width; // weak
 extern int dword_47952C; // weak
-extern int rand2_seed; // weak
-extern int rand_seed; // weak
-extern int boxd_rand_seed; // weak
 extern int dword_47953C; // weak
 extern int dword_479540; // weak
 extern Sidebar *stru22_list_479548;
@@ -843,7 +841,7 @@ extern void *render_locked_surface_ptr;
 extern DDPIXELFORMAT pixelformat_primary;
 extern DWORD global_wnd_style; // idb
 extern int global_wnd_bpp; // weak
-extern unsigned __int16 render_locked_surface_width_px; // idb
+extern unsigned int render_locked_surface_width_px; // idb
 extern DDSURFACEDESC ddsd_primary;
 extern int global_fullscreen; // weak
 extern int global_time_flows; // weak
@@ -853,13 +851,10 @@ extern DWORD global_wnd_style_ex; // idb
 extern stru1_draw_params *stru1_list;
 extern int fullscreen_flip_or_blt; // weak
 extern int global_wnd_width; // idb
-extern int _411760_GameWindowCreate_already_called; // weak
+extern bool is_render_window_initialized; // 411760
 extern IDirectDraw *pdd;
-extern IDirectDrawSurface *pdds_primary;
-extern IDirectDrawSurface *pdds_4798D8;
 extern IDirectDrawPalette *pddpal_primary;
 extern IDirectDrawClipper *pddclipper;
-extern int unused_4798E4; // weak
 extern HWND global_hwnd; // idb
 extern int RenderDD_initialized; // weak
 extern int timer_render_skips; // weak
@@ -1049,7 +1044,7 @@ extern int render_clip_w; // weak
 extern int render_clip_z; // weak
 extern int render_clip_x; // weak
 extern int render_clip_y; // weak
-extern __int16 _47C044_ds; // idb
+extern int _47C044_ds; // idb
 extern int _47C048_unit_bomberdmg; // weak
 extern int _47C04C_num_explosions_max20; // weak
 extern stru175 _47C050_array[20];
@@ -1255,5 +1250,5 @@ extern void *entity_default_stru60_ptr;
 extern int dword_47DCE8; // weak
 extern HINSTANCE global_hinstance; // idb
 extern int global_win32_nCmdShow; // idb
-extern int _47DCF4_wm_quit_received; // weak
+extern bool _47DCF4_wm_quit_received; // weak
 extern VideoFileFrame *video_47F434_frame;

@@ -111,6 +111,12 @@
     <ClInclude Include="..\..\src\File.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Random.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kknd.cpp">
@@ -148,6 +154,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Scripts\Schrap.cpp">
       <Filter>src\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Random.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Render.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

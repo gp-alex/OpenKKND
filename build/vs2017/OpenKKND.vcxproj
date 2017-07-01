@@ -115,6 +115,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\File.cpp" />
     <ClCompile Include="..\..\src\kknd.cpp" />
+    <ClCompile Include="..\..\src\Random.cpp" />
+    <ClCompile Include="..\..\src\Render.cpp" />
     <ClCompile Include="..\..\src\Scripts\Aircraft.cpp" />
     <ClCompile Include="..\..\src\Scripts\Buildings.cpp" />
     <ClCompile Include="..\..\src\Scripts\Detenshn.cpp" />
@@ -156,6 +158,8 @@
     <ClInclude Include="..\..\src\File.h" />
     <ClInclude Include="..\..\src\hexrays-defs.h" />
     <ClInclude Include="..\..\src\kknd.h" />
+    <ClInclude Include="..\..\src\Random.h" />
+    <ClInclude Include="..\..\src\Render.h" />
     <ClInclude Include="..\..\src\_unsorted_data.h" />
     <ClInclude Include="..\..\src\_unsorted_functions.h" />
   </ItemGroup>

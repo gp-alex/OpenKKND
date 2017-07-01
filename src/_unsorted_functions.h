@@ -255,9 +255,6 @@ int entity_40F0A0(Entity *a1, int a2); // idb
 int entity_40F100(Entity *a1, int a2); // idb
 int boxd_40F160(Entity *a1, int map_x, int map_y, int a4);
 int boxd_40F230(Entity *a1, int map_x, int map_y, int a4, int a5);
-int rand2(const char *file, int line);
-int rand();
-int rnd_capped(int maxrang); // idb
 void sub_40F380_incdec(int inc_dec);
 bool sidebar_button_list_alloc();
 void script_sidebar(Script *a1); // idb
@@ -297,22 +294,6 @@ bool stru27_array_initialize();
 bool stru26_array_initialize();
 void stru26_stru27_free();
 int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam); // idb
-bool render_create_window(int width, int height, int bpp, int run, int fullscreen);
-bool render_init_dd();
-void render_cleanup_dd();
-bool render_should_render();
-stru1_draw_params *render_create_stru1(int a1, int clip_x, int clip_y, int clip_z, int clip_w); // idb
-void render_remove_stru1(stru1_draw_params *a1);
-bool render_dd_is_primary_surface_lost();
-void render_draw_list(DrawJob *list);
-int render_call_draw_handler_mode1(DrawJobDetails *a1);
-int render_call_draw_handler_mode2(DrawJobDetails *a1);
-void render_cleanup();
-int render_sprt_draw_handler_setup_palettes();
-int render_sprt_draw_handler(DrawJobDetails *data, int mode); // idb
-int nullsub_3(void); // idb
-int render_scrl_draw_handler(DrawJobDetails *data, int mode);
-int render_video_draw_handler(DrawJobDetails *a1, int mode);
 void UNIT_Handler_Vehicle(Script *a1); // idb
 void UNIT_Handler_Infantry(Script *a1);
 void entity_init_infantry(Entity *a1);
@@ -723,7 +704,7 @@ void render_434EA0(int a1, int a2, int a3, unsigned int a4, int a5);
 char render_4351A0_draw(unsigned __int8 *pixels, int x, int y, int width, int height); // idb
 int render_435320(void *pixels, int x, int y, int w, int h);
 void render_4354A0_draw_tile(unsigned __int8 *tile, int a2, int a3, int a4, int a5); // idb
-void render_do_draw_cursor_43A910(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, _BYTE *a5, unsigned __int16 a6, unsigned __int16 a7, unsigned __int16 a8, __int16 a9, __int16 a10, int a11, unsigned __int16 a12, unsigned __int16 a13, unsigned __int16 a14);
+void render_do_draw_cursor_43A910(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, _BYTE *a5, unsigned __int16 a6, unsigned __int16 a7, unsigned __int16 a8, __int16 a9, int a11, unsigned __int16 a12, unsigned __int16 a13, unsigned __int16 a14);
 void render_draw_43B59F(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, unsigned __int8 *sprite_data, unsigned __int16 x, unsigned __int16 y, unsigned __int16 width, __int16 height, unsigned __int8 *palette, __int16 reg_ds, unsigned __int8 *dst_surface, __int16 dst_surface_x, unsigned __int16 dst_surface_y, unsigned __int16 dst_surface_pitch);
 void REND_DirectDrawClearScreen(int a2);
 void EventHandler_PowerStation(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
@@ -805,7 +786,7 @@ bool draw_list_alloc();
 DrawJob *draw_list_add(void *param, void(*on_update_handler)(void *, DrawJob *)); // idb
 bool draw_list_update_and_draw();
 void draw_list_update(DrawJob *list);
-void draw_list_z_order(DrawJob *a1);
+void draw_list_z_order(DrawJob *list);
 void draw_list_free();
 void script_43BA40(Script *a1, int a2, int(*a3)(void), int a4);
 void script_netz_43BA70(Script *a1);

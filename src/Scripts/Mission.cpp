@@ -3,6 +3,9 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
+#include "src/Random.h"
+#include "src/Render.h"
+
 
 //----- (00424B90) --------------------------------------------------------
 void UNIT_Handler_TechBunker_2(Script *a1)
@@ -1372,7 +1375,7 @@ void script_425F50_stru48_stru51_tech_bunkers(Script *a1)
     }
     else
     {
-        *(_DWORD *)v77 = rand2(__FILE__, __LINE__) % 6;
+        *(_DWORD *)v77 = kknd_rand_debug(__FILE__, __LINE__) % 6;
     }
 LABEL_28:
     v13 = 1;
@@ -1668,10 +1671,10 @@ LABEL_28:
             for (v77[11] = 0; v62 < netz_468B50_available_units_denom / 2 + 1; ++v62)
             {
                 v63 = 19;
-                v64 = rand2(__FILE__, __LINE__) % 12;
+                v64 = kknd_rand_debug(__FILE__, __LINE__) % 12;
                 while (v77[v64])
                 {
-                    v64 = rand2(__FILE__, __LINE__) % 12;
+                    v64 = kknd_rand_debug(__FILE__, __LINE__) % 12;
                     if (--v63 <= 0)
                     {
                         v64 = 0;

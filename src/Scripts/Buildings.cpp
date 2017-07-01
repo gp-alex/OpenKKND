@@ -3,6 +3,8 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
+#include "src/Random.h"
+
 
 //----- (00402F30) --------------------------------------------------------
 void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
@@ -143,11 +145,11 @@ void script_403230_building_mini_explosion(Script *a1)
     v1->pstru7 = &_479D48_stru7;
     sprite_408800_play_sound(v1, SOUND_3, _4690A8_unit_sounds_volume, 0);
     v1->field_88 = 1;
-    v2 = rand2(__FILE__, __LINE__);
+    v2 = kknd_rand_debug(__FILE__, __LINE__);
     v3 = v1->x;
     v1->field_88 = 1;
     v1->x = (v2 & 0x3FFF) - 0x2000 + v3;
-    v1->y += (rand2(__FILE__, __LINE__) & 0x3FFF) - 0x2000;
+    v1->y += (kknd_rand_debug(__FILE__, __LINE__) & 0x3FFF) - 0x2000;
     sprite_4272A0_load_mobd_item(v1, 220);
     v1->z_index = 0x4000;
     script_445370_yield(a1, 0x10000000, 0);
@@ -209,7 +211,7 @@ void script_403380_explosions(Script *a1)
             if (v1)
                 v1->z_index = a1->sprite->z_index + 0x20000000;
         }
-        v5 = rand2(__FILE__, __LINE__);
+        v5 = kknd_rand_debug(__FILE__, __LINE__);
         v2 += v5 & 0x1F;
         script_445370_yield(a1, 0x80000000, v5 & 0x1F);
         --v4;

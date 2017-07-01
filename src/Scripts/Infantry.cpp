@@ -1,4 +1,5 @@
 #include "src/kknd.h"
+#include "src/Random.h"
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
@@ -2246,8 +2247,8 @@ void entity_mode_415690(Entity *a1)
     {
         if (SLOWORD_HEXRAYS(v1->field_29C) > 50)
         {
-            boxd_rand_seed = (3141 * boxd_rand_seed + 13867) & 0xFFFF;// INLINED rand3
-            if (!(_BYTE)boxd_rand_seed)
+            int rnd = kknd_rand_3();
+            if (!(_BYTE)rnd)
                 v1->mode = entity_mode_4157F0;
         }
     }
@@ -2294,8 +2295,6 @@ void entity_mode_415690(Entity *a1)
         entity_mode_417E60(v1);
     }
 }
-// 479538: using guessed type int boxd_rand_seed;
-// 47953C: using guessed type int dword_47953C;
 
 //----- (004157F0) --------------------------------------------------------
 void entity_mode_4157F0(Entity *a1)
@@ -2313,8 +2312,7 @@ void entity_mode_4157F0(Entity *a1)
     Script *v11; // ST00_4@7
 
     v1 = a1;
-    v2 = (3141 * boxd_rand_seed + 13867) & 0xFFFF;// INLINED rand3
-    boxd_rand_seed = v2;
+    v2 = kknd_rand_3();// INLINED rand3
     v3 = v2 & 0x7F;
     if (v3 >= 70)
     {
@@ -2351,7 +2349,6 @@ void entity_mode_4157F0(Entity *a1)
     v1->mode = entity_mode_415540_infantry;
     script_445370_yield(v11, 0x80000000, 80);
 }
-// 479538: using guessed type int boxd_rand_seed;
 
 //----- (004158B0) --------------------------------------------------------
 void entity_4158B0(Entity *a1)
@@ -2982,8 +2979,8 @@ void entity_mode_4165C0(Entity *a1)
             v1->sprite,
             v1->stats->_38_mobd_lookup_table_offset,
             _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
-        boxd_rand_seed = (3141 * boxd_rand_seed + 13867) & 0xFFFF;
-        v1->sprite->_60_mobd_field_0_int -= boxd_rand_seed << 9;
+        int rnd = kknd_rand_3();
+        v1->sprite->_60_mobd_field_0_int -= rnd << 9;
         v1->field_C0 = v1->sprite->_60_mobd_field_0_int;
     }
     else if (v4->field_4C == 128 || boxd_41C130(v1->sprite_width, v1->sprite_height, v2->x, v2->y, v1))
@@ -2992,8 +2989,8 @@ void entity_mode_4165C0(Entity *a1)
             v1->sprite,
             v1->stats->_38_mobd_lookup_table_offset,
             _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
-        boxd_rand_seed = (3141 * boxd_rand_seed + 13867) & 0xFFFF;// INLINED rand3
-        v1->sprite->_60_mobd_field_0_int -= boxd_rand_seed << 9;
+        int rnd = kknd_rand_3();
+        v1->sprite->_60_mobd_field_0_int -= rnd << 9;
         v5 = v1->sprite;
         v6 = v1->sprite_height;
         v1->field_C0 = v5->_60_mobd_field_0_int;
@@ -3012,7 +3009,6 @@ void entity_mode_4165C0(Entity *a1)
         entity_mode_417E60(v1);
     }
 }
-// 479538: using guessed type int boxd_rand_seed;
 
 //----- (00416790) --------------------------------------------------------
 void entity_mode_416790(Entity *a1)
@@ -4232,8 +4228,7 @@ void entity_mode_417E60(Entity *a1)
         v5 = 16 * HIWORD_HEXRAYS(v1->field_2A0);
         if (v5 >= 240)
             v5 = 240;
-        boxd_rand_seed = (3141 * boxd_rand_seed + 13867) & 0xFFFF;// INLINED rand3
-        v6 = (boxd_rand_seed & 7) + v5;
+        v6 = (kknd_rand_3() & 7) + v5;
         entity_40DF50_boxd(v1, 1);
         v1->sprite->_60_mobd_field_0_int = 0;
         v1->sprite->field_1C_speed = 0;
@@ -4539,16 +4534,14 @@ void entity_418290(Entity *a1)
         {
         LABEL_29:
             v1->mode = entity_mode_418550;
-            boxd_rand_seed = (3141 * boxd_rand_seed + 13867) & 0xFFFF;// INLINED rand3
-            v1->stru224._2C_map_x = boxd_rand_seed & 0x3F;
+            int rnd = kknd_rand_3();
+            v1->stru224._2C_map_x = rnd & 0x3F;
             return;
         }
     }
     v1->mode_return = entity_mode_418590;
     entity_mode_416EB0(v1);
 }
-// 479538: using guessed type int boxd_rand_seed;
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
 
 //----- (00418550) --------------------------------------------------------
 void entity_mode_418550(Entity *a1)
@@ -5457,13 +5450,13 @@ void entity_419560_on_death(Entity *a1)
         if (v1->_98_465610_accuracy_dmg_bonus_idx)
         {
             v11 = _4690A8_unit_sounds_volume;
-            v5 = rand2(__FILE__, __LINE__);
+            v5 = kknd_rand_debug(__FILE__, __LINE__);
             v6 = 6;
         }
         else
         {
             v11 = _4690A8_unit_sounds_volume;
-            v5 = rand2(__FILE__, __LINE__);
+            v5 = kknd_rand_debug(__FILE__, __LINE__);
             v6 = 5;
         }
         sprite_408800_play_sound(v1->sprite, _465988_sounds[(unsigned __int64)(v5 % v6)], v11, 0);
@@ -5483,7 +5476,7 @@ void entity_419560_on_death(Entity *a1)
     if (v1->unit_id == 27)
     {
         v8 = _4690A8_unit_sounds_volume;
-        v9 = rand2(__FILE__, __LINE__);
+        v9 = kknd_rand_debug(__FILE__, __LINE__);
         sprite_408800_play_sound(v1->sprite, _465988_sounds[v9 % 5], v8, 0);
         v1->sprite->mobd_id = MOBD_MUTE_DIRE_WOLF;
         v7 = 1216;

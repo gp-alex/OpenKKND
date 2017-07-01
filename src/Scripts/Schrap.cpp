@@ -3,6 +3,8 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
+#include "src/Random.h"
+
 
 //----- (00438B40) --------------------------------------------------------
 void _438B40_reset_explosions()
@@ -43,11 +45,11 @@ void script_438B80_on_death_explosion(Script *task)
     char v3; // al@1
 
     v1 = task->sprite;
-    v2 = rand2("k/Scripts/Schrap.cpp", 155);
+    v2 = kknd_rand_debug("k/Scripts/Schrap.cpp", 155);
     sprite_4272A0_load_mobd_item(v1, dword_46BC84[v2 % 5]);
     v1->z_index = 0;
     v1->field_3C = 549;
-    v3 = rand2("k/Scripts/Schrap.cpp", 158);
+    v3 = kknd_rand_debug("k/Scripts/Schrap.cpp", 158);
     v1->field_30 = -10;
     v1->field_24 = (v3 & 0x7F) + 336;
     while (v1->z_index >= 0)
@@ -68,15 +70,15 @@ void script_438C20_on_death_explosion(Script *a1)
     int v5; // eax@2
 
     v1 = a1->sprite;
-    v2 = rand2("k/Scripts/Schrap.cpp", 173) % 9;
-    v3 = rand2("k/Scripts/Schrap.cpp", 176) & 7;
-    v1->field_1C_speed = dword_46BC20[v3] + (unsigned __int8)rand2("k/Scripts/Schrap.cpp", 176) - 128;
-    v4 = rand2("k/Scripts/Schrap.cpp", 177) & 7;
-    v1->field_20_neg_speed = dword_46BC40[v4] + (unsigned __int8)rand2("k/Scripts/Schrap.cpp", 177) - 128;
+    v2 = kknd_rand_debug("k/Scripts/Schrap.cpp", 173) % 9;
+    v3 = kknd_rand_debug("k/Scripts/Schrap.cpp", 176) & 7;
+    v1->field_1C_speed = dword_46BC20[v3] + (unsigned __int8)kknd_rand_debug("k/Scripts/Schrap.cpp", 176) - 128;
+    v4 = kknd_rand_debug("k/Scripts/Schrap.cpp", 177) & 7;
+    v1->field_20_neg_speed = dword_46BC40[v4] + (unsigned __int8)kknd_rand_debug("k/Scripts/Schrap.cpp", 177) - 128;
     sprite_4272A0_load_mobd_item(v1, dword_46BC60[v2]);
     v1->z_index = 0;
     v1->field_3C = 549;
-    v1->field_24 = (rand2("k/Scripts/Schrap.cpp", 183) & 0x7F) + 352;
+    v1->field_24 = (kknd_rand_debug("k/Scripts/Schrap.cpp", 183) & 0x7F) + 352;
     if (v2 <= 2)
     {
         v1->field_30 = -9;
@@ -84,7 +86,7 @@ void script_438C20_on_death_explosion(Script *a1)
     else
     {
         v1->field_30 = -5;
-        v5 = rand2("k/Scripts/Schrap.cpp", 187);
+        v5 = kknd_rand_debug("k/Scripts/Schrap.cpp", 187);
         v1->_60_mobd_field_0_int *= (((unsigned __int64)v5 >> 32) ^ abs(v5) & 1) - ((unsigned __int64)v5 >> 32) + 1;
     }
     while (v1->z_index >= 0)
@@ -143,9 +145,9 @@ void entity_438D90_on_death_explosion(Entity *a1)
                 if (!v8)
                     break;
                 v9 = (unsigned __int8)((char)v7 % -8);
-                v8->field_1C_speed = (rand2("k/Scripts/Schrap.cpp", 263) & 0x7F) + dword_46BC20[v9] - 64;
+                v8->field_1C_speed = (kknd_rand_debug("k/Scripts/Schrap.cpp", 263) & 0x7F) + dword_46BC20[v9] - 64;
                 ++v7;
-                v8->field_20_neg_speed = (rand2("k/Scripts/Schrap.cpp", 264) & 0x7F) + dword_46BC40[v9] - 64;
+                v8->field_20_neg_speed = (kknd_rand_debug("k/Scripts/Schrap.cpp", 264) & 0x7F) + dword_46BC40[v9] - 64;
             } while (v7 < 8);
         }
         else
@@ -174,9 +176,9 @@ void entity_438D90_on_death_explosion(Entity *a1)
             if (!v4)
                 break;
             v5 = (unsigned __int8)((char)v3 % -8);
-            v4->field_1C_speed = (rand2("k/Scripts/Schrap.cpp", 231) & 0x7F) + dword_46BC20[v5] - 64;
+            v4->field_1C_speed = (kknd_rand_debug("k/Scripts/Schrap.cpp", 231) & 0x7F) + dword_46BC20[v5] - 64;
             ++v3;
-            v4->field_20_neg_speed = (rand2("k/Scripts/Schrap.cpp", 232) & 0x7F) + dword_46BC40[v5] - 64;
+            v4->field_20_neg_speed = (kknd_rand_debug("k/Scripts/Schrap.cpp", 232) & 0x7F) + dword_46BC40[v5] - 64;
         } while (v3 < 6);
     }
 }
@@ -193,16 +195,16 @@ void script_438F50_explosions(Script *a1)
 
     v1 = a1->sprite;
     v2 = 30;
-    v3 = (unsigned __int8)((char)rand2("k/Scripts/Schrap.cpp", 293) % -8);
+    v3 = (unsigned __int8)((char)kknd_rand_debug("k/Scripts/Schrap.cpp", 293) % -8);
     if (v3 < 4)
         v2 = 60;
     v1->pstru7 = &_479D48_stru7;
-    v1->x += ((unsigned __int8)rand2("k/Scripts/Schrap.cpp", 300) - 128) << 8;
-    v4 = rand2("k/Scripts/Schrap.cpp", 301);
+    v1->x += ((unsigned __int8)kknd_rand_debug("k/Scripts/Schrap.cpp", 300) - 128) << 8;
+    v4 = kknd_rand_debug("k/Scripts/Schrap.cpp", 301);
     v5 = v1->y;
     v1->z_index = 0;
     v1->y = ((v4 - 128) << 8) + v5;
-    v6 = rand2("k/Scripts/Schrap.cpp", 303);
+    v6 = kknd_rand_debug("k/Scripts/Schrap.cpp", 303);
     script_445370_yield(a1, 0x80000000, v2 + (v6 & 0x3F));
     sprite_4272A0_load_mobd_item(v1, dword_46BC98[v3]);
     _4389A0_prolly_create_map_damage_decal(v1->x, v1->y);

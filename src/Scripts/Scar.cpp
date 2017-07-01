@@ -3,6 +3,8 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
+#include "src/Random.h"
+
 
 //----- (00438930) --------------------------------------------------------
 int stru28_list_alloc()
@@ -58,7 +60,7 @@ void _4389A0_prolly_create_map_damage_decal(int map_x, int map_y)
     v3 = map_y;
     if (map_x >= 0 && map_y >= 0 && map_x < _478AB4_map_width_shl_13 && map_y < _478FF0_map_height_shl_13)
     {
-        v4 = rand2(__FILE__, __LINE__) & 0x7FFF;
+        v4 = kknd_rand_debug(__FILE__, __LINE__) & 0x7FFF;
         if (v4 < 5000)
         {
             v5 = v3 & 0xFFFFE000;

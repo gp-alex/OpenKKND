@@ -250,6 +250,7 @@ enum UNIT_ID : __int32
 	UNIT_INVALID = -1,
 };
 
+#pragma pack(push, 1)
 /* 64 */
 struct UnitStat
 {
@@ -1253,7 +1254,7 @@ struct DataMobdItem
 };
 
 /* 335 */
-struct __declspec(align(1)) ScriptLocalObject
+struct ScriptLocalObject
 {
 	ScriptLocalObject *next;
 	ScriptLocalObject *prev;
@@ -2052,7 +2053,7 @@ struct stru38
 };
 
 /* 386 */
-struct __declspec(align(2)) MapdScrlImageTile
+struct MapdScrlImageTile
 {
 	int flags;
 	char pixels[2];
@@ -2182,7 +2183,7 @@ struct _4269B0_task_attachment
 };
 
 /* 400 */
-struct __declspec(align(1)) netz_stru0
+struct netz_stru0
 {
 	char player_name[8];
 	int field_8;
@@ -2464,7 +2465,7 @@ struct EntityBuildingAttachment_stru14_stru29D
 };
 
 /* 424 */
-struct __declspec(align(2)) EntityBuildingAttachment_stru14
+struct EntityBuildingAttachment_stru14
 {
 	int field_0;
 	int field_4;
@@ -2682,7 +2683,7 @@ struct _428940_global
 };
 
 /* 437 */
-struct __declspec(align(2)) _47A660_global
+struct _47A660_global
 {
 	int field_0;
 	int field_4;
@@ -2692,7 +2693,7 @@ struct __declspec(align(2)) _47A660_global
 };
 
 /* 438 */
-struct __declspec(align(1)) _47CA80_global
+struct _47CA80_global
 {
 	int field_0;
 	int field_4;
@@ -2719,7 +2720,7 @@ struct netz_provider
 	const char *string_4;
 	const char *string_8;
 	const char *string_C;
-	int direct_play;
+	int is_directplay_initialized;
 	int field_14;
 	int field_18;
 	void *pfn_1C;
@@ -2916,3 +2917,6 @@ struct netz_modem
 	char phone[12];
 	int baud;
 };
+
+
+#pragma pack(pop)

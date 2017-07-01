@@ -3,6 +3,8 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
+#include "src/Random.h"
+
 
 //----- (004089B0) --------------------------------------------------------
 void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
@@ -2428,7 +2430,7 @@ void stru24_40B230(stru24 *a1)
             {
                 if (*v10 == v18)
                 {
-                    if (rand2(__FILE__, __LINE__) & 1)
+                    if (kknd_rand_debug(__FILE__, __LINE__) & 1)
                         v1->array_2C8_idx = v20;
                 }
             }
@@ -2574,14 +2576,14 @@ bool stru24_40B490(stru24 *a1, UNIT_ID a2, int *out_x, int *out_y)
                     }
                     else
                     {
-                        v21 = rand2(0, 0);
+                        v21 = kknd_rand_debug(0, 0);
                         v7 = (stru24 *)v31;
                         v20 = (v21 & 7) + 15;
                     }
                 }
                 else
                 {
-                    v19 = rand2(0, 0);
+                    v19 = kknd_rand_debug(0, 0);
                     v7 = (stru24 *)v31;
                     v20 = (v19 & 7) + 1;
                 }

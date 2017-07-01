@@ -1,6 +1,8 @@
 #include "src/_unsorted_data.h"
 #include "src/_unsorted_functions.h"
 
+#include "src/Render.h"
+
 _UNKNOWN loc_45D19B; // weak
 _UNKNOWN loc_45D1A4; // weak
 _UNKNOWN loc_45D267; // weak
@@ -2858,7 +2860,7 @@ char *aS = "%s";
 char *MAPD = "MAPD";
 char *aWaitLvl_runlev = "Wait LVL_RunLevel() failed\n";
 char *aLvl_loadlevelW = "LVL_LoadLevel(wait.lvl) failed\n";
-char *aSLevelsSWait_l = "%s\LEVELS\%s\wait.lvl";
+char *aSLevelsSWait_l = "%s\\LEVELS\\%s\\wait.lvl";
 char *aNetz_initFaile = "NETZ_Init() failed %02x: %s\n";
 char *aLvl_sysinitFai = "LVL_SysInit() failed\n";
 char *aLvl_runlevelFa = "LVL_RunLevel() failed\n";
@@ -3278,7 +3280,6 @@ int netz_468B50_available_units_denom = 1; // weak
 int dword_468B54 = -1;
 void *__47CA80_array_idx_and_netz_player_side = (void *)0xFFFFFFFF; // idb
 int single_player_game = 1; // weak
-int dword_468B60 = 1; // weak
 int netz_468B6C_providers_idx = -1; // weak
 netz_provider netz_468B6C_providers[3] =
 {
@@ -7185,9 +7186,6 @@ int _478FF0_map_height_shl_13; // weak
 int dword_478FF4; // weak
 int _4793F8_map_width; // weak
 int dword_47952C; // weak
-int rand2_seed; // weak
-int rand_seed; // weak
-int boxd_rand_seed; // weak
 int dword_47953C; // weak
 int dword_479540; // weak
 Sidebar *stru22_list_479548;
@@ -7211,7 +7209,7 @@ void *render_locked_surface_ptr;
 DDPIXELFORMAT pixelformat_primary;
 DWORD global_wnd_style; // idb
 int global_wnd_bpp; // weak
-unsigned __int16 render_locked_surface_width_px; // idb
+unsigned int render_locked_surface_width_px; // idb
 DDSURFACEDESC ddsd_primary;
 int global_fullscreen; // weak
 int global_time_flows; // weak
@@ -7221,13 +7219,10 @@ DWORD global_wnd_style_ex; // idb
 stru1_draw_params *stru1_list;
 int fullscreen_flip_or_blt; // weak
 int global_wnd_width; // idb
-int _411760_GameWindowCreate_already_called; // weak
+bool is_render_window_initialized; // 411760
 IDirectDraw *pdd;
-IDirectDrawSurface *pdds_primary;
-IDirectDrawSurface *pdds_4798D8;
 IDirectDrawPalette *pddpal_primary;
 IDirectDrawClipper *pddclipper;
-int unused_4798E4; // weak
 HWND global_hwnd; // idb
 int RenderDD_initialized; // weak
 int timer_render_skips; // weak
@@ -7417,7 +7412,7 @@ int render_clip_w; // weak
 int render_clip_z; // weak
 int render_clip_x; // weak
 int render_clip_y; // weak
-__int16 _47C044_ds; // idb
+int _47C044_ds; // idb
 int _47C048_unit_bomberdmg; // weak
 int _47C04C_num_explosions_max20; // weak
 stru175 _47C050_array[20];
@@ -7623,5 +7618,5 @@ void *entity_default_stru60_ptr;
 int dword_47DCE8; // weak
 HINSTANCE global_hinstance; // idb
 int global_win32_nCmdShow; // idb
-int _47DCF4_wm_quit_received; // weak
+bool _47DCF4_wm_quit_received = false; // weak
 VideoFileFrame *video_47F434_frame;

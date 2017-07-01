@@ -4,6 +4,8 @@
 #include "src/_unsorted_data.h"
 
 #include "src/File.h"
+#include "src/Random.h"
+#include "src/Render.h"
 
 #pragma comment(lib, "Winmm.lib") // timeGetTime
 #pragma comment(lib, "ddraw.lib") // DirectDrawCreate
@@ -13,6 +15,7 @@
 int __ES__ = 0;
 int __DS__ = 0;
 void *__EAX__ = 0;
+void *__ESP__ = 0;
 
 void __stdcall nullsub_2(int, int) {}
 void nullsub_1(void) {}
@@ -6777,79 +6780,6 @@ LABEL_9:
 	return a4a;
 }
 
-void REND_DirectDrawClearScreen(int a2)
-{
-    __debugbreak();
-
-    int v2; // esi@1
-    int v3; // eax@3
-    void *v4; // eax@4
-    int v8; // [sp+0h] [bp-6Ch]@3
-    DDBLTFX v9; // [sp+8h] [bp-64h]@7
-
-    v2 = a2;
-
-    __debugbreak();
-    void *__eax = 0;
-    _477340_coroutine_yield_item = __eax;
-    if (coroutine_list_head != coroutine_current && ++_47734C_coroutine_int == 1)
-    {
-        v3 = coroutine_list_head->stack;
-        _477344_esp = (int)&v8;
-    }
-    v4 = _477340_coroutine_yield_item;
-    if (global_fullscreen == 1)
-    {
-        v4 = (void *)pdds_primary->EnumAttachedSurfaces(0, EnumAttachedSurfacesCallback);
-    }
-    else if (pdds_4798D8)
-    {
-        memset(&v9, 0, sizeof(v9));
-        v9.dwFillColor = 0;
-        v9.dwSize = 100;
-        v4 = (void *)pdds_4798D8->Blt(&_46BB50_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v9);
-    }
-    if (v2 && pdds_primary)
-    {
-        memset(&v9, 0, sizeof(v9));
-        v9.dwFillColor = 0;
-        v9.dwSize = 100;
-        v4 = (void *)pdds_primary->Blt(&_46BB50_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v9);
-    }
-    _477340_coroutine_yield_item = v4;
-    if (coroutine_list_head != coroutine_current)
-        --_47734C_coroutine_int;
-    //return 477340_coroutine_yield_item;
-}
-
-//----- (0040E2A0) --------------------------------------------------------
-int REND_SetRoutines()
-{
-	render_width = _478AA0_game_width;
-	render_height = _478A84_game_height;
-	REND_434890_set_ds();
-	render_478A94 = 1;
-	render_478A0C = 1;
-	p_render_set_clip = REND_SetClip;
-	REND_SetClip(0, 0, render_width, render_height);
-	RENDER_pClearScreen = REND_DirectDrawClearScreen;
-	j_render_draw_tile = render_draw_tile;
-	j_render_4351A0_draw = (decltype(j_render_4351A0_draw))render_4351A0_draw;
-	j_render_434EA0 = (decltype(j_render_434EA0))render_434EA0;
-	j_render_draw_cursor_434A00 = (decltype(j_render_draw_cursor_434A00))render_draw_cursor_434A00;
-	j_render_434A90 = (int)render_434A90;
-	j_render_nullsub_1 = (int)nullsub_1;
-	j_render_435320 = render_435320;
-	j_render_434AD0 = (decltype(j_render_434AD0))render_434AD0;
-	j_render_434B70 = (int)render_434B70;
-	j_render_434BD0 = (decltype(j_render_434BD0))render_434BD0;
-	j_render_434C60 = (decltype(j_render_434C60))render_434C60;
-	j_render_4349A0_draw_tile_32x32 = (decltype(j_render_4349A0_draw_tile_32x32))render_draw_tile_32x32;
-	j_render_4349D0_draw_tile_32x32 = (decltype(j_render_4349D0_draw_tile_32x32))render_4349D0_draw_tile_32x32;
-	j_render_nullsub_2 = (int)nullsub_1;
-	return 1;
-}
-
 //----- (0040E390) --------------------------------------------------------
 bool GAME_SetResolution()
 {
@@ -6863,11 +6793,6 @@ bool GAME_SetResolution()
 	}
 	return 1;
 }
-// 4785E8: using guessed type int _4785E8_game_width_unused;
-// 478A00: using guessed type int _478A00_fullscreen_unused;
-// 478A80: using guessed type int _478A80_game_height_unused;
-// 478A84: using guessed type int _478A84_game_height;
-// 478AA0: using guessed type int _478AA0_game_width;
 
 //----- (0040E3E0) --------------------------------------------------------
 char *get_resource_res_subfolder()
@@ -7121,7 +7046,7 @@ bool boxd_40E6E0()
 	int v34; // [sp+38h] [bp-Ch]@19
 
 	byte_478C08 = 0;
-	boxd_rand_seed = 0;
+	kknd_srand_3(0);
 	dword_478FF4 = 0;
 	dword_47953C = 0;
 	dword_47952C = 0;
@@ -7276,16 +7201,6 @@ bool boxd_40E6E0()
 	_478BE8_map_info__see40E6E0[7] = -1 - _4793F8_map_width;
 	return result;
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 478AB0: using guessed type int dword_478AB0;
-// 478AB4: using guessed type int _478AB4_map_width_shl_13;
-// 478C08: using guessed type char byte_478C08;
-// 478FF0: using guessed type int _478FF0_map_height_shl_13;
-// 478FF4: using guessed type int dword_478FF4;
-// 4793F8: using guessed type int _4793F8_map_width;
-// 47952C: using guessed type int dword_47952C;
-// 479538: using guessed type int boxd_rand_seed;
-// 47953C: using guessed type int dword_47953C;
 
 //----- (0040EA20) --------------------------------------------------------
 void boxd_40EA20()
@@ -7885,35 +7800,6 @@ int boxd_40F230(Entity *a1, int map_x, int map_y, int a4, int a5)
 	}
 	return result;
 }
-
-//----- (0040F2F0) --------------------------------------------------------
-int rand2(const char *file, int line)
-{
-	int result; // eax@1
-
-	result = (3141 * rand2_seed + 13867) & 0xFFFF;
-	rand2_seed = (3141 * rand2_seed + 13867) & 0xFFFF;
-	return result;
-}
-
-//----- (0040F320) --------------------------------------------------------
-int rand()
-{
-	int result; // eax@1
-
-	result = (3141 * rand_seed + 13867) & 0xFFFF;
-	rand_seed = (3141 * rand_seed + 13867) & 0xFFFF;
-	return result;
-}
-// 479534: using guessed type int rand_seed;
-
-//----- (0040F350) --------------------------------------------------------
-int rnd_capped(int maxrang)
-{
-	rand_seed = (3141 * rand_seed + 13867) & 0xFFFF;
-	return rand_seed % maxrang;
-}
-// 479534: using guessed type int rand_seed;
 
 //----- (0040F380) --------------------------------------------------------
 void sub_40F380_incdec(int inc_dec)
@@ -10101,18 +9987,15 @@ int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 	HWND v5; // eax@17
 	struct tagPOINT Point; // [sp+Ch] [bp-60h]@7
 	struct tagPOINT v7; // [sp+14h] [bp-58h]@7
-	struct tagPOINT v8; // [sp+1Ch] [bp-50h]@7
-	struct tagPOINT v9; // [sp+24h] [bp-48h]@7
+	RECT v8; // [sp+1Ch] [bp-50h]@7
 	struct tagPAINTSTRUCT Paint; // [sp+2Ch] [bp-40h]@5
 
-	if (Msg > WM_PAINT)
-	{
 		switch (Msg)
 		{
 		case WM_ERASEBKGND:
 			return 1;
 		case WM_ACTIVATEAPP:
-			if (!_411760_GameWindowCreate_already_called || global_fullscreen != 1)
+			if (!is_render_window_initialized || global_fullscreen != 1)
 				goto LABEL_18;
 			if (wParam)
 			{
@@ -10151,1046 +10034,34 @@ int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 		case WM_SYSCHAR:
 		case WM_SYSDEADCHAR:
 			return 0;
+
+        case WM_PAINT:
+            BeginPaint(hWnd, &Paint);
+            {
+                Point = *(struct tagPOINT *)&Paint.rcPaint.left;
+                v7 = *(struct tagPOINT *)&Paint.rcPaint.right;
+                ClientToScreen(hWnd, &Point);
+                ClientToScreen(hWnd, &v7);
+                *(struct tagPOINT *)&v8.left = Point;
+                *(struct tagPOINT *)&v8.right = v7;
+
+                render_on_wm_paint(&v8);
+            }
+            EndPaint(hWnd, &Paint);
+            result = 1;
+            break;
+
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            result = 0;
+            break;
+
 		default:
-			goto LABEL_25;
+            result = DefWindowProcA(hWnd, Msg, wParam, lParam);
+            break;
 		}
-	}
-	else if (Msg == WM_PAINT)
-	{
-		BeginPaint(hWnd, &Paint);
-		if (pdds_primary)
-		{
-			if (pdds_4798D8)
-			{
-				Point = *(struct tagPOINT *)&Paint.rcPaint.left;
-				v7 = *(struct tagPOINT *)&Paint.rcPaint.right;
-				ClientToScreen(hWnd, &Point);
-				ClientToScreen(hWnd, &v7);
-				v8 = Point;
-				v9 = v7;
-				pdds_primary->Blt((LPRECT)&v8, pdds_4798D8, (LPRECT)&v8, 0, 0);
-			}
-		}
-		EndPaint(hWnd, &Paint);
-		result = 1;
-	}
-	else if (Msg == WM_DESTROY)
-	{
-		PostQuitMessage(0);
-		result = 0;
-	}
-	else
-	{
-	LABEL_25:
-		result = DefWindowProcA(hWnd, Msg, wParam, lParam);
-	}
-	return result;
-}
 
-//----- (00411760) --------------------------------------------------------
-bool render_create_window(int width, int height, int bpp, int run, int fullscreen)
-{
-	int he1ght; // ebx@1
-	int w1dth; // ebp@1
-	BOOL result; // eax@2
-	int v8; // eax@3
-	HWND v9; // eax@5
-	BOOL v10; // eax@6
-	DWORD v11; // eax@11
-	LONG v12; // eax@13
-	int v13; // ST18_4@13
-	HWND v14; // eax@13
-	stru1_draw_params *v15; // eax@19
-	int v16; // ecx@21
-	WNDCLASSEXA v17; // [sp+10h] [bp-30h]@8
-
-	he1ght = height;
-	w1dth = width;
-	if (_411760_GameWindowCreate_already_called)
-		return 0;
-	v8 = bpp;
-	if (bpp == 15)
-	{
-		v8 = 16;
-	}
-	else if (bpp != 8 && bpp != 16 && bpp != 24)
-	{
-		return 0;
-	}
-	global_wnd_bpp = v8;
-	global_wnd_width = width;
-	global_wnd_height = height;
-	global_time_flows = run;
-	global_fullscreen = fullscreen;
-	v9 = FindWindowA("KKNDXtremeMainWindowClass", "KKND Xtreme");
-	if (v9)
-	{
-		SetForegroundWindow(v9);
-		v10 = 0;
-		goto LABEL_17;
-	}
-	ShowCursor(0);
-	if (!global_hwnd)
-	{
-		v17.style = 8;
-		v17.hInstance = global_hinstance;
-		v17.lpszClassName = "KKNDXtremeMainWindowClass";
-		v17.lpfnWndProc = (WNDPROC)WndProc;
-		v17.cbSize = 48;
-		v17.hIcon = LoadIconA(global_hinstance, (LPCSTR)0x65);
-		v17.cbClsExtra = 0;
-		v17.cbWndExtra = 0;
-		v17.hIconSm = LoadIconA(global_hinstance, (LPCSTR)0x65);
-		v17.hCursor = 0;
-		v17.lpszMenuName = 0;
-		v17.hbrBackground = (HBRUSH)GetStockObject(5);
-		if (!RegisterClassExA(&v17))
-		{
-			v10 = 0;
-			goto LABEL_17;
-		}
-		if (global_fullscreen == 1)
-		{
-			v11 = 0x90080000;
-			global_wnd_style_ex = 0x40008;
-			global_wnd_style = 0x90080000;
-		}
-		else
-		{
-			v11 = 0x90CA0000;
-			global_wnd_style_ex = 0x40000;
-			global_wnd_style = 0x90CA0000;
-		}
-		global_wnd_rect.left = 0;
-		global_wnd_rect.right = global_wnd_width;
-		global_wnd_rect.top = 0;
-		global_wnd_rect.bottom = global_wnd_height;
-		AdjustWindowRect(&global_wnd_rect, v11, 0);
-		global_wnd_rect.bottom -= global_wnd_rect.top;
-		global_wnd_rect.right -= global_wnd_rect.left;
-		global_wnd_rect.top = 0;
-		global_wnd_rect.left = 0;
-		v12 = GetSystemMetrics(0) - global_wnd_rect.right;
-		global_wnd_rect.right += v12;
-		v13 = global_wnd_rect.right - (v12 + global_wnd_rect.left);
-		global_wnd_rect.left += v12;
-		v14 = CreateWindowExA(
-			global_wnd_style_ex,
-			"KKNDXtremeMainWindowClass",
-			"KKND Xtreme",
-			global_wnd_style,
-			global_wnd_rect.left,
-			global_wnd_rect.top,
-			v13,
-			global_wnd_rect.bottom - global_wnd_rect.top,
-			0,
-			0,
-			global_hinstance,
-			0);
-		global_hwnd = v14;
-		if (!v14)
-		{
-			v10 = 0;
-			goto LABEL_17;
-		}
-		UpdateWindow(v14);
-	}
-	render_sw_initialize();
-	v10 = render_init_dd();
-LABEL_17:
-	if (v10)
-	{
-		v15 = (stru1_draw_params *)malloc(0xFCu);
-		stru1_list = v15;
-		if (v15)
-		{
-			v16 = 0;
-			do
-			{
-				v15[v16].next = &v15[v16 + 1];          // chain
-														// [0] -> [1] -> [2] -> [3] -> [4] -> [5] -> [6]
-				v15 = stru1_list;
-				++v16;
-			} while (v16 < 6);
-			stru1_list[6].next = 0;
-			stru1_list_free_pool = stru1_list;
-			default_stru1.prev = &default_stru1;
-			default_stru1.next = &default_stru1;
-			result = 1;
-			default_stru1.field_8 = 0;
-			default_stru1.anim_pos = 0x80000000;
-			default_stru1.clip_y = 0;
-			default_stru1.clip_x = 0;
-			default_stru1.clip_z = w1dth;
-			default_stru1.clip_w = he1ght;
-			default_stru1.field_20 = 0;
-			_411760_GameWindowCreate_already_called = 1;
-		}
-		else
-		{
-			result = 0;
-		}
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
-//----- (00411A50) --------------------------------------------------------
-bool render_init_dd()
-{
-	int v0; // eax@11
-	int v1; // eax@15
-	int v2; // eax@19
-	int v3; // eax@23
-	int v4; // eax@31
-	int v5; // eax@35
-	int v6; // eax@45
-	HWND v8; // eax@46
-	IDirectDrawSurface *v9; // [sp+68h] [bp-280h]@10
-	IDirectDraw *lpDD; // [sp+6Ch] [bp-27Ch]@3
-	DDCAPS v11; // [sp+70h] [bp-278h]@5
-	DDCAPS v12; // [sp+1ACh] [bp-13Ch]@5
-
-	if (!RenderDD_initialized && !pdd)
-	{
-		RenderDD_initialized = 1;
-		lpDD = 0;
-		if (!DirectDrawCreate(0, &lpDD, 0))
-		{
-			pdd = lpDD;
-			if (lpDD)
-			{
-				v11.dwSize = 316;
-				memset(&v11.dwCaps, 0, 0x138u);
-				v12.dwSize = 316;
-				memset(&v12.dwCaps, 0, 0x138u);
-				lpDD->GetCaps(&v11, &v12);
-				if (v11.dwCaps & DDCAPS_CANBLTSYSMEM || v12.dwCaps & DDCAPS_CANBLTSYSMEM)
-				{
-					if (global_fullscreen == 1)
-					{
-						global_wnd_style = 0x90080000;
-						global_wnd_style_ex = 0x40008;
-						SetWindowLongA(global_hwnd, GWL_STYLE, 0x90080000);
-						SetWindowLongA(global_hwnd, GWL_EXSTYLE, global_wnd_style_ex);
-						SetWindowPos(global_hwnd, (HWND)(void *)((int)HWND_MESSAGE | 0x2), 0, 0, global_wnd_width, global_wnd_height, 0x60u);
-						InvalidateRect(global_hwnd, 0, 1);
-						UpdateWindow(global_hwnd);
-						if (!pdd->SetCooperativeLevel(
-							global_hwnd,
-							DDSCL_EXCLUSIVE | DDSCL_NOWINDOWCHANGES | DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN)
-							&& !pdd->SetDisplayMode(global_wnd_width, global_wnd_height, global_wnd_bpp))
-						{
-							pdds_4798D8 = 0;
-							ddsd_primary.dwSize = 108;
-							ddsd_primary.dwFlags = 33;
-							ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLTSTRETCH | DDCAPS_ALIGNSIZESRC | DDCAPS_ALIGNBOUNDARYSRC;
-							ddsd_primary.dwBackBufferCount = 2;
-							fullscreen_flip_or_blt = 1;
-							if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
-							{
-								v0 = 0;
-							}
-							else
-							{
-								pdds_primary = v9;
-								v0 = v9 != 0;
-							}
-							if (v0
-								|| ((ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLTSTRETCH | DDCAPS_ALIGNSIZESRC | DDCAPS_ALIGNBOUNDARYSRC,
-									ddsd_primary.dwBackBufferCount = 1,
-									!pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v1 = v9 != 0) : (v1 = 0),
-									v1
-									|| ((fullscreen_flip_or_blt = 0,
-										ddsd_primary.dwFlags = 1,
-										ddsd_primary.ddsCaps.dwCaps = 512,
-										!pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v2 = v9 != 0) : (v2 = 0),
-										v2
-										&& ((ddsd_primary.dwHeight = global_wnd_height,
-											ddsd_primary.dwWidth = global_wnd_width,
-											ddsd_primary.dwFlags = 7,
-											ddsd_primary.ddsCaps.dwCaps = 2112,
-											!pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_4798D8 = v9, v3 = v9 != 0) : (v3 = 0),
-											v3))))
-							{
-								if (pdds_4798D8
-									|| (v9 = (IDirectDrawSurface *)4,
-										!pdds_primary->GetAttachedSurface((LPDDSCAPS)&v9, &pdds_4798D8)))
-								{
-								LABEL_38:
-									if ((global_fullscreen != 1
-										|| !pdd->CreatePalette(68, RenderDD_primary_palette_values, &pddpal_primary, 0)
-										&& !pdds_primary->SetPalette(pddpal_primary))
-										&& !pdd->CreateClipper(0, &pddclipper, 0)
-										&& !pddclipper->SetHWnd(0, global_hwnd)
-										&& !pdds_primary->SetClipper(pddclipper)
-										&& !pdds_primary->GetSurfaceDesc(&ddsd_primary))
-									{
-										memcpy(&pixelformat_primary, &ddsd_primary.ddpfPixelFormat, sizeof(pixelformat_primary));
-										v6 = ShowWindow(global_hwnd, global_win32_nCmdShow);
-										RenderDD_initialized = 0;
-										REND_DirectDrawClearScreen(1);
-										return 1;
-									}
-									goto LABEL_46;
-								}
-							}
-						}
-					}
-					else                                  // windowed
-					{
-						global_wnd_style = 0x90CA0000;
-						global_wnd_style_ex = 0x40000;
-						SetWindowLongA(global_hwnd, GWL_STYLE, 0x90CA0000);
-						SetWindowLongA(global_hwnd, GWL_EXSTYLE, global_wnd_style_ex);
-						SetWindowPos(
-							global_hwnd,
-							(HWND)0xFFFFFFFE,
-							global_wnd_rect.left,
-							global_wnd_rect.top,
-							global_wnd_rect.right - global_wnd_rect.left,
-							global_wnd_rect.bottom - global_wnd_rect.top,
-							0x60u);
-						InvalidateRect(global_hwnd, 0, 1);
-						UpdateWindow(global_hwnd);
-						if (!pdd->SetCooperativeLevel(global_hwnd, DDSCL_NORMAL))
-						{
-							memset(&ddsd_primary, 0, sizeof(ddsd_primary));
-							ddsd_primary.dwSize = 108;
-							ddsd_primary.dwFlags = 1;
-							ddsd_primary.ddsCaps.dwCaps = 512;
-							if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
-							{
-								v4 = 0;
-							}
-							else
-							{
-								pdds_primary = v9;
-								v4 = v9 != 0;
-							}
-							if (v4)
-							{
-								ddsd_primary.dwHeight = global_wnd_height;
-								ddsd_primary.dwWidth = global_wnd_width;
-								ddsd_primary.dwFlags = 7;
-								ddsd_primary.ddsCaps.dwCaps = DDCAPS_OVERLAYSTRETCH | DDCAPS_BLT;
-								if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
-								{
-									v5 = 0;
-								}
-								else
-								{
-									pdds_4798D8 = v9;
-									v5 = v9 != 0;
-								}
-								if (v5)
-									goto LABEL_38;
-							}
-						}
-					}
-				}
-			}
-		}
-	LABEL_46:
-		RenderDD_initialized = 0;
-		render_cleanup_dd();
-		v8 = GetActiveWindow();
-		MessageBoxA(v8, (LPCSTR)aFailedToSetupDirectdraw, (LPCSTR)Caption, 0);
-		return 0;
-	}
-	return 1;
-}
-
-//----- (00411FE0) --------------------------------------------------------
-void render_cleanup_dd()
-{
-	IDirectDrawSurface *v0; // esi@3
-	int v1; // eax@15
-	IDirectDrawSurface *v2; // esi@23
-	int v3; // eax@24
-	IDirectDrawPalette *v4; // [sp+14h] [bp-4h]@9
-
-	if (!RenderDD_initialized && pdd)
-	{
-		v0 = pdds_primary;
-		if (pdds_primary)
-		{
-			pdds_primary->SetClipper(0);
-			v0 = pdds_primary;
-		}
-		if (pddclipper)
-		{
-			pddclipper->Release();
-			v0 = pdds_primary;
-			pddclipper = 0;
-		}
-		if (global_fullscreen == 1)
-		{
-			if (v0)
-			{
-				v4 = 0;
-				v0->GetPalette(&v4);
-				if (v4)
-					pdds_primary->SetPalette(0);
-				v0 = pdds_primary;
-			}
-			if (pddpal_primary)
-			{
-				pddpal_primary->Release();
-				v0 = pdds_primary;
-				pddpal_primary = 0;
-			}
-		}
-		if (v0)
-		{
-			while (1)
-			{
-				v1 = v0->GetBltStatus(2);
-				if (v1 != 0x887601AE && v1 != 0x8876021C)
-					break;
-				Sleep(0xAu);
-			}
-			if (fullscreen_flip_or_blt && v0->GetFlipStatus(2) == 0x887601AE)
-			{
-				do
-					Sleep(0xAu);
-				while (v0->GetFlipStatus(2) == 0x887601AE);
-			}
-			v0->Release();
-		}
-		pdds_primary = 0;
-		if (!fullscreen_flip_or_blt)
-		{
-			v2 = pdds_4798D8;
-			if (pdds_4798D8)
-			{
-				while (1)
-				{
-					v3 = v2->GetBltStatus(2);
-					if (v3 != 0x887601AE && v3 != 0x8876021C)
-						break;
-					Sleep(0xAu);
-				}
-				if (fullscreen_flip_or_blt && v2->GetFlipStatus(2) == -2005532242)
-				{
-					do
-						Sleep(0xAu);
-					while (v2->GetFlipStatus(2) == -2005532242);
-				}
-				v2->Release();
-			}
-		}
-		pdds_4798D8 = 0;
-		if (global_fullscreen != 1 && !GetWindowRect(global_hwnd, &global_wnd_rect))
-		{
-			global_wnd_rect.top = 0;
-			global_wnd_rect.left = 0;
-		}
-		if (pdd)
-		{
-			pdd->Release();
-			pdd = 0;
-		}
-	}
-}
-
-//----- (00412190) --------------------------------------------------------
-bool render_should_render()
-{
-	BOOL result; // eax@3
-	bool v1; // sf@4
-	unsigned __int8 v2; // of@4
-
-	if (global_time_flows)
-	{
-		if (timer_time < timeGetTime())
-		{
-			v2 = __OFSUB__(timer_render_skips + 1, 4);// if (timer_time < timeGetTime())
-													  // {
-													  //   if (++timer_num_skips < 4)
-													  //   {
-													  //     return 0;
-													  //   }
-													  //   else
-													  //   {
-													  //     timer_time = timeGetTime();
-													  //     timer_num_skips = 0;
-													  //     return 1;
-													  //   }
-													  // }
-			v1 = timer_render_skips++ - 3 < 0;
-			if (v1 ^ v2)
-			{
-				result = 0;
-			}
-			else
-			{
-				timer_time = timeGetTime();
-				timer_render_skips = 0;
-				result = 1;
-			}
-		}
-		else
-		{
-			timer_render_skips = 0;
-			result = 1;
-		}
-	}
-	else
-	{
-		result = 1;
-	}
-	return result;
-}
-// 478104: using guessed type int timer_time;
-// 4798B0: using guessed type int global_time_flows;
-// 4798F0: using guessed type int timer_render_skips;
-
-//----- (004121F0) --------------------------------------------------------
-stru1_draw_params *render_create_stru1(int a1, int clip_x, int clip_y, int clip_z, int clip_w)
-{
-	stru1_draw_params *result; // eax@5
-
-	if (clip_x < global_wnd_width
-		&& clip_y < global_wnd_height
-		&& clip_z + clip_x <= global_wnd_width
-		&& clip_w + clip_y <= global_wnd_height
-		&& (result = stru1_list_free_pool) != 0)
-	{
-		stru1_list_free_pool = stru1_list_free_pool->next;
-		result->next = default_stru1.next;
-		default_stru1.next = result;
-		result->next->prev = result;
-		result->prev = &default_stru1;
-		result->field_8 = a1;
-		result->anim_pos = 0x80000000;
-		result->clip_x = clip_x;
-		result->clip_y = clip_y;
-		result->clip_z = clip_z;
-		result->clip_w = clip_w;
-		result->field_20 = 0;
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
-//----- (00412280) --------------------------------------------------------
-void render_remove_stru1(stru1_draw_params *a1)
-{
-	if (a1)
-	{
-		a1->next->prev = a1->prev;
-		a1->prev->next = a1->next;
-		a1->field_8 |= 0x80000000;
-		a1->next = stru1_list_free_pool;
-		stru1_list_free_pool = a1;
-	}
-}
-
-//----- (004122B0) --------------------------------------------------------
-bool render_dd_is_primary_surface_lost()
-{
-	BOOL result; // eax@2
-
-	if (!pdds_primary || (result = pdds_primary->IsLost()) != 0)
-		result = 1;
-	return result;
-}
-
-//----- (004122D0) --------------------------------------------------------
-void render_draw_list(DrawJob *list)
-{
-	DrawJob *v1; // ebp@1
-	int restore_palettes; // ebx@4
-	IDirectDrawSurface *v3; // esi@7
-	int v4; // eax@8
-	HRESULT v5; // eax@9
-	IDirectDrawSurface *v6; // esi@14
-	int v7; // eax@15
-	HRESULT v8; // eax@16
-	DrawJob *i; // esi@25
-	MapdScrlImage *v10; // eax@26
-	int(*v11)(DrawJobDetails *, int); // eax@27
-	RECT v12; // [sp+44h] [bp-94h]@34
-	POINT Point; // [sp+54h] [bp-84h]@35
-	POINT v14; // [sp+5Ch] [bp-7Ch]@35
-	RECT v15; // [sp+64h] [bp-74h]@35
-	DDBLTFX v16; // [sp+74h] [bp-64h]@34
-
-	v1 = list;
-	if (list && render_default_stru1 && pdds_primary)
-	{
-		restore_palettes = 0;
-		if (pdds_primary->IsLost() == 0x887601C2 && global_fullscreen == 1)
-			restore_palettes = 1;
-		v3 = pdds_primary;
-		if (pdds_primary)
-		{
-			v5 = pdds_primary->IsLost();
-			if (v5 == 0x887601C2)
-				v4 = v3->Restore() == 0;
-			else
-				v4 = v5 == 0;
-		}
-		else
-		{
-			v4 = 0;
-		}
-		if (v4)
-		{
-			if (global_fullscreen == 1
-				|| ((v6 = pdds_4798D8) != 0 ? ((v8 = pdds_4798D8->IsLost(), v8 != 0x887601C2) ? (v7 = v8 == 0) : (v7 = v6->Restore() == 0)) : (v7 = 0),
-					v7))
-			{
-				if (restore_palettes)
-				{
-					pdds_primary->SetPalette(pddpal_primary);
-					pddpal_primary->SetEntries(0, 0, 256, RenderDD_primary_palette_values);
-				}
-				_40E430_update_palette(render_default_stru1->anim_pos);
-				if (!pdds_4798D8->Lock(&stru_465810, &ddsd_primary, 1, 0))
-				{
-					*(_DWORD *)&render_locked_surface_width_px = ddsd_primary.lPitch;
-					if (global_wnd_bpp == 16)
-						*(_DWORD *)&render_locked_surface_width_px = ddsd_primary.lPitch >> 1;
-					unused_4798E4 = 0;
-					render_locked_surface_ptr = ddsd_primary.lpSurface;
-					render_first_drawing_item = 1;
-					for (i = v1->next; i != v1; i = i->next)
-					{
-						v10 = (MapdScrlImage *)i->job_details.image;
-						if (v10)
-						{
-							v11 = v10->on_draw_handler;
-							if (v11)
-								v11(&i->job_details, 0);
-						}
-					}
-					if (!pdds_4798D8->Unlock(ddsd_primary.lpSurface))
-					{
-						if (global_fullscreen == 1)
-						{
-							if (fullscreen_flip_or_blt)
-							{
-								pdds_primary->Flip(0, 0);
-							}
-							else
-							{
-								v12.bottom = global_wnd_height;
-								v12.top = 0;
-								v12.left = 0;
-								v12.right = global_wnd_width;
-								memset(&v16, 0, sizeof(v16));
-								v16.dwSize = 100;
-								v16.dwDDFX = 8;
-								pdds_primary->Blt(
-									&v12,
-									pdds_4798D8,
-									&v12,
-									DDBLT_WAIT | DDBLT_DDFX | DDBLT_ASYNC,
-									&v16);
-							}
-						}
-						else
-						{
-                            v14.x = global_wnd_width;
-                            v14.y = global_wnd_height;
-                            Point.x = 0;
-                            Point.y = 0;
-							ClientToScreen(global_hwnd, &Point);
-							ClientToScreen(global_hwnd, &v14);
-							v12.top = 0;
-							v12.left = 0;
-							*(struct tagPOINT *)&v15.left = Point;
-							v12.right = global_wnd_width;
-							*(struct tagPOINT *)&v15.right = v14;
-							v12.bottom = global_wnd_height;
-							memset(&v16, 0, sizeof(v16));
-							v16.dwSize = 100;
-							v16.dwDDFX = 8;
-							pdds_primary->Blt(&v15, pdds_4798D8, &v12, DDBLT_WAIT | DDBLT_DDFX | DDBLT_ASYNC, &v16);
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-//----- (004125D0) --------------------------------------------------------
-int render_call_draw_handler_mode1(DrawJobDetails *a1)
-{
-	MapdScrlImage *v1; // eax@1
-	int result; // eax@2
-
-	v1 = (MapdScrlImage *)a1->image;
-	if (v1)
-		result = v1->on_draw_handler(a1, 1);
-	else
-		result = 0;
-	return result;
-}
-
-//----- (004125F0) --------------------------------------------------------
-int render_call_draw_handler_mode2(DrawJobDetails *a1)
-{
-	MapdScrlImage *v1; // eax@1
-	int result; // eax@2
-
-	v1 = (MapdScrlImage *)a1->image;
-	if (v1)
-		result = v1->on_draw_handler(a1, 2);
-	else
-		result = 0;
-	return result;
-}
-
-//----- (00412610) --------------------------------------------------------
-void render_cleanup()
-{
-	if (_411760_GameWindowCreate_already_called == 1)
-	{
-		render_cleanup_dd();
-		render_sw_free_palette();
-		ShowWindow(global_hwnd, 0);
-		UpdateWindow(global_hwnd);
-		free(stru1_list);
-	}
-}
-// 4798CC: using guessed type int _411760_GameWindowCreate_already_called;
-
-//----- (00412650) --------------------------------------------------------
-int render_sprt_draw_handler_setup_palettes()
-{
-	copy_player_sprite_palette_aligned(palette_465848_sprt, (unsigned __int8 *)palette_4798F8_sprt_aligned);
-	return 1;
-}
-
-//----- (00412670) --------------------------------------------------------
-int render_sprt_draw_handler(DrawJobDetails *data, int mode)
-{
-	DrawJobDetails *v2; // esi@1
-	int result; // eax@4
-	stru1_draw_params *v4; // eax@7
-	DrawHandlerData_Units *v5; // edi@7
-	int v6; // ecx@9
-	int v7; // ebx@9
-	int v8; // ebp@9
-	int v9; // edx@10
-	int width; // ecx@17
-	char v11; // bl@19
-	int _x; // edx@26
-	char *pixels; // ecx@26
-	int _y; // [sp-Ch] [bp-20h]@26
-	int _width; // [sp-8h] [bp-1Ch]@26
-	int he1ght; // [sp-4h] [bp-18h]@20
-	int height; // [sp-4h] [bp-18h]@23
-	int _height; // [sp-4h] [bp-18h]@26
-	char tYpe; // [sp+10h] [bp-4h]@7
-
-	v2 = data;
-	if (mode)
-	{
-		if (mode == 1)
-			return **((_DWORD **)data->image + 2);
-		if (mode == 2)
-			return *(_DWORD *)(*((_DWORD *)data->image + 2) + 4);
-		return 0;
-	}
-	if (data->flags & 0xC0000000)
-		return 0;
-	v4 = data->params;
-	v5 = (DrawHandlerData_Units *)*((_DWORD *)data->image + 2);// MobdSprtImage::data
-	tYpe = v5->type;
-	if (!v4)
-		v4 = render_default_stru1;
-	v6 = data->x;
-	v7 = v5->width;
-	v8 = v5->height;
-	if (v6 > v4->clip_z)
-		return 0;
-	v9 = v2->y;
-	if (v9 > v4->clip_w || !(v7 + v6) || !(v8 + v9))
-		return 0;
-	if (v4 != current_drawing_params)
-	{
-		current_drawing_params = v4;
-		p_render_set_clip(v4->clip_x, v4->clip_y, v4->clip_z, v4->clip_w);
-	}
-	if (!tYpe)
-	{
-		_height = v5->height;
-		_width = v5->width;
-		_y = v2->y;
-		_x = v2->x;
-		pixels = (char *)v5->sprite_data;
-		if (*((_BYTE *)v2->image + 4) & 1)        // MobdSprtImage::flags
-		{
-			j_render_435320(pixels, _x, _y, _width, _height);
-			render_first_drawing_item = 0;
-			return 0;
-		}
-		j_render_4351A0_draw(pixels, _x, _y, _width, _height);
-		goto LABEL_29;
-	}
-	if (tYpe != 2 || (width = v5->width, v7 != v5->width) || v8 != v5->height)
-	{
-	LABEL_29:
-		render_first_drawing_item = 0;
-		return 0;
-	}
-	v11 = *((_BYTE *)v2->image + 4);              // MobdSprtImage::flags
-	if ((v2->flags & 0x10000000) == 0x10000000)
-	{
-		he1ght = v5->height;
-		if (v11 & 1)
-		{
-			j_render_434C60(v5->sprite_data, v2->palette, v2->x, v2->y, width, he1ght);
-			render_first_drawing_item = 0;
-			result = 0;
-		}
-		else
-		{
-			j_render_434BD0(v5->sprite_data, v2->palette, v2->x, v2->y, width, he1ght);
-			render_first_drawing_item = 0;
-			result = 0;
-		}
-	}
-	else
-	{
-		height = v5->height;
-		if (v11 & 1)
-		{
-			j_render_434AD0(v5->sprite_data, v2->x, v2->y, width, height);
-			render_first_drawing_item = 0;
-			result = 0;
-		}
-		else
-		{
-			j_render_draw_cursor_434A00(v5->sprite_data, v2->x, v2->y, width, height);
-			render_first_drawing_item = 0;
-			result = 0;
-		}
-	}
-	return result;
-}
-
-//----- (00412850) --------------------------------------------------------
-int nullsub_3(void)
-{
-	return 1;
-}
-
-//----- (00412860) --------------------------------------------------------
-int render_scrl_draw_handler(DrawJobDetails *data, int mode)
-{
-	MapdScrlImage *data_draw_handler; // edi@1
-	stru1_draw_params *data_params; // esi@7
-	int data_y; // ebp@7
-	int data_x; // ebx@7
-	unsigned int v7; // ecx@18
-	unsigned int v8; // ebx@18
-	int v9; // ebp@18
-	unsigned int x_tiles_to_draw; // eax@18
-	unsigned int v11; // ecx@18
-	int starting_y_tile; // ecx@22
-	unsigned int v13; // edx@22
-	unsigned int y_tiles_to_draw; // eax@22
-	unsigned int tile_y_size; // ebx@24
-	unsigned int v16; // ebp@24
-	unsigned int v17; // edx@24
-	int *image_data; // ebx@27
-	unsigned int v19; // eax@29
-	int v20; // esi@29
-	_BYTE *tile_ptr; // eax@31
-	unsigned int num_x_tiles_to_draw; // [sp+10h] [bp-10h]@16
-	int dAta_y; // [sp+14h] [bp-Ch]@7
-	unsigned int y_tiles_left; // [sp+14h] [bp-Ch]@28
-	int starting_x_tile; // [sp+18h] [bp-8h]@16
-	unsigned int x_tiles_left; // [sp+18h] [bp-8h]@30
-	int leftover_x; // [sp+1Ch] [bp-4h]@16
-
-	data_draw_handler = (MapdScrlImage *)data->image;
-	if (!mode)
-	{
-		if (data->flags & 0xC0000000)
-			return 0;
-		data_params = data->params;
-		data_y = data->y;
-		data_x = data->x;
-		dAta_y = data->y;
-		if (!data_params)
-			data_params = render_default_stru1;
-		if (data_x >= data_params->clip_z
-			|| data_x <= -(signed __int16)(LOWORD_HEXRAYS(data_draw_handler->tile_x_size) * LOWORD_HEXRAYS(data_draw_handler->num_x_tiles))
-			|| data_y >= data_params->clip_w
-			|| data_y <= -(signed __int16)(LOWORD_HEXRAYS(data_draw_handler->tile_y_size) * LOWORD_HEXRAYS(data_draw_handler->num_y_tiles)))
-		{
-			return 0;
-		}
-		if (data_params != current_drawing_params)
-		{
-			current_drawing_params = data_params;
-			p_render_set_clip(data_params->clip_x, data_params->clip_y, data_params->clip_z, data_params->clip_w);
-		}
-		if (data_x < 0)
-		{
-			v7 = data_draw_handler->tile_x_size;
-			v8 = -data_x;
-			v9 = v8 / v7;
-			starting_x_tile = v9;
-			leftover_x = ~(v8 % v7);
-			x_tiles_to_draw = (v7 + data_params->clip_z - 1) / v7;
-			v11 = data_draw_handler->num_x_tiles;
-			num_x_tiles_to_draw = x_tiles_to_draw + 1;
-			if (v9 + x_tiles_to_draw + 1 > v11)
-				num_x_tiles_to_draw = v11 - v9;
-			data_y = dAta_y;
-		}
-		else
-		{
-			leftover_x = data_x;
-			starting_x_tile = 0;
-			num_x_tiles_to_draw = (unsigned int)(data_draw_handler->tile_x_size - data_x + data_params->clip_z - 1)
-				/ data_draw_handler->tile_x_size
-				+ 1;
-			if (num_x_tiles_to_draw > data_draw_handler->num_x_tiles)
-				num_x_tiles_to_draw = data_draw_handler->num_x_tiles;
-		}
-		if (data_y < 0)
-		{
-			tile_y_size = data_draw_handler->tile_y_size;
-			v16 = -data_y;
-			starting_y_tile = v16 / tile_y_size;
-			data_y = ~(v16 % tile_y_size);
-			v17 = data_draw_handler->num_y_tiles;
-			y_tiles_to_draw = (tile_y_size + data_params->clip_w - 1) / tile_y_size + 1;
-			if (y_tiles_to_draw + starting_y_tile > v17)
-			{
-				v13 = v17 - starting_y_tile;
-			LABEL_26:
-				y_tiles_to_draw = v13;
-				goto LABEL_27;
-			}
-		}
-		else
-		{
-			starting_y_tile = 0;
-			v13 = data_draw_handler->num_y_tiles;
-			y_tiles_to_draw = (unsigned int)(data_draw_handler->tile_y_size - dAta_y + data_params->clip_w - 1)
-				/ data_draw_handler->tile_y_size
-				+ 1;
-			if (y_tiles_to_draw > v13)
-				goto LABEL_26;
-		}
-	LABEL_27:
-		image_data = (int *)&data_draw_handler->tiles[starting_x_tile + data_draw_handler->num_x_tiles * starting_y_tile];
-		if (y_tiles_to_draw)
-		{
-			y_tiles_left = y_tiles_to_draw;
-			do
-			{
-				v19 = num_x_tiles_to_draw;
-				v20 = leftover_x;
-				if (num_x_tiles_to_draw)
-				{
-					x_tiles_left = num_x_tiles_to_draw;
-					do
-					{
-						tile_ptr = (_BYTE *)*image_data;
-						if (*image_data)
-						{
-							if (render_first_drawing_item || *tile_ptr & 1)
-								j_render_4349A0_draw_tile_32x32(tile_ptr + 4, v20, data_y);// second param -> neg (x leftover)
-																						   // last param = neg (y leftover)
-							else
-								j_render_4349D0_draw_tile_32x32(tile_ptr + 4, v20, data_y);
-						}
-						v20 += data_draw_handler->tile_x_size;
-						++image_data;
-						--x_tiles_left;
-					} while (x_tiles_left);
-					v19 = num_x_tiles_to_draw;
-				}
-				image_data += data_draw_handler->num_x_tiles - v19;
-				data_y += data_draw_handler->tile_y_size;
-				--y_tiles_left;
-			} while (y_tiles_left);
-		}
-		render_first_drawing_item = 0;
-		return 0;
-	}
-	if (mode == 1)
-		return data_draw_handler->num_x_tiles * data_draw_handler->tile_x_size;
-	if (mode == 2)
-		return data_draw_handler->num_y_tiles * data_draw_handler->tile_y_size;
-	return 0;
-}
-// 46580C: using guessed type int render_first_drawing_item;
-
-//----- (00412A80) --------------------------------------------------------
-int render_video_draw_handler(DrawJobDetails *a1, int mode)
-{
-	DrawJobDetails *v2; // esi@1
-	DetailedDrawHandler_VideoPlayer *v3; // edi@1
-	stru1_draw_params *v5; // eax@7
-	int v6; // ecx@9
-	int v7; // ecx@11
-	void *v8; // ecx@15
-
-	v2 = a1;
-	v3 = (DetailedDrawHandler_VideoPlayer *)a1->image;
-	if (mode)
-	{
-		if (mode == 1)
-			return v3->width;
-		if (mode == 2)
-			return v3->height;
-	}
-	else if (!(a1->flags & 0xC0000000))
-	{
-		v5 = a1->params;
-		if (!v5)
-			v5 = render_default_stru1;
-		v6 = a1->x;
-		if (v6 <= v5->clip_z)
-		{
-			if (v6 + v3->width)
-			{
-				v7 = v2->y;
-				if (v7 <= v5->clip_w)
-				{
-					if (v7 + v3->height)
-					{
-						if (v5 != current_drawing_params)
-						{
-							current_drawing_params = v5;
-							p_render_set_clip(v5->clip_x, v5->clip_y, v5->clip_z, v5->clip_w);
-						}
-						v8 = v3->_18_img_data;
-						if (v8)
-						{
-							if (v3->field_14)
-							{
-								j_render_434EA0(v8, v2->x, v2->y, v3->width, v3->height);
-								render_first_drawing_item = 0;
-								return 0;
-							}
-							j_render_draw_tile(v8, v2->x, v2->y, v3->width, v3->height);
-						}
-						render_first_drawing_item = 0;
-					}
-				}
-			}
-		}
-	}
-	return 0;
+    return result;
 }
 
 //----- (00419DF0) --------------------------------------------------------
@@ -12130,7 +11001,7 @@ bool LVL_SysInit()
 		result = file_list_alloc();
 		if (result)
 		{
-			result = render_create_window(640, 480, 8, 1, 0);
+			result = render_create_window(640, 480, 8, 1, false);
 			if (result)
 			{
 				game_window_created = 1;
@@ -12140,8 +11011,6 @@ bool LVL_SysInit()
 	}
 	return result;
 }
-// 479DE4: using guessed type int game_window_created;
-// 479DF4: using guessed type __int16 stru2_list_initialized;
 
 //----- (0041B140) --------------------------------------------------------
 DataHunk *LVL_LoadLevel(const char *filename)
@@ -19141,9 +18010,6 @@ void _4224B0_update_last_level()
 		}
 	}
 }
-// 468B5C: using guessed type int single_player_game;
-// 47A2DC: using guessed type __int16 current_mute_level;
-// 47A2E0: using guessed type __int16 current_surv_level;
 
 //----- (00422500) --------------------------------------------------------
 void GAME_ReadRegistry()
@@ -19151,7 +18017,7 @@ void GAME_ReadRegistry()
 	DWORD cbData; // [sp+8h] [bp-1Ch]@2
 	HKEY phkResult; // [sp+Ch] [bp-18h]@1
 	DWORD Type; // [sp+10h] [bp-14h]@2
-	BYTE Data; // [sp+14h] [bp-10h]@4
+	BYTE Data[16]; // [sp+14h] [bp-10h]@4
 
 	game_installation_drive_letter = 'C';
 	is_minimal_install = 1;
@@ -19166,15 +18032,14 @@ void GAME_ReadRegistry()
 		cbData = 256;
 		if (!RegQueryValueExA(phkResult, (LPCSTR)reg_GamePath, 0, &Type, (LPBYTE)game_data_installation_dir, &cbData))
 			game_data_installation_dir[cbData] = 0;
-		cbData = 16;
-		if (!RegQueryValueExA(phkResult, (LPCSTR)reg_DriveLetter, 0, &Type, &Data, &cbData))
-			game_installation_drive_letter = Data;
+		cbData = sizeof(Data);
+		if (!RegQueryValueExA(phkResult, (LPCSTR)reg_DriveLetter, 0, &Type, Data, &cbData))
+			game_installation_drive_letter = Data[0];
 		cbData = 4;
 		RegQueryValueExA(phkResult, (LPCSTR)reg_MinimumInstall, 0, &Type, (LPBYTE)&is_minimal_install, &cbData);
 		RegCloseKey(phkResult);
 	}
 }
-// 47A008: using guessed type char game_installation_drive_letter;
 
 //----- (00422610) --------------------------------------------------------
 bool GAME_ShowWait()
@@ -19188,7 +18053,6 @@ bool GAME_ShowWait()
 	int v7; // [sp+0h] [bp-80h]@13
 	char v8[120]; // [sp+8h] [bp-78h]@13
 
-	dword_468B60 = 1;
 	GAME_ReadRegistry();
 	_4240E0_kknd_sve_read(pKknd_sve);
 	GAME_ParseCommandLine();
@@ -19207,7 +18071,7 @@ bool GAME_ShowWait()
 		exit(0);
 	}
 	REND_SetRoutines();
-	nullsub_1();
+
 	if (nocd)
 		strcpy(app_root_dir, a_);
 	else
@@ -19223,7 +18087,7 @@ bool GAME_ShowWait()
 			printf((const char *)aS, v8);
 		exit(0);
 	}
-	dword_468B60 = 0;
+
 	v3 = get_resource_res_subfolder();
 	sprintf(v8, (const char *)aSLevelsSWait_l, game_data_installation_dir, v3);
 	wait_lvl = LVL_LoadLevel(v8);
@@ -19251,7 +18115,7 @@ bool GAME_ShowWait()
 	_40E400_set_palette(&v4->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
 	_47C380_mapd.mapd_cplc_render_y = 0x1EA00;     // 490
-	v5 = 180;
+	v5 = 1;
 	do
 	{
 		draw_list_update_and_draw();
@@ -19262,9 +18126,6 @@ bool GAME_ShowWait()
 	LVL_Deinit();
 	return 1;
 }
-// 468B60: using guessed type int dword_468B60;
-// 47A008: using guessed type char game_installation_drive_letter;
-// 47A2E8: using guessed type int nocd;
 
 //----- (00422860) --------------------------------------------------------
 void GAME_PrepareSuperLvl(int mapd_idx)
@@ -19411,7 +18272,7 @@ int VIDEO_Play(int id)
 	char a1[80]; // [sp+24h] [bp-1A4h]@7
 	char v14[80]; // [sp+74h] [bp-154h]@7
 	char v15[260]; // [sp+C4h] [bp-104h]@16
-
+return 1;
 	v1 = id;
 	VIDEO_IsAllocated();
 	stru1_408480_reset_animation();
@@ -19566,8 +18427,6 @@ int VIDEO_Play(int id)
 	}
 	return result;
 }
-// 47A18C: using guessed type int _47A18C_probably_play_outro_movie;
-// 47A400: using guessed type Sprite sprite_47A400;
 
 //----- (00422F60) --------------------------------------------------------
 void GAME_PrepareLevel()
@@ -19779,7 +18638,6 @@ int GAME_Main()
 {
 	int result; // eax@2
 	int mapd_idx; // ecx@5
-	Bitmap **v2; // esi@14
 	Bitmap **v3; // esi@27
 
 	timeBeginPeriod(1u);
@@ -19826,16 +18684,16 @@ int GAME_Main()
 				draw_list_update_and_draw();
 				TimedMessagePump();
 			} while (!_47DCF4_wm_quit_received && !game_state);
-			v2 = _47A010_mapd_item_being_drawn;
-			do
-			{
-				if (*v2)
-				{
-					bitmap_list_remove(*v2);
-					*v2 = 0;
-				}
-				++v2;
-			} while ((int)v2 < (int) & _47A01C_sound_id);
+
+            for (int mapd_item = 0; mapd_item < 3; ++mapd_item)
+            {
+                if (_47A010_mapd_item_being_drawn[mapd_item])
+                {
+                    bitmap_list_remove(_47A010_mapd_item_being_drawn[mapd_item]);
+                    _47A010_mapd_item_being_drawn[mapd_item] = 0;
+                }
+            }
+
 			LVL_Deinit();
 			dword_47A180 = 0;
 			free(current_level_lvl);
@@ -19856,7 +18714,7 @@ int GAME_Main()
 					{
 						if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
 						{
-							VIDEO_Play(1);
+							//VIDEO_Play(1);
 						}
 						else
 						{
@@ -19938,7 +18796,6 @@ int GAME_Main()
 				}
 			}
 			netz_deinit();
-			dword_468B60 = 1;
 			free(wait_lvl);
 			sound_free_sounds();
 			GAME_Deinit();
@@ -19947,7 +18804,6 @@ int GAME_Main()
 		}
 		else
 		{
-			dword_468B60 = 1;
 			free(wait_lvl);
 			sound_free_sounds();
 			GAME_Deinit();
@@ -20146,7 +19002,6 @@ void script_event_list_free()
 //----- (00423A70) --------------------------------------------------------
 void script_custom_mission_briefing_loop(Script *a1)
 {
-	unsigned int v1; // eax@4
 	int v2; // edi@4
 	KeyboardInput keys_state; // [sp+10h] [bp-118h]@5
 	char name[260]; // [sp+24h] [bp-104h]@4
@@ -20162,9 +19017,10 @@ void script_custom_mission_briefing_loop(Script *a1)
 		_47A1A8_custom_mission_idx = current_level_idx - LEVEL_SURV_16;
 	}
 	a1->script_type = SCRIPT_TYPE_17;
-	v1 = GetTickCount();
-	srand(v1);
+
+	srand(GetTickCount());
 	_47C380_mapd.mapd_cplc_render_y = 122880 * (rand() % 6);
+
 	script_4084A0_animation(a1);
 	_47C65C_render_string = render_string_create(0, currently_running_lvl_mobd[80].items, 84, 84, 39, 19, 90, 14, 16);
 	render_string_445AE0(_47C65C_render_string);
@@ -20218,13 +19074,6 @@ LABEL_12:
 	script_408500_anim(a1);
 	game_state = 3;
 }
-// 47A19C: using guessed type int dword_47A19C;
-// 47A1A0: using guessed type int dword_47A1A0;
-// 47A1A4: using guessed type int _47A1A4_custom_mission_briefing_line;
-// 47A1A8: using guessed type int _47A1A8_custom_mission_idx;
-// 47A1AC: using guessed type int _47A1AC_is_custom_surv_mission;
-// 47A1B0: using guessed type int _47A1B0_custom_mission_briefing_ui;
-// 47A2C4: using guessed type int game_state;
 
 //----- (00423C60) --------------------------------------------------------
 void _423C60_custom_mission_make_briefing_lines(int a1)
@@ -24092,7 +22941,7 @@ void sub_4297D0(_428940_local *a1, int edx0)
 			case 0x4Du:
 			case 0x4Eu:
 				v26 = _4690A8_unit_sounds_volume;
-				v16 = _4689A8_sound_ids[rand() % -2];
+				v16 = _4689A8_sound_ids[kknd_rand() % -2];
 				break;
 			case 0x1Bu:
 				v26 = _4690A8_unit_sounds_volume;
@@ -24118,12 +22967,12 @@ void sub_4297D0(_428940_local *a1, int edx0)
 				if (get_player_faction())
 				{
 					v26 = _4690A8_unit_sounds_volume;
-					v16 = _468998_sound_ids[(unsigned __int8)((char)rand() % -4)];
+					v16 = _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
 				}
 				else
 				{
 					v26 = _4690A8_unit_sounds_volume;
-					v16 = _468988_sound_ids[(unsigned __int8)((char)rand() % -4)];
+					v16 = _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
 				}
 				break;
 			}
@@ -24402,23 +23251,23 @@ void sub_429D40(_428940_local *a1, Entity *a2)
 					if (v11)
 					{
 						v14 = _4690A8_unit_sounds_volume;
-						v7 = _468A18_sound_ids[rand() % -2];
+						v7 = _468A18_sound_ids[kknd_rand() % -2];
 					}
 					else
 					{
 						v14 = _4690A8_unit_sounds_volume;
-						v7 = _468988_sound_ids[(unsigned __int8)((char)rand() % -4)];
+						v7 = _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
 					}
 				}
 				else if (v11)
 				{
 					v14 = _4690A8_unit_sounds_volume;
-					v7 = _468A20_sound_ids[rand() % -2];
+					v7 = _468A20_sound_ids[kknd_rand() % -2];
 				}
 				else
 				{
 					v14 = _4690A8_unit_sounds_volume;
-					v7 = _468998_sound_ids[(unsigned __int8)((char)rand() % -4)];
+					v7 = _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
 				}
 			LABEL_53:
 				sound_play(v7, 0, v14, 16, 0);
@@ -24427,7 +23276,7 @@ void sub_429D40(_428940_local *a1, Entity *a2)
 		else
 		{
 			v8 = _4690A8_unit_sounds_volume;
-			v9 = rand();
+			v9 = kknd_rand();
 			sound_play(
 				_4689A8_sound_ids[(((unsigned __int64)v9 >> 32) ^ abs(v9) & 1) - ((unsigned __int64)v9 >> 32)],
 				0,
@@ -24797,7 +23646,7 @@ void sub_42A0A0(_428940_local *a1)
 				|| (v38 = v2->_48_unit_stats_idx, v38 >= (int)UNIT_STATS_GORT) && v38 <= (int)UNIT_STATS_MECH)
 			{
 				v39 = _4690A8_unit_sounds_volume;
-				v40 = rand();
+				v40 = kknd_rand();
 				sound_play(_4689B0_sound_ids[v40 % 3], 0, v39, 16, 0);
 				return;
 			}
@@ -24835,13 +23684,13 @@ void sub_42A0A0(_428940_local *a1)
 					}
 					if (!get_player_faction())
 					{
-						if ((char)rand() % -2)
+						if ((char)kknd_rand() % -2)
 							sound_play(SOUND_59, 0, _4690A8_unit_sounds_volume, 16, 0);
 						else
 							sound_play(SOUND_48, 0, _4690A8_unit_sounds_volume, 16, 0);
 						return;
 					}
-					if ((char)rand() % -2)
+					if ((char)kknd_rand() % -2)
 					{
 						sound_play(SOUND_92, 0, _4690A8_unit_sounds_volume, 16, 0);
 						return;
@@ -24859,7 +23708,7 @@ void sub_42A0A0(_428940_local *a1)
 			if (v41 >= (int)UNIT_STATS_GORT && v41 <= (int)UNIT_STATS_MECH)
 			{
 				v42 = _4690A8_unit_sounds_volume;
-				v43 = rand();
+				v43 = kknd_rand();
 				sound_play(_4689B0_sound_ids[v43 % 3], 0, v42, 16, 0);
 				return;
 			}
@@ -25340,7 +24189,7 @@ void sub_42AFD0(_428940_local *a1, Entity *a2)
 					if (get_player_faction())
 					{
 						v13 = _4690A8_unit_sounds_volume;
-						v14 = rand();
+						v14 = kknd_rand();
 						sound_play(
 							_468998_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 3) - ((unsigned __int64)v14 >> 32)],
 							0,
@@ -25351,7 +24200,7 @@ void sub_42AFD0(_428940_local *a1, Entity *a2)
 					else
 					{
 						v11 = _4690A8_unit_sounds_volume;
-						v12 = rand();
+						v12 = kknd_rand();
 						sound_play(
 							_468988_sound_ids[(((unsigned __int64)v12 >> 32) ^ abs(v12) & 3) - ((unsigned __int64)v12 >> 32)],
 							0,
@@ -25439,7 +24288,7 @@ void sub_42B230(_428940_local *a1)
 				|| (v9 = v1->_48_unit_stats_idx, v9 >= (int)UNIT_STATS_GORT) && v9 <= (int)UNIT_STATS_MECH)
 			{
 				v19 = _4690A8_unit_sounds_volume;
-				v10 = _4689C0_sound_ids[rand() % 22];
+				v10 = _4689C0_sound_ids[kknd_rand() % 22];
 				goto LABEL_53;
 			}
 			if (v8 == UNIT_STATS_SURV_SCOUT)
@@ -25493,32 +24342,32 @@ void sub_42B230(_428940_local *a1)
 							if (v12->_98_465610_accuracy_dmg_bonus_idx)
 							{
 								v19 = _4690A8_unit_sounds_volume;
-								v13 = rand();
+								v13 = kknd_rand();
 								v10 = _468A48_sound_ids[(((unsigned __int64)v13 >> 32) ^ abs(v13) & 1) - ((unsigned __int64)v13 >> 32)];
 							}
 							else
 							{
 								v19 = _4690A8_unit_sounds_volume;
-								v10 = _468A28_sound_ids[rand() % 3];
+								v10 = _468A28_sound_ids[kknd_rand() % 3];
 							}
 						}
 						else
 						{
 							v19 = _4690A8_unit_sounds_volume;
-							v10 = _468A28_sound_ids[rand() % 3];
+							v10 = _468A28_sound_ids[kknd_rand() % 3];
 						}
 						goto LABEL_53;
 					}
 					if (!v12)
 					{
 						v19 = _4690A8_unit_sounds_volume;
-						v10 = _468A38_sound_ids[rand() % 3];
+						v10 = _468A38_sound_ids[kknd_rand() % 3];
 						goto LABEL_53;
 					}
 					if (!v12->_98_465610_accuracy_dmg_bonus_idx)
 					{
 						v19 = _4690A8_unit_sounds_volume;
-						v10 = _468A38_sound_ids[rand() % 3];
+						v10 = _468A38_sound_ids[kknd_rand() % 3];
 						goto LABEL_53;
 					}
 					goto LABEL_46;
@@ -25527,12 +24376,12 @@ void sub_42B230(_428940_local *a1)
 				{
 				LABEL_46:
 					v19 = _4690A8_unit_sounds_volume;
-					v14 = rand();
+					v14 = kknd_rand();
 					v10 = _468A50_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 1) - ((unsigned __int64)v14 >> 32)];
 					goto LABEL_53;
 				}
 				v19 = _4690A8_unit_sounds_volume;
-				v15 = rand();
+				v15 = kknd_rand();
 				v10 = _468A38_sound_ids[(((unsigned __int64)v15 >> 32) ^ abs(v15) & 1) - ((unsigned __int64)v15 >> 32)];
 			}
 		LABEL_53:
@@ -26867,7 +25716,7 @@ void sub_42C9E0(_428940_local *a1, int x, int y)
 			case UNIT_STATS_SENTINEL_DROID:
 			case UNIT_STATS_MECH:
 				v36 = _4690A8_unit_sounds_volume;
-				v26 = _4689A8_sound_ids[rand() % -2];
+				v26 = _4689A8_sound_ids[kknd_rand() % -2];
 				goto LABEL_57;
 			case UNIT_STATS_MUTE_DIRE_WOLF:
 				v36 = _4690A8_unit_sounds_volume;
@@ -26893,12 +25742,12 @@ void sub_42C9E0(_428940_local *a1, int x, int y)
 				if (get_player_faction())
 				{
 					v36 = _4690A8_unit_sounds_volume;
-					v26 = _468998_sound_ids[(unsigned __int8)((char)rand() % -4)];
+					v26 = _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
 				}
 				else
 				{
 					v36 = _4690A8_unit_sounds_volume;
-					v26 = _468988_sound_ids[(unsigned __int8)((char)rand() % -4)];
+					v26 = _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
 				}
 			LABEL_57:
 				sound_play(v26, 0, v36, 16, 0);
@@ -28171,7 +27020,6 @@ void stru24_42E070(stru24 *a1)
 int netz_42E170(int a1, char *a2)
 {
 	char *v2; // eax@1
-	unsigned int v3; // eax@3
 	int v4; // esi@3
 	void *v5; // edx@3
 	void *v6; // ecx@9
@@ -28205,8 +27053,7 @@ int netz_42E170(int a1, char *a2)
 		*(_DWORD *)v2 = 1;
 		v2 += 28;
 	} while ((int)v2 < (int)&netz_47A840);
-	v3 = clock();
-	srand(v3);
+	srand(clock());
 	v4 = 0;
 	v5 = (void *)(rand() % 6);
 	while (netz_47A740[(int)v5 + 2].field_8)
@@ -28885,7 +27732,7 @@ int netz_42E820(netz_stru_3 *a1)
 			script_trigger_event_group(0, EVT_MSG_1526, 0, SCRIPT_TYPE_17);
 			return 0;
 		case 71:
-			rand2_seed = *(_DWORD *)a1->str_34;
+            kknd_srand_debug(*(_DWORD *)a1->str_34);
 			goto LABEL_62;
 		case 70:
 		LABEL_62:
@@ -29202,7 +28049,7 @@ int netz_42E820(netz_stru_3 *a1)
 			return 0;
 		}
 		v79 = 0;
-		v80 = rand() % 6;
+		v80 = kknd_rand() % 6;
 		while (netz_47A740[v80 + 2].field_8)
 		{
 			if (++v80 == 6)
@@ -29307,7 +28154,6 @@ void *netz_42F650(void *a1)
 	int v1; // eax@3
 	int v2; // edi@4
 	char *v3; // esi@4
-	unsigned int v4; // eax@6
 	int v5; // esi@6
 	int v6; // edx@6
 	void *v7; // ebx@11
@@ -29345,8 +28191,7 @@ void *netz_42F650(void *a1)
 		v3 += 28;
 		++v2;
 	} while ((int)v3 < (int)&netz_47A840);
-	v4 = clock();
-	srand(v4);
+	srand(clock());
 	v5 = 0;
 	v6 = rand() % 6;
 	while (netz_47A740[v6 + 2].field_8)
@@ -29417,24 +28262,19 @@ int netz_init(int netz_provider_id, void(*a2)(), int(*a3)(int))
 {
 	int v3; // ebx@1
 	int result; // eax@2
-	int v5; // edi@3
-	char *v6; // esi@3
 
 	v3 = netz_provider_id;
 	if (a3)
 	{
 		netz_pfn_47A838 = (int(*)(netz_stru_3 *))a3;
-		v5 = 0;
-		v6 = (char *)&netz_468B6C_providers[0].direct_play;
-		do
+
+		for (int i = 0; i < 3; ++i)
 		{
-			*(_DWORD *)v6 = netz_create_direct_play(v5) >= 0;
-			v6 += 104;
-			++v5;
-		} while ((int)v6 < (int)&aDirectxModem[12]);
+            netz_468B6C_providers[i].is_directplay_initialized = netz_create_direct_play(i) >= 0;
+		}
 		if (v3 < 0)
 			goto LABEL_16;
-		if (v3 < 3 && netz_468B6C_providers[v3].direct_play)
+		if (v3 < 3 && netz_468B6C_providers[v3].is_directplay_initialized)
 		{
 			if (netz_468B6C_providers_idx != -1)
 				netz_cleanup();
@@ -29520,7 +28360,7 @@ int netz_42F930_switch_provider(int netz_provider_id)
 	int result; // eax@6
 
 	v1 = netz_provider_id;
-	if (netz_provider_id < 3 && netz_provider_id >= 0 && netz_468B6C_providers[netz_provider_id].direct_play)
+	if (netz_provider_id < 3 && netz_provider_id >= 0 && netz_468B6C_providers[netz_provider_id].is_directplay_initialized)
 	{
 		if (netz_468B6C_providers_idx != -1)
 			netz_cleanup();
@@ -30405,7 +29245,6 @@ BOOL __stdcall DirectPlayEnumerateACallback(LPGUID lpguidSP, LPSTR lpSPName, DWO
 //----- (00430780) --------------------------------------------------------
 int netz_create_direct_play(int a1)
 {
-    __debugbreak();
 /*	int v1; // eax@1
 	int v2; // ebp@1
 	int v3; // edi@2
@@ -31458,7 +30297,6 @@ void render_sw_initialize()
 	if (global_wnd_bpp == 8)
 		render_sw_hdc = GetDC(global_hwnd);
 }
-// 47980C: using guessed type int global_wnd_bpp;
 
 //----- (00431940) --------------------------------------------------------
 void render_sw_free_palette()
@@ -31475,7 +30313,6 @@ void render_sw_free_palette()
 		render_sw_palette = 0;
 	}
 }
-// 47980C: using guessed type int global_wnd_bpp;
 
 //----- (00431980) --------------------------------------------------------
 void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
@@ -31495,9 +30332,10 @@ void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
 	v1 = palette_entries;
 	if (global_wnd_bpp == 8)
 	{
-		_477340_coroutine_yield_item = (void *)global_wnd_bpp;
+		_477340_coroutine_yield_item = __EAX__;
 		if (coroutine_list_head != coroutine_current && ++_47734C_coroutine_int == 1)
 		{
+            __debugbreak();
 			v2 = coroutine_list_head->stack;
 			_477344_esp = (int)&v9;
 		}
@@ -31580,18 +30418,22 @@ HPALETTE _431B60_create_palette(PALETTEENTRY *a1, int num_entries)
 	int v11; // eax@6
 	int v12; // edx@6
 	int v14; // [sp+14h] [bp-408h]@1
-	LOGPALETTE plpal; // [sp+18h] [bp-404h]@1
+    struct
+    {
+        LOGPALETTE plpal; // [sp+18h] [bp-404h]@1
+        char pixels[0x400];
+    } v15;
 
 	v2 = a1;
-	plpal.palVersion = 768;
-	plpal.palNumEntries = 256;
-	memset(plpal.palPalEntry, 0, 0x400u);
+    v15.plpal.palVersion = 768;
+    v15.plpal.palNumEntries = 256;
+	memset(v15.plpal.palPalEntry, 0, 0x400u);
 	v14 = num_entries - 10;
-	v3 = &plpal.palPalEntry[0].peBlue - (BYTE *)a1;
-	v4 = (char *)((char *)&plpal.palNumEntries + 1 - (char *)v2);
-	v5 = (char *)((char *)plpal.palPalEntry - (char *)v2);
+	v3 = &v15.plpal.palPalEntry[0].peBlue - (BYTE *)a1;
+	v4 = (char *)((char *)&v15.plpal.palNumEntries + 1 - (char *)v2);
+	v5 = (char *)((char *)v15.plpal.palPalEntry - (char *)v2);
 	v6 = (int)&v2->peGreen;
-	v7 = (char *)(&plpal.palPalEntry[0].peGreen - (BYTE *)v2);
+	v7 = (char *)(&v15.plpal.palPalEntry[0].peGreen - (BYTE *)v2);
 	v8 = 10;
 	do
 	{
@@ -31627,7 +30469,7 @@ HPALETTE _431B60_create_palette(PALETTEENTRY *a1, int num_entries)
 		v11 += 4;
 		--v12;
 	} while (v12);
-	return CreatePalette(&plpal);
+	return CreatePalette(&v15.plpal);
 }
 
 //----- (00431C40) --------------------------------------------------------
@@ -33664,10 +32506,7 @@ HRESULT __stdcall EnumAttachedSurfacesCallback(IDirectDrawSurface *lpDDSurface, 
 //----- (00434890) --------------------------------------------------------
 int REND_434890_set_ds()
 {
-	int result; // eax@1
-	result = __DS__;
-	*(_DWORD *)&_47C044_ds = __DS__;
-	return result;
+	return _47C044_ds = __DS__;
 }
 
 //----- (004348B0) --------------------------------------------------------
@@ -33752,7 +32591,6 @@ void render_draw_cursor_434A00(void *pixels, int x, __int16 y, __int16 width, __
             clipped_y,
             width,
             height,
-            _47C044_ds,
             (int)render_locked_surface_ptr,
             render_clip_x + X,
             render_clip_y + y,
@@ -33940,7 +32778,7 @@ void render_draw_tile(void *data, int image_off_x, int image_off_y, int image_x_
 			return;
 		y_off = image_y_size + image_off_y;
 		pdata = (char *)data + image_x_size * -image_off_y;
-		y_clip_off = *(_DWORD *)&render_locked_surface_width_px * render_clip_y;
+		y_clip_off = render_locked_surface_width_px * render_clip_y;
 	}
 	else
 	{
@@ -33954,7 +32792,7 @@ void render_draw_tile(void *data, int image_off_x, int image_off_y, int image_x_
 				return;
 			y_off = render_clip_w - image_off_y;
 		}
-		y_clip_off = *(_DWORD *)&render_locked_surface_width_px * (render_clip_y + image_off_y);
+		y_clip_off = render_locked_surface_width_px * (render_clip_y + image_off_y);
 	}
 	if (image_off_x < 0)
 	{
@@ -33982,7 +32820,7 @@ void render_draw_tile(void *data, int image_off_x, int image_off_y, int image_x_
 		LABEL_14:
 			num_pixels_to_skip = render_clip_x + image_off_x + y_clip_off;
 		LABEL_17:
-			row_pitch_leftover = *(_DWORD *)&render_locked_surface_width_px - x_pixels_to_render;
+			row_pitch_leftover = render_locked_surface_width_px - x_pixels_to_render;
 			pdAta = (unsigned __int8 *)pdata;
 			dst = (unsigned __int8 *)render_locked_surface_ptr + num_pixels_to_skip;
 			v7 = y_off;
@@ -34047,7 +32885,7 @@ void render_434EA0(int a1, int a2, int a3, unsigned int a4, int a5)
 			return;
 		v10 = a5 + a3;
 		v5 = a4 * -a3 + a1;
-		v12 = *(_DWORD *)&render_locked_surface_width_px * render_clip_y;
+		v12 = render_locked_surface_width_px * render_clip_y;
 	}
 	else
 	{
@@ -34061,7 +32899,7 @@ void render_434EA0(int a1, int a2, int a3, unsigned int a4, int a5)
 				return;
 			v10 = render_clip_w - a3;
 		}
-		v12 = *(_DWORD *)&render_locked_surface_width_px * (render_clip_y + a3);
+		v12 = render_locked_surface_width_px * (render_clip_y + a3);
 	}
 	if (a2 < 0)
 	{
@@ -34088,7 +32926,7 @@ void render_434EA0(int a1, int a2, int a3, unsigned int a4, int a5)
 		}
 		v13 = render_clip_x + a2 + v12;
 	}
-	v14 = *(_DWORD *)&render_locked_surface_width_px - v7;
+	v14 = render_locked_surface_width_px - v7;
 	v6 = v5;
 	v8 = (int)render_locked_surface_ptr + v13;
 	while (v10)
@@ -34174,7 +33012,7 @@ char render_4351A0_draw(unsigned __int8 *pixels, int x, int y, int width, int he
 		actual_width -= width + v11 - (render_clip_z + render_clip_x);
 	if (height + ya > render_clip_w + render_clip_y)
 		actual_height -= height + ya - (render_clip_w + render_clip_y);
-	dst_px_offset = dst_x_offset + dst_y_offset * *(_DWORD *)&render_locked_surface_width_px;
+	dst_px_offset = dst_x_offset + dst_y_offset * render_locked_surface_width_px;
 	if (actual_width > 0 && actual_height > 0)
 	{
 		src = p1xels;
@@ -34191,7 +33029,7 @@ char render_4351A0_draw(unsigned __int8 *pixels, int x, int y, int width, int he
 				--width_left;
 			} while (width_left);
 			src += width;
-			dst += *(_DWORD *)&render_locked_surface_width_px;
+			dst += render_locked_surface_width_px;
 			--height_left;
 		} while (height_left);
 	}
@@ -34244,7 +33082,7 @@ int render_435320(void *pxiels, int x, int y, int w, int h)
         v15 -= w + v11 - (render_clip_z + render_clip_x);
     if (h + ya > render_clip_w + render_clip_y)
         v14 -= h + ya - (render_clip_w + render_clip_y);
-    result = v13 + v12 * *(_DWORD *)&render_locked_surface_width_px;
+    result = v13 + v12 * render_locked_surface_width_px;
     if (v15 > 0 && v14 > 0)
     {
         v6 = v16;
@@ -34263,7 +33101,7 @@ int render_435320(void *pxiels, int x, int y, int w, int h)
                 --v9;
             } while (v9);
             v6 += w;
-            v7 += *(_DWORD *)&render_locked_surface_width_px;
+            v7 += render_locked_surface_width_px;
             --v8;
         } while (v8);
     }
@@ -34294,8 +33132,8 @@ void render_4354A0_draw_tile(unsigned __int8 *tile, int a2, int a3, int a4, int 
 			return;
 		v12 = a5 + a3;
 		t1le = &tile[a4 * -a3];
-		result = (char *)(*(_DWORD *)&render_locked_surface_width_px * render_clip_y);
-		v15 = *(_DWORD *)&render_locked_surface_width_px * render_clip_y;
+		result = (char *)(render_locked_surface_width_px * render_clip_y);
+		v15 = render_locked_surface_width_px * render_clip_y;
 	}
 	else
 	{
@@ -34311,7 +33149,7 @@ void render_4354A0_draw_tile(unsigned __int8 *tile, int a2, int a3, int a4, int 
 				return;
 			v12 = render_clip_w - a3;
 		}
-		v15 = *(_DWORD *)&render_locked_surface_width_px * (render_clip_y + a3);
+		v15 = render_locked_surface_width_px * (render_clip_y + a3);
 	}
 	if (a2 < 0)
 	{
@@ -34338,7 +33176,7 @@ void render_4354A0_draw_tile(unsigned __int8 *tile, int a2, int a3, int a4, int 
 		}
 		v16 = render_clip_x + a2 + v15;
 	}
-	v17 = *(_DWORD *)&render_locked_surface_width_px - v10;
+	v17 = render_locked_surface_width_px - v10;
 	result = (char *)t1le;
 	v9 = t1le;
 	v11 = (char *)render_locked_surface_ptr + v16;
@@ -34960,12 +33798,12 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
 				show_message_ex(0, aUpgradeComplete);
 				if (get_player_faction())
 				{
-					if ((char)rand() % -2)
+					if ((char)kknd_rand() % -2)
 						sound_play(SOUND_MUTE_UPGRADE_COMPLETE_2, 0, _4690A8_unit_sounds_volume, 16, 0);
 					else
 						sound_play(SOUND_MUTE_UPGRADE_COMPLETE_1, 0, _4690A8_unit_sounds_volume, 16, 0);
 				}
-				else if ((char)rand() % -2)
+				else if ((char)kknd_rand() % -2)
 				{
 					sound_play(SOUND_SURV_UPGRADE_COMPLETE_2, 0, _4690A8_unit_sounds_volume, 16, 0);
 				}
@@ -36557,7 +35395,7 @@ void sound_list_remove(Sound *a1)
 }
 
 //----- (0043A910) --------------------------------------------------------
-void render_do_draw_cursor_43A910(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, _BYTE *a5, unsigned __int16 a6, unsigned __int16 a7, unsigned __int16 a8, __int16 a9, __int16 a10, int a11, unsigned __int16 a12, unsigned __int16 a13, unsigned __int16 a14)
+void render_do_draw_cursor_43A910(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, _BYTE *a5, unsigned __int16 a6, unsigned __int16 a7, unsigned __int16 a8, __int16 a9, int a11, unsigned __int16 a12, unsigned __int16 a13, unsigned __int16 a14)
 {
 	_BYTE *v14; // esi@1
 	unsigned int v15; // ecx@1
@@ -38479,17 +37317,20 @@ void draw_list_update(DrawJob *list)
 }
 
 //----- (0043B8C0) --------------------------------------------------------
-void draw_list_z_order(DrawJob *a1)
+void draw_list_z_order(DrawJob *list)
 {
 	DrawJob *v1; // esi@1
 	DrawJob *v2; // eax@2
 	int v3; // edi@2
 	DrawJob *v4; // edx@3
 
-	v1 = a1->prev;
+	v1 = list->prev;
+    if (!v1)
+        return;
+
 	do
 	{
-		v2 = a1->next;
+		v2 = list->next;
 		v3 = 1;
 		while (v2 != v1)
 		{
@@ -39706,7 +38547,7 @@ void script_43D090_mobd45_directx_ipx(Script *a1)
 	v4 = v3;
 	if (v3 != -1)
 	{
-		if (netz_468B6C_providers[v3].direct_play)
+		if (netz_468B6C_providers[v3].is_directplay_initialized)
 		{
 			while (!script_443780(a1, 1792, 1, 0))
 				;
@@ -39780,7 +38621,7 @@ void script_43D270_mobd45_directx_serial(Script *a1)
 	v3 = netz_42FAC0(aDirectxSerial);
 	if (v3 != -1)
 	{
-		if (netz_468B6C_providers[v3].direct_play)
+		if (netz_468B6C_providers[v3].is_directplay_initialized)
 		{
 			while (!script_443780(a1, 1904, 1, 0))
 				;
@@ -39853,7 +38694,7 @@ void script_43D430_mobd45_directx_modem(Script *a1)
 	v3 = netz_42FAC0(aDirectxModem);
 	if (v3 != -1)
 	{
-		if (netz_468B6C_providers[v3].direct_play)
+		if (netz_468B6C_providers[v3].is_directplay_initialized)
 		{
 			while (!script_443780(a1, 1888, 1, 0))
 				;
@@ -43221,8 +42062,6 @@ void script_441CE0_mobd45_evt8(Script *a1)
 	Script *v1; // esi@1
 	Sprite *v2; // edi@1
 	Sprite *v3; // eax@1
-	unsigned int v4; // eax@8
-	int v5; // eax@8
 	void *v6; // eax@8
 	Script *v7; // edx@8
 	signed __int64 v8; // rtt@8
@@ -43256,20 +42095,19 @@ void script_441CE0_mobd45_evt8(Script *a1)
 				;
 		} while (!netz_42E7B0());
 	}
-	v4 = clock();
-	srand(v4);
-	v5 = rand();
-	v8 = v5;
-	v6 = (void *)(v5 / 0xFFFF);
+
+    srand(clock());
+	v8 = rand();
+	v6 = (void *)(v8 / 0xFFFF);
 	v7 = (Script *)(v8 % 0xFFFF);
-	rand2_seed = v8 % 0xFFFF;
+	kknd_srand_debug((int)v7);
 	if (netz_47C6C0_mapd_idx == 15)
 	{
 		_47C6D8_use__466098_cost_multipliers = 1;
 		_47C6DC_dont_execute_unit_handlers = 1;
 		single_player_game = 1;
 		netz_42E7F0();
-		v10 = rand();
+		v10 = kknd_rand();
 		player_side = (PLAYER_SIDE)(2 * (v10 % 3) + 2);
 		if (!_47C658_faction_index)
 			player_side = (PLAYER_SIDE)(2 * (v10 % 3) + 1);
@@ -43313,8 +42151,6 @@ void netz_441EF0(int a1)
 	_46E420_starting_cash_idx = *(_DWORD *)a1;
 	byte_47C600 = *(_BYTE *)(a1 + 4);
 }
-// 47C5FC: using guessed type int _46E420_starting_cash_idx;
-// 47C600: using guessed type char byte_47C600;
 
 //----- (00441F10) --------------------------------------------------------
 void script_441F10(Script *a1)
@@ -53858,20 +52694,18 @@ LABEL_25:
 	}
 	return 0;
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
 
 //----- (0044D560) --------------------------------------------------------
 void message_pump()
 {
-	struct tagMSG Msg; // [sp+8h] [bp-1Ch]@1
+	MSG msg;
 
-	while (PeekMessageA(&Msg, 0, 0, 0, 1u))
+	while (PeekMessageA(&msg, 0, 0, 0, PM_REMOVE))
 	{
-		if (Msg.message == WM_QUIT)
-			_47DCF4_wm_quit_received = 1;
-		TranslateMessage(&Msg);
-		DispatchMessageA(&Msg);
+		if (msg.message == WM_QUIT)
+			_47DCF4_wm_quit_received = true;
+		TranslateMessage(&msg);
+		DispatchMessageA(&msg);
 	}
 }
 
