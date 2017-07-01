@@ -222,7 +222,7 @@ int timer_init(unsigned int fps);
 void TimedMessagePump();
 int entity_40D600(Entity *a1, int sprite_width, int sprite_height, int a4);
 int entity_40D6F0(Entity *a1, int sprite_width, int sprite_height, int a4);
-bool __40D860_prolly_sprite_distance(Sprite *a1, Sprite *a2, int a3); // idb
+bool _40D860_prolly_sprite_distance(Sprite *a1, Sprite *a2, int a3); // idb
 int sprite_40D8B0_dmg(Sprite *a1, int a2); // idb
 int entity_40DA90_boxd(Entity *a1);
 bool entity_40DBF0_boxd(Entity *a1);

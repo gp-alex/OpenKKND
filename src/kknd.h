@@ -13,6 +13,8 @@
 
 #include "src/hexrays-defs.h"
 
+#include "src/File.h"
+
 struct UnitAttachmentPoint;
 struct UnitDamageSource;
 struct Script;
@@ -489,19 +491,6 @@ struct __declspec(align(4)) LevelDesc
 	__int16 field_28;
 	__int16 field_2A;
 	int field_2C;
-};
-
-/* 248 */
-struct File
-{
-	int flags;
-	void *handle_or_FILE;
-	HANDLE handle_8;
-	void *view;
-	void *view_current_ptr;
-	int view_end_ptr;
-	File *next;
-	File *prev;
 };
 
 

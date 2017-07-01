@@ -13,6 +13,9 @@
     <Filter Include="lib\src\legacy_dx">
       <UniqueIdentifier>{101147fb-4553-49d0-81ac-37402d422f64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Scripts">
+      <UniqueIdentifier>{cc1fb11a-e198-4ef9-8b96-ff4a34a7b930}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\lib\src\legacy_dx\d3d.h">
@@ -105,6 +108,9 @@
     <ClInclude Include="..\..\src\hexrays-defs.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\File.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kknd.cpp">
@@ -112,6 +118,36 @@
     </ClCompile>
     <ClCompile Include="..\..\src\_unsorted_data.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Scripts\Detenshn.cpp">
+      <Filter>src\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Scripts\Aircraft.cpp">
+      <Filter>src\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Scripts\Buildings.cpp">
+      <Filter>src\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Scripts\EnemyAI.cpp">
+      <Filter>src\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Scripts\Infantry.cpp">
+      <Filter>src\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\File.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Scripts\Mission.cpp">
+      <Filter>src\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Scripts\Projectiles.cpp">
+      <Filter>src\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Scripts\Scar.cpp">
+      <Filter>src\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Scripts\Schrap.cpp">
+      <Filter>src\Scripts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -113,7 +113,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\File.cpp" />
     <ClCompile Include="..\..\src\kknd.cpp" />
+    <ClCompile Include="..\..\src\Scripts\Aircraft.cpp" />
+    <ClCompile Include="..\..\src\Scripts\Buildings.cpp" />
+    <ClCompile Include="..\..\src\Scripts\Detenshn.cpp" />
+    <ClCompile Include="..\..\src\Scripts\EnemyAI.cpp" />
+    <ClCompile Include="..\..\src\Scripts\Infantry.cpp" />
+    <ClCompile Include="..\..\src\Scripts\Mission.cpp" />
+    <ClCompile Include="..\..\src\Scripts\Projectiles.cpp" />
+    <ClCompile Include="..\..\src\Scripts\Scar.cpp" />
+    <ClCompile Include="..\..\src\Scripts\Schrap.cpp" />
     <ClCompile Include="..\..\src\_unsorted_data.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +153,7 @@
     <ClInclude Include="..\..\lib\src\legacy_dx\rmxfguid.h" />
     <ClInclude Include="..\..\lib\src\legacy_dx\rmxftmpl.h" />
     <ClInclude Include="..\..\lib\src\legacy_dx\strsafe.h" />
+    <ClInclude Include="..\..\src\File.h" />
     <ClInclude Include="..\..\src\hexrays-defs.h" />
     <ClInclude Include="..\..\src\kknd.h" />
     <ClInclude Include="..\..\src\_unsorted_data.h" />

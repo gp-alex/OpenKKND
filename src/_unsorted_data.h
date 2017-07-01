@@ -13,8 +13,6 @@ extern int kknd_sve_array_463070[15];
 extern int kknd_sve_array_4630AC[15];
 extern int dword_4630E8; // weak
 extern GUID netz_463DE0;
-extern char aCKScriptsAircraft[26];
-extern char aCKScriptsBuilding[];
 extern char asc_464068[4];
 extern BasicProductionOption mute_default_buildings[6];
 extern BasicProductionOption mute_default_infantry[3];
@@ -32,7 +30,6 @@ extern enum UNIT_ID mute_prison_spawns_table[10];
 extern enum UNIT_ID surv_prison_spawns_table[10];
 extern enum UNIT_ID techbunker_spawns_table[4];
 extern char aCouldnTCreateS[]; // idb
-extern char aCKScriptsDeten[]; // idb
 extern int dword_464D38; // weak
 extern int dword_464D3C[24];
 extern char aDDD[]; // idb
@@ -50,7 +47,6 @@ extern char aWarningOutOfTa[]; // idb
 extern char aWarningOutOfBu[]; // idb
 extern char aWarningOutOfEnemyNodes[]; // idb
 extern char aEnemyaiCreatur[]; // idb
-extern char aCKScriptsEnemy[]; // idb
 extern char aRb[3]; // idb
 extern char aWb__AND__handlers_minus1_indexer[3];
 extern void *script_handlers[353];
@@ -77,7 +73,6 @@ extern char *Caption;
 extern unsigned __int8 palette_465848_sprt[256];
 extern int _465948_per_mobd_lookup_idx[16];
 extern enum SOUND_ID _465988_sounds[5];
-extern char aCKScriptsInfantry[]; // idb
 extern VKeyMap vkey_map[25];
 extern int input_465A80_wndprockey_map[256];
 extern int virtual_keys[90];
@@ -199,7 +194,6 @@ extern stru50 _468560_stru50_array[16];
 extern stru50 _468620_stru50_array[16];
 extern stru50 __4686E0_stru50_array[20];
 extern stru50 _4687D0_stru50_array[20];
-extern char aCKScriptsMission[]; // idb
 extern DataCplcItem_ptr1_stru20 _4688E0_DataCplcItem_ptr1_stru20_clanhall; // weak
 extern DataCplcItem_ptr1_stru20 _468910_DataCplcItem_ptr1_stru20_outpost; // weak
 
@@ -296,19 +290,16 @@ extern RECT _46BB50_blt_rect;
 extern int _46BB60_dmg_handler_mobd_offsets[3];
 extern enum SOUND_ID _46BB70_dmg_handler_sounds[3];
 extern enum SOUND_ID _46BB80_dmg_handler_sounds[2];
-extern char aCKScriptsProjectl[]; // idb
 extern char aSGameD_sav[]; // idb
 extern char aSlotDSD[]; // idb
 extern char aActiveslotD[]; // idb
 extern char aSSave_lst[]; // idb
 extern int _46BBE8_mobd_offset_table_by_stru22[8];
-extern char aCKScriptsScar[]; // idb
 extern int dword_46BC20[8];
 extern int dword_46BC40[8];
 extern int dword_46BC60[9];
 extern int dword_46BC84[5];
 extern int dword_46BC98[8];
-extern char aCKScriptsSchrap[]; // idb
 extern char aSoun[]; // idb
 extern char shared_slv_filename[]; // idb
 extern char aData[5]; // weak

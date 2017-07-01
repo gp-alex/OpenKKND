@@ -9,8 +9,6 @@ int kknd_sve_array_463070[15] = { 35, 62, 93, 42, 54, 12, 65, 89, 21, 30, 210, 8
 int kknd_sve_array_4630AC[15] = { 77, 24, 84, 36, 20, 43, 72, 20, 5, 89, 189, 233, 91, 21, 13 };
 int dword_4630E8 = 2273464000; // weak
 GUID netz_463DE0 = { 2638611840u, 43042u, 4559u,{ 150u, 12u, 0u, 128u, 199u, 83u, 78u, 130u } };
-char aCKScriptsAircraft[26] = "C:\\k\\Scripts\\Aircraft.cpp";
-char aCKScriptsBuilding[] = "C:\\k\\Scripts\\Building.cpp"; // idb
 char asc_464068[4] = "#:\\"; // weak
 BasicProductionOption mute_default_buildings[6] =
 {
@@ -366,7 +364,6 @@ enum UNIT_ID techbunker_spawns_table[4] =
 	UNIT_STATS_MECH
 };
 char aCouldnTCreateS[] = "Couldn't create spawned unit"; // idb
-char aCKScriptsDeten[] = "C:\\k\\Scripts\\Detenshn.cpp"; // idb
 int dword_464D38 = 30; // weak
 int dword_464D3C[24] =
 {
@@ -441,7 +438,6 @@ char aWarningOutOfTa[] = "Warning: out of tanker nodes"; // idb
 char aWarningOutOfBu[] = "Warning: out of building nodes"; // idb
 char aWarningOutOfEnemyNodes[] = "Warning: out of enemy nodes"; // idb
 char aEnemyaiCreatur[] = "EnemyAI: Creature ID unknown"; // idb
-char aCKScriptsEnemy[] = "C:\\k\\Scripts\\Enemyai.cpp"; // idb
 char aRb[3] = "rb"; // idb
 char aWb__AND__handlers_minus1_indexer[3] = "wb";
 void *script_handlers[353] =
@@ -1119,7 +1115,6 @@ int _465948_per_mobd_lookup_idx[16] =
 	4294965729
 };
 enum SOUND_ID _465988_sounds[5] = { SOUND_174, SOUND_175, SOUND_176, SOUND_177, SOUND_178 };
-char aCKScriptsInfantry[] = "C:\\k\\Scripts\\Infantry.cpp"; // idb
 VKeyMap vkey_map[25] =
 {
 	{ 72, 1 },
@@ -3132,7 +3127,6 @@ stru50 _4687D0_stru50_array[20] =
 	{ UNIT_STATS_SURV_ATV_FLAMETHROWER, 4294967168, 20 },
 	{ UNIT_INVALID, 0, 0 }
 };
-char aCKScriptsMission[] = "C:\\k\\Scripts\\Mission.cpp"; // idb
 DataCplcItem_ptr1_stru20 _4688E0_DataCplcItem_ptr1_stru20_clanhall =
 {
 	MOBD_MUTE_CLANHALL,
@@ -3480,19 +3474,16 @@ RECT _46BB50_blt_rect = { 0, 0, 640, 480 };
 int _46BB60_dmg_handler_mobd_offsets[3] = { 332, 364, 388 };
 enum SOUND_ID _46BB70_dmg_handler_sounds[3] = { SOUND_RIFLE_FIRE_2, SOUND_RIFLE_FIRE_3, SOUND_RIFLE_FIRE_4 };
 enum SOUND_ID _46BB80_dmg_handler_sounds[2] = { SOUND_GENERIC_PROJECTILE_DMG, SOUND_GENERIC_PROJECTILE_DMG_2 };
-char aCKScriptsProjectl[] = "C:\\k\\Scripts\\Projectl.cpp"; // idb
 char aSGameD_sav[] = "%s\\game%d.sav"; // idb
 char aSlotDSD[] = "Slot %d = %s %d\n"; // idb
 char aActiveslotD[] = "ActiveSlot=%d\n"; // idb
 char aSSave_lst[] = "%s\\save.lst"; // idb
 int _46BBE8_mobd_offset_table_by_stru22[8] = { 1976, 1988, 2000, 2012, 2024, 2036, 2048, 2060 };
-char aCKScriptsScar[] = "C:\\k\\Scripts\\Scar.cpp"; // idb
 int dword_46BC20[8] = { 60, 40, 4294967286, 4294967266, 4294967251, 4294967261, 0, 30 };
 int dword_46BC40[8] = { 10, 4294967251, 4294967241, 4294967261, 0, 25, 35, 40 };
 int dword_46BC60[9] = { 0, 40, 80, 120, 292, 448, 620, 660, 700 };
 int dword_46BC84[5] = { 736, 748, 772, 792, 760 };
 int dword_46BC98[8] = { 496, 496, 496, 496, 276, 220, 72, 144 };
-char aCKScriptsSchrap[] = "C:\\k\\Scripts\\Schrap.cpp"; // idb
 char aSoun[] = "SOUN"; // idb
 char shared_slv_filename[] = "sound.slv"; // idb
 char aData[5] = "data"; // weak
