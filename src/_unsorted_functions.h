@@ -1,6 +1,9 @@
 #pragma once
 #include "src/kknd.h"
 
+void log_init();
+void log(const char *, ...);
+
 void stru28_list_free();
 int stru31_list_alloc();
 void stru31_list_free();
@@ -46,8 +49,8 @@ void entity_mode_402780_blacksmith(Entity *a1);
 void entity_mode_402840_blacksmith(Entity *); // idb
 void entity_mode_402870_blacksmith(Entity *a1);
 void entity_mode_blacksmith_on_death(Entity *a1);
-int coroutine_list_alloc();
-Coroutine *couroutine_create(void(*function)(), size_t stack_size);
+bool coroutine_list_alloc();
+Coroutine *couroutine_create(void(*function)(), size_t stack_size, const char *debug_handler_name);
 void coroutine_list_remove(Coroutine *a1);
 int script_yield_handler(Script *self);
 void coroutine_list_free();
@@ -396,6 +399,7 @@ bool LVL_RunLevel(DataHunk *lvl);
 void LVL_Deinit();
 void GAME_Deinit();
 void *LVL_FindSection(const char *name);
+DataMapd *LVL_FindMapd();
 bool LVL_SubstHunk(DataHunk *dst, DataHunk *src, const char *hunk);
 bool entity_41B510(Entity *a1, Entity *a2);
 int entity_41B970_boxd(Entity *a1, int a2, int a3); // idb
@@ -785,8 +789,8 @@ void render_draw_43B4A6(unsigned __int8 *sprite_data, unsigned __int16 clipped_x
 bool draw_list_alloc();
 DrawJob *draw_list_add(void *param, void(*on_update_handler)(void *, DrawJob *)); // idb
 bool draw_list_update_and_draw();
-void draw_list_update(DrawJob *list);
-void draw_list_z_order(DrawJob *list);
+void draw_list_update(DrawJobList *list);
+void draw_list_z_order(DrawJobList *list);
 void draw_list_free();
 void script_43BA40(Script *a1, int a2, int(*a3)(void), int a4);
 void script_netz_43BA70(Script *a1);
@@ -795,13 +799,13 @@ void sub_43BAA0();
 void _43BAB0_move_cursor(Sprite *a1);
 void script_43BBA0_cursors_mobd79_handler(Script *a1); // idb
 void script_43C040_cursors_handler(Script *a1);
-void script_43C0E0_mobd79_evt1(Script *a1);
-void script_43C310_mobd79_evt19(Script *a1); // idb
-void script_43C430_mobd79_evt1(Script *a1); // idb
-void script_43C630_mobd79_evt1(Script *a1); // idb
-void script_43C820_mobd79_evt1(Script *a1); // idb
-void script_43CA10_mobd79_evt1(Script *a1); // idb
-void script_43CC00_mobd79_evt1(Script *a1); // idb
+void script_mobd79_evt1__main_menu_new_game(Script *a1);
+void script_mobd79_evt19__main_menu_load(Script *a1); // idb
+void script_mobd79_evt1__main_menu_play_mission(Script *a1); // idb
+void script_mobd79_evt1__main_menu_new_missions(Script *a1); // idb
+void script_mobd79_evt1__main_menu_kaos_mode(Script *a1); // idb
+void script_mobd79_evt1__main_menu_multiplayer(Script *a1); // idb
+void script_mobd79_evt1__main_menu_quit(Script *a1); // idb
 void script_43CD20_mobd45_begin_surv_campaign(Script *a1);
 void script_43CE30_mobd45_begin_mute_campaign(Script *a1);
 void script_43CF50_mobd45(Script *a1);
@@ -867,7 +871,7 @@ void script_442BB0_mobd46(Script *a1);
 void script_443000_mobd45(Script *a1);
 void script_443140_mobd45(Script *a1);
 void script_443290_mobd45(Script *a1);
-int script_443380(Script *a1, int a2, int a3);
+int script_443380(Script *a1, int lookup_table_offset, bool a3);
 int script_443570(Script *a1, int a2, int a3, int a4);
 int script_443780(Script *a1, int a2, int a3, int a4);
 bool stru29_list_alloc();
@@ -903,17 +907,20 @@ void entity_mode_444CC0_oiltanker(Entity *a1);
 void entity_mode_444D10_oiltanker(Entity *a1);
 void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 bool script_list_alloc(int coroutine_stack_size);
-Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size);
+
+Script *script_create_coroutine_impl(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size, const char *debug_handler_name);
+#define script_create_coroutine(type, handler, stack_size) script_create_coroutine_impl(type, handler, stack_size, #handler)
+
 Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *)); // idb
 void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result);
 void script_deinit(Script *a1);
-int script_445370_yield(Script *a1, int flags, int a3);
+int script_445370_yield_to_main_thread(Script *a1, int flags, int a3);
 void *script_create_local_object(Script *a1, int size);
 void script_free_local_object(Script *a1, void *data); // idb
-void script_445470_yield(Script *a1);
+void script_yield(Script *a1);
 void script_list_update();
 void script_list_free();
-void coroutine_445650_execute();
+void coroutine_main();
 bool render_string_list_alloc();
 void render_string_445770(RenderString *a1, const char *text, int a3); // idb
 RenderString *render_string_create(stru1_draw_params *a1, DataMobdItem *custom_font, int a3, int a4, int a5, int a6, int z_index, int a8, int a9); // idb

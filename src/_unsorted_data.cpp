@@ -2857,7 +2857,6 @@ char *reg_DriveLetter = "DriveLetter";
 char *reg_GamePath = "GamePath";
 char a_[2] = "."; // weak
 char *aS = "%s";
-char *MAPD = "MAPD";
 char *aWaitLvl_runlev = "Wait LVL_RunLevel() failed\n";
 char *aLvl_loadlevelW = "LVL_LoadLevel(wait.lvl) failed\n";
 char *aSLevelsSWait_l = "%s\\LEVELS\\%s\\wait.lvl";
@@ -3781,10 +3780,10 @@ Script4 stru_46FC40 = { MOBD_45, script_4404D0_mobd45_evt8, SCRIPT_COROUTINE, 0,
 Script4 stru_46FC58 = { MOBD_45, script_441940_mobd45_evt17, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 Script4 stru_46FC70 = { MOBD_45, script_441CE0_mobd45_evt8, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 Script4 stru_46FC88 = { MOBD_45, script_4426D0_mobd45_evt6, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-Script4 stru_46FCA0 = { MOBD_79, script_43CC00_mobd79_evt1, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-Script4 stru_46FCB8 = { MOBD_79, script_43C310_mobd79_evt19, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-Script4 stru_46FCD0 = { MOBD_79, script_43CA10_mobd79_evt1, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-Script4 stru_46FCE8 = { MOBD_79, script_43C0E0_mobd79_evt1, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+Script4 stru_46FCA0 = { MOBD_79, script_mobd79_evt1__main_menu_quit, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+Script4 stru_46FCB8 = { MOBD_79, script_mobd79_evt19__main_menu_load, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+Script4 stru_46FCD0 = { MOBD_79, script_mobd79_evt1__main_menu_multiplayer, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+Script4 stru_46FCE8 = { MOBD_79, script_mobd79_evt1__main_menu_new_game, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 
 Script4 *scripts[196] =
 {
@@ -7149,7 +7148,6 @@ Entity *dword_478108[300];
 int j_render_nullsub_2; // weak
 int j_render_434B70; // weak
 PALETTEENTRY *ppalette_4785C0;
-void(*RENDER_pClearScreen)(int);
 int j_render_434A90; // weak
 int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
 PALETTEENTRY *_4785DC_syscolors_palette_entries;
@@ -7452,11 +7450,9 @@ void *faction_slv; // idb
 BOOL sound_initialized;
 int dword_47C5D0; // weak
 int _47C5D4_sound_threaded_snd_id; // idb
-DrawJob draw_list_47C5D8_head; // idb
-DrawJob *draw_list_47C5DC;
+DrawJobList draw_list_47C5D8; // idb
 DrawJob *draw_list_free_pool;
-DrawJob *draw_list_47C5E8_head; // idb
-DrawJob *draw_list_head;
+DrawJobList draw_list_47C5E8; // idb
 DrawJob *draw_list;
 int dword_47C5F8; // weak
 int _46E420_starting_cash_idx; // weak
@@ -7495,12 +7491,12 @@ int dword_47C6F4; // weak
 int dword_47C6F8; // weak
 int dword_47C700; // weak
 Script *script_list_free_pool;
-void(*task_creation_yield_handler)(Script *);
+void(*task_creation_handler)(Script *);
 Script *script_execute_list;
 Script *script_list_47C714;
-Coroutine *coroutine_current;
+Coroutine *volatile coroutine_current;
 size_t coroutine_default_stack_size; // idb
-Script *_47C75C_task;
+Script *task_creation_handler_arg;
 Coroutine *coroutine_list_head;
 __int16 is_coroutine_list_initialization_failed; // weak
 Script *script_list;

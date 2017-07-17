@@ -122,6 +122,7 @@
     <ClCompile Include="..\..\src\Scripts\Detenshn.cpp" />
     <ClCompile Include="..\..\src\Scripts\EnemyAI.cpp" />
     <ClCompile Include="..\..\src\Scripts\Infantry.cpp" />
+    <ClCompile Include="..\..\src\Scripts\MainMenu.cpp" />
     <ClCompile Include="..\..\src\Scripts\Mission.cpp" />
     <ClCompile Include="..\..\src\Scripts\Projectiles.cpp" />
     <ClCompile Include="..\..\src\Scripts\Scar.cpp" />

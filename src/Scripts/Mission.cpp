@@ -23,7 +23,7 @@ void UNIT_Handler_TechBunker_2(Script *a1)
         _47A300_stru51_array__field_4__minus1_index[2 * (v1 + 1)] = v2;
     }
     sprite_list_remove(a1->sprite);
-    script_445470_yield(a1);
+    script_yield(a1);
 }
 
 //----- (00424BF0) --------------------------------------------------------
@@ -44,13 +44,13 @@ void script_424BF0_mobd_20_handler(Script *a1)
     _47A378_stru48_array[v1]._8_sprite_cplc = v3;
     if (v2 >= 6)
     {
-        script_445370_yield(a1, 0x80000000, 1);
+        script_445370_yield_to_main_thread(a1, 0x80000000, 1);
         for (i = script_47A3CC; !script_47A3CC; i = script_47A3CC)
-            script_445370_yield(a1, 0x80000000, 1);
+            script_445370_yield_to_main_thread(a1, 0x80000000, 1);
         script_trigger_event(0, EVT_MSG_1514, 0, i);
     }
     sprite_list_remove(a1->sprite);
-    script_445470_yield(a1);
+    script_yield(a1);
 }
 // 47A3E4: using guessed type int _47A378_stru48_array_num_items;
 
@@ -110,18 +110,18 @@ void script_424CE0_mission_outcome_modal(Script *a1)
             do
             {
                 sound_play(SOUND_MISSION_OUTCOME_LETTER_APPEARING, 0, _4690A8_unit_sounds_volume, 16, 0);
-                script_445370_yield(v1, 0x80000000, 8);
+                script_445370_yield_to_main_thread(v1, 0x80000000, 8);
                 --v7;
             } while (v7);
-            script_445370_yield(v1, 0x80000000, 30);
+            script_445370_yield_to_main_thread(v1, 0x80000000, 30);
             sprite_4272A0_load_mobd_item(v3, v6);
             v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
             v3->x = (int)a1;
             v3->y = v8;
             v3->z_index = 999;
-            script_445370_yield(v1, 0x10000000, 0);
+            script_445370_yield_to_main_thread(v1, 0x10000000, 0);
             sound_play(SOUND_MISSION_OUTCOME_LETTER_APPEARING, 0, _4690A8_unit_sounds_volume, 16, 0);
-            script_445370_yield(v1, 0x80000000, 200);
+            script_445370_yield_to_main_thread(v1, 0x80000000, 200);
             script_408500_anim(v1);
             if (single_player_game)
             {
@@ -159,7 +159,7 @@ void script_424CE0_mission_outcome_modal(Script *a1)
                 *(_DWORD *)&netz_47A740[2].str_0[0] = 1;
             }
             while (1)
-                script_445370_yield(v1, 0x80000000, 5000);
+                script_445370_yield_to_main_thread(v1, 0x80000000, 5000);
         }
     }
     v6 = 60;
@@ -521,7 +521,7 @@ void script_4252C0(Script *a1, void *param)
     a1->field_1C = 1;
     is_coroutine_list_initialization_failed = 1;
     while (sub_408400())
-        script_445370_yield(v2, 0x80000000, 1);
+        script_445370_yield_to_main_thread(v2, 0x80000000, 1);
     v3 = sprite_create(MOBD_MISSION_OUTCOME_MODAL, 0, 0);
     v4 = v3;
     if (v3)
@@ -589,7 +589,7 @@ void script_425400(Script *a1)
         script_425F50_stru48_stru51_tech_bunkers(a1);
         while (1)
         {
-            script_445370_yield(a1, 0x80000000, 30);
+            script_445370_yield_to_main_thread(a1, 0x80000000, 30);
             v2 = sub_424EC0();
             if (!(v2 & 2))
                 break;
@@ -608,7 +608,7 @@ void script_425400(Script *a1)
         script_425F50_stru48_stru51_tech_bunkers(a1);
         while (1)
         {
-            script_445370_yield(a1, 0x80000000, 30);
+            script_445370_yield_to_main_thread(a1, 0x80000000, 30);
             v13 = sub_4251B0();
             if (!(v13 & 2))
                 goto LABEL_52;
@@ -626,7 +626,7 @@ void script_425400(Script *a1)
     {
         do
         {
-            while (script_445370_yield(a1, 0x80000000, 30) != 0x80000000)
+            while (script_445370_yield_to_main_thread(a1, 0x80000000, 30) != 0x80000000)
             {
                 v3 = 0;
                 for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
@@ -694,8 +694,8 @@ void script_425400(Script *a1)
     }
 LABEL_55:
     script_47A3CC = 0;
-    script_445370_yield(v1, 0x80000000, 300);
-    script_445470_yield(v1);
+    script_445370_yield_to_main_thread(v1, 0x80000000, 300);
+    script_yield(v1);
 }
 
 //----- (00425660) --------------------------------------------------------
@@ -706,7 +706,7 @@ void script_47A3CC_die()
     v0 = script_47A3CC;
     script_47A3CC = 0;
     if (v0)
-        script_445470_yield(v0);
+        script_yield(v0);
 }
 
 //----- (00425680) --------------------------------------------------------
@@ -937,8 +937,8 @@ char *entity_425A50_setup_spawn(Entity *a1, void *spawn_param, int spawn_type)
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
     v5 = v3->sprite;
     v3->mode = entity_mode_425920_scout;
-    v5->field_1C_speed = 0;
-    v3->sprite->field_20_neg_speed = 0;
+    v5->x_speed = 0;
+    v3->sprite->y_speed = 0;
     v3->_128_spawn_param = v4;
     v3->_12C_prison_bunker_spawn_type = 60 * spawn_type;
     return entity_40DF50_boxd(v3, 0);
@@ -987,8 +987,8 @@ void UNIT_Handler_Scout(Script *a1)
             _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
         v2 = v1->sprite;
         v1->mode = entity_mode_425920_scout;
-        v2->field_1C_speed = 0;
-        v1->sprite->field_20_neg_speed = 0;
+        v2->x_speed = 0;
+        v1->sprite->y_speed = 0;
         v1->_12C_prison_bunker_spawn_type = 60;
         v1->_128_spawn_param = (void *)76800;
         entity_40DF50_boxd(v1, 0);
@@ -1030,7 +1030,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
         do
         {
             do
-                script_445370_yield(a1, 0x80000000, 30);
+                script_445370_yield_to_main_thread(a1, 0x80000000, 30);
             while (!entity_scout);
             entity_scout->sprite->field_88 = 1;
             v1 = entity_scout->sprite;
@@ -1046,7 +1046,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
         {
             while (1)
             {
-                script_445370_yield(a1, 0x80000000, 30);
+                script_445370_yield_to_main_thread(a1, 0x80000000, 30);
                 v5 = entity_list_head;
                 v6 = 0;
                 if ((Entity **)entity_list_head == &entity_list_head)
@@ -1078,7 +1078,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
         do
         {
             v9 = 1;
-            script_445370_yield(a1, 0x80000000, 30);
+            script_445370_yield_to_main_thread(a1, 0x80000000, 30);
             v10 = entity_list_head;
             if ((Entity **)entity_list_head != &entity_list_head)
             {
@@ -1108,7 +1108,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
         while (1)
         {
             do
-                script_445370_yield(a1, 2147483648, 30);
+                script_445370_yield_to_main_thread(a1, 2147483648, 30);
             while (!entity_scout);
             v12 = entity_list_head;
             v13 = 0;
@@ -1144,7 +1144,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
         v17 = 0;
         do
         {
-            script_445370_yield(a1, 2147483648, 30);
+            script_445370_yield_to_main_thread(a1, 2147483648, 30);
             v18 = entity_list_head;
             if ((Entity **)entity_list_head != &entity_list_head)
             {
@@ -1180,7 +1180,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
         break;
     }
 end:
-    script_445470_yield(a1);
+    script_yield(a1);
 }
 
 //----- (00425EC0) --------------------------------------------------------
@@ -1316,7 +1316,7 @@ void script_425F50_stru48_stru51_tech_bunkers(Script *a1)
     do
     {
         v1 = 0;
-        script_445370_yield(a1, 0x40000000, 0);
+        script_445370_yield_to_main_thread(a1, 0x40000000, 0);
         for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
         {
             if (i->event == EVT_MSG_1514)
@@ -1718,9 +1718,9 @@ void script_426680_cursor_mobd(Script *a1)
     v1->y = render_height << 7;
     v1->pstru7 = &_479D48_stru7;
     sprite_4272A0_load_mobd_item(v1, current_level_idx != LEVEL_MUTE_04_RAID_THE_FORT ? 852 : 868);
-    script_445370_yield(a1, 0x80000000, 600);
+    script_445370_yield_to_main_thread(a1, 0x80000000, 600);
     sprite_list_remove(v1);
-    script_445470_yield(a1);
+    script_yield(a1);
 }
 
 //----- (00426710) --------------------------------------------------------

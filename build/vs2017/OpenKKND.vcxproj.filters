@@ -161,6 +161,9 @@
     <ClCompile Include="..\..\src\Render.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Scripts\MainMenu.cpp">
+      <Filter>src\Scripts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\lib\src\legacy_dx\d3dvec.inl">

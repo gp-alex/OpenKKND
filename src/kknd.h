@@ -436,6 +436,10 @@ enum SCRIPT_ROUTINE_TYPE : __int32
 	SCRIPT_FUNCTION = 1,
 };
 
+
+#define SCRIPT_FLAGS_20_X_SPEED_LIMIT 0x8000000
+#define SCRIPT_FLAGS_20_Y_SPEED_LIMIT 0x4000000
+#define SCRIPT_FLAGS_20_Z_SPEED_LIMIT 0x2000000
 /* 72 */
 struct Script
 {
@@ -447,7 +451,7 @@ struct Script
 	int field_14;
 	SCRIPT_ROUTINE_TYPE routine_type;
 	int field_1C;
-	int field_20;
+	int flags_20; // C00000000 - when mouse hovered
 	int field_24;
 	int field_28;
 	int field_2C;
@@ -561,6 +565,12 @@ struct DrawJob
 	int field_38;
 };
 
+struct DrawJobList
+{
+    DrawJob *next;
+    DrawJob *prev;
+};
+
 
 /* 274 */
 struct MobdSprtImage
@@ -639,10 +649,24 @@ struct CplcSectionData
 /* 290 */
 struct Coroutine
 {
+    inline Coroutine()
+    {
+        static int _id = 0;
+
+        this->id = _id++;
+        this->yield_to = nullptr;
+        this->context = nullptr;
+        this->stack = 0;
+        this->next = nullptr;
+    }
+
 	Coroutine *yield_to;
 	int *context;
 	int stack;
 	Coroutine *next;
+
+    int         id;
+    const char *debug_handler_name;
 };
 
 /* 291 */
@@ -672,18 +696,23 @@ struct Sprite
 	int x;
 	int y;
 	int z_index;
-	int field_1C_speed;
-	int field_20_neg_speed;
-	int field_24;
-	int field_28;
-	int field_2C;
-	int field_30;
-	int field_34;
-	void *field_38;
-	int field_3C;
-	int field_40;
-	int field_44;
-	int field_48;
+
+	int x_speed;
+	int y_speed;
+	int z_speed;
+
+	int x_speed_factor_2;
+	int y_speed_factor_2;
+	int z_speed_factor_2;
+
+	int x_speed_limit;
+	int y_speed_limit;
+	int z_speed_limit;
+
+	int x_speed_factor_1;
+	int y_speed_factor_1;
+	int z_speed_factor_1;
+
 	DataMobdItem *_inside_mobd_item;
 	DataMobdItem *_inside_mobd_item_2;
 	DataMobdItem_stru0 *_54_inside_mobd_ptr4;
@@ -2056,7 +2085,7 @@ struct stru38
 struct MapdScrlImageTile
 {
 	int flags;
-	char pixels[2];
+	unsigned char pixels[2];
 };
 
 /* 388 */
@@ -2272,9 +2301,9 @@ struct SpriteSerialized
 	int x;
 	int y;
 	int z_index;
-	int field_1C_speed;
-	int field_20_neg_speed;
-	int field_24;
+	int x_speed;
+	int y_speed;
+	int z_speed;
 	int _inside_mobd_item;
 	int _54_inside_mobd_ptr4;
 	int _60_mobd_field_0;
@@ -2815,11 +2844,11 @@ struct Sprite_stru58
 struct Sprite_stru58_stru0
 {
 	int psrite_pstru7_idx;
-	int _4_x_offset;
-	int _8_y_offset;
+	int x;
+	int y;
 	int field_C;
-	int _10_x;
-	int _14_y;
+	int z;
+	int w;
 };
 
 /* 448 */

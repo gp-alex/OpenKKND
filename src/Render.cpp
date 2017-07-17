@@ -11,6 +11,8 @@ IDirectDrawSurface *pdds_primary;
 IDirectDrawSurface *pdds_backbuffer;
 
 
+PALETTEENTRY *render_current_palette = nullptr;
+
 //----- (00411760) --------------------------------------------------------
 bool render_create_window(int width, int height, int bpp, int run, bool fullscreen)
 {
@@ -45,7 +47,7 @@ bool render_create_window(int width, int height, int bpp, int run, bool fullscre
     global_time_flows = run;
     global_fullscreen = fullscreen;
 
-    HWND v9 = FindWindowA("KKNDXtremeMainWindowClass", "KKND Xtreme");
+    HWND v9 = FindWindowA("OpenKKNDWindowClass", "OpenKKND");
     if (v9)
     {
         SetForegroundWindow(v9);
@@ -510,9 +512,8 @@ bool render_dd_is_primary_surface_lost()
 }
 
 //----- (004122D0) --------------------------------------------------------
-void render_draw_list(DrawJob *list)
+void render_draw_list(DrawJobList *list)
 {
-    DrawJob *v1; // ebp@1
     int restore_palettes; // ebx@4
     IDirectDrawSurface *v3; // esi@7
     int v4; // eax@8
@@ -529,7 +530,6 @@ void render_draw_list(DrawJob *list)
     RECT v15; // [sp+64h] [bp-74h]@35
     DDBLTFX v16; // [sp+74h] [bp-64h]@34
 
-    v1 = list;
     if (list && render_default_stru1 && pdds_primary)
     {
         restore_palettes = 0;
@@ -571,7 +571,7 @@ void render_draw_list(DrawJob *list)
                     render_locked_surface_ptr = pixels_8bpp;
 
                     render_first_drawing_item = 1;
-                    for (i = v1->next; i != v1; i = i->next)
+                    for (i = list->next; i != (DrawJob *)list; i = i->next)
                     {
                         v10 = (MapdScrlImage *)i->job_details.image;
                         if (v10)
@@ -591,7 +591,19 @@ void render_draw_list(DrawJob *list)
 
                             auto p = (unsigned char *)ddsd_primary.lpSurface;
                             //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (c << 16) | (c << 8) | c;
-                            *(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (c << 16) | (c << 8) | c;
+
+                            int r, g, b;
+                            r = c;
+                            g = c;
+                            b = c;
+                            if (render_current_palette)
+                            {
+                                r = render_current_palette[c].peRed;
+                                g = render_current_palette[c].peGreen;
+                                b = render_current_palette[c].peBlue;
+                            }
+
+                            *(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (r << 16) | (g << 8) | b;
                         }
                     }
 
@@ -718,24 +730,26 @@ int render_sprt_draw_handler(DrawJobDetails *data, int mode)
     int he1ght; // [sp-4h] [bp-18h]@20
     int height; // [sp-4h] [bp-18h]@23
     int _height; // [sp-4h] [bp-18h]@26
-    char tYpe; // [sp+10h] [bp-4h]@7
 
     v2 = data;
-    if (mode)
+
+    auto image = (MobdSprtImage *)data->image;
+    v5 = image->data;
+    if (mode != 0)
     {
         if (mode == 1)
-            return **((_DWORD **)data->image + 2);
+            return v5->width;
         if (mode == 2)
-            return *(_DWORD *)(*((_DWORD *)data->image + 2) + 4);
+            return v5->height;
         return 0;
     }
     if (data->flags & 0xC0000000)
         return 0;
+
     v4 = data->params;
-    v5 = (DrawHandlerData_Units *)*((_DWORD *)data->image + 2);// MobdSprtImage::data
-    tYpe = v5->type;
     if (!v4)
         v4 = render_default_stru1;
+
     v6 = data->x;
     v7 = v5->width;
     v8 = v5->height;
@@ -749,14 +763,14 @@ int render_sprt_draw_handler(DrawJobDetails *data, int mode)
         current_drawing_params = v4;
         p_render_set_clip(v4->clip_x, v4->clip_y, v4->clip_z, v4->clip_w);
     }
-    if (!tYpe)
+    if (v5->type == 0)
     {
         _height = v5->height;
         _width = v5->width;
         _y = v2->y;
         _x = v2->x;
         pixels = (char *)v5->sprite_data;
-        if (*((_BYTE *)v2->image + 4) & 1)        // MobdSprtImage::flags
+        if (image->flags & 1)        // MobdSprtImage::flags
         {
             j_render_435320(pixels, _x, _y, _width, _height);
             render_first_drawing_item = 0;
@@ -765,13 +779,13 @@ int render_sprt_draw_handler(DrawJobDetails *data, int mode)
         j_render_4351A0_draw(pixels, _x, _y, _width, _height);
         goto LABEL_29;
     }
-    if (tYpe != 2 || (width = v5->width, v7 != v5->width) || v8 != v5->height)
+    if (v5->type != 2 || (width = v5->width, v7 != v5->width) || v8 != v5->height)
     {
     LABEL_29:
         render_first_drawing_item = 0;
         return 0;
     }
-    v11 = *((_BYTE *)v2->image + 4);              // MobdSprtImage::flags
+    v11 = image->flags;              // MobdSprtImage::flags
     if ((v2->flags & 0x10000000) == 0x10000000)
     {
         he1ght = v5->height;
@@ -843,7 +857,7 @@ int render_scrl_draw_handler(DrawJobDetails *data, int mode)
     int leftover_x; // [sp+1Ch] [bp-4h]@16
 
     data_draw_handler = (MapdScrlImage *)data->image;
-    if (!mode)
+    if (mode == 0)
     {
         if (data->flags & 0xC0000000)
             return 0;
@@ -1020,6 +1034,7 @@ int render_video_draw_handler(DrawJobDetails *a1, int mode)
 }
 
 
+//----- (00434790) --------------------------------------------------------
 void REND_DirectDrawClearScreen(int a2)
 {
     int v2; // esi@1
@@ -1030,11 +1045,9 @@ void REND_DirectDrawClearScreen(int a2)
 
     v2 = a2;
 
-    __debugbreak();
     _477340_coroutine_yield_item = __EAX__;
     if (coroutine_list_head != coroutine_current && ++_47734C_coroutine_int == 1)
     {
-        __debugbreak();
         v3 = coroutine_list_head->stack;
         __asm
         {
@@ -1063,7 +1076,16 @@ void REND_DirectDrawClearScreen(int a2)
     }
     _477340_coroutine_yield_item = v4;
     if (coroutine_list_head != coroutine_current)
-        --_47734C_coroutine_int;
+    {
+        if (--_47734C_coroutine_int == 0)
+        {
+            v3 = coroutine_list_head->stack;
+            __asm
+            {
+                mov esp, _477344_esp
+            }
+        }
+    }
 }
 
 //----- (0040E2A0) --------------------------------------------------------
@@ -1076,7 +1098,6 @@ int REND_SetRoutines()
     render_478A0C = 1;
     p_render_set_clip = REND_SetClip;
     REND_SetClip(0, 0, render_width, render_height);
-    RENDER_pClearScreen = REND_DirectDrawClearScreen;
     j_render_draw_tile = render_draw_tile;
     j_render_4351A0_draw = (decltype(j_render_4351A0_draw))render_4351A0_draw;
     j_render_434EA0 = (decltype(j_render_434EA0))render_434EA0;

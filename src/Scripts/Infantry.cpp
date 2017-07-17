@@ -127,8 +127,8 @@ void entity_init_infantry(Entity *a1)
         v10 = entity_40DE80_boxd(v1, v9 + (v1->sprite->x & 0xFFFFE000), v7 + (v1->sprite->y & 0xFFFFE000), 0);
         if (v10 == 5)
         {
-            v1->sprite->field_1C_speed = 0;
-            v1->sprite->field_20_neg_speed = 0;
+            v1->sprite->x_speed = 0;
+            v1->sprite->y_speed = 0;
             sprite_4272E0_load_mobd_item(
                 v1->sprite,
                 v1->stats->_38_mobd_lookup_table_offset,
@@ -187,8 +187,8 @@ void entity_init_infantry(Entity *a1)
         v26 = _42D560_get_mobd_lookup_id_rotation(v25 - v23->x, v24 - v23->y);
         v27 = v1->stats;
         v1->mobd_lookup_idx = v26;
-        v1->sprite->field_1C_speed = v27->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v26 + 1]] >> 6;
-        v1->sprite->field_20_neg_speed = -(v1->stats->speed
+        v1->sprite->x_speed = v27->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v26 + 1]] >> 6;
+        v1->sprite->y_speed = -(v1->stats->speed
             * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
         sprite_4272E0_load_mobd_item(
             v1->sprite,
@@ -198,8 +198,8 @@ void entity_init_infantry(Entity *a1)
     }
     else
     {
-        v1->sprite->field_1C_speed = 0;
-        v1->sprite->field_20_neg_speed = 0;
+        v1->sprite->x_speed = 0;
+        v1->sprite->y_speed = 0;
         sprite_4272E0_load_mobd_item(
             v1->sprite,
             v1->stats->_38_mobd_lookup_table_offset,
@@ -380,10 +380,10 @@ bool entity_413120(Entity *a1, Entity *a2, int entity_id)
         else
         {
             v31 = v3->sprite;
-            v32 = v31->field_1C_speed;
-            if (v32 || v31->field_20_neg_speed)
+            v32 = v31->x_speed;
+            if (v32 || v31->y_speed)
             {
-                v33 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v32, v31->field_20_neg_speed);
+                v33 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v32, v31->y_speed);
                 v34 = _42D560_get_mobd_lookup_id_rotation(v3->sprite->x - v4->sprite->x, v3->sprite->x - v4->sprite->x);
                 v35 = v34;
                 v36 = v33 - v34;
@@ -480,8 +480,8 @@ void entity_4133D0(Entity *a1)
         default:
             if (v6 < 12)
                 goto LABEL_21;
-            v1->sprite->field_1C_speed = 0;
-            v1->sprite->field_20_neg_speed = 0;
+            v1->sprite->x_speed = 0;
+            v1->sprite->y_speed = 0;
             sprite_4272E0_load_mobd_item(
                 v1->sprite,
                 v1->stats->_38_mobd_lookup_table_offset,
@@ -1657,8 +1657,8 @@ void entity_4149A0(Entity *a1)
     }
     else
     {
-        v2->field_1C_speed = 0;
-        a1->sprite->field_20_neg_speed = 0;
+        v2->x_speed = 0;
+        a1->sprite->y_speed = 0;
         v8 = a1->stats;
         a1->field_DC = 1;
         if (v8->field_30_hp_regen_condition)
@@ -1735,8 +1735,8 @@ bool entity_414AD0(Entity *a1)
                 v1->sprite,
                 v1->stats->mobd_lookup_offset,
                 _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
-            v1->sprite->field_1C_speed = 0;
-            v1->sprite->field_20_neg_speed = 0;
+            v1->sprite->x_speed = 0;
+            v1->sprite->y_speed = 0;
             v1->_128_spawn_param = (void *)60;
             v1->mode = entity_mode_4181B0;
             return 1;
@@ -1746,8 +1746,8 @@ bool entity_414AD0(Entity *a1)
         v1->sprite,
         v1->stats->mobd_lookup_offset,
         _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v1->_128_spawn_param = (void *)60;
     entity_40DF50_boxd(v1, 0);
     v1->mode = entity_mode_4181B0;
@@ -1779,12 +1779,12 @@ void entity_414C30_boxd(Entity *a1)
     v3 = v2;
     if (v2 & 0x3F)
     {
-        v1->sprite->field_1C_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v2 + 1]] >> 6;
-        v1->sprite->field_20_neg_speed = 0;
+        v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v2 + 1]] >> 6;
+        v1->sprite->y_speed = 0;
         if (entity_40DA90_boxd(v1) == 4)
         {
             v4 = v1->sprite;
-            if (v4->field_1C_speed <= 0)
+            if (v4->x_speed <= 0)
             {
                 if ((int)(v4->x & 0xFFFFE000) > 0)
                 {
@@ -1820,12 +1820,12 @@ void entity_414C30_boxd(Entity *a1)
                 return;
             }
         }
-        v1->sprite->field_1C_speed = 0;
-        v1->sprite->field_20_neg_speed = -(v1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v3 + 1]]) >> 6;
+        v1->sprite->x_speed = 0;
+        v1->sprite->y_speed = -(v1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v3 + 1]]) >> 6;
         if (entity_40DA90_boxd(v1) == 4)
         {
             v10 = v1->sprite;
-            if (v10->field_20_neg_speed <= 0)
+            if (v10->y_speed <= 0)
             {
                 v14 = v10->x;
                 if ((int)(v14 & 0xFFFFE000) > 0)
@@ -2198,15 +2198,15 @@ void entity_mode_415540_infantry(Entity *a1)
     v8 = v6 + (v7->y & 0xFFFFE000);
     v9 = v1->sprite_width;
     v1->sprite_height = v8;
-    v7->field_1C_speed = v9 - v7->x;
-    v1->sprite->field_20_neg_speed = v1->sprite_height - v1->sprite->y;
+    v7->x_speed = v9 - v7->x;
+    v1->sprite->y_speed = v1->sprite_height - v1->sprite->y;
     if (entity_40DA90_boxd(v1) == 4)
     {
-        v1->sprite->x += v1->sprite->field_1C_speed;
-        v1->sprite->y += v1->sprite->field_20_neg_speed;
+        v1->sprite->x += v1->sprite->x_speed;
+        v1->sprite->y += v1->sprite->y_speed;
     }
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v10 = v1->sprite;
     v1->sprite_width_2 = v10->x;
     v11 = v1->mobd_lookup_idx;
@@ -2271,11 +2271,11 @@ void entity_mode_415690(Entity *a1)
     }
     v6 = v1->script;
     v1->_134_param__unitstats_after_mobile_outpost_plant = 0;
-    script_445370_yield(v6, 0x80000000, 6);
+    script_445370_yield_to_main_thread(v6, 0x80000000, 6);
     v7 = v1->entity_id & 0x3F;
     if ((dword_47953C & 0x3F) <= v7 && ((dword_47953C + 6) & 0x3F) > v7 && (entity_414670(v1), entity_4135E0(v1)))
     {
-        script_445370_yield(v1->script, 0x80000000, 1);
+        script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
     }
     else if (v1->script->script_type != 0xCA00000F || v1->field_DC != 7)
     {
@@ -2347,7 +2347,7 @@ void entity_mode_4157F0(Entity *a1)
     }
     v11 = v1->script;
     v1->mode = entity_mode_415540_infantry;
-    script_445370_yield(v11, 0x80000000, 80);
+    script_445370_yield_to_main_thread(v11, 0x80000000, 80);
 }
 
 //----- (004158B0) --------------------------------------------------------
@@ -2367,8 +2367,8 @@ void entity_4158B0(Entity *a1)
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
     v2 = v1->sprite;
     v1->mode = entity_mode_415980;
-    v2->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v2->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v3 = v1->stats;
     if (v3->field_30_hp_regen_condition)
         v4 = entity_40F0A0(v1, v1->field_A4);
@@ -2441,8 +2441,8 @@ void entity_415A20(Entity *a1)
         a1->sprite,
         a1->stats->_38_mobd_lookup_table_offset,
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v1->mode = entity_mode_415A60;
 }
 
@@ -2498,8 +2498,8 @@ void entity_mode_415AB0(Entity *a1)
     if (v2 != 23 && v2 != 24
         || (v3 = a1->sprite, v3->x >> 13 == a1->sprite_width_shr13) && v3->y >> 13 == a1->sprite_height_shr13)
     {
-        a1->sprite->field_1C_speed = 0;
-        a1->sprite->field_20_neg_speed = 0;
+        a1->sprite->x_speed = 0;
+        a1->sprite->y_speed = 0;
         entity_40DF50_boxd(a1, 1);
         if (!entity_413D10_boxd(v1))
         {
@@ -3000,8 +3000,8 @@ void entity_mode_4165C0(Entity *a1)
         v1->mode_turn_return = entity_mode_416790;
         v1->field_88 = (v7 + 8) & 0xF0;
         sprite_4272E0_load_mobd_item(v1->sprite, v9->_38_mobd_lookup_table_offset, _47D3C4_entity_mobd_lookup_ids[v8 + 1]);
-        v1->sprite->field_1C_speed = 0;
-        v1->sprite->field_20_neg_speed = 0;
+        v1->sprite->x_speed = 0;
+        v1->sprite->y_speed = 0;
         v1->mode = entity_mode_415A60;
     }
     else if (!entity_414870_boxd(v1))
@@ -3091,11 +3091,11 @@ void entity_mode_416790(Entity *a1)
         (v19 = v18, v1->field_88 = v18, v18 == -1) || (v20 = v1->mobd_lookup_idx, v20 == v18)))
     {
     LABEL_37:
-        v1->sprite->field_1C_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
-        v1->sprite->field_20_neg_speed = -(v1->stats->speed
+        v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
+        v1->sprite->y_speed = -(v1->stats->speed
             * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
-        v1->sprite->field_1C_speed += v1->sprite->field_1C_speed < 0 ? 1 : 0;
-        v1->sprite->field_20_neg_speed += v1->sprite->field_20_neg_speed < 0 ? 1 : 0;
+        v1->sprite->x_speed += v1->sprite->x_speed < 0 ? 1 : 0;
+        v1->sprite->y_speed += v1->sprite->y_speed < 0 ? 1 : 0;
         if (v1->stats->field_30_hp_regen_condition)
         {
             v23 = entity_40DA90_boxd(v1);
@@ -3114,10 +3114,10 @@ void entity_mode_416790(Entity *a1)
                     v1->mode_return = entity_mode_4165C0;
                     sprite_4272E0_load_mobd_item(v1->sprite, v25->mobd_lookup_offset, _47D3C4_entity_mobd_lookup_ids[v24 + 1]);
                     v26 = v1->sprite;
-                    v1->stru224._2C_map_x = v26->field_1C_speed;
-                    v1->stru224._30_map_y = v26->field_20_neg_speed;
-                    v26->field_1C_speed = 0;
-                    v1->sprite->field_20_neg_speed = 0;
+                    v1->stru224._2C_map_x = v26->x_speed;
+                    v1->stru224._30_map_y = v26->y_speed;
+                    v26->x_speed = 0;
+                    v1->sprite->y_speed = 0;
                     v27 = v1->field_124;
                     LOBYTE_HEXRAYS(v27) = v27 & 0xBF;
                     v1->_128_spawn_param = (void *)60;
@@ -3155,8 +3155,8 @@ void entity_mode_416790(Entity *a1)
     v28 = v1->sprite;
     v1->mode_turn_return = entity_mode_416790;
     sprite_4272E0_load_mobd_item(v28, v22->_38_mobd_lookup_table_offset, _47D3C4_entity_mobd_lookup_ids[v20 + 1]);
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v1->mode = entity_mode_415A60;
 }
 
@@ -3190,8 +3190,8 @@ void entity_mode_416A70_oiltanker(Entity *a1)
     int v25; // edx@33
 
     v1 = a1;
-    a1->sprite->field_1C_speed = 0;
-    a1->sprite->field_20_neg_speed = 0;
+    a1->sprite->x_speed = 0;
+    a1->sprite->y_speed = 0;
     v2 = a1->stats;
     v3 = v2->field_4C;
     if (v3 != 4096)
@@ -3273,8 +3273,8 @@ LABEL_24:
                 v1->sprite,
                 v24->_38_mobd_lookup_table_offset,
                 _47D3C4_entity_mobd_lookup_ids[v25 + 1]);
-            v1->sprite->field_1C_speed = 0;
-            v1->sprite->field_20_neg_speed = 0;
+            v1->sprite->x_speed = 0;
+            v1->sprite->y_speed = 0;
             v1->mode = entity_mode_415A60;
         }
     }
@@ -3282,8 +3282,8 @@ LABEL_24:
     {
         v16->x = v19;
         v1->sprite->y = v1->sprite_height;
-        v1->sprite->field_1C_speed = 0;
-        v1->sprite->field_20_neg_speed = 0;
+        v1->sprite->x_speed = 0;
+        v1->sprite->y_speed = 0;
         v1->mode = v1->mode_return;
     }
 }
@@ -3324,13 +3324,13 @@ void entity_mode_416CD0(Entity *a1)
             v9,
             v1->stats->_38_mobd_lookup_table_offset,
             _47D3C4_entity_mobd_lookup_ids[v8 + 1]);
-        v1->sprite->field_1C_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
-        v1->sprite->field_20_neg_speed = -(v1->stats->speed
+        v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
+        v1->sprite->y_speed = -(v1->stats->speed
             * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
         if (entity_40DA90_boxd(v1) != 4)
         {
-            v1->sprite->field_1C_speed = 0;
-            v1->sprite->field_20_neg_speed = 0;
+            v1->sprite->x_speed = 0;
+            v1->sprite->y_speed = 0;
             v10 = v1->stats;
             v11 = v10->field_4C;
             if (v11 != 4096)
@@ -3365,8 +3365,8 @@ void entity_mode_416CD0(Entity *a1)
     {
         v2->x = v3;
         v1->sprite->y = v1->sprite_height;
-        v1->sprite->field_1C_speed = 0;
-        v1->sprite->field_20_neg_speed = 0;
+        v1->sprite->x_speed = 0;
+        v1->sprite->y_speed = 0;
         v1->mode = v1->mode_return;
     }
 }
@@ -3402,8 +3402,8 @@ void entity_mode_416EB0(Entity *a1)
     int v25; // edx@33
 
     v1 = a1;
-    a1->sprite->field_1C_speed = 0;
-    a1->sprite->field_20_neg_speed = 0;
+    a1->sprite->x_speed = 0;
+    a1->sprite->y_speed = 0;
     v2 = a1->stats;
     v3 = v2->field_4C;
     if (v3 != 4096)
@@ -3485,15 +3485,15 @@ LABEL_24:
                 v1->sprite,
                 v24->_38_mobd_lookup_table_offset,
                 _47D3C4_entity_mobd_lookup_ids[v25 + 1]);
-            v1->sprite->field_1C_speed = 0;
-            v1->sprite->field_20_neg_speed = 0;
+            v1->sprite->x_speed = 0;
+            v1->sprite->y_speed = 0;
             v1->mode = entity_mode_415A60;
         }
     }
     else
     {
-        v16->field_1C_speed = 0;
-        v1->sprite->field_20_neg_speed = 0;
+        v16->x_speed = 0;
+        v1->sprite->y_speed = 0;
         v1->mode = v1->mode_return;
     }
 }
@@ -3534,13 +3534,13 @@ void entity_mode_417100(Entity *a1)
             v9,
             v1->stats->_38_mobd_lookup_table_offset,
             _47D3C4_entity_mobd_lookup_ids[v8 + 1]);
-        v1->sprite->field_1C_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
-        v1->sprite->field_20_neg_speed = -(v1->stats->speed
+        v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
+        v1->sprite->y_speed = -(v1->stats->speed
             * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
         if (entity_40DA90_boxd(v1) != 4)
         {
-            v1->sprite->field_1C_speed = 0;
-            v1->sprite->field_20_neg_speed = 0;
+            v1->sprite->x_speed = 0;
+            v1->sprite->y_speed = 0;
             v10 = v1->stats;
             v11 = v10->field_4C;
             if (v11 != 4096)
@@ -3573,8 +3573,8 @@ void entity_mode_417100(Entity *a1)
     }
     else
     {
-        v2->field_1C_speed = 0;
-        v1->sprite->field_20_neg_speed = 0;
+        v2->x_speed = 0;
+        v1->sprite->y_speed = 0;
         v1->mode = v1->mode_return;
     }
 }
@@ -3591,8 +3591,8 @@ void entity_4172D0(Entity *a1)
     v2 = _42D560_get_mobd_lookup_id_rotation(a1->sprite_width - a1->sprite->x, a1->sprite_height - a1->sprite->y);
     v3 = v1->stats;
     v1->mobd_lookup_idx = v2;
-    v1->sprite->field_1C_speed = v3->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v2 + 1]] >> 6;
-    v1->sprite->field_20_neg_speed = -(v1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
+    v1->sprite->x_speed = v3->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v2 + 1]] >> 6;
+    v1->sprite->y_speed = -(v1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
     sprite_4272E0_load_mobd_item(
         v1->sprite,
         v1->stats->_38_mobd_lookup_table_offset,
@@ -3637,8 +3637,8 @@ void entity_mode_417360_infantry(Entity *a1)
             v1->sprite,
             v17->_38_mobd_lookup_table_offset,
             _47D3C4_entity_mobd_lookup_ids[v16 + 1]);
-        v1->sprite->field_1C_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
-        v1->sprite->field_20_neg_speed = -(v1->stats->speed
+        v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
+        v1->sprite->y_speed = -(v1->stats->speed
             * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
     }
     else
@@ -3659,7 +3659,7 @@ void entity_mode_417360_infantry(Entity *a1)
                     v14 = v1->script;
                     v1->stru224.field_54 = 0;
                     v1->stru224.field_50 = 0;
-                    script_445370_yield(v14, 0x80000000, 1);
+                    script_445370_yield_to_main_thread(v14, 0x80000000, 1);
                     v15 = v1->sprite_height_3;
                     v1->sprite_width_2 = v1->sprite_width_3;
                     v1->field_DC = 1;
@@ -3676,7 +3676,7 @@ void entity_mode_417360_infantry(Entity *a1)
                     v11 = v1->script;
                     v1->stru224.field_54 = 0;
                     v1->stru224.field_50 = 0;
-                    script_445370_yield(v11, 0x80000000, 1);
+                    script_445370_yield_to_main_thread(v11, 0x80000000, 1);
                     v12 = v1->_2A8_entity;
                     v13 = v1->_2A8_entity_id;
                     v1->field_DC = 2;
@@ -3717,8 +3717,8 @@ void entity_417550(Entity *a1)
         a1->sprite,
         a1->stats->mobd_lookup_offset,
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v2 = v1->sprite;
     v3 = v1->sprite_width >> 13;
     v4 = v1->sprite_height >> 13;
@@ -3906,8 +3906,8 @@ void entity_417810(Entity *a1)
         v1->mode = entity_mode_417BD0;
         v1->field_124 = v13;
         sprite_4272E0_load_mobd_item(v11, v1->stats->_38_mobd_lookup_table_offset, _47D3C4_entity_mobd_lookup_ids[v12 + 1]);
-        v1->sprite->field_1C_speed = 0;
-        v1->sprite->field_20_neg_speed = 0;
+        v1->sprite->x_speed = 0;
+        v1->sprite->y_speed = 0;
         if (v1->field_D4)
         {
             v1->field_D8 = ((unsigned __int8)v1->mobd_lookup_idx + 64) & 0xE0;
@@ -3946,8 +3946,8 @@ void entity_417980(Entity *a1)
     v1->mode = entity_mode_417BD0;
     v1->field_124 = v5;
     sprite_4272E0_load_mobd_item(v2, v1->stats->_38_mobd_lookup_table_offset, _47D3C4_entity_mobd_lookup_ids[v3 + 1]);
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     if (v1->field_D4)
     {
         v1->field_D8 = ((unsigned __int8)v1->mobd_lookup_idx + 64) & 0xE0;
@@ -4020,8 +4020,8 @@ void entity_mode_417A20(Entity *a1)
                             v1->sprite,
                             v9->_38_mobd_lookup_table_offset,
                             _47D3C4_entity_mobd_lookup_ids[v10 + 1]);
-                        v1->sprite->field_1C_speed = 0;
-                        v1->sprite->field_20_neg_speed = 0;
+                        v1->sprite->x_speed = 0;
+                        v1->sprite->y_speed = 0;
                         v1->mode = entity_mode_415A60;
                     }
                     else if (!entity_414870_boxd(v1))
@@ -4130,8 +4130,8 @@ void entity_mode_417BD0(Entity *a1)
                         v23 = v1->sprite;
                         v1->mode_turn_return = entity_mode_417BD0;
                         sprite_4272E0_load_mobd_item(v23, v17->_38_mobd_lookup_table_offset, _47D3C4_entity_mobd_lookup_ids[v15 + 1]);
-                        v1->sprite->field_1C_speed = 0;
-                        v1->sprite->field_20_neg_speed = 0;
+                        v1->sprite->x_speed = 0;
+                        v1->sprite->y_speed = 0;
                         v1->mode = entity_mode_415A60;
                         return;
                     }
@@ -4143,11 +4143,11 @@ void entity_mode_417BD0(Entity *a1)
                 }
             }
         }
-        v1->sprite->field_1C_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
-        v1->sprite->field_20_neg_speed = -(v1->stats->speed
+        v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
+        v1->sprite->y_speed = -(v1->stats->speed
             * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
-        v1->sprite->field_1C_speed += v1->sprite->field_1C_speed < 0 ? 1 : 0;
-        v1->sprite->field_20_neg_speed += v1->sprite->field_20_neg_speed < 0 ? 1 : 0;
+        v1->sprite->x_speed += v1->sprite->x_speed < 0 ? 1 : 0;
+        v1->sprite->y_speed += v1->sprite->y_speed < 0 ? 1 : 0;
         if (v1->stats->field_30_hp_regen_condition)
         {
             v18 = entity_40DA90_boxd(v1);
@@ -4166,10 +4166,10 @@ void entity_mode_417BD0(Entity *a1)
                     v1->mode_return = entity_mode_4165C0;
                     sprite_4272E0_load_mobd_item(v1->sprite, v20->mobd_lookup_offset, _47D3C4_entity_mobd_lookup_ids[v19 + 1]);
                     v21 = v1->sprite;
-                    v1->stru224._2C_map_x = v21->field_1C_speed;
-                    v1->stru224._30_map_y = v21->field_20_neg_speed;
-                    v21->field_1C_speed = 0;
-                    v1->sprite->field_20_neg_speed = 0;
+                    v1->stru224._2C_map_x = v21->x_speed;
+                    v1->stru224._30_map_y = v21->y_speed;
+                    v21->x_speed = 0;
+                    v1->sprite->y_speed = 0;
                     v22 = v1->field_124;
                     LOBYTE_HEXRAYS(v22) = v22 & 0xBF;
                     v1->_128_spawn_param = (void *)60;
@@ -4231,14 +4231,14 @@ void entity_mode_417E60(Entity *a1)
         v6 = (kknd_rand_3() & 7) + v5;
         entity_40DF50_boxd(v1, 1);
         v1->sprite->_60_mobd_field_0_int = 0;
-        v1->sprite->field_1C_speed = 0;
-        v1->sprite->field_20_neg_speed = 0;
+        v1->sprite->x_speed = 0;
+        v1->sprite->y_speed = 0;
         if (v1->stats->field_30_hp_regen_condition)
         {
             v1->mode_return = entity_mode_417F50;
             entity_mode_416A70_oiltanker(v1);
         }
-        script_445370_yield(v1->script, 0x80000000, v6);
+        script_445370_yield_to_main_thread(v1->script, 0x80000000, v6);
     }
 }
 
@@ -4255,10 +4255,10 @@ void entity_417F60(Entity *a1)
         a1->stats->mobd_lookup_offset,
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
     v2 = v1->sprite;
-    v1->stru224._2C_map_x = v2->field_1C_speed;
-    v1->stru224._30_map_y = v2->field_20_neg_speed;
-    v2->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->stru224._2C_map_x = v2->x_speed;
+    v1->stru224._30_map_y = v2->y_speed;
+    v2->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v3 = v1->field_124;
     LOBYTE_HEXRAYS(v3) = v3 & 0xBF;
     v1->_128_spawn_param = (void *)60;
@@ -4281,11 +4281,11 @@ void entity_mode_417FC0(Entity *a1)
     int v10; // eax@14
 
     v1 = a1;
-    a1->sprite->field_1C_speed = a1->stru224._2C_map_x;
-    a1->sprite->field_20_neg_speed = a1->stru224._30_map_y;
+    a1->sprite->x_speed = a1->stru224._2C_map_x;
+    a1->sprite->y_speed = a1->stru224._30_map_y;
     v2 = entity_40DA90_boxd(a1) == 4;
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v3 = v1->sprite;
     if (v2)
     {
@@ -4342,7 +4342,7 @@ void entity_mode_417FC0(Entity *a1)
     }
     if (v1->field_124 & 0x40)
         entity_40DF50_boxd(v1, 0);
-    script_445370_yield(v1->script, 0x80000000, 3);
+    script_445370_yield_to_main_thread(v1->script, 0x80000000, 3);
 }
 
 //----- (00418120) --------------------------------------------------------
@@ -4355,8 +4355,8 @@ void entity_418120(Entity *a1)
         a1->sprite,
         a1->stats->mobd_lookup_offset,
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v1->_128_spawn_param = (void *)60;
     entity_40DF50_boxd(v1, 0);
     v1->mode = entity_mode_4181B0;
@@ -4372,8 +4372,8 @@ void entity_418170(Entity *a1)
         a1->sprite,
         a1->stats->mobd_lookup_offset,
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v1->_128_spawn_param = (void *)60;
     v1->mode = entity_mode_4181B0;
 }
@@ -4415,7 +4415,7 @@ void entity_mode_4181B0(Entity *a1)
         v1->_128_spawn_param = v6 - 1;
         if (v6)
         {
-            script_445370_yield(v1->script, 0x80000000, 3);
+            script_445370_yield_to_main_thread(v1->script, 0x80000000, 3);
         }
         else
         {
@@ -4456,8 +4456,8 @@ void entity_418290(Entity *a1)
     int v21; // eax@25
 
     v1 = a1;
-    a1->sprite->field_1C_speed = 0;
-    a1->sprite->field_20_neg_speed = 0;
+    a1->sprite->x_speed = 0;
+    a1->sprite->y_speed = 0;
     if (_47C048_unit_bomberdmg >= 200)
     {
         a1->mode = entity_mode_418550;
@@ -4468,8 +4468,8 @@ void entity_418290(Entity *a1)
         a1->stats->mobd_lookup_offset,
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
     entity_40DF50_boxd(v1, 0);
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     if (!v1->stats->field_30_hp_regen_condition)
     {
         if (v1->mobd_lookup_idx != (signed __int16)_42D560_get_mobd_lookup_id_rotation(
@@ -4484,8 +4484,8 @@ void entity_418290(Entity *a1)
             v4 = v1->stats;
             v1->mode_turn_return = entity_mode_418590;
             sprite_4272E0_load_mobd_item(v1->sprite, v4->_38_mobd_lookup_table_offset, _47D3C4_entity_mobd_lookup_ids[v3 + 1]);
-            v1->sprite->field_1C_speed = 0;
-            v1->sprite->field_20_neg_speed = 0;
+            v1->sprite->x_speed = 0;
+            v1->sprite->y_speed = 0;
             v1->mode = entity_mode_415A60;
             return;
         }
@@ -4630,7 +4630,7 @@ void entity_mode_418590(Entity *a1)
             + (v6->damage_building
                 * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
         script_trigger_event(v1->script, EVT_MSG_1497, v1, v1->entity_8->script);
-        script_445370_yield(
+        script_445370_yield_to_main_thread(
             v1->script,
             0x80000000,
             v1->stats->reload_time
@@ -4687,8 +4687,8 @@ void entity_4187F0(Entity *a1)
     v6 = v1->stats;
     v1->mobd_lookup_idx = v5;
     sprite_4272E0_load_mobd_item(v1->sprite, v6->_38_mobd_lookup_table_offset, _47D3C4_entity_mobd_lookup_ids[v5 + 1]);
-    v1->sprite->field_1C_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
-    v1->sprite->field_20_neg_speed = -(v1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
+    v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
+    v1->sprite->y_speed = -(v1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
     v1->mode = v1->mode_arrive;
 }
 
@@ -4753,7 +4753,7 @@ void script_4188F0(Script *a1)
         if (v9 >= v10)
             v1->hitpoints = v10;
         entity_410710_status_bar(v1);
-        script_445370_yield(a1, 0x80000000, 1);
+        script_445370_yield_to_main_thread(a1, 0x80000000, 1);
         if (++v2 >= 600)
             break;
     }
@@ -4768,7 +4768,7 @@ void script_4188F0(Script *a1)
             v1->sprite->parent = 0;
         }
     }
-    script_445470_yield(a1);
+    script_yield(a1);
 }
 
 //----- (00418A10) --------------------------------------------------------
@@ -4835,7 +4835,7 @@ void script_418A10(Script *a1)
         if (v10 >= v11)
             v1->hitpoints = v11;
         entity_410520_update_healthbar_color(v1);
-        script_445370_yield(a1, 0x80000000, 1);
+        script_445370_yield_to_main_thread(a1, 0x80000000, 1);
         if (++v6 >= 600)
             break;
     }
@@ -4849,7 +4849,7 @@ void script_418A10(Script *a1)
             *(_DWORD *)(v13 + 32) = 0;
         }
     }
-    script_445470_yield(a1);
+    script_yield(a1);
 }
 
 //----- (00418B30) --------------------------------------------------------
@@ -4868,7 +4868,6 @@ void entity_mode_418B30(Entity *a1)
     int v11; // ecx@12
     int v12; // ecx@14
     UnitAttachmentPoint *v13; // eax@14
-    void(*v14)(Script *); // edx@17
     Script *v15; // edi@19
     enum SOUND_ID v16; // ecx@21
     Script *v17; // edx@26
@@ -4887,7 +4886,7 @@ void entity_mode_418B30(Entity *a1)
         a1->entity_id = 0;
     LABEL_29:
         sprite_list_remove(v1->sprite);
-        script_445470_yield(v1->script);
+        script_yield(v1->script);
         entity_list_remove(v1);
         return;
     }
@@ -4906,8 +4905,8 @@ void entity_mode_418B30(Entity *a1)
             v19,
             v1->stats->_38_mobd_lookup_table_offset,
             _47D3C4_entity_mobd_lookup_ids[v18 + 1]);
-        v1->sprite->field_1C_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
-        v1->sprite->field_20_neg_speed = -(v1->stats->speed
+        v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
+        v1->sprite->y_speed = -(v1->stats->speed
             * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
         return;
     }
@@ -4924,10 +4923,14 @@ void entity_mode_418B30(Entity *a1)
                 v13 = v10->stats->attach;
                 if (v13 && v13->dmg_source)
                     v12 = 1;
-                v14 = script_4188F0;
                 if (!v12)
-                    v14 = script_418A10;
-                v15 = script_create_coroutine(SCRIPT_TYPE_INVALID, v14, 0);
+                {
+                    v15 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_418A10, 0);
+                }
+                else
+                {
+                    v15 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_4188F0, 0);
+                }
                 if (v1->player_side == player_side)
                 {
                     if (v1->unit_id == UNIT_STATS_SURV_TECHNICIAN)
@@ -4990,8 +4993,8 @@ void entity_mode_418D20(Entity *a1)
                 v1->sprite,
                 v12->_38_mobd_lookup_table_offset,
                 _47D3C4_entity_mobd_lookup_ids[v11 + 1]);
-            v1->sprite->field_1C_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
-            v1->sprite->field_20_neg_speed = -(v1->stats->speed
+            v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
+            v1->sprite->y_speed = -(v1->stats->speed
                 * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
             return;
         }
@@ -5010,7 +5013,7 @@ void entity_mode_418D20(Entity *a1)
         a1->entity_id = 0;
     }
     sprite_list_remove(v1->sprite);
-    script_445470_yield(v1->script);
+    script_yield(v1->script);
     entity_list_remove(v1);
 }
 
@@ -5028,8 +5031,8 @@ void entity_mode_418E90(Entity *a1)
     if ((int)v2 <= 0)
     {
         a1->script->event_handler = a1->event_handler;
-        a1->sprite->field_1C_speed = 0;
-        a1->sprite->field_20_neg_speed = 0;
+        a1->sprite->x_speed = 0;
+        a1->sprite->y_speed = 0;
         v3 = a1->entity_E0_outpost_clanhall;
         if (v3)
         {
@@ -5057,7 +5060,7 @@ void entity_mode_418E90(Entity *a1)
             entity_mode_416A70_oiltanker(v1);
         }
     }
-    script_445370_yield(v1->script, 0x80000000, 1);
+    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
 }
 
 //----- (00418F60) --------------------------------------------------------
@@ -5073,8 +5076,8 @@ void entity_mode_418F60(Entity *a1)
     a1->script->event_handler = EventHandler_419E80;
     v2 = a1->sprite;
     v1->mode = entity_mode_418E90;
-    v2->field_1C_speed = -64;
-    v1->sprite->field_20_neg_speed = 64;
+    v2->x_speed = -64;
+    v1->sprite->y_speed = 64;
     sprite_4272E0_load_mobd_item(
         v1->sprite,
         v1->stats->_38_mobd_lookup_table_offset,
@@ -5164,8 +5167,8 @@ LABEL_20:
         v1->script->event_handler = EventHandler_419E80;
         v10 = v1->sprite;
         v1->mode = entity_mode_418E90;
-        v10->field_1C_speed = -64;
-        v1->sprite->field_20_neg_speed = 64;
+        v10->x_speed = -64;
+        v1->sprite->y_speed = 64;
         sprite_4272E0_load_mobd_item(
             v1->sprite,
             v1->stats->_38_mobd_lookup_table_offset,
@@ -5187,7 +5190,7 @@ LABEL_20:
         }
     }
 LABEL_27:
-    script_445370_yield(v1->script, 0x80000000, 4 * v2);
+    script_445370_yield_to_main_thread(v1->script, 0x80000000, 4 * v2);
 }
 
 //----- (00419180) --------------------------------------------------------
@@ -5209,8 +5212,8 @@ void entity_mode_419180(Entity *a1)
         a1->_128_spawn_param = v4 - 1;
         if ((int)v4 <= 0)
         {
-            a1->sprite->field_1C_speed = 0;
-            a1->sprite->field_20_neg_speed = 0;
+            a1->sprite->x_speed = 0;
+            a1->sprite->y_speed = 0;
             v5 = a1->mobd_lookup_idx;
             v6 = a1->stats;
             a1->mode = entity_mode_418FE0;
@@ -5220,13 +5223,13 @@ void entity_mode_419180(Entity *a1)
     }
     else
     {
-        a1->sprite->field_1C_speed = 0;
-        a1->sprite->field_20_neg_speed = 0;
+        a1->sprite->x_speed = 0;
+        a1->sprite->y_speed = 0;
         a1->mode_return = entity_mode_415540_infantry;
         entity_mode_416A70_oiltanker(a1);
         v1->script->event_handler = v1->event_handler;
     }
-    script_445370_yield(v1->script, 0x80000000, 1);
+    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
 }
 
 //----- (00419230) --------------------------------------------------------
@@ -5238,16 +5241,16 @@ void entity_mode_419230(Entity *a1)
 
     v1 = a1;
     v2 = &a1->mobd_lookup_idx;
-    a1->sprite->field_1C_speed = 0;
-    a1->sprite->field_20_neg_speed = 0;
+    a1->sprite->x_speed = 0;
+    a1->sprite->y_speed = 0;
     sprite_4272E0_load_mobd_item(
         a1->sprite,
         a1->stats->mobd_lookup_offset,
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
     if (!_44CB60_advance_mobd_frame(v2, 160, v1->stats->turning_speed))
     {
-        v1->sprite->field_1C_speed = 64;
-        v1->sprite->field_20_neg_speed = -64;
+        v1->sprite->x_speed = 64;
+        v1->sprite->y_speed = -64;
         sprite_4272E0_load_mobd_item(
             v1->sprite,
             v1->stats->_38_mobd_lookup_table_offset,
@@ -5259,7 +5262,7 @@ void entity_mode_419230(Entity *a1)
         *((_DWORD *)v3->state + 2) = 1;
         v1->event_handler = v1->script->event_handler;
     }
-    script_445370_yield(v1->script, 0x80000000, 1);
+    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
 }
 
 //----- (004192F0) --------------------------------------------------------
@@ -5282,8 +5285,8 @@ char *entity_4192F0(Entity *a1)
         a1->stats->mobd_lookup_offset,
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
     result = 0;
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v3 = (EntityOilTankerState *)v1->state;
     v1->mode = entity_mode_419390_oiltanker;
     if (v3)
@@ -5321,7 +5324,7 @@ void entity_mode_419390_oiltanker(Entity *a1)
         entity_40DF50_boxd(v1, 0);
         if (!v4 || (v5 = *(_DWORD *)(v4 + 24)) != 0 && *(_DWORD *)(v5 + 304) == *(_DWORD *)(v4 + 28))
         {
-            script_445370_yield(v1->script, 0x80000000, 30);
+            script_445370_yield_to_main_thread(v1->script, 0x80000000, 30);
         }
         else
         {
@@ -5401,8 +5404,8 @@ void entity_mode_419420(Entity *a1)
         v17 = _42D560_get_mobd_lookup_id_rotation(v13, v11 - v10->y);
         v18 = v1->stats;
         v1->mobd_lookup_idx = v17;
-        v1->sprite->field_1C_speed = v18->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v17 + 1]] >> 6;
-        v1->sprite->field_20_neg_speed = -(v1->stats->speed
+        v1->sprite->x_speed = v18->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v17 + 1]] >> 6;
+        v1->sprite->y_speed = -(v1->stats->speed
             * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
     }
     else
@@ -5441,8 +5444,8 @@ void entity_419560_on_death(Entity *a1)
     }
     script_trigger_event_group(v1->script, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
     v1->script->script_type = SCRIPT_TYPE_INVALID;
-    v1->sprite->field_1C_speed = 0;
-    v1->sprite->field_20_neg_speed = 0;
+    v1->sprite->x_speed = 0;
+    v1->sprite->y_speed = 0;
     v4 = v1->stats;
     v1->mode = entity_419720;
     if (v4->field_30_hp_regen_condition)
@@ -5491,7 +5494,7 @@ void entity_419560_on_death(Entity *a1)
         v1->stats->mobd_lookup_offset,
         _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
 LABEL_15:
-    script_445370_yield(v1->script, 0x80000000, 60);
+    script_445370_yield_to_main_thread(v1->script, 0x80000000, 60);
 }
 
 //----- (00419720) --------------------------------------------------------
@@ -5502,7 +5505,7 @@ void entity_419720(Entity *a1)
     v1 = a1;
     entity_40DEC0_boxd(a1, a1->sprite_width_shr13, a1->sprite_height_shr13, a1->field_A4);
     sprite_list_remove(v1->sprite);
-    script_445470_yield(v1->script);
+    script_yield(v1->script);
     entity_list_remove(v1);
 }
 
@@ -5513,8 +5516,8 @@ void entity_mode_419760_infantry_destroyed(Entity *a1)
     Script *v2; // ecx@1
 
     v1 = a1;
-    a1->sprite->field_1C_speed = 0;
-    a1->sprite->field_20_neg_speed = 0;
+    a1->sprite->x_speed = 0;
+    a1->sprite->y_speed = 0;
     sprite_4272E0_load_mobd_item(
         a1->sprite,
         a1->stats->_38_mobd_lookup_table_offset,
@@ -5535,13 +5538,13 @@ void entity_mode_4197E0_infantry(Entity *a1)
     Sprite *v3; // ecx@1
 
     v1 = a1;
-    a1->sprite->field_1C_speed = 0;
-    a1->sprite->field_20_neg_speed = 0;
+    a1->sprite->x_speed = 0;
+    a1->sprite->y_speed = 0;
     v2 = a1->mobd_lookup_idx + 64;
     v3 = a1->sprite;
     v1->mobd_lookup_idx = v2;
     sprite_4272E0_load_mobd_item(v3, v1->stats->_38_mobd_lookup_table_offset, _47D3C4_entity_mobd_lookup_ids[v2 + 1]);
-    script_445370_yield(v1->script, 0x10000000, 0);
+    script_445370_yield_to_main_thread(v1->script, 0x10000000, 0);
 }
 
 //----- (00419830) --------------------------------------------------------
@@ -5589,7 +5592,7 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
         case EVT_MSG_1526:                        // param -> Entity *
             if (param != v4->entity_E0_outpost_clanhall || v4->field_DC != 3)
             {
-                script_445370_yield(v4->script, 0x80000000, 1);
+                script_445370_yield_to_main_thread(v4->script, 0x80000000, 1);
                 v4->field_DC = 3;
                 v4->entity_E0_outpost_clanhall = (Entity *)param;
                 v4->entity_E0_outpost_clanhall_entity_id = *((_DWORD *)param + 76);// ->entity_id
@@ -5603,7 +5606,7 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
         case EVT_MSG_1527:
             if (v4->player_side == *(_DWORD *)param && (Entity *)*((_DWORD *)param + 1) != v4->_E8_entity)
             {
-                script_445370_yield(v4->script, 0x80000000, 1);
+                script_445370_yield_to_main_thread(v4->script, 0x80000000, 1);
                 v4->field_DC = 5;
                 v5 = (Entity *)*((_DWORD *)param + 1);
                 v4->_E8_entity = v5;
@@ -5654,7 +5657,7 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
             }
             break;
         case EVT_MSG_1499:
-            script_445370_yield(v4->script, 0x80000000, 1);
+            script_445370_yield_to_main_thread(v4->script, 0x80000000, 1);
             v4->hitpoints = 0;
             v4->destroyed = 1;
             v4->mode = entity_419560_on_death;
@@ -5681,7 +5684,7 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
                 v4->_98_465610_accuracy_dmg_bonus_idx = 2;
             break;
         case EVT_MSG_1546:
-            script_445370_yield(v4->script, 0x80000000, 1);
+            script_445370_yield_to_main_thread(v4->script, 0x80000000, 1);
             v4->field_DC = 10;
             v4->entity_E0_outpost_clanhall = (Entity *)param;
             v13 = *((_DWORD *)param + 76);

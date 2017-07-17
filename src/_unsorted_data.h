@@ -5,6 +5,8 @@
 #include "src/_unsorted_data.h"
 #include "src/_unsorted_functions.h"
 
+#define LVL_SECTION_MAPD "MAPD"
+
 extern void *__EAX__;
 
 extern _UNKNOWN loc_45D19B; // weak
@@ -117,7 +119,6 @@ extern char *reg_DriveLetter;
 extern char *reg_GamePath;
 extern char a_[2]; // weak
 extern char *aS;
-extern char *MAPD;
 extern char *aWaitLvl_runlev;
 extern char *aLvl_loadlevelW;
 extern char *aSLevelsSWait_l;
@@ -781,7 +782,6 @@ extern Entity *dword_478108[300];
 extern int j_render_nullsub_2; // weak
 extern int j_render_434B70; // weak
 extern PALETTEENTRY *ppalette_4785C0;
-extern void(*RENDER_pClearScreen)(int);
 extern int j_render_434A90; // weak
 extern int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
 extern PALETTEENTRY *_4785DC_syscolors_palette_entries;
@@ -1084,11 +1084,9 @@ extern void *faction_slv; // idb
 extern BOOL sound_initialized;
 extern int dword_47C5D0; // weak
 extern int _47C5D4_sound_threaded_snd_id; // idb
-extern DrawJob draw_list_47C5D8_head; // idb
-extern DrawJob *draw_list_47C5DC;
+extern DrawJobList draw_list_47C5D8; // idb
 extern DrawJob *draw_list_free_pool;
-extern DrawJob *draw_list_47C5E8_head; // idb
-extern DrawJob *draw_list_head;
+extern DrawJobList draw_list_47C5E8; // idb
 extern DrawJob *draw_list;
 extern int dword_47C5F8; // weak
 extern int _46E420_starting_cash_idx; // weak
@@ -1127,12 +1125,12 @@ extern int dword_47C6F4; // weak
 extern int dword_47C6F8; // weak
 extern int dword_47C700; // weak
 extern Script *script_list_free_pool;
-extern void(*task_creation_yield_handler)(Script *);
+extern void(*task_creation_handler)(Script *);
 extern Script *script_execute_list;
 extern Script *script_list_47C714;
-extern Coroutine *coroutine_current;
+extern Coroutine *volatile coroutine_current;
 extern size_t coroutine_default_stack_size; // idb
-extern Script *_47C75C_task;
+extern Script *task_creation_handler_arg;
 extern Coroutine *coroutine_list_head;
 extern __int16 is_coroutine_list_initialization_failed; // weak
 extern Script *script_list;

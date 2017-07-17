@@ -308,7 +308,7 @@ void Task_context_1_BomberDmgHandler_401D10(Task_context_1_BomberDmgHandler *a1)
 	v1 = a1;
 	--_47C048_unit_bomberdmg;
 	sprite_list_remove(a1->sprite);
-	script_445470_yield(v1->task);
+	script_yield(v1->task);
 }
 // 47C048: using guessed type int _47C048_unit_bomberdmg;
 
@@ -323,10 +323,10 @@ void Task_context_1_BomberDmgHandler_401D30(Task_context_1_BomberDmgHandler *a1)
 	v1 = a1;
 	v2 = a1->sprite;
 	v3 = v2->param;
-	v2->field_1C_speed = 0;
-	v2->field_20_neg_speed = 0;
-	v2->field_24 = 0;
-	v2->field_30 = 0;
+	v2->x_speed = 0;
+	v2->y_speed = 0;
+	v2->z_speed = 0;
+	v2->z_speed_factor_2 = 0;
 	v2->z_index = 1;
 	if (*((_DWORD *)v3 + 3) != -1)
 	{
@@ -341,7 +341,7 @@ void Task_context_1_BomberDmgHandler_401D30(Task_context_1_BomberDmgHandler *a1)
 	}
 	v4 = v1->task;
 	v1->handler = Task_context_1_BomberDmgHandler_401D10;
-	script_445370_yield(v4, 0x10000000, 0);
+	script_445370_yield_to_main_thread(v4, 0x10000000, 0);
 }
 
 //----- (00401DC0) --------------------------------------------------------
@@ -360,9 +360,9 @@ void Task_context_1_BomberDmgHandler_401DE0(Task_context_1_BomberDmgHandler *a1)
 	v1 = a1;
 	v2 = a1->sprite;
 	v2->pstru7 = &_479D48_stru7;
-	v2->field_24 = 512;
-	v2->field_3C = 512;
-	v2->field_30 = -34;
+	v2->z_speed = 512;
+	v2->z_speed_limit = 512;
+	v2->z_speed_factor_2 = -34;
 	sprite_408800_play_sound(v2, SOUND_163, _4690A8_unit_sounds_volume, 0);
 	v1->handler = Task_context_1_BomberDmgHandler_401DC0;
 }
@@ -964,76 +964,66 @@ void entity_mode_blacksmith_on_death(Entity *a1)
 }
 
 //----- (00402910) --------------------------------------------------------
-int coroutine_list_alloc()
+bool coroutine_list_alloc()
 {
-	Coroutine *result; // eax@1
-	int v1; // ecx@2
-	Coroutine *v2; // eax@3
-
-	result = (Coroutine *)malloc(0x7D00u);
-	coroutine_list = result;
-	if (result)
+	coroutine_list = new Coroutine[2000];
+	if (coroutine_list)
 	{
-		v1 = 0;
-		do
+		for (int i = 0; i < 2000; ++i)
 		{
-			v2 = &result[v1];
-			v2->yield_to = 0;
-			v2->context = 0;
-			v2->stack = 0;
-			v2->next = 0;
-			coroutine_list[v1].next = &coroutine_list[v1 + 1];
-			result = coroutine_list;
-			++v1;
-		} while (v1 < 1999);
+			//v2 = &coroutine_list[i];
+			//v2->yield_to = 0;
+			//v2->context = 0;
+			//v2->stack = 0;
+			//v2->next = 0;
+			coroutine_list[i].next = &coroutine_list[i + 1];
+		}
 		coroutine_list[1999].next = 0;
 		coroutine_list_head = coroutine_list;
 		coroutine_list_next = coroutine_list + 1;
-		result = (Coroutine *)1;
+        return true;
 	}
-	return (int)result;
+
+	return false;
 }
 
 //----- (00402980) --------------------------------------------------------
-Coroutine *couroutine_create(void(*function)(), size_t stack_size)
+Coroutine *couroutine_create(void(*function)(), size_t stack_size, const char *debug_handler_name)
 {
 	Coroutine *v2; // edi@1
-	int v3; // esi@1
-	void(*funct1on)(); // ebp@1
 	int *result; // eax@2
 	Coroutine **head_next; // ebx@3
 	int v7; // esi@5
 
 	v2 = coroutine_list_next;
-	v3 = stack_size;
-	funct1on = function;
 	if (coroutine_list_next)
 	{
 		head_next = &coroutine_list_next->next;
 		coroutine_list_next = coroutine_list_next->next;
 		result = (int *)malloc(stack_size);
 		v2->context = result;
+        v2->debug_handler_name = debug_handler_name;
 		if (result)
 		{
-			v7 = v3 >> 2;
-			result[v7 - 1] = (int)nullsub_1;
+			v7 = stack_size >> 2;
+            v2->context[v7 - 1] = (int)nullsub_1;
 			v2->context[v7 - 2] = 0;
-			v2->context[v7 - 3] = (int)funct1on;
+			v2->context[v7 - 3] = (int)function;
 			v2->context[v7 - 4] = (int)&v2->context[v7 - 4];
 			v2->stack = (int)&v2->context[v7 - 7];
-			result = (int *)v2;
+			return v2;
 		}
 		else
 		{
 			*head_next = coroutine_list_next;
 			coroutine_list_next = v2;
+            return nullptr;
 		}
 	}
 	else
 	{
-		result = 0;
+        return nullptr;
 	}
-	return (Coroutine *)result;
 }
 
 //----- (00402A00) --------------------------------------------------------
@@ -1067,7 +1057,42 @@ void coroutine_list_free()
 }
 
 //----- (00402A60) --------------------------------------------------------
-int coroutine_yield(Coroutine *self)
+__declspec(naked) int coroutine_yield_asm(Coroutine *self)
+{
+    __asm
+    {
+        push    ebp
+        mov     ebp, esp
+        push    ebx
+        push    esi
+        push    edi
+        mov     coroutine_current_stack, esp
+        mov     eax, coroutine_current
+        mov     ecx, coroutine_current_stack
+        mov     [eax + 8], ecx // coroutine_current->stack = esp
+        mov     eax, [self]
+        mov     edx, coroutine_current
+        mov     [eax], edx // self->yield_to = coroutine_current;
+        mov     coroutine_current, eax
+        mov     eax, [eax + 8]
+        mov     coroutine_current_stack, eax
+        mov     esp, coroutine_current_stack
+        xor     eax, eax
+        pop     edi
+        pop     esi
+        pop     ebx
+        pop     ebp
+        retn
+        ; -------------------------------------------------------------------------- -
+        pop     edi
+        pop     esi
+        xor     eax, eax
+        pop     ebx
+        pop     ebp
+        retn
+    }
+}
+/*int coroutine_yield(Coroutine *self)
 {
 	int current_stack; // [sp+0h] [bp-Ch]@1
 
@@ -1077,8 +1102,12 @@ int coroutine_yield(Coroutine *self)
 	coroutine_current = self;
 	coroutine_current_stack = self->stack;
 	return 0;                                     // DECOMPILATION ERROR double exit here, view assembly
+}*/
+
+int coroutine_yield(Coroutine *self)
+{
+    return coroutine_yield_asm(self);
 }
-// 477348: using guessed type int coroutine_current_stack;
 
 //----- (00402AB0) --------------------------------------------------------
 void entity_mode_402AB0(Entity *a1)
@@ -1306,7 +1335,7 @@ int entity_402E40_destroy(Entity *a1, void(*new_mode)(Entity *))
 	{
 		v5 = a1->script;
 		a1->hitpoints = 0;
-		result = script_445370_yield(v5, 0x80000000, 1);
+		result = script_445370_yield_to_main_thread(v5, 0x80000000, 1);
 		v2->hitpoints = 0;
 		v2->mode = nEw_mode;
 		v2->destroyed = 1;
@@ -1346,7 +1375,7 @@ void entity_402E90_on_damage(Entity *a1, void *param, void(*on_death_mode)(Entit
 			v3->hitpoints = v7;
 			if (v7 <= 0)
 			{
-				script_445370_yield(v3->script, 0x80000000, 1);
+				script_445370_yield_to_main_thread(v3->script, 0x80000000, 1);
 				v3->hitpoints = 0;
 				v3->mode = on_death_mode;
 				v3->destroyed = 1;
@@ -1915,7 +1944,7 @@ bool sub_404530(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				a1->x = v8;
 				if (!v9)
 					goto LABEL_40;
-				v10 = v9->field_20 | 0x1000000;
+				v10 = v9->flags_20 | 0x1000000;
 				goto LABEL_32;
 			}
 			result = 0;
@@ -1937,7 +1966,7 @@ bool sub_404530(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				a1->x = v13;
 				if (!v14)
 					goto LABEL_40;
-				v15 = v14->field_20 | 0x800000;
+				v15 = v14->flags_20 | 0x800000;
 				goto LABEL_39;
 			}
 			result = 0;
@@ -1957,10 +1986,10 @@ bool sub_404530(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				v18 = v16 - v17 + a1->y;
 				v9 = a1->script;
 				a1->y = v18;
-				a1->field_20_neg_speed = 0;
+				a1->y_speed = 0;
 				if (!v9)
 					goto LABEL_40;
-				v10 = v9->field_20 | 0x400000;
+				v10 = v9->flags_20 | 0x400000;
 				goto LABEL_32;
 			}
 			result = 0;
@@ -1980,10 +2009,10 @@ bool sub_404530(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				v21 = v19 - v20 + a1->y;
 				v14 = a1->script;
 				a1->y = v21;
-				a1->field_20_neg_speed = 0;
+				a1->y_speed = 0;
 				if (!v14)
 					goto LABEL_40;
-				v15 = v14->field_20 | 0x200000;
+				v15 = v14->flags_20 | 0x200000;
 				goto LABEL_39;
 			}
 			result = 0;
@@ -2005,11 +2034,11 @@ bool sub_404530(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				a1->z_index = v24;
 				if (!v9)
 					goto LABEL_40;
-				v10 = v9->field_20 | 0x100000;
+				v10 = v9->flags_20 | 0x100000;
 			LABEL_32:
-				v9->field_20 = v10;
+				v9->flags_20 = v10;
 				result = 1;
-				a1->script->field_24 |= a1->script->field_20;
+				a1->script->field_24 |= a1->script->flags_20;
 			}
 			else
 			{
@@ -2033,10 +2062,10 @@ bool sub_404530(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				a1->z_index = v27;
 				if (v14)
 				{
-					v15 = v14->field_20 | 0x80000;
+					v15 = v14->flags_20 | 0x80000;
 				LABEL_39:
-					v14->field_20 = v15;
-					a1->script->field_24 |= a1->script->field_20;
+					v14->flags_20 = v15;
+					a1->script->field_24 |= a1->script->flags_20;
 				}
 				goto LABEL_40;
 			}
@@ -2077,11 +2106,11 @@ bool sub_404760(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	{
 		v8 = a1->script;
 		a1->y = v6;
-		a1->field_20_neg_speed = 0;
+		a1->y_speed = 0;
 		if (v8)
 		{
-			v8->field_20 |= 0x400000u;
-			a1->script->field_24 |= a1->script->field_20;
+			v8->flags_20 |= 0x400000;
+			a1->script->field_24 |= a1->script->flags_20;
 		}
 		result = 1;
 	}
@@ -2111,11 +2140,11 @@ bool sub_4047E0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	{
 		a1->y = v9;
 		v10 = a1->script;
-		a1->field_20_neg_speed = 0;
+		a1->y_speed = 0;
 		if (v10)
 		{
-			v10->field_20 |= 0x400000u;
-			a1->script->field_24 |= a1->script->field_20;
+			v10->flags_20 |= 0x400000;
+			a1->script->field_24 |= a1->script->flags_20;
 		}
 		result = 1;
 	}
@@ -2141,11 +2170,11 @@ bool sub_404870(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	{
 		a1->y = v9;
 		v10 = a1->script;
-		a1->field_20_neg_speed = 0;
+		a1->y_speed = 0;
 		if (v10)
 		{
-			v10->field_20 |= 0x400000u;
-			a1->script->field_24 |= a1->script->field_20;
+			v10->flags_20 |= 0x400000;
+			a1->script->field_24 |= a1->script->flags_20;
 		}
 		result = 1;
 	}
@@ -2176,7 +2205,7 @@ bool sub_404900(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	{
 		a1->y += *((_DWORD *)a5 + 5) - v5;
 		if (a3 > 1)
-			a1->field_20_neg_speed = 0;
+			a1->y_speed = 0;
 		if (!a1)
 			return 1;
 		v11 = a1->script;
@@ -2189,15 +2218,15 @@ bool sub_404900(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 		return 0;
 	a1->y += v10 - v5;
 	if (a3 > 1)
-		a1->field_20_neg_speed = 0;
+		a1->y_speed = 0;
 	if (a1)
 	{
 		v11 = a1->script;
 		if (v11)
 		{
 		LABEL_15:
-			v11->field_20 |= 0x200000u;
-			a1->script->field_24 |= a1->script->field_20;
+			v11->flags_20 |= 0x200000;
+			a1->script->field_24 |= a1->script->flags_20;
 			return 1;
 		}
 	}
@@ -2224,7 +2253,7 @@ bool sub_4049D0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	{
 		a1->y += *((_DWORD *)a5 + 5) - v5;
 		if (a3 > 1)
-			a1->field_20_neg_speed = 0;
+			a1->y_speed = 0;
 		if (!a1)
 			return 1;
 		v11 = a1->script;
@@ -2237,15 +2266,15 @@ bool sub_4049D0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 		return 0;
 	a1->y += v10 - v5;
 	if (a3 > 1)
-		a1->field_20_neg_speed = 0;
+		a1->y_speed = 0;
 	if (a1)
 	{
 		v11 = a1->script;
 		if (v11)
 		{
 		LABEL_15:
-			v11->field_20 |= 0x200000u;
-			a1->script->field_24 |= a1->script->field_20;
+			v11->flags_20 |= 0x200000;
+			a1->script->field_24 |= a1->script->flags_20;
 			return 1;
 		}
 	}
@@ -2273,11 +2302,11 @@ bool sub_404AA0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				return 0;
 			a1->y = v5;
 			v7 = a1->script;
-			a1->field_20_neg_speed = 0;
+			a1->y_speed = 0;
 			if (v7)
 			{
-				v7->field_20 |= 0x400000u;
-				a1->script->field_24 |= a1->script->field_20;
+				v7->flags_20 |= 0x400000;
+				a1->script->field_24 |= a1->script->flags_20;
 				return 1;
 			}
 			return 1;
@@ -2295,8 +2324,8 @@ bool sub_404AA0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	a1->x = v10;
 	if (v11)
 	{
-		v11->field_20 |= 0x800000u;
-		a1->script->field_24 |= a1->script->field_20;
+		v11->flags_20 |= 0x800000;
+		a1->script->field_24 |= a1->script->flags_20;
 	}
 	return 1;
 }
@@ -2322,11 +2351,11 @@ bool sub_404B80(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				return 0;
 			a1->y = v5;
 			v7 = a1->script;
-			a1->field_20_neg_speed = 0;
+			a1->y_speed = 0;
 			if (v7)
 			{
-				v7->field_20 |= 0x400000u;
-				a1->script->field_24 |= a1->script->field_20;
+				v7->flags_20 |= 0x400000;
+				a1->script->field_24 |= a1->script->flags_20;
 				return 1;
 			}
 			return 1;
@@ -2344,8 +2373,8 @@ bool sub_404B80(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	a1->x = v10;
 	if (v11)
 	{
-		v11->field_20 |= 0x1000000u;
-		a1->script->field_24 |= a1->script->field_20;
+		v11->flags_20 |= 0x1000000;
+		a1->script->field_24 |= a1->script->flags_20;
 	}
 	return 1;
 }
@@ -2460,16 +2489,16 @@ void bodx_404D50_sprite_list(Sprite *list)
 						if (v2->pstru7[v7]._4_psprite_pstru7_idx)
 						{
 						LABEL_16:
-							v8 = v2->field_1C_speed;
+							v8 = v2->x_speed;
 							v9 = v2->x;
-							v10 = v6->_4_x_offset;
+							v10 = v6->x;
 							if (v8 < 0)
 							{
 								v11 = _4773AC_boxd_item0_map_x_scale;
 								v12 = (v8 + v9 + v10) >> _4773AC_boxd_item0_map_x_scale;
 								if (v12 < 0)
 									v12 = 0;
-								v13 = v6->_10_x + v9 - 1;
+								v13 = v6->z + v9 - 1;
 							}
 							else
 							{
@@ -2477,29 +2506,29 @@ void bodx_404D50_sprite_list(Sprite *list)
 								v12 = (v9 + v10) >> _4773AC_boxd_item0_map_x_scale;
 								if (v12 < 0)
 									v12 = 0;
-								v13 = v9 + v6->_10_x + v8 - 1;
+								v13 = v9 + v6->z + v8 - 1;
 							}
 							v14 = (v13 >> v11) - v12;
 							if (v12 + v14 >= _4773C8_boxd_item0_map_num_x_tiles)
 								v14 = _4773C8_boxd_item0_map_num_x_tiles - v12 - 1;
-							v15 = v2->field_20_neg_speed;
+							v15 = v2->y_speed;
 							v16 = v2->y;
 							v25 = v15;
 							v17 = v15 < 0;
-							v18 = v6->_8_y_offset;
+							v18 = v6->y;
 							if (v17)
 							{
-								v19 = (v2->field_20_neg_speed + v16 + v18) >> _4773B8_boxd_item0_map_y_scale;
+								v19 = (v2->y_speed + v16 + v18) >> _4773B8_boxd_item0_map_y_scale;
 								if (v19 < 0)
 									v19 = 0;
-								v20 = v6->_14_y + v16 - 1;
+								v20 = v6->w + v16 - 1;
 							}
 							else
 							{
 								v19 = (v16 + v18) >> _4773B8_boxd_item0_map_y_scale;
 								if (v19 < 0)
 									v19 = 0;
-								v20 = v16 + v6->_14_y + v25 - 1;
+								v20 = v16 + v6->w + v25 - 1;
 							}
 							v21 = (v20 >> _4773B8_boxd_item0_map_y_scale) - v19;
 							if (v19 + v21 >= _4773B4_boxd_item0_map_num_y_tiles)
@@ -2544,13 +2573,6 @@ void bodx_404D50_sprite_list(Sprite *list)
 		}
 	}
 }
-// 4773A0: using guessed type int _4773A0_boxd_item0_num_things;
-// 4773AC: using guessed type int _4773AC_boxd_item0_map_x_scale;
-// 4773B4: using guessed type int _4773B4_boxd_item0_map_num_y_tiles;
-// 4773B8: using guessed type int _4773B8_boxd_item0_map_y_scale;
-// 4773BC: using guessed type int currently_running_lvl_boxd_valid;
-// 4773C8: using guessed type int _4773C8_boxd_item0_map_num_x_tiles;
-// 47C764: using guessed type __int16 is_coroutine_list_initialization_failed;
 
 //----- (00404F40) --------------------------------------------------------
 void boxd_404F40_sprite(Sprite *a1, int a2, int a3)
@@ -2561,55 +2583,25 @@ void boxd_404F40_sprite(Sprite *a1, int a2, int a3)
 	Sprite_stru58 *v6; // ecx@6
 	Sprite_stru58_stru0 *v7; // edi@8
 	int v8; // eax@8
-	int v9; // ebp@13
-	int v10; // ebx@13
-	int v11; // edx@13
-	int v12; // eax@13
-	int v13; // eax@17
-	int v14; // ecx@20
-	int v15; // eax@22
 	Sprite_stru58 *v16; // ecx@28
 	int v17; // eax@30
 	int v18; // ebp@38
 	stru7 *v19; // ecx@41
 	bool (*v20)(Sprite *, Sprite *, int, void *, void *); // eax@41
-	int v21; // eax@44
-	int v22; // eax@44
-	int v23; // ebp@44
 	Sprite_stru58 *v24; // eax@45
 	Sprite_stru58_stru0 *v25; // eax@45
 	stru7 *v26; // ebp@46
 	int v27; // ecx@47
 	int v28; // ecx@49
 	int(*v29)(Sprite *, void *, int, int *, int *); // eax@51
-	int v30; // eax@54
-	int v31; // eax@54
-	int v32; // ebp@54
 	Sprite_stru58 *v33; // eax@56
-	bool v34; // zf@63
-	Sprite_stru58_stru0 *v35; // [sp+10h] [bp-8Ch]@13
 	Sprite_stru58 *v36; // [sp+10h] [bp-8Ch]@28
 	Sprite_stru58 *v37; // [sp+14h] [bp-88h]@8
 	Sprite_stru58 *v38; // [sp+14h] [bp-88h]@45
-	Boxd_stru0 *i; // [sp+18h] [bp-84h]@26
-	int v40; // [sp+1Ch] [bp-80h]@13
-	int v41; // [sp+1Ch] [bp-80h]@19
-	int v42; // [sp+1Ch] [bp-80h]@23
-	int v43; // [sp+20h] [bp-7Ch]@13
-	Boxd_stru0 **v44; // [sp+20h] [bp-7Ch]@22
 	int v45; // [sp+24h] [bp-78h]@31
 	int v46; // [sp+28h] [bp-74h]@28
-	Boxd_stru0 **v47; // [sp+2Ch] [bp-70h]@24
 	int v48; // [sp+30h] [bp-6Ch]@9
-	int v49; // [sp+34h] [bp-68h]@15
-	BoxdTile **v50; // [sp+38h] [bp-64h]@22
 	int v51; // [sp+3Ch] [bp-60h]@1
-	int v52; // [sp+40h] [bp-5Ch]@25
-	int v53; // [sp+44h] [bp-58h]@13
-	int v54; // [sp+48h] [bp-54h]@13
-	int v55; // [sp+4Ch] [bp-50h]@13
-	int v56; // [sp+54h] [bp-48h]@13
-	int v57; // [sp+58h] [bp-44h]@13
 	int v58; // [sp+60h] [bp-3Ch]@46
 	int v59; // [sp+64h] [bp-38h]@34
 	int v60; // [sp+68h] [bp-34h]@34
@@ -2638,7 +2630,7 @@ void boxd_404F40_sprite(Sprite *a1, int a2, int a3)
 				v7 = v6->pstru0;
 				v37 = v3->pstru58;
 				v8 = v6->pstru0->psrite_pstru7_idx;
-				if (v6->pstru0->psrite_pstru7_idx < 0)
+				if (v8 < 0)
 				{
 					if (v8 == -3)
 						return;
@@ -2650,214 +2642,177 @@ void boxd_404F40_sprite(Sprite *a1, int a2, int a3)
 					if (!v48)
 						return;
 				}
-				v9 = v3->x;
-				v53 = v6->pstru0->psrite_pstru7_idx;
-				v10 = v9 + v7->_4_x_offset;
-				v54 = v9 + v7->_4_x_offset;
-				v56 = v7->_10_x + v9;
-				v40 = v3->y;
-				v11 = v7->_8_y_offset + v40;
-				v55 = v7->_8_y_offset + v40;
-				v57 = v7->_14_y + v40;
-				v35 = v6->pstru0;
-				v12 = (v9 + v6->pstru0->_4_x_offset) >> _4773AC_boxd_item0_map_x_scale;
-				v43 = v12;
-				if (v12 < 0)
-				{
-					v12 = 0;
-					v43 = 0;
-				}
-				v49 = ((v35->_10_x + v9 - 1) >> _4773AC_boxd_item0_map_x_scale) - v12;
-				if ((v35->_10_x + v9 - 1) >> _4773AC_boxd_item0_map_x_scale >= _4773C8_boxd_item0_map_num_x_tiles)
-					v49 = _4773C8_boxd_item0_map_num_x_tiles - v12 - 1;
-				v13 = (v40 + v35->_8_y_offset) >> _4773B8_boxd_item0_map_y_scale;
-				if (v13 < 0)
-					v13 = 0;
-				v41 = ((v35->_14_y + v40 - 1) >> _4773B8_boxd_item0_map_y_scale) - v13;
-				if (v13 + v41 < _4773B4_boxd_item0_map_num_y_tiles)
-					v14 = v41;
-				else
-					v14 = _4773B4_boxd_item0_map_num_y_tiles - v13 - 1;
-				v15 = v43 + _4773C8_boxd_item0_map_num_x_tiles * v13;
-				v50 = &_4773C4_boxd_item0_map_tiles[v15];
-				v44 = &_4773B0_boxd_item0_things[v15];
-				if (v14 >= 0)
-				{
-					v42 = v14 + 1;
-					do
-					{
-						v47 = v44;
-						if (v49 >= 0)
-						{
-							v52 = v49 + 1;
-							do
-							{
-								for (i = *v47; i; i = i->ptr_8)
-								{
-									if (i->sprite != v3)
-									{
-										v16 = i->sprite_pstru58;
-										v46 = 1;
-										v36 = i->sprite_pstru58;
-										do
-										{
-											if (!v16->pstru0)
-												break;
-											v17 = v16->pstru0->psrite_pstru7_idx;
-											if (v17 >= 0)
-											{
-												v45 = v3->pstru7[v17]._4_psprite_pstru7_idx;
-												v16 = v36;
-											}
-											else
-											{
-												v46 = 0;
-												v45 = -1;
-											}
-											if (v48 & v45)
-											{
-												v59 = v17;
-												v60 = i->sprite->x + v16->pstru0->_4_x_offset;
-												if (v60 < v56)
-												{
-													v62 = i->sprite->x + v16->pstru0->_10_x;
-													if (v62 > v10)
-													{
-														v61 = i->sprite->y + v16->pstru0->_8_y_offset;
-														if (v61 < v57)
-														{
-															v63 = i->sprite->y + v16->pstru0->_14_y;
-															if (v63 > v11)
-															{
-																v18 = v16->pstru0->psrite_pstru7_idx;
-																if (v18 >= 0)
-																{
-																	if (v7->psrite_pstru7_idx < 0)
-																	{
-																		v24 = v37 + 1;
-																		v38 = v24;
-																		v25 = v24->pstru0;
-																		if (v25)
-																		{
-																			do
-																			{
-																				v26 = v3->pstru7;
-																				v58 = v25->psrite_pstru7_idx;
-																				if (v45 & v26[v58].field_0)
-																				{
-																					v27 = v3->x;
-																					v64 = v58;
-																					v65 = v27 + v38->pstru0->_4_x_offset;
-																					if (v65 < v62)
-																					{
-																						v67 = v27 + v38->pstru0->_10_x;
-																						if (v67 > v60)
-																						{
-																							v28 = v3->y;
-																							v66 = v28 + v38->pstru0->_8_y_offset;
-																							if (v66 < v63)
-																							{
-																								v68 = v28 + v38->pstru0->_14_y;
-																								if (v68 > v61)
-																								{
-																									v29 = (int(*)(Sprite *, void *, int, int *, int *))v26[v38->pstru0->psrite_pstru7_idx].pfn_8_ui_hint_box;
-																									if (v29
-																										|| (v29 = (int(*)(Sprite *, void *, int, int *, int *))v26[v36->pstru0->psrite_pstru7_idx].pfn_C) != 0)
-																									{
-																										if (v29(v3, i->sprite, v51, &v64, &v59))
-																										{
-																											v30 = v3->x;
-																											v10 = v30 + v7->_4_x_offset;
-																											v54 = v30 + v7->_4_x_offset;
-																											v56 = v7->_10_x + v30;
-																											v31 = v3->y;
-																											v32 = v7->_8_y_offset;
-																											v11 = v32 + v3->y;
-																											v55 = v32 + v3->y;
-																											v57 = v7->_14_y + v31;
-																										}
-																										else
-																										{
-																											v11 = v55;
-																											v10 = v54;
-																										}
-																									}
-																								}
-																							}
-																						}
-																					}
-																				}
-																				v33 = v38 + 1;
-																				v38 = v33;
-																				v25 = v33->pstru0;
-																			} while (v25);
-																			v16 = v36;
-																		}
-																		v37 = v3->pstru58;
-																	}
-																	else
-																	{
-																		v19 = v3->pstru7;
-																		v20 = v19[v7->psrite_pstru7_idx].pfn_8_ui_hint_box;
-																		if (v20 || (v20 = v19[v18].pfn_C) != 0)
-																		{
-																			if (v20(v3, i->sprite, v51, &v53, &v59))
-																			{
-																				v21 = v3->x;
-																				v10 = v21 + v7->_4_x_offset;
-																				v54 = v21 + v7->_4_x_offset;
-																				v56 = v7->_10_x + v21;
-																				v22 = v3->y;
-																				v23 = v7->_8_y_offset;
-																				v11 = v23 + v3->y;
-																				v55 = v23 + v3->y;
-																				v57 = v7->_14_y + v22;
-																			}
-																			else
-																			{
-																				v11 = v55;
-																				v10 = v54;
-																			}
-																		}
-																		v16 = v36;
-																	}
-																}
-																else
-																{
-																	v46 = 1;
-																}
-															}
-														}
-													}
-												}
-											}
-											++v16;
-											v36 = v16;
-										} while (v46);
-									}
-								}
-								v34 = v52 == 1;
-								++v47;
-								++_4773A8_boxd_parray;
-								--v52;
-							} while (!v34);
-						}
-						v50 += _4773C8_boxd_item0_map_num_x_tiles;
-						v34 = v42 == 1;
-						v44 += _4773C8_boxd_item0_map_num_x_tiles;
-						--v42;
-					} while (!v34);
-				}
+
+                int z = v3->x + v7->z;
+                int y_y = v3->y + v7->w;
+
+                int x = v3->x + v7->x;
+                int y = v3->y + v7->y;
+
+				int v53 = v6->pstru0->psrite_pstru7_idx;
+
+				int x_scaled = x >> _4773AC_boxd_item0_map_x_scale;
+				if (x_scaled < 0)
+                    x_scaled = 0;
+
+                int z_scaled = (z - 1) >> _4773AC_boxd_item0_map_x_scale;
+                if (z_scaled >= _4773C8_boxd_item0_map_num_x_tiles)
+                    z_scaled = _4773C8_boxd_item0_map_num_x_tiles - 1;
+
+				int width_scaled = z_scaled - x_scaled;
+
+				int y_scaled = y >> _4773B8_boxd_item0_map_y_scale;
+				if (y_scaled < 0)
+                    y_scaled = 0;
+
+                int w_scaled = (y_y - 1) >> _4773B8_boxd_item0_map_y_scale;
+				if (w_scaled >= _4773B4_boxd_item0_map_num_y_tiles)
+                    w_scaled = _4773B4_boxd_item0_map_num_y_tiles - 1;
+
+                int height_scaled = w_scaled - y_scaled;
+
+
+                for (int k = 0; k <= height_scaled; ++k)
+                {
+                    for (int j = 0; j <= width_scaled; ++j)
+                    {
+                        int tile_idx = (x_scaled + j) + (y_scaled + k) * _4773C8_boxd_item0_map_num_x_tiles;
+                        BoxdTile **tile = &_4773C4_boxd_item0_map_tiles[tile_idx];
+                        Boxd_stru0 **tile_extra = &_4773B0_boxd_item0_things[tile_idx];
+
+                        for (Boxd_stru0 *i = *tile_extra; i; i = i->ptr_8)
+                        {
+                            if (i->sprite != v3)
+                            {
+                                v16 = i->sprite_pstru58;
+                                v46 = 1;
+                                v36 = i->sprite_pstru58;
+                                do
+                                {
+                                    if (!v16->pstru0)
+                                        break;
+                                    v17 = v16->pstru0->psrite_pstru7_idx;
+                                    if (v17 >= 0)
+                                    {
+                                        v45 = v3->pstru7[v17]._4_psprite_pstru7_idx;
+                                        v16 = v36;
+                                    }
+                                    else
+                                    {
+                                        v46 = 0;
+                                        v45 = -1;
+                                    }
+                                    if (v48 & v45)
+                                    {
+                                        v59 = v17;
+                                        v60 = i->sprite->x + v16->pstru0->x;
+                                        if (v60 < z)
+                                        {
+                                            v62 = i->sprite->x + v16->pstru0->z;
+                                            if (v62 > x)
+                                            {
+                                                v61 = i->sprite->y + v16->pstru0->y;
+                                                if (v61 < y_y)
+                                                {
+                                                    v63 = i->sprite->y + v16->pstru0->w;
+                                                    if (v63 > y)
+                                                    {
+                                                        v18 = v16->pstru0->psrite_pstru7_idx;
+                                                        if (v18 >= 0)
+                                                        {
+                                                            if (v7->psrite_pstru7_idx < 0)
+                                                            {
+                                                                v24 = v37 + 1;
+                                                                v38 = v24;
+                                                                v25 = v24->pstru0;
+                                                                if (v25)
+                                                                {
+                                                                    do
+                                                                    {
+                                                                        v26 = v3->pstru7;
+                                                                        v58 = v25->psrite_pstru7_idx;
+                                                                        if (v45 & v26[v58].field_0)
+                                                                        {
+                                                                            v27 = v3->x;
+                                                                            v64 = v58;
+                                                                            v65 = v27 + v38->pstru0->x;
+                                                                            if (v65 < v62)
+                                                                            {
+                                                                                v67 = v27 + v38->pstru0->z;
+                                                                                if (v67 > v60)
+                                                                                {
+                                                                                    v28 = v3->y;
+                                                                                    v66 = v28 + v38->pstru0->y;
+                                                                                    if (v66 < v63)
+                                                                                    {
+                                                                                        v68 = v28 + v38->pstru0->w;
+                                                                                        if (v68 > v61)
+                                                                                        {
+                                                                                            v29 = (int(*)(Sprite *, void *, int, int *, int *))v26[v38->pstru0->psrite_pstru7_idx].pfn_8_ui_hint_box;
+                                                                                            if (v29
+                                                                                                || (v29 = (int(*)(Sprite *, void *, int, int *, int *))v26[v36->pstru0->psrite_pstru7_idx].pfn_C) != 0)
+                                                                                            {
+                                                                                                if (v29(v3, i->sprite, v51, &v64, &v59))
+                                                                                                {
+                                                                                                    x = v3->x + v7->x;
+                                                                                                    y = v3->y + v7->y;
+
+                                                                                                    z = v3->x + v7->z;
+                                                                                                    y_y = v3->y + v7->w;
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        v33 = v38 + 1;
+                                                                        v38 = v33;
+                                                                        v25 = v33->pstru0;
+                                                                    } while (v25);
+                                                                    v16 = v36;
+                                                                }
+                                                                v37 = v3->pstru58;
+                                                            }
+                                                            else
+                                                            {
+                                                                v19 = v3->pstru7;
+                                                                v20 = v19[v7->psrite_pstru7_idx].pfn_8_ui_hint_box;
+                                                                if (v20 || (v20 = v19[v18].pfn_C) != 0)
+                                                                {
+                                                                    if (v20(v3, i->sprite, v51, &v53, &v59))
+                                                                    {
+                                                                        x = v3->x + v7->x;
+                                                                        y = v3->y + v7->y;
+
+                                                                        z = v3->x + v7->z;
+                                                                        y_y = v3->y + v7->w;
+                                                                    }
+                                                                }
+                                                                v16 = v36;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            v46 = 1;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    ++v16;
+                                    v36 = v16;
+                                } while (v46);
+                            }
+                        }
+                        ++_4773A8_boxd_parray;
+                    }
+                }
 			}
 		}
 	}
 }
-// 4773AC: using guessed type int _4773AC_boxd_item0_map_x_scale;
-// 4773B4: using guessed type int _4773B4_boxd_item0_map_num_y_tiles;
-// 4773B8: using guessed type int _4773B8_boxd_item0_map_y_scale;
-// 4773BC: using guessed type int currently_running_lvl_boxd_valid;
-// 4773C8: using guessed type int _4773C8_boxd_item0_map_num_x_tiles;
-// 47C764: using guessed type __int16 is_coroutine_list_initialization_failed;
 
 //----- (00405430) --------------------------------------------------------
 void boxd_free()
@@ -2993,8 +2948,8 @@ void entity_mode_405690(Entity *a1)
 	if (!a1->_134_param__unitstats_after_mobile_outpost_plant)
 	{
 		entity_40DEC0_boxd(a1, a1->sprite_width_shr13, a1->sprite_height_shr13, a1->field_A4);
-		v1->sprite->field_1C_speed = 0;
-		v1->sprite->field_20_neg_speed = 0;
+		v1->sprite->x_speed = 0;
+		v1->sprite->y_speed = 0;
 		v1->mode = entity_mode_405680_tanker_convoy;
 	}
 }
@@ -3063,8 +3018,8 @@ bool entity_405750_tanker_convoy(Entity *a1)
 	v1->mode_return = entity_mode_405690;
 	v1->mobd_lookup_idx = 192;
 	v1->_134_param__unitstats_after_mobile_outpost_plant = 600;
-	v5->field_1C_speed = -64;
-	v1->sprite->field_20_neg_speed = 0;
+	v5->x_speed = -64;
+	v1->sprite->y_speed = 0;
 	sprite_4272E0_load_mobd_item(
 		v1->sprite,
 		v1->stats->mobd_lookup_offset,
@@ -3376,7 +3331,7 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
 		v20 = v1;
 		v23 = 480;
 		v24 = 0;
-		while (!(script_445370_yield(a1, 0xC0000000, 2) & 0x40000000))
+		while (!(script_445370_yield_to_main_thread(a1, 0xC0000000, 2) & 0x40000000))
 		{
 			++dword_477410;
 			if (v24)
@@ -3868,8 +3823,8 @@ void cplc_406320()
 					v8 = v5->script;
 					if (v8)
 					{
-						v8->field_20 |= 0x20000u;
-						v3->sprite->script->field_24 |= v3->sprite->script->field_20;
+						v8->flags_20 |= 0x20000;
+						v3->sprite->script->field_24 |= v3->sprite->script->flags_20;
 					}
 					v9 = v3;
 					v3 = v3->next;
@@ -4521,20 +4476,20 @@ void entity_mode_406DC0_mobilederrick(Entity *a1)
 	v1->state = v2;
 	if (v2)
 	{
-		v1->sprite->field_1C_speed = 0;
-		v1->sprite->field_20_neg_speed = 0;
+		v1->sprite->x_speed = 0;
+		v1->sprite->y_speed = 0;
 		sprite_4272E0_load_mobd_item(
 			v1->sprite,
 			v1->stats->mobd_lookup_offset,
 			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
 		if (!_44CB60_advance_mobd_frame(&v1->mobd_lookup_idx, 160, v1->stats->turning_speed))
 			v1->mode = entity_mode_plant_mobile_derrick;
-		script_445370_yield(v1->script, 0xC0000000, 1);
+		script_445370_yield_to_main_thread(v1->script, 0xC0000000, 1);
 	}
 	else
 	{
 		entity_mode_415540_infantry(v1);
-		script_445370_yield(v1->script, 0xC0000000, 1);
+		script_445370_yield_to_main_thread(v1->script, 0xC0000000, 1);
 	}
 }
 
@@ -4560,7 +4515,7 @@ void entity_mode_plant_mobile_derrick(Entity *a1)
 		v3->_80_entity__stru29__sprite__initial_hitpoints = (void *)v1->hitpoints;
 	v4 = v1->script;
 	v1->mode = entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant;
-	script_445370_yield(v4, 0x80000000, 5);
+	script_445370_yield_to_main_thread(v4, 0x80000000, 5);
 }
 
 //----- (00406F40) --------------------------------------------------------
@@ -4581,7 +4536,7 @@ void entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant(Entity *a1)
 	v3 = v1->sprite;
 	v1->entity_id = 0;
 	sprite_list_remove(v3);
-	script_445470_yield(v1->script);
+	script_yield(v1->script);
 	entity_list_remove(v1);
 }
 
@@ -4706,8 +4661,8 @@ int oilspot_subtract_oil(OilDeposit *a1, int amount)
 		result = a1->oil_left;
 		v4 = a1->sprite;
 		a1->oil_left = 0;
-		v4->script->field_20 |= 1u;
-		a1->sprite->script->field_24 |= a1->sprite->script->field_20;
+		v4->script->flags_20 |= 1u;
+		a1->sprite->script->field_24 |= a1->sprite->script->flags_20;
 		v5 = a1->drillrig;
 		if (v5)
 		{
@@ -4770,12 +4725,12 @@ void UNIT_Handler_OilPatch(Script *a1)
 	v1->field_88 = 1;
 	v7 = &_478AA8_boxd_stru0_array[v1->x >> 13].flags2 + 24 * _4793F8_map_width * (v6 >> 13);
 	*v7 |= 0x80u;
-	script_445370_yield(a1, 1, 0);
+	script_445370_yield_to_main_thread(a1, 1, 0);
 	v1->drawjob->flags |= 0x40000000u;
 	if (a1)
 	{
 		while (1)
-			script_445370_yield(a1, 0x80000000, 1000);
+			script_445370_yield_to_main_thread(a1, 0x80000000, 1000);
 	}
 	v4->next->prev = v4->prev;
 	v4->prev->next = v4->next;
@@ -4877,8 +4832,8 @@ void entity_mode_4081C0_drillrig(Entity *a1)
 	Script *v3; // ecx@3
 
 	v1 = a1;
-	a1->sprite->field_1C_speed = 0;
-	a1->sprite->field_20_neg_speed = 0;
+	a1->sprite->x_speed = 0;
+	a1->sprite->y_speed = 0;
 	v2 = a1->turret;
 	if (v2)
 	{
@@ -4889,11 +4844,11 @@ void entity_mode_4081C0_drillrig(Entity *a1)
 			_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
 		v3 = v1->script;
 		v1->mode = entity_mode_408260_drillrig;
-		script_445370_yield(v3, 0x10000000, 0);
+		script_445370_yield_to_main_thread(v3, 0x10000000, 0);
 	}
 	else
 	{
-		script_445370_yield(a1->script, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 	}
 }
 
@@ -4904,7 +4859,7 @@ void entity_mode_408240_drillrig(Entity *a1)
 
 	v1 = a1->script;
 	a1->mode = entity_mode_408260_drillrig;
-	script_445370_yield(v1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(v1, 0x80000000, 1);
 }
 
 //----- (00408260) --------------------------------------------------------
@@ -4955,7 +4910,7 @@ void entity_mode_drillrig_on_death(Entity *a1)
 	v2 = v1->script;
 	v1->destroyed = 1;
 	v1->mode = entity_mode_building_default_on_death;
-	script_445370_yield(v2, 0x80000000, 1);
+	script_445370_yield_to_main_thread(v2, 0x80000000, 1);
 }
 
 //----- (00408370) --------------------------------------------------------
@@ -4971,7 +4926,7 @@ void script_408370(Script *a1)
 		do
 		{
 			dword_477890 = v1 << 8;
-			script_445370_yield(a1, 0x80000000, 1);
+			script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 			v1 = *v2;
 			++v2;
 		} while (v1);
@@ -4980,7 +4935,7 @@ void script_408370(Script *a1)
 	dword_477894 = 0;
 	dword_477898 = 0;
 	dword_47789C = 0;
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (004083D0) --------------------------------------------------------
@@ -5052,7 +5007,7 @@ void script_4084A0_animation(Script *a1)
 		stru1_set_animation(0, 0, 0, 0);
 		dword_4778A0 = 1;
 		stru1_set_animation(0, 0, 0x80000000, 30);
-		script_445370_yield(v1, 0x80000000, 30);
+		script_445370_yield_to_main_thread(v1, 0x80000000, 30);
 		dword_4778A0 = 0;
 	}
 }
@@ -5066,7 +5021,7 @@ void script_408500_anim(Script *a1)
 	v1 = a1;
 	dword_4778A0 = 1;
 	stru1_set_animation(0, 0x80000000, 0, 30);
-	script_445370_yield(v1, 0x80000000, 30);
+	script_445370_yield_to_main_thread(v1, 0x80000000, 30);
 	dword_4778A0 = 0;
 	stru1_set_animation(0, 0, 0, 0);
 	dword_4778A0 = 0;
@@ -6207,8 +6162,8 @@ int entity_40DA90_boxd(Entity *a1)
 	v2 = a1->sprite;
 	if (a1->stats->field_4C != 4096)
 	{
-		v13 = (v2->field_1C_speed + v2->x) >> 13;
-		v14 = (v2->y + v2->field_20_neg_speed) >> 13;
+		v13 = (v2->x_speed + v2->x) >> 13;
+		v14 = (v2->y + v2->y_speed) >> 13;
 		if (v13 != a1->sprite_width_shr13 || v14 != a1->sprite_height_shr13)
 		{
 			v15 = boxd_40EEB0(a1, v13, v14, 1);
@@ -6243,8 +6198,8 @@ int entity_40DA90_boxd(Entity *a1)
 	}
 	result = entity_40E1B0_boxd(
 		v1,
-		v1->sprite->field_1C_speed + v1->sprite->x,
-		v1->sprite->y + v1->sprite->field_20_neg_speed,
+		v1->sprite->x_speed + v1->sprite->x,
+		v1->sprite->y + v1->sprite->y_speed,
 		1);
 	v12 = result;
 	if (result != 4)
@@ -6809,6 +6764,8 @@ char *get_resource_res_subfolder()
 //----- (0040E400) --------------------------------------------------------
 void _40E400_set_palette(PALETTEENTRY *palette)
 {
+    render_current_palette = palette;
+
 	ppalette_4785C0 = palette;
 	_4785DC_syscolors_palette_entries = palette;
 	_478A14_prev_stru1_palette_entries = -1;
@@ -6900,17 +6857,15 @@ void _40E430_update_palette(unsigned int a1)
 	}
 	else
 	{
-		RENDER_pClearScreen(0);
+        REND_DirectDrawClearScreen(0);
 	}
 }
-// 4785F0: using guessed type PALETTEENTRY palette_4785F0[256];
-// 478A14: using guessed type int _478A14_prev_stru1_palette_entries;
 
 //----- (0040E530) --------------------------------------------------------
 void RENDER_SetViewportAndClear()
 {
 	p_render_set_clip(0, 0, render_width, render_height);
-	RENDER_pClearScreen(0);
+    REND_DirectDrawClearScreen(0);
 }
 
 //----- (0040E550) --------------------------------------------------------
@@ -7871,9 +7826,9 @@ void script_sidebar(Script *a1)
 {
 	while (1)
 	{
-		while (!(script_445370_yield(a1, 1, 0) & 1))
+		while (!(script_445370_yield_to_main_thread(a1, 1, 0) & 1))
 			;
-		script_445470_yield(a1);
+		script_yield(a1);
 	}
 }
 
@@ -7895,7 +7850,7 @@ Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int heig
 	{
 		v5->script = script;
 		if (!script)
-			v5->script = script_create_coroutine(SCRIPT_TYPE_51914_sidebar, (void(*)(Script *))script_sidebar, 0);
+			v5->script = script_create_coroutine(SCRIPT_TYPE_51914_sidebar, script_sidebar, 0);
 		v5->num_buttons = 0;
 		v5->x = (width + render_width - 320) << 8;
 		v5->w = height << 8;
@@ -7974,7 +7929,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 			v4 = 0;
 			v5 = 0;
 			v6 = 0;
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v8 = i->event;
@@ -7998,7 +7953,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 				sprite_4272E0_load_mobd_item(v24, a1a->mobd_lookup_table_offset, 1);
 				do
 				{
-					script_445370_yield(v1, 0xC0000000, 1);
+					script_445370_yield_to_main_thread(v1, 0xC0000000, 1);
 					v9 = 0;
 					for (j = script_get_next_event(v1); j; j = script_get_next_event(v1))
 					{
@@ -8039,7 +7994,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 		{
 			if (v6)
 				goto LABEL_64;
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (k = script_get_next_event(v1); k; k = script_get_next_event(v1))
 			{
 				v16 = k->event;
@@ -8062,7 +8017,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 			sprite_4272A0_load_mobd_item(v24, 1980);
 			while (v6)
 			{
-				script_445370_yield(v1, 0x40000000, 0);
+				script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 				for (l = script_get_next_event(v1); l; l = script_get_next_event(v1))
 				{
 					if (l->event == EVT_MSG_1514)
@@ -8086,7 +8041,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 				sprite_4272E0_load_mobd_item(v24, a1a->mobd_lookup_table_offset, 1);
 				do
 				{
-					script_445370_yield(v1, 0xC0000000, 1);
+					script_445370_yield_to_main_thread(v1, 0xC0000000, 1);
 					v19 = 0;
 					for (m = script_get_next_event(v1); m; m = script_get_next_event(v1))
 					{
@@ -8175,7 +8130,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 			v4 = 0;
 			v5 = 0;
 			v6 = 0;
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v8 = i->event;
@@ -8199,7 +8154,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 				sprite_4272E0_load_mobd_item(v25, a1a->mobd_lookup_table_offset, 1);
 				do
 				{
-					script_445370_yield(v1, 0xC0000000, 1);
+					script_445370_yield_to_main_thread(v1, 0xC0000000, 1);
 					v11 = 0;
 					for (j = script_get_next_event(v1); j; j = script_get_next_event(v1))
 					{
@@ -8242,7 +8197,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 					goto LABEL_70;
 				if (v26)
 					break;
-				script_445370_yield(v1, 0x40000000, 0);
+				script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 				for (k = script_get_next_event(v1); k; k = script_get_next_event(v1))
 				{
 					v18 = k->event;
@@ -8267,7 +8222,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 					sprite_4272E0_load_mobd_item(v25, a1a->mobd_lookup_table_offset, 1);
 					do
 					{
-						script_445370_yield(v1, 0xC0000000, 1);
+						script_445370_yield_to_main_thread(v1, 0xC0000000, 1);
 						v20 = 0;
 						for (l = script_get_next_event(v1); l; l = script_get_next_event(v1))
 						{
@@ -8306,7 +8261,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 			sprite_4272A0_load_mobd_item(v25, 1980);
 			while (v6)
 			{
-				script_445370_yield(v1, 0x40000000, 0);
+				script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 				for (m = script_get_next_event(v1); m; m = script_get_next_event(v1))
 				{
 					if (m->event == EVT_MSG_1514)
@@ -8444,7 +8399,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 						v18 = *(_DWORD *)(v4 + 4);
 						v19 = 0;
 						v36 = 0;
-						script_445370_yield(a1, 2147483648, 6);
+						script_445370_yield_to_main_thread(a1, 2147483648, 6);
 						if (v18 != *(_DWORD *)(v4 + 4))
 							v36 = 1;
 						for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
@@ -8550,7 +8505,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 				}
 			}
 			sprite_4272E0_load_mobd_item(v2, v3->mobd_lookup_table_offset, 0);
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (j = script_get_next_event(v1); j; j = script_get_next_event(v1))
 			{
 				if (j->event == 1511)
@@ -8562,7 +8517,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 		sprite_4272E0_load_mobd_item(v2, v3->mobd_lookup_table_offset, 1);
 		do
 		{
-			script_445370_yield(v1, 0xC0000000, 1);
+			script_445370_yield_to_main_thread(v1, 0xC0000000, 1);
 			v31 = 0;
 			for (k = script_get_next_event(v1); k; k = script_get_next_event(v1))
 			{
@@ -10177,7 +10132,7 @@ void entity_419F00_evt1523(Entity *a1, int a2)
 			v8 = v3->script;
 			v3->stru224.field_54 = 0;
 			v3->stru224.field_50 = 0;
-			script_445370_yield(v8, 0x80000000, 1);
+			script_445370_yield_to_main_thread(v8, 0x80000000, 1);
 			v3->field_DC = 2;
 			v9 = *(Entity **)(v2 + 4);
 			v3->entity_E0_outpost_clanhall = v9;
@@ -10211,7 +10166,7 @@ void entity_41A060_evt1525(Entity *a1, void *a2)
 			|| (*((_DWORD *)a2 + 1) ^ a1->sprite_width_2) & 0xFFFFE000
 			|| (*((_DWORD *)a2 + 2) ^ a1->sprite_height_2) & 0xFFFFE000))
 	{
-		script_445370_yield(a1->script, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 		v4 = v3->stats;
 		v3->field_DC = 9;
 		v3->_134_param__unitstats_after_mobile_outpost_plant = 600;
@@ -10254,7 +10209,7 @@ void entity_41A170_evt1524(Entity *a1, int a2)
 			|| (*(_DWORD *)(a2 + 4) ^ a1->sprite_width_2) & 0xFFFFE000
 			|| (*(_DWORD *)(a2 + 8) ^ a1->sprite_height_2) & 0xFFFFE000))
 	{
-		script_445370_yield(a1->script, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 		v4 = v3->stats;
 		v3->field_DC = 1;
 		if (v4->field_30_hp_regen_condition)
@@ -10310,7 +10265,7 @@ void entity_41A270_evt_mission_accomplished(Entity *a1, int a2)
 					v7 = a1->script;
 					a1->stru224.field_54 = 0;
 					a1->stru224.field_50 = 0;
-					script_445370_yield(v7, 0x80000000, 1);
+					script_445370_yield_to_main_thread(v7, 0x80000000, 1);
 					v8 = v3->entity_E0_outpost_clanhall;
 					v9 = v3->entity_E0_outpost_clanhall_entity_id;
 					v10 = v3->stats;
@@ -10353,7 +10308,7 @@ void entity_41A400_evt1547(Entity *a1, Entity *a2)
 	v3 = a2;
 	if (a2 != a1->entity_E0_outpost_clanhall)
 	{
-		script_445370_yield(a1->script, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 		v2->field_DC = 3;
 		v2->entity_E0_outpost_clanhall = v3;
 		v2->entity_E0_outpost_clanhall_entity_id = v3->entity_id;
@@ -10375,7 +10330,7 @@ void entity_41A470(Entity *a1, Entity *a2)
 
 	v2 = a1;
 	v3 = a2;
-	script_445370_yield(a1->script, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 	v2->field_DC = 10;
 	v2->entity_E0_outpost_clanhall = v3;
 	v2->entity_E0_outpost_clanhall_entity_id = v3->entity_id;
@@ -10428,7 +10383,7 @@ void entity_41A510_evt1503(Entity *a1, int a2)
 			v2->hitpoints = v7;
 			if (v7 <= 0)
 			{
-				script_445370_yield(v2->script, 0x80000000, 1);
+				script_445370_yield_to_main_thread(v2->script, 0x80000000, 1);
 				v8 = v2->entity_E0_outpost_clanhall;
 				if (v8)
 				{
@@ -10485,7 +10440,7 @@ void entity_41A610_evt1503(Entity *a1, void *a2)
 			v2->hitpoints = v7;
 			if (v7 <= 0)
 			{
-				script_445370_yield(v2->script, 0x80000000, 1);
+				script_445370_yield_to_main_thread(v2->script, 0x80000000, 1);
 				v2->hitpoints = 0;
 				v2->mode = entity_419560_on_death;
 				v2->destroyed = 1;
@@ -10562,7 +10517,7 @@ void entity_41A6D0_evt1497(Entity *a1, Entity *a2)
 		a1->field_DC = 8;
 		a1->entity_8 = 0;
 		entity_mode_415AB0(a1);
-		script_445370_yield(v2->script, 2147483648, 1);
+		script_445370_yield_to_main_thread(v2->script, 2147483648, 1);
 	}
 }
 
@@ -10821,7 +10776,7 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 		{
 			if (a5)
 			{
-				script_445370_yield(a5, 0x80000000, 1);
+				script_445370_yield_to_main_thread(a5, 0x80000000, 1);
 			}
 			else
 			{
@@ -10978,8 +10933,8 @@ bool _41B070_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 					if (*(_DWORD *)(v9 + 20) != *(_DWORD *)(v7 + 20) || (v10 = *(_DWORD *)(v7 + 16), v10 >= 46) && v10 <= 72)
 					{
 						script_trigger_event(0, EVT_MSG_DAMAGE, v5, v6);
-						v5->script->field_20 |= 2u;
-						v5->script->field_24 |= v5->script->field_20;
+						v5->script->flags_20 |= 2u;
+						v5->script->field_24 |= v5->script->flags_20;
 					}
 				}
 			}
@@ -11219,6 +11174,10 @@ void GAME_Deinit()
 }
 // 479DE4: using guessed type int game_window_created;
 
+DataMapd *LVL_FindMapd()
+{
+    return (DataMapd *)LVL_FindSection(LVL_SECTION_MAPD);
+}
 //----- (0041B420) --------------------------------------------------------
 void *LVL_FindSection(const char *name)
 {
@@ -12943,7 +12902,7 @@ LABEL_9:
 	else
 		v18 = v16 + 1;
 	v4->entity_task_message_handler_idx = v18;
-	v4->entity_task_field_20 = v9->field_20;
+	v4->entity_task_field_20 = v9->flags_20;
 	v4->entity_task_field_14 = v9->field_14;
 	v4->entity_task_field_24 = v9->field_24;
 	v4->entity_task_field_28 = v9->field_28;
@@ -12999,7 +12958,7 @@ LABEL_9:
 		else
 			v28 = v26 + 1;
 		v4->turret_sprite_task_message_handler_idx = v28;
-		v4->turret_sprite_task_field_20 = v21->field_20;
+		v4->turret_sprite_task_field_20 = v21->flags_20;
 		v4->turret_sprite_task_field_14 = v21->field_14;
 		v4->turret_sprite_task_field_24 = v21->field_24;
 		v4->turret_sprite_task_field_28 = v21->field_28;
@@ -13592,9 +13551,9 @@ LABEL_156:
 				v126 = 0;
 			else
 				v126 = v124 + 1;
-			v4[1].turret_sprite.field_1C_speed = v126;
-			v4[1].turret_sprite.field_20_neg_speed = *(_DWORD *)(v118 + 32);
-			v4[1].turret_sprite.field_24 = *(_DWORD *)(v118 + 20);
+			v4[1].turret_sprite.x_speed = v126;
+			v4[1].turret_sprite.y_speed = *(_DWORD *)(v118 + 32);
+			v4[1].turret_sprite.z_speed = *(_DWORD *)(v118 + 20);
 			v4[1].turret_sprite._inside_mobd_item = *(_DWORD *)(v118 + 36);
 			v4[1].turret_sprite._54_inside_mobd_ptr4 = *(_DWORD *)(v118 + 40);
 			v4[1].turret_sprite._60_mobd_field_0 = *(_DWORD *)(v118 + 44);
@@ -13620,9 +13579,9 @@ bool GAME_Save_PackSprite(Sprite *a1, SpriteSerialized *out)
 	out->x = a1->x;
 	out->y = a1->y;
 	out->z_index = a1->z_index;
-	out->field_1C_speed = a1->field_1C_speed;
-	out->field_20_neg_speed = a1->field_20_neg_speed;
-	out->field_24 = a1->field_24;
+	out->x_speed = a1->x_speed;
+	out->y_speed = a1->y_speed;
+	out->z_speed = a1->z_speed;
 	v2 = a1->_inside_mobd_item;
 	if (v2)
 		out->_inside_mobd_item = (char *)v2 - (char *)currently_running_lvl_mobd[out->mobd_idx].items;
@@ -14309,14 +14268,14 @@ bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data)
 				v71 = script_create_function((enum SCRIPT_TYPE)v2[1].turret_sprite.y, v69);
 				if (v71)
 				{
-					v72 = v2[1].turret_sprite.field_1C_speed;
+					v72 = v2[1].turret_sprite.x_speed;
 					if (v72 < 1 || v72 > num_script_handlers)
 						v73 = 0;
 					else
 						v73 = *(void(**)(Script *, Script *, enum SCRIPT_EVENT, void *))&aWb__AND__handlers_minus1_indexer[4 * v72];
 					v71->event_handler = v73;
-					v71->field_20 = v2[1].turret_sprite.field_20_neg_speed;
-					v71->field_14 = v2[1].turret_sprite.field_24;
+					v71->flags_20 = v2[1].turret_sprite.y_speed;
+					v71->field_14 = v2[1].turret_sprite.z_speed;
 					v71->field_24 = v2[1].turret_sprite._inside_mobd_item;
 					v71->field_28 = v2[1].turret_sprite._54_inside_mobd_ptr4;
 					v71->field_2C = v2[1].turret_sprite._60_mobd_field_0;
@@ -14434,9 +14393,9 @@ Sprite *GAME_Load_UnpackSprite(SpriteSerialized *serialized)
 	v2->x = v1->x;
 	v2->y = v1->y;
 	v2->z_index = v1->z_index;
-	v2->field_1C_speed = v1->field_1C_speed;
-	v2->field_20_neg_speed = v1->field_20_neg_speed;
-	v2->field_24 = v1->field_24;
+	v2->x_speed = v1->x_speed;
+	v2->y_speed = v1->y_speed;
+	v2->z_speed = v1->z_speed;
 	v4 = v1->_inside_mobd_item;
 	if (v4 == -1)
 	{
@@ -17602,12 +17561,6 @@ LABEL_59:
 	game_load_in_progress = 0;
 	return 0;
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
-// 479FBC: using guessed type int game_load_in_progress;
-// 47DCC4: using guessed type int _47DCC4_entity_id_counter;
-// 47DCC8: using guessed type int UNIT_num_player_units;
-// 47DCCC: using guessed type int UNIT_num_nonplayer_units;
 
 //----- (00421D40) --------------------------------------------------------
 void GAME_OnSaveFailed()
@@ -17648,7 +17601,7 @@ void script_421D60_on_savegame_failed(Script *a1)
 	if (v5)
 	{
 		render_string_445770(v5, str, 0);
-		script_445370_yield(a1, 0x80000000, 180);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 180);
 		render_string_list_remove(v6);
 	}
 }
@@ -18111,7 +18064,7 @@ bool GAME_ShowWait()
 			printf((const char *)aS, aWaitLvl_runlev);
 		exit(0);
 	}
-	v4 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	v4 = LVL_FindMapd();
 	_40E400_set_palette(&v4->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
 	_47C380_mapd.mapd_cplc_render_y = 0x1EA00;     // 490
@@ -18235,7 +18188,7 @@ void GAME_PrepareSuperLvl(int mapd_idx)
 			printf((const char *)aS, aLvl_runlevelFa);
 		exit(0);
 	}
-	v18 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	v18 = LVL_FindMapd();
 	_40E400_set_palette(&v18[mApd_idx].items->palette);
 	render_default_stru1->field_8 &= 0xBFFFFFFF;
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)mApd_idx, 0, 0);
@@ -18281,7 +18234,7 @@ return 1;
 	if (!v1)
 	{
 		draw_list_alloc();
-		RENDER_pClearScreen(1);
+        REND_DirectDrawClearScreen(1);
 		sprintf(a1, (const char *)aSFmvMh_fmv_vbc, app_root_dir);
 		if (VIDEO_ReadAndAllocDrawJob(a1, 0, 0, 100) == 1 && !VIDEO_IsVideoInvalid())
 		{
@@ -18381,12 +18334,12 @@ return 1;
 			if (current_level_idx >= LEVEL_MUTE_01)
 			{
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
-				v8 = *(DataMapdItem **)LVL_FindSection((const char *)MAPD);
+				v8 = &LVL_FindMapd()->items[0];
 			}
 			else
 			{
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
-				v8 = (DataMapdItem *)*((_DWORD *)LVL_FindSection((const char *)MAPD) + 1);
+				v8 = &LVL_FindMapd()->items[1];
 			}
 			_40E400_set_palette(&v8->palette);
 			memcpy(&stru_477990, _4785DC_syscolors_palette_entries, 0x400u);
@@ -18509,7 +18462,7 @@ void GAME_PrepareLevel()
 		exit(0);
 	}
 	stru1_408480_reset_animation();
-	v6 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	v6 = LVL_FindMapd();
 	_40E400_set_palette((PALETTEENTRY *)&v6->items[1]);
 	sidebar_button_list_alloc();
 	boxd_40E6E0();
@@ -18646,7 +18599,7 @@ int GAME_Main()
 		if (VIDEO_Play(0))
 		{
 		LABEL_5:
-			RENDER_pClearScreen(1);
+            REND_DirectDrawClearScreen(1);
 			mapd_idx = 0;
 			netz_47A82C = 0;
 			if (!single_player_game)
@@ -18709,7 +18662,7 @@ int GAME_Main()
 			{
 				while (1)
 				{
-					RENDER_pClearScreen(1);
+                    REND_DirectDrawClearScreen(1);
 					if (!is_game_loading())
 					{
 						if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
@@ -18870,8 +18823,8 @@ bool script_trigger_event(Script *sender, enum SCRIPT_EVENT event, void *param, 
 		receiver->event_list = result;
 	}
 	v6 = receiver->field_24;
-	v7 = receiver->field_20 | 0x40000000;
-	receiver->field_20 = v7;
+	v7 = receiver->flags_20 | 0x40000000;
+	receiver->flags_20 = v7;
 	receiver->field_24 = v7 | v6;
 	return true;
 }
@@ -18916,8 +18869,8 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
 					v7->next = self->event_list;
 					self->event_list = v7;
 				}
-				v8 = self->field_20 | 0x40000000;
-				self->field_20 = v8;
+				v8 = self->flags_20 | 0x40000000;
+				self->flags_20 = v8;
 				self->field_24 |= v8;
 				self = self->next;
 			} while ((Script **)self != &script_execute_list);
@@ -18949,8 +18902,8 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
 					v9->next = self->event_list;
 					self->event_list = v9;
 				}
-				v10 = self->field_20 | 0x40000000;
-				self->field_20 = v10;
+				v10 = self->flags_20 | 0x40000000;
+				self->flags_20 = v10;
 				self->field_24 |= v10;
 			}
 			self = self->next;
@@ -19042,7 +18995,7 @@ void script_custom_mission_briefing_loop(Script *a1)
 	{
 		do
 		{
-			script_445370_yield(a1, 0x80000000, 1);
+			script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 			input_get_keyboard_state(&keys_state);
 			if (keys_state.just_pressed_keys_mask & 0x200)
 			{
@@ -19989,7 +19942,7 @@ void _426860_4269B0_task_attachment_handler(_4269B0_task_attachment *a1)
 		{
 			--_4269B0_task_attachment__num_units_created_manually;
 		}
-		script_445470_yield(a1->task);
+		script_yield(a1->task);
 	}
 	else
 	{
@@ -20022,15 +19975,15 @@ void _4268B0_4269B0_task_attachment_handler(_4269B0_task_attachment *a1)
 		v7 = a1->field_14;
 		v1->handler = _426860_4269B0_task_attachment_handler;
 		if (v7 <= 0)
-			script_445370_yield(v1->task, 0x80000000, 1);
+			script_445370_yield_to_main_thread(v1->task, 0x80000000, 1);
 		else
-			script_445370_yield(v1->task, 0x80000000, _468410_stru49_array[v2]._8_some_task_flags);
+			script_445370_yield_to_main_thread(v1->task, 0x80000000, _468410_stru49_array[v2]._8_some_task_flags);
 	}
 	else if (a1->_24_iftrue__call_UNIT_Spawn__else__create_manually)
 	{
 		spawn_unit(v3, a1->x, a1->y, player_side);
 		++v1->stru53_54_55_unit_stats_idx_idx;
-		script_445370_yield(v1->task, 0x80000000, 6);
+		script_445370_yield_to_main_thread(v1->task, 0x80000000, 6);
 	}
 	else
 	{
@@ -20047,7 +20000,7 @@ void _4268B0_4269B0_task_attachment_handler(_4269B0_task_attachment *a1)
 			v6->param = (void *)(v3 | (v4 << 16) | 0x8000);
 		}
 		++v1->stru53_54_55_unit_stats_idx_idx;
-		script_445370_yield(v1->task, 0x80000000, 6);
+		script_445370_yield_to_main_thread(v1->task, 0x80000000, 6);
 	}
 }
 
@@ -20183,19 +20136,19 @@ LABEL_18:
 				v15 = 1;
 			}
 			v2->handler = _426860_4269B0_task_attachment_handler;
-			script_445370_yield(v1, 0x80000000, v15);
+			script_445370_yield_to_main_thread(v1, 0x80000000, v15);
 		}
 		else
 		{
 			v2->handler = _426860_4269B0_task_attachment_handler;
-			script_445370_yield(v1, 0x80000000, -v11);
+			script_445370_yield_to_main_thread(v1, 0x80000000, -v11);
 		}
 	}
 	else
 	{
 		v16 = v2->__468410_stru49_array_idx;
 		v2->handler = _426860_4269B0_task_attachment_handler;
-		script_445370_yield(v1, 0x80000000, _468410_stru49_array[v16]._4_some_task_flags);
+		script_445370_yield_to_main_thread(v1, 0x80000000, _468410_stru49_array[v16]._4_some_task_flags);
 	}
 }
 // 47A2F8: using guessed type int _4269B0_task_attachment__num_units_created_manually;
@@ -20270,18 +20223,18 @@ void sprite_init_47A400()
 	sprite_47A400.z_index = 0;
 	sprite_47A400.y = 0;
 	sprite_47A400.x = 0;
-	sprite_47A400.field_24 = 0;
-	sprite_47A400.field_20_neg_speed = 0;
-	sprite_47A400.field_1C_speed = 0;
-	sprite_47A400.field_30 = 0;
-	sprite_47A400.field_2C = 0;
-	sprite_47A400.field_28 = 0;
-	sprite_47A400.field_3C = 0x7FFFFFFF;
-	sprite_47A400.field_38 = (void *)0x7FFFFFFF;
-	sprite_47A400.field_34 = 0x7FFFFFFF;
-	sprite_47A400.field_48 = 0;
-	sprite_47A400.field_44 = 0;
-	sprite_47A400.field_40 = 0;
+	sprite_47A400.z_speed = 0;
+	sprite_47A400.y_speed = 0;
+	sprite_47A400.x_speed = 0;
+	sprite_47A400.z_speed_factor_2 = 0;
+	sprite_47A400.y_speed_factor_2 = 0;
+	sprite_47A400.x_speed_factor_2 = 0;
+	sprite_47A400.z_speed_limit = 0x7FFFFFFF;
+	sprite_47A400.y_speed_limit = 0x7FFFFFFF;
+	sprite_47A400.x_speed_limit = 0x7FFFFFFF; // max signed int
+	sprite_47A400.z_speed_factor_1 = 0;
+	sprite_47A400.y_speed_factor_1 = 0;
+	sprite_47A400.x_speed_factor_1 = 0;
 	sprite_47A400.field_64 = 0;
 	sprite_47A400._60_mobd_field_0_int = 0;
 	sprite_47A400._inside_mobd_item = 0;
@@ -20361,6 +20314,7 @@ Sprite *sprite_create_scripted(enum MOBD_ID mobd_item_idx, Sprite *parent, void(
 
 	v5 = parent;
 	v6 = mobd_item_idx;
+    //__debugbreak(); // COROUTINE CREATION ALTER CAUSED v5 AND parnet to become corrupt after cr creation & yield
 	if (!script)
 	{
 		result = 0;
@@ -20377,10 +20331,15 @@ Sprite *sprite_create_scripted(enum MOBD_ID mobd_item_idx, Sprite *parent, void(
 		}
 		return result;
 	}
-	if (task_type)
+	if (task_type == SCRIPT_FUNCTION)
 		result = (Sprite *)script_create_function(SCRIPT_TYPE_INVALID, script);
-	else
+	else if (task_type == SCRIPT_COROUTINE)
 		result = (Sprite *)script_create_coroutine(SCRIPT_TYPE_INVALID, script, 0);
+    else
+    {
+        __debugbreak();
+        result = false;
+    }
 	if (result)
 		goto LABEL_8;
 	return result;
@@ -20470,36 +20429,6 @@ void sprite_list_427020()
 	Sprite *i; // esi@2
 	Script *v1; // eax@4
 	int v2; // eax@5
-	int v3; // ecx@8
-	int v4; // eax@8
-	int v5; // edx@9
-	int v6; // ecx@13
-	int v7; // edx@14
-	int v8; // eax@22
-	int v9; // eax@23
-	int v10; // eax@25
-	int v11; // ecx@28
-	int v12; // eax@28
-	bool v13; // sf@28
-	int v14; // eax@28
-	int v15; // edx@29
-	int v16; // eax@29
-	int v17; // eax@35
-	int v18; // eax@36
-	int v19; // eax@38
-	int v20; // ecx@41
-	int v21; // eax@41
-	int v22; // eax@41
-	int v23; // edx@42
-	void *v24; // eax@42
-	int v25; // eax@48
-	int v26; // eax@49
-	int v27; // eax@51
-	int v28; // ecx@54
-	int v29; // eax@54
-	int v30; // eax@54
-	int v31; // edx@55
-	int v32; // eax@55
 
 	if (currently_running_lvl_mobd_valid)
 	{
@@ -20512,196 +20441,156 @@ void sprite_list_427020()
 				v2 = 1;
 			if (!v2)
 				continue;
-			v3 = i->field_1C_speed;
-			v4 = 0;
-			i->x += v3;
-			if (v3 <= 0)
+
+			i->x += i->x_speed;
+            if (i->x_speed > 0)
+                boxd_404F40_sprite(i, 0, 1);
+            else if (i->x_speed < 0)
+                boxd_404F40_sprite(i, 1, 1);
+
+			i->y += i->y_speed;
+            if (i->y_speed > 0)
+                boxd_404F40_sprite(i, 2, 1);
+            else if (i->y_speed < 0)
+                boxd_404F40_sprite(i, 3, 1);
+
+			i->z_index += i->z_speed;
+			if (i->x_speed == 0 && i->y_speed == 0)
 			{
-				if (i->field_1C_speed >= 0)
-					goto LABEL_13;
-				v5 = 1;
+                boxd_404F40_sprite(i, 0, i->field_88 ? 1 : 0);
 			}
-			else
-			{
-				v5 = 0;
-			}
-			boxd_404F40_sprite(i, v5, 1);
-			v4 = 1;
-		LABEL_13:
-			v6 = i->field_20_neg_speed;
-			i->y += v6;
-			if (v6 <= 0)
-			{
-				if (i->field_20_neg_speed >= 0)
-					goto LABEL_18;
-				v7 = 3;
-			}
-			else
-			{
-				v7 = 2;
-			}
-			boxd_404F40_sprite(i, v7, 1);
-			v4 = 1;
-		LABEL_18:
-			i->z_index += i->field_24;
-			if (!v4)
-			{
-				if (i->field_88)
-					boxd_404F40_sprite(i, 0, 1);
-				else
-					boxd_404F40_sprite(i, 0, 0);
-			}
-			v8 = i->field_1C_speed;
+
 			i->field_88 = 1;
-			if (v8 < 0)
+			if (i->x_speed < 0)
 			{
-				v10 = i->field_40 + i->field_1C_speed;
-				i->field_1C_speed = v10;
-				if (v10 <= 0)
-					goto LABEL_27;
+				i->x_speed += i->x_speed_factor_1;
+				if (i->x_speed > 0)
+                    i->x_speed = 0;
 			}
 			else
 			{
-				v9 = v8 - i->field_40;
-				i->field_1C_speed = v9;
-				if (v9 >= 0)
-					goto LABEL_27;
+				i->x_speed -= i->x_speed_factor_1;
+				if (i->x_speed < 0)
+                    i->x_speed = 0;
 			}
-			i->field_1C_speed = 0;
-		LABEL_27:
-			if (!i->field_28)
-				goto LABEL_35;
-			v11 = i->field_28;
-			v12 = i->field_1C_speed;
-			v13 = v11 + v12 < 0;
-			v14 = v11 + v12;
-			i->field_1C_speed = v14;
-			if (v13)
+
+            if (i->x_speed_factor_2)
+            {
+                i->x_speed += i->x_speed_factor_2;
+                if (i->x_speed < 0)
+                {
+                    if (i->x_speed < -i->x_speed_limit)
+                    {
+                        i->x_speed = -i->x_speed_limit;
+                        if (i->script)
+                        {
+                            i->script->flags_20 |= SCRIPT_FLAGS_20_X_SPEED_LIMIT;
+                            i->script->field_24 |= i->script->flags_20;
+                        }
+                    }
+                }
+                else
+                {
+                    if (i->x_speed > i->x_speed_limit)
+                    {
+                        i->x_speed = i->x_speed_limit;
+                        if (i->script)
+                        {
+                            i->script->flags_20 |= SCRIPT_FLAGS_20_X_SPEED_LIMIT;
+                            i->script->field_24 |= i->script->flags_20;
+                        }
+                    }
+                }
+            }
+
+
+			if (i->y_speed < 0)
 			{
-				if (i->field_1C_speed < -i->field_34)
-				{
-					i->field_1C_speed = -i->field_34;
-					if (i->script)
-					{
-					LABEL_34:
-						i->script->field_20 |= 0x8000000u;
-						i->script->field_24 |= i->script->field_20;
-						goto LABEL_35;
-					}
-				}
-			}
-			else
-			{
-				v15 = v14;
-				v16 = i->field_34;
-				if (v15 > v16)
-				{
-					i->field_1C_speed = v16;
-					if (i->script)
-						goto LABEL_34;
-				}
-			}
-		LABEL_35:
-			v17 = i->field_20_neg_speed;
-			if (v17 < 0)
-			{
-				v19 = i->field_44 + i->field_20_neg_speed;
-				i->field_20_neg_speed = v19;
-				if (v19 <= 0)
-					goto LABEL_40;
+				i->y_speed += i->y_speed_factor_1;
+				if (i->y_speed > 0)
+                    i->y_speed = 0;
 			}
 			else
 			{
-				v18 = v17 - i->field_44;
-				i->field_20_neg_speed = v18;
-				if (v18 >= 0)
-					goto LABEL_40;
+				i->y_speed -= i->y_speed_factor_1;
+				if (i->y_speed < 0)
+                    i->y_speed = 0;
 			}
-			i->field_20_neg_speed = 0;
-		LABEL_40:
-			if (!i->field_2C)
-				goto LABEL_48;
-			v20 = i->field_2C;
-			v21 = i->field_20_neg_speed;
-			v13 = v20 + v21 < 0;
-			v22 = v20 + v21;
-			i->field_20_neg_speed = v22;
-			if (v13)
+
+            if (i->y_speed_factor_2)
+            {
+                i->y_speed += i->y_speed_factor_2;
+                if (i->y_speed < 0)
+                {
+                    if (i->y_speed < -i->y_speed_limit)
+                    {
+                        i->y_speed = -i->y_speed_limit;
+                        if (i->script)
+                        {
+                            i->script->flags_20 |= SCRIPT_FLAGS_20_Y_SPEED_LIMIT;
+                            i->script->field_24 |= i->script->flags_20;
+
+                        }
+                    }
+                }
+                else
+                {
+                    if (i->y_speed > i->y_speed_limit)
+                    {
+                        i->y_speed = i->y_speed_limit;
+                        if (i->script)
+                        {
+                            i->script->flags_20 |= SCRIPT_FLAGS_20_Y_SPEED_LIMIT;
+                            i->script->field_24 |= i->script->flags_20;
+                        }
+                    }
+                }
+            }
+
+			if (i->z_speed < 0)
 			{
-				if (i->field_20_neg_speed < -(int)i->field_38)
-				{
-					i->field_20_neg_speed = -(int)i->field_38;
-					if (i->script)
-					{
-					LABEL_47:
-						i->script->field_20 |= 0x4000000u;
-						i->script->field_24 |= i->script->field_20;
-						goto LABEL_48;
-					}
-				}
-			}
-			else
-			{
-				v23 = v22;
-				v24 = i->field_38;
-				if (v23 > (int)v24)
-				{
-					i->field_20_neg_speed = (int)v24;
-					if (i->script)
-						goto LABEL_47;
-				}
-			}
-		LABEL_48:
-			v25 = i->field_24;
-			if (v25 < 0)
-			{
-				v27 = i->field_48 + i->field_24;
-				i->field_24 = v27;
-				if (v27 <= 0)
-					goto LABEL_53;
+				i->z_speed += i->z_speed_factor_1;
+				if (i->z_speed > 0)
+                    i->z_speed = 0;
 			}
 			else
 			{
-				v26 = v25 - i->field_48;
-				i->field_24 = v26;
-				if (v26 >= 0)
-					goto LABEL_53;
+				i->z_speed -= i->z_speed_factor_1;
+				if (i->z_speed < 0)
+                    i->z_speed = 0;
 			}
-			i->field_24 = 0;
-		LABEL_53:
-			if (i->field_30)
+
+			if (i->z_speed_factor_2)
 			{
-				v28 = i->field_30;
-				v29 = i->field_24;
-				v13 = v28 + v29 < 0;
-				v30 = v28 + v29;
-				i->field_24 = v30;
-				if (v13)
+				i->z_speed += i->z_speed_factor_2;
+				if (i->z_speed < 0)
 				{
-					if (i->field_24 >= -i->field_3C)
-						continue;
-					i->field_24 = -i->field_3C;
-					if (!i->script)
-						continue;
+                    if (i->z_speed < -i->z_speed_limit)
+                    {
+                        i->z_speed = -i->z_speed_limit;
+                        if (i->script)
+                        {
+                            i->script->flags_20 |= SCRIPT_FLAGS_20_Z_SPEED_LIMIT;
+                            i->script->field_24 |= i->script->flags_20;
+                        }
+                    }
 				}
 				else
 				{
-					v31 = v30;
-					v32 = i->field_3C;
-					if (v31 <= v32)
-						continue;
-					i->field_24 = v32;
-					if (!i->script)
-						continue;
+                    if (i->z_speed > i->z_speed_limit)
+                    {
+                        i->z_speed = i->z_speed_limit;
+                        if (!i->script)
+                        {
+                            i->script->flags_20 |= SCRIPT_FLAGS_20_Z_SPEED_LIMIT;
+                            i->script->field_24 |= i->script->flags_20;
+                        }
+                    }
 				}
-				i->script->field_20 |= 0x2000000u;
-				i->script->field_24 |= i->script->field_20;
 			}
 		}
 	}
 }
-// 47A498: using guessed type int currently_running_lvl_mobd_valid;
-// 47C764: using guessed type __int16 is_coroutine_list_initialization_failed;
 
 //----- (004272A0) --------------------------------------------------------
 void sprite_4272A0_load_mobd_item(Sprite *a1, int offset)
@@ -20900,8 +20789,8 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
 					v1->pstru58 = v9;
 					if (v10)
 					{
-						v10->field_20 |= 0x10000000u;
-						v1->script->field_24 |= v1->script->field_20;
+						v10->flags_20 |= 0x10000000u;
+						v1->script->field_24 |= v1->script->flags_20;
 					}
 				}
 				else
@@ -20925,8 +20814,8 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
 						if (v15->field_28 & 0x40000)
 						{
 							script_trigger_event(0, (SCRIPT_EVENT)((int)EVT_MSG_neg2 | 0x1), v14, v1->script);
-							v1->script->field_20 |= 0x40000u;
-							v1->script->field_24 |= v1->script->field_20;
+							v1->script->flags_20 |= 0x40000u;
+							v1->script->field_24 |= v1->script->flags_20;
 						}
 					}
 				}
@@ -20938,8 +20827,8 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
 				v1->_inside_mobd_item = 0;
 				if (v6)
 				{
-					v6->field_20 |= 0x10000000u;
-					v1->script->field_24 |= v1->script->field_20;
+					v6->flags_20 |= 0x10000000u;
+					v1->script->field_24 |= v1->script->flags_20;
 					v1->field_64 -= v1->_60_mobd_field_0_int;
 					return;
 				}
@@ -21186,10 +21075,10 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 
 	v1 = a1;
 	v2 = a1->sprite;
-	v3 = v2->field_1C_speed;
-	v4 = v2->field_20_neg_speed;
-	v2->field_1C_speed = 0;
-	a1->sprite->field_20_neg_speed = 0;
+	v3 = v2->x_speed;
+	v4 = v2->y_speed;
+	v2->x_speed = 0;
+	a1->sprite->y_speed = 0;
 	entity_40DEC0_boxd(a1, a1->sprite_width_shr13, a1->sprite_height_shr13, a1->field_A4);
 	v5 = v1->unit_id;
 	v6 = (int)&v1->stru60.ptr_C->field_0;
@@ -21238,15 +21127,15 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 		v14->y = v15;
 		v16 = v1->script;
 		v1->mode = entity_427C30_after_mobile_outpost_clanhall_wagon_plant;
-		script_445370_yield(v16, 0x10000000, 0);
+		script_445370_yield_to_main_thread(v16, 0x10000000, 0);
 	}
 	else
 	{
 		v8 = v1->sprite;
 		v1->unit_id = (UNIT_ID)v1->_134_param__unitstats_after_mobile_outpost_plant;
 		entity_40DE80_boxd(v1, v8->x, v8->y, 0);
-		v1->sprite->field_1C_speed = v3;
-		v1->sprite->field_20_neg_speed = v4;
+		v1->sprite->x_speed = v3;
+		v1->sprite->y_speed = v4;
 	}
 }
 
@@ -21264,7 +21153,7 @@ void entity_427BB0_mobile_outpost_clanhall_planting(Entity *a1)
 	sprite_4272E0_load_mobd_item(a1->sprite, v2, 1);
 	v3 = v1->script;
 	v1->mode = entity_mode_427BF0_mobile_outpost_clanhall_planting;
-	script_445370_yield(v3, 0x80000000, 30);
+	script_445370_yield_to_main_thread(v3, 0x80000000, 30);
 }
 
 //----- (00427BF0) --------------------------------------------------------
@@ -21281,7 +21170,7 @@ void entity_mode_427BF0_mobile_outpost_clanhall_planting(Entity *a1)
 	sprite_4272E0_load_mobd_item(a1->sprite, v2, 2);
 	v3 = v1->script;
 	v1->mode = entity_427C30_after_mobile_outpost_clanhall_wagon_plant;
-	script_445370_yield(v3, 0x80000000, 30);
+	script_445370_yield_to_main_thread(v3, 0x80000000, 30);
 }
 
 //----- (00427C30) --------------------------------------------------------
@@ -21309,7 +21198,7 @@ void entity_427C30_after_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 	}
 	v5 = v1->script;
 	v1->mode = entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant;
-	script_445370_yield(v5, 0x80000000, 10);
+	script_445370_yield_to_main_thread(v5, 0x80000000, 10);
 }
 // 4688E0: using guessed type DataCplcItem_ptr1_stru20 _4688E0_DataCplcItem_ptr1_stru20_clanhall;
 // 468910: using guessed type DataCplcItem_ptr1_stru20 _468910_DataCplcItem_ptr1_stru20_outpost;
@@ -21753,7 +21642,7 @@ void script_4280A0_stru38_list__production_loop(Script *task)
 	LABEL_35:
 		;
 	}
-	script_445370_yield(task, 0x80000000, 1);
+	script_445370_yield_to_main_thread(task, 0x80000000, 1);
 }
 
 //----- (00428310) --------------------------------------------------------
@@ -21942,7 +21831,6 @@ bool stru13construct_list_alloc()
 	}
 	return result;
 }
-// 47A608: using guessed type stru13_stru0 _47A608_stru13_associated_array;
 
 //----- (004287A0) --------------------------------------------------------
 void stru13_list_free()
@@ -22165,7 +22053,7 @@ void script_428940_cursors_handler(Script *a1)
 	v62.pstru2 = v3;
 	if (!v3)
 	{
-		script_445470_yield(a1);
+		script_yield(a1);
 		v3 = v62.pstru2;
 	}
 	v62.ptr_10 = v3;
@@ -24608,7 +24496,7 @@ void _42B740_cursors(_428940_local *a1, int a2)
 						_47A714.ptr_0 = v7;
 					}
 				}
-				script_445370_yield(v2->_14_task, 0xC0000000, 1);
+				script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
 				v3->next->prev = v3->prev;
 				v3->prev->next = v3->next;
 				v3->next = stru13construct_list_free_pool;
@@ -24654,7 +24542,7 @@ void _42B740_cursors(_428940_local *a1, int a2)
 				LABEL_23:
 					v13->next = v14;
 				LABEL_25:
-					script_445370_yield(v2->_14_task, 0xC0000000, 1);
+					script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
 					goto LABEL_26;
 				}
 			LABEL_24:
@@ -24701,7 +24589,7 @@ void _42B740_cursors(_428940_local *a1, int a2)
 		goto LABEL_24;
 	}
 LABEL_27:
-	script_445370_yield(v2->_14_task, 0xC0000000, 1);
+	script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
 	input_get_mouse_data(&_47A5E0_mouse_input);
 	input_get_keyboard_state(&_47A700_input);
 	v21 = is_coroutine_list_initialization_failed;
@@ -24928,7 +24816,7 @@ LABEL_82:
 			v2->next = v2;
 			v2->prev = v2;
 		}
-		script_445370_yield(v2->_14_task, 0xC0000000, 1);
+		script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
 	}
 	v2->_70_sprite->field_88 = 1;
 	v39 = v2->_70_sprite;
@@ -25841,7 +25729,7 @@ void script_42D030_sidebar_tooltips(Script *a1)
 		v14 = 0;
 		do
 		{
-			script_445370_yield(a1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				if (i->event == EVT_MSG_1511_sidebar_click_category)
@@ -25905,7 +25793,7 @@ void script_42D030_sidebar_tooltips(Script *a1)
 			render_string_445770(v11, v15, 0);
 			do
 			{
-				script_445370_yield(a1, 0x40000000, 0);
+				script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 				for (j = script_get_next_event(a1); j; j = script_get_next_event(a1))
 				{
 					if (j->event == EVT_MSG_TEXT_STRING)
@@ -26040,7 +25928,7 @@ void script_42D390_cursors(Script *a1)
 	_47A730_render_string = v1;
 	if (!v1)
 	{
-		script_445470_yield(a1);
+		script_yield(a1);
 		v1 = _47A730_render_string;
 	}
 	render_string_445AE0(v1);
@@ -26070,7 +25958,7 @@ void script_42D390_cursors(Script *a1)
 	}
 	render_string_list_remove(_47A730_render_string);
 	_47A730_render_string = 0;
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 42D390: using guessed type char var_38[56];
 
@@ -26649,14 +26537,14 @@ void script_42DA90_ai(Script *a2)
 		}
 	}
 	stru24_42E070(v1);
-	script_445370_yield(a2, 0x80000000, 60);
+	script_445370_yield_to_main_thread(a2, 0x80000000, 60);
 }
 
 //----- (0042DC70) --------------------------------------------------------
 void script_42DC70_ai(Script *a1)
 {
 	a1->handler = script_42DA90_ai;
-	script_445370_yield(a1, 0x80000000, 60);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 60);
 }
 
 //----- (0042DC90) --------------------------------------------------------
@@ -26837,14 +26725,14 @@ void script_42DE80(Script *a1)
 		}
 	}
 	stru24_42E070(v1);
-	script_445370_yield(a1, 0x80000000, 60);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 60);
 }
 
 //----- (0042DF20) --------------------------------------------------------
 void script_42DF20(Script *a1)
 {
 	a1->handler = script_42DE80;
-	script_445370_yield(a1, 0x80000000, 60);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 60);
 }
 
 //----- (0042DF40) --------------------------------------------------------
@@ -30335,9 +30223,12 @@ void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
 		_477340_coroutine_yield_item = __EAX__;
 		if (coroutine_list_head != coroutine_current && ++_47734C_coroutine_int == 1)
 		{
-            __debugbreak();
 			v2 = coroutine_list_head->stack;
-			_477344_esp = (int)&v9;
+            __asm
+            {
+                mov _477344_esp, esp
+                mov esp, v2
+            }
 		}
 		dword_47C018 = 0;
 		dword_468FD4 = 1;
@@ -30398,8 +30289,16 @@ void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
 			v5 = RealizePalette(render_sw_hdc);
 		}
 		_477340_coroutine_yield_item = (void *)v5;
-		if (coroutine_list_head != coroutine_current)
-			--_47734C_coroutine_int;
+        if (coroutine_list_head != coroutine_current)
+        {
+            if (--_47734C_coroutine_int == 0)
+            {
+                __asm
+                {
+                    mov esp, _477344_esp
+                }
+            }
+        }
 	}
 }
 
@@ -30587,12 +30486,12 @@ void script_431E60_mobd_20_input(Script *a1)
 	v1 = 0;
 	dword_47C6C4 = 0;
 	a1->field_1C = 1;
-	script_445370_yield(a1, 0x80000000, 2);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 2);
 	if (!script_create_coroutine(SCRIPT_TYPE_INVALID, script_425400, 0))
 		game_state = 3;
 	while (1)
 	{
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 		input_get_keyboard_state(&out);
 		v2 = out.just_pressed_keys_mask;
 		if (v1 > 0)
@@ -30664,7 +30563,7 @@ void script_431F10_ingame_menu(Script *a1)
 	}
 	do
 	{
-		if (script_445370_yield(a1, 0xC0000000, 1) & 0x40000000)
+		if (script_445370_yield_to_main_thread(a1, 0xC0000000, 1) & 0x40000000)
 		{
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
@@ -30749,7 +30648,7 @@ void script_431F10_ingame_menu(Script *a1)
 	} while (!v18);
 	sprite_list_remove(v3);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 4690B0: using guessed type int dword_4690B0;
 // 4690B4: using guessed type int dword_4690B4;
@@ -31023,7 +30922,7 @@ void script_432730_ingame_menu(Script *a1)
 		v4 = 0;
 		do
 		{
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			v5 = script_get_next_event(v1);
 			if (v5)
 			{
@@ -31057,7 +30956,7 @@ void script_432730_ingame_menu(Script *a1)
 	}
 	_47C668_ingame_menu_sprites[(int)a1] = 0;
 	sprite_list_remove(v2);
-	script_445470_yield(v1);
+	script_yield(v1);
 }
 
 //----- (00432800) --------------------------------------------------------
@@ -31084,7 +30983,7 @@ void script_432800_ingame_menu(Script *a1)
 		v4 = 0;
 		do
 		{
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v6 = i->event;
@@ -31110,7 +31009,7 @@ void script_432800_ingame_menu(Script *a1)
 	}
 	_47C668_ingame_menu_sprites[(int)a1] = 0;
 	sprite_list_remove(v7);
-	script_445470_yield(v1);
+	script_yield(v1);
 }
 
 //----- (004328F0) --------------------------------------------------------
@@ -31275,7 +31174,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 				{
 					if (v26 > 0)
 						--v26;
-				} while (!(script_445370_yield(v25, 0xC0000000, 1) & 0x40000000));
+				} while (!(script_445370_yield_to_main_thread(v25, 0xC0000000, 1) & 0x40000000));
 				v12 = v25;
 				v13 = 0;
 				v14 = 0;
@@ -31349,7 +31248,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 						_47C65C_render_string = 0;
 					}
 					sprite_list_remove(a1a);
-					script_445470_yield(v25);
+					script_yield(v25);
 				}
 				_47C050_array_idx = v23 + v24;
 				if (a3)
@@ -31543,7 +31442,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 		}
 		do
 		{
-			script_445370_yield(v1, 0xC0000000, 1);
+			script_445370_yield_to_main_thread(v1, 0xC0000000, 1);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				if (i->event == EVT_MSG_1530_OPEN_GAME_MENU)
@@ -31567,7 +31466,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 		{
 			script_trigger_event(v1, EVT_MSG_1532, 0, task_mobd17_cursor);
 			while (!is_coroutine_list_initialization_failed)
-				script_445370_yield(v1, 0x80000000, 1);
+				script_445370_yield_to_main_thread(v1, 0x80000000, 1);
 			if (dword_47050C == 1)
 			{
 				dword_47C030 = 1;
@@ -31582,7 +31481,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 		v7 = 1;
 		do
 		{
-			if (script_445370_yield(v1, 0xC0000000, 1) & 0x40000000)
+			if (script_445370_yield_to_main_thread(v1, 0xC0000000, 1) & 0x40000000)
 			{
 				for (j = script_get_next_event(v1); j; j = script_get_next_event(v1))
 				{
@@ -31826,12 +31725,12 @@ void script_433780_ingame_menu(Script *a1)
 	if (script_434500(a1, 864, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_MISSION_ACCOMPLISHED, 0, task_47C028);
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	}
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 468B5C: using guessed type int single_player_game;
 
@@ -31844,12 +31743,12 @@ void script_433810_ingame_menu(Script *a1)
 	if (script_434500(a1, 888, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1509_stru11, 0, task_47C028);
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	}
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00433880) --------------------------------------------------------
@@ -31861,12 +31760,12 @@ void script_433880_ingame_menu(Script *a1)
 	if (script_434500(a1, 900, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1507_stru11, 0, task_47C028);
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	}
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (004338F0) --------------------------------------------------------
@@ -31878,12 +31777,12 @@ void script_4338F0_ingame_menu(Script *a1)
 	if (script_434500(a1, 852, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1526, 0, task_47C028);
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	}
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00433960) --------------------------------------------------------
@@ -31898,12 +31797,12 @@ void script_433960_ingame_menu(Script *a1)
 	if (script_434500(a1, 840, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1528, 0, task_47C028);
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	}
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 468B5C: using guessed type int single_player_game;
 
@@ -31916,12 +31815,12 @@ void script_4339F0_ingame_menu(Script *a1)
 	if (script_434500(a1, 876, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1527, 0, task_47C028);
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	}
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00433A60) --------------------------------------------------------
@@ -31936,12 +31835,12 @@ void script_433A60_ingame_menu(Script *a1)
 	if (script_434500(a1, 828, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1523, 0, task_47C028);
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	}
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 468B5C: using guessed type int single_player_game;
 
@@ -31972,7 +31871,7 @@ void script_433AF0_ingame_menu(Script *a1)
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 468B50: using guessed type int netz_468B50_available_units_denom;
 // 468B5C: using guessed type int single_player_game;
@@ -32003,7 +31902,7 @@ void script_433BA0_ingame_menu(Script *a1)
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00433C30) --------------------------------------------------------
@@ -32017,7 +31916,7 @@ void script_433C30_ingame_menu(Script *a1)
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47A2C4: using guessed type int game_state;
 
@@ -32041,7 +31940,7 @@ void script_433C90_ingame_menu(Script *a1)
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00433D20) --------------------------------------------------------
@@ -32061,7 +31960,7 @@ void script_433D20_ingame_menu(Script *a1)
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00433DB0) --------------------------------------------------------
@@ -32070,7 +31969,7 @@ void script_433DB0_ingame_menu(Script *a1)
 	Sprite *v1; // edi@6
 
 	script_433640(a1, SCRIPT_TYPE_DA000001, -200, 153, 3);
-	script_445370_yield(a1, 0x80000000, 2);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 2);
 	dword_47C6C4 = 0;
 	if (script_434500(a1, 756, 1, 0))
 	{
@@ -32086,7 +31985,7 @@ void script_433DB0_ingame_menu(Script *a1)
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6C4: using guessed type int dword_47C6C4;
 
@@ -32108,7 +32007,7 @@ void script_433E60_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00433ED0) --------------------------------------------------------
@@ -32126,7 +32025,7 @@ void script_433ED0_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00433F40) --------------------------------------------------------
@@ -32144,7 +32043,7 @@ void script_433F40_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00433FB0) --------------------------------------------------------
@@ -32163,7 +32062,7 @@ void script_433FB0_ingame_menu(Script *a1)
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00434040) --------------------------------------------------------
@@ -32184,7 +32083,7 @@ void script_434040_ingame_menu_load_game_related(Script *a1)
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (004340B0) --------------------------------------------------------
@@ -32202,7 +32101,7 @@ void script_4340B0_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00434120) --------------------------------------------------------
@@ -32220,7 +32119,7 @@ void script_434120_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00434190) --------------------------------------------------------
@@ -32239,7 +32138,7 @@ void script_434190_ingame_menu(Script *a1)
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00434220) --------------------------------------------------------
@@ -32261,7 +32160,7 @@ void script_434220_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (004342A0) --------------------------------------------------------
@@ -32280,7 +32179,7 @@ void script_4342A0_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00434310) --------------------------------------------------------
@@ -32299,7 +32198,7 @@ void script_434310_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00434390) --------------------------------------------------------
@@ -32322,7 +32221,7 @@ void script_434390_ingame_menu(Script *a1)
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6F8: using guessed type int dword_47C6F8;
 
@@ -32347,7 +32246,7 @@ void script_434460_DA000007(Script *a1)
 	sprite_4272A0_load_mobd_item(v2, 1392);
 	do
 	{
-		script_445370_yield(a1, 0x40000000, 0);
+		script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 		for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 		{
 			if (i->event == EVT_MSG_1528)
@@ -32356,7 +32255,7 @@ void script_434460_DA000007(Script *a1)
 		}
 	} while (!v1);
 	sprite_list_remove(v2);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00434500) --------------------------------------------------------
@@ -32386,7 +32285,7 @@ bool script_434500(Script *a1, int a2, int a3, int a4)
 		while (1)
 		{
 			v6 = 0;
-			if (script_445370_yield(v4, 0xC0000000, 1) != 0x80000000)
+			if (script_445370_yield_to_main_thread(v4, 0xC0000000, 1) != 0x80000000)
 				break;
 			sprite_4272E0_load_mobd_item(v18, v17, 0);
 			sprite_4272E0_load_mobd_item(v5, 720, a3);
@@ -32437,7 +32336,7 @@ bool script_434500(Script *a1, int a2, int a3, int a4)
 	v10 = 1;
 	do
 	{
-		v11 = script_445370_yield(v4, 0x50000000, 0);
+		v11 = script_445370_yield_to_main_thread(v4, 0x50000000, 0);
 		if (!(v11 & 0x40000000))
 			break;
 		for (j = script_get_next_event(v4); j; j = script_get_next_event(v4))
@@ -32457,7 +32356,7 @@ LABEL_31:
 	v13 = 1;
 	do
 	{
-		v14 = script_445370_yield(v4, 0x50000000, 0);
+		v14 = script_445370_yield_to_main_thread(v4, 0x50000000, 0);
 		if (!(v14 & 0x40000000))
 			break;
 		for (k = script_get_next_event(v4); k; k = script_get_next_event(v4))
@@ -32573,7 +32472,7 @@ void render_draw_cursor_434A00(void *pixels, int x, __int16 y, __int16 width, __
 	clipped_y = 0;
 	clipped_x = 0;
 
-    int _w, _h, _x, _y;
+    int _w = width, _h = height, _x = x, _y = y;
     if (render_clip(&clipped_x, &clipped_y, &_w, &_h, &_x, &_y))
     {
         width = _w;
@@ -33600,7 +33499,7 @@ void EntityUpgradeAttachment_438000(EntityUpgradeAttachment *a1)
 	stru38_list_427FD0(v2, 0);
 	*v2 = 0;
 	sprite_list_remove(v1->_18_sprite);
-	script_445470_yield(v1->script);
+	script_yield(v1->script);
 }
 
 //----- (00438030) --------------------------------------------------------
@@ -34080,7 +33979,7 @@ bool LVL_InitMapd()
 	int v4; // edx@7
 	Bitmap *v5; // ecx@8
 
-	v0 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	v0 = LVL_FindMapd();
 	currently_running_lvl_mapd = v0;
 	if (v0)
 	{
@@ -37159,30 +37058,26 @@ void render_draw_43B59F(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, unsig
 //----- (0043B6B0) --------------------------------------------------------
 bool draw_list_alloc()
 {
-	BOOL result; // eax@1
-	int v1; // edx@2
-
-	result = (BOOL)malloc(0x28C80u);
-	draw_list = (DrawJob *)result;
-	if (result)
+	draw_list = new DrawJob[3000];
+	if (draw_list)
 	{
-		draw_list_free_pool = (DrawJob *)result;
-		*(_DWORD *)(result + 4) = (int)&draw_list_free_pool;
-		v1 = 2783;
-		do
+		draw_list_free_pool = draw_list;
+
+		for (int i = 0; i < 3000; ++i)
 		{
-			--v1;
-			*(_DWORD *)result = result + 60;
-			result += 60;
-		} while (v1);
-		*(_DWORD *)result = (int)&draw_list_free_pool;
-		draw_list_47C5DC = &draw_list_47C5D8_head;
-		draw_list_47C5D8_head.next = &draw_list_47C5D8_head;
-		draw_list_head = (DrawJob *)&draw_list_47C5E8_head;
-		draw_list_47C5E8_head = (DrawJob *)&draw_list_47C5E8_head;
-		result = 1;
+            draw_list[i].next = &draw_list[i + 1];
+		}
+        draw_list[0].prev = (DrawJob *)&draw_list_free_pool;
+        draw_list[2999].next = (DrawJob *)&draw_list_free_pool;
+
+        draw_list_47C5D8.prev = (DrawJob *)&draw_list_47C5D8;
+		draw_list_47C5D8.next = (DrawJob *)&draw_list_47C5D8;
+
+        draw_list_47C5E8.prev = (DrawJob *)&draw_list_47C5E8;
+		draw_list_47C5E8.next = (DrawJob *)&draw_list_47C5E8;
+        return true;
 	}
-	return result;
+	return false;
 }
 
 //----- (0043B710) --------------------------------------------------------
@@ -37198,10 +37093,12 @@ DrawJob *draw_list_add(void *param, void(*on_update_handler)(void *, DrawJob *))
 	else
 	{
 		draw_list_free_pool = draw_list_free_pool->next;
-		result->next = (DrawJob *)&draw_list_47C5E8_head;
-		result->prev = draw_list_head;
-		draw_list_head->next = result;
-		draw_list_head = result;
+
+		result->next = (DrawJob *)&draw_list_47C5E8;
+		result->prev = draw_list_47C5E8.prev;
+        draw_list_47C5E8.prev->next = result;
+        draw_list_47C5E8.prev = result;
+
 		result->job_details.params = render_default_stru1;
 		result->on_update_handler_param = param;
 		result->job_details.field_8 = 0;
@@ -37226,17 +37123,17 @@ bool draw_list_update_and_draw()
 
 	if (render_should_render())
 	{
-		draw_list_update(&draw_list_47C5D8_head);
-		draw_list_z_order(&draw_list_47C5D8_head);
-		draw_list_update((DrawJob *)&draw_list_47C5E8_head);
-		draw_list_z_order((DrawJob *)&draw_list_47C5E8_head);
-		v0 = draw_list_47C5E8_head;
-		v1 = draw_list_47C5D8_head.next;
-		if ((DrawJob **)draw_list_47C5E8_head != &draw_list_47C5E8_head)
+		draw_list_update(&draw_list_47C5D8);
+		draw_list_z_order(&draw_list_47C5D8);
+		draw_list_update(&draw_list_47C5E8);
+		draw_list_z_order(&draw_list_47C5E8);
+		v0 = draw_list_47C5E8.next;
+		v1 = draw_list_47C5D8.next;
+		if (draw_list_47C5E8.next != (DrawJob *)&draw_list_47C5E8)
 		{
 			do
 			{
-				if (v1 == &draw_list_47C5D8_head)
+				if (v1 == (DrawJob *)&draw_list_47C5D8)
 					break;
 				if (v0->job_details.z_index > v1->job_details.z_index)
 				{
@@ -37251,18 +37148,19 @@ bool draw_list_update_and_draw()
 					v0->next = v1;
 					v0 = v2;
 				}
-			} while ((DrawJob **)v0 != &draw_list_47C5E8_head);
-			if ((DrawJob **)v0 != &draw_list_47C5E8_head)
+			} while (v0 != (DrawJob *)&draw_list_47C5E8);
+
+			if (v0 != (DrawJob *)&draw_list_47C5E8)
 			{
-				v0->prev = draw_list_47C5DC;
-				draw_list_47C5DC->next = v0;
-				draw_list_47C5DC = draw_list_head;
-				draw_list_head->next = &draw_list_47C5D8_head;
+				v0->prev = draw_list_47C5D8.prev;
+				draw_list_47C5D8.prev->next = v0;
+				draw_list_47C5D8.prev = draw_list_47C5E8.prev;
+                draw_list_47C5E8.prev->next = (DrawJob *)&draw_list_47C5D8;
 			}
 		}
-		draw_list_head = (DrawJob *)&draw_list_47C5E8_head;
-		draw_list_47C5E8_head = (DrawJob *)&draw_list_47C5E8_head;
-		render_draw_list(&draw_list_47C5D8_head);
+        draw_list_47C5E8.prev = (DrawJob *)&draw_list_47C5E8;
+        draw_list_47C5E8.next = (DrawJob *)&draw_list_47C5E8;
+		render_draw_list(&draw_list_47C5D8);
 		result = 1;
 	}
 	else
@@ -37273,7 +37171,7 @@ bool draw_list_update_and_draw()
 }
 
 //----- (0043B840) --------------------------------------------------------
-void draw_list_update(DrawJob *list)
+void draw_list_update(DrawJobList *list)
 {
 	DrawJob *end; // ebp@1
 	DrawJob *next; // esi@1
@@ -37281,9 +37179,10 @@ void draw_list_update(DrawJob *list)
 	DrawJob *v4; // eax@6
 	void(*v5)(void *, DrawJob *); // eax@7
 
-	end = list;
+	end = (DrawJob *)list;
 	next = list->next;
-	is_list_47C5E8 = (DrawJob **)list == &draw_list_47C5E8_head;
+	is_list_47C5E8 = list == &draw_list_47C5E8;
+
 	while (next != end)
 	{
 		if (is_list_47C5E8)
@@ -37317,7 +37216,7 @@ void draw_list_update(DrawJob *list)
 }
 
 //----- (0043B8C0) --------------------------------------------------------
-void draw_list_z_order(DrawJob *list)
+void draw_list_z_order(DrawJobList *list)
 {
 	DrawJob *v1; // esi@1
 	DrawJob *v2; // eax@2
@@ -37325,9 +37224,6 @@ void draw_list_z_order(DrawJob *list)
 	DrawJob *v4; // edx@3
 
 	v1 = list->prev;
-    if (!v1)
-        return;
-
 	do
 	{
 		v2 = list->next;
@@ -37366,25 +37262,25 @@ void draw_list_free()
 	DrawJob *v4; // edx@9
 	int v5; // eax@14
 
-	for (i = draw_list_47C5D8_head.next; i != &draw_list_47C5D8_head; i = i->next)
+	for (i = draw_list_47C5D8.next; i != (DrawJob *)&draw_list_47C5D8; i = i->next)
 		i->flags |= 0x80000000;
-	for (j = draw_list_47C5E8_head; (DrawJob **)j != &draw_list_47C5E8_head; j = j->next)
+	for (j = draw_list_47C5E8.next; j != (DrawJob *)&draw_list_47C5E8; j = j->next)
 		j->flags |= 0x80000000;
 	while (1)
 	{
 		if (render_should_render())
 		{
-			draw_list_update(&draw_list_47C5D8_head);
-			draw_list_z_order(&draw_list_47C5D8_head);
-			draw_list_update((DrawJob *)&draw_list_47C5E8_head);
-			draw_list_z_order((DrawJob *)&draw_list_47C5E8_head);
-			v2 = draw_list_47C5E8_head;
-			v3 = draw_list_47C5D8_head.next;
-			if ((DrawJob **)draw_list_47C5E8_head != &draw_list_47C5E8_head)
+			draw_list_update(&draw_list_47C5D8);
+			draw_list_z_order(&draw_list_47C5D8);
+			draw_list_update(&draw_list_47C5E8);
+			draw_list_z_order(&draw_list_47C5E8);
+			v2 = draw_list_47C5E8.next;
+			v3 = draw_list_47C5D8.next;
+			if (draw_list_47C5E8.next != (DrawJob *)&draw_list_47C5E8)
 			{
 				do
 				{
-					if (v3 == &draw_list_47C5D8_head)
+					if (v3 == (DrawJob *)&draw_list_47C5D8)
 						break;
 					if (v2->job_details.z_index > v3->job_details.z_index)
 					{
@@ -37399,18 +37295,18 @@ void draw_list_free()
 						v2->next = v3;
 						v2 = v4;
 					}
-				} while ((DrawJob **)v2 != &draw_list_47C5E8_head);
-				if ((DrawJob **)v2 != &draw_list_47C5E8_head)
+				} while (v2 != (DrawJob *)&draw_list_47C5E8);
+				if (v2 != (DrawJob *)&draw_list_47C5E8)
 				{
-					v2->prev = draw_list_47C5DC;
-					draw_list_47C5DC->next = v2;
-					draw_list_47C5DC = draw_list_head;
-					draw_list_head->next = &draw_list_47C5D8_head;
+					v2->prev = draw_list_47C5D8.prev;
+					draw_list_47C5D8.prev->next = v2;
+					draw_list_47C5D8.prev = draw_list_47C5E8.prev;
+                    draw_list_47C5E8.prev->next = (DrawJob *)&draw_list_47C5D8;
 				}
 			}
-			draw_list_head = (DrawJob *)&draw_list_47C5E8_head;
-			draw_list_47C5E8_head = (DrawJob *)&draw_list_47C5E8_head;
-			render_draw_list(&draw_list_47C5D8_head);
+            draw_list_47C5E8.prev = (DrawJob *)&draw_list_47C5E8;
+            draw_list_47C5E8.next = (DrawJob *)&draw_list_47C5E8;
+			render_draw_list(&draw_list_47C5D8);
 			v5 = 1;
 		}
 		else
@@ -37444,7 +37340,7 @@ void script_43BA40(Script *a1, int a2, int(*a3)(void), int a4)
 void script_netz_43BA70(Script *a1)
 {
 	script_408500_anim(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (0043BA90) --------------------------------------------------------
@@ -37581,7 +37477,7 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 	if (dword_47A184)
 	{
 		dword_47A184 = 0;
-		script_445370_yield(v1, 0x80000000, 10);
+		script_445370_yield_to_main_thread(v1, 0x80000000, 10);
 		netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
 		netz_47C6C0_mapd_idx = 12;
 		script_408500_anim(v1);
@@ -37605,16 +37501,16 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 			stru29_list_initialized = 1;
 		}
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-		script_445370_yield(v1, 0x80000000, 3);
-		v5 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+		script_445370_yield_to_main_thread(v1, 0x80000000, 3);
+		v5 = LVL_FindMapd();
 		_40E400_set_palette(&v5[12].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)12, 0, -10);
 		cplc_select(12);
 		cplc_406320();
-		script_445370_yield(v1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(v1, 0x80000000, 1);
 		script_4084A0_animation(v1);
 		if (netz_47C6BC_mapd_idx)
-			script_445470_yield(v1);
+			script_yield(v1);
 	}
 	while (1)
 	{
@@ -37628,16 +37524,16 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 			stru29_list_remove_all(v1);
 			stru29_list_alloc();
 			bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-			script_445370_yield(v1, 0x80000000, 3);
-			v6 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+			script_445370_yield_to_main_thread(v1, 0x80000000, 3);
+			v6 = LVL_FindMapd();
 			_40E400_set_palette(&v6[12].items->palette);
 			_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)12, 0, -10);
 			cplc_select(12);
 			cplc_406320();
-			script_445370_yield(v1, 0x80000000, 1);
+			script_445370_yield_to_main_thread(v1, 0x80000000, 1);
 			script_4084A0_animation(v1);
 			if (netz_47C6BC_mapd_idx)
-				script_445470_yield(v1);
+				script_yield(v1);
 		}
 		if (!dword_47C6C4)
 		{
@@ -37670,7 +37566,7 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 							stru29_list_remove_all(v1);
 							game_state = 3;
 							sprite_list_remove(v1->sprite);
-							script_445470_yield(v1);
+							script_yield(v1);
 						}
 					}
 					v10 = stru29_list_47C610;
@@ -37686,7 +37582,7 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 			}
 		}
 	LABEL_56:
-		if (script_445370_yield(v1, 0xC0000000, 1) & 0x40000000)
+		if (script_445370_yield_to_main_thread(v1, 0xC0000000, 1) & 0x40000000)
 		{
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
@@ -37779,12 +37675,6 @@ LABEL_54:
 		_43BAB0_move_cursor(v11);
 	goto LABEL_56;
 }
-// 4778A0: using guessed type int dword_4778A0;
-// 47A184: using guessed type int dword_47A184;
-// 47A2C4: using guessed type int game_state;
-// 47C6C4: using guessed type int dword_47C6C4;
-// 47C6C8: using guessed type int stru29_list_initialized;
-// 47C6F0: using guessed type int dword_47C6F0;
 
 //----- (0043C040) --------------------------------------------------------
 void script_43C040_cursors_handler(Script *a1)
@@ -37817,520 +37707,8 @@ void script_43C040_cursors_handler(Script *a1)
 		sprite_create_scripted(MOBD_79, 0, (void(*)(Script *))script_43BBA0_cursors_mobd79_handler, SCRIPT_COROUTINE, 0);
 	}
 	sprite_list_remove(a1->sprite);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
-// 47C6C8: using guessed type int stru29_list_initialized;
-
-//----- (0043C0E0) --------------------------------------------------------
-void script_43C0E0_mobd79_evt1(Script *a1)
-{
-	Sprite *v1; // esi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // edi@3
-	Sprite *v4; // esi@3
-	stru29 *v5; // eax@3
-	stru29 *v6; // eax@9
-	int v7; // ecx@10
-	DataMapd *v8; // eax@13
-
-	_47C65C_render_string = 0;
-	a1->sprite->y = 61440;
-	a1->sprite->z_index = 4;
-	sprite_create_scripted(MOBD_79, a1->sprite, script_43C430_mobd79_evt1, SCRIPT_COROUTINE, 0);
-	sprite_create_scripted(MOBD_79, a1->sprite, script_43C630_mobd79_evt1, SCRIPT_COROUTINE, 0);
-	sprite_create_scripted(MOBD_79, a1->sprite, script_43C820_mobd79_evt1, SCRIPT_COROUTINE, 0);
-	script_445370_yield(a1, 0x80000000, 1);
-	v1 = a1->sprite;
-	v2 = sprite_create(MOBD_79, 0, v1);
-	v1->parent = v2;
-	v2->parent = 0;
-	v2->z_index = v1->z_index - 1;
-	a1->script_type = SCRIPT_TYPE_1;
-	v1->_80_entity__stru29__sprite__initial_hitpoints = stru29_list_4439F0(v1, 0, 0, 1, 1);
-	while (!script_443380(a1, 464, 0))
-	{
-		v3 = a1->sprite;
-		v4 = v3->parent;
-		v3->drawjob->flags |= 0x40000000u;
-		v4->drawjob->flags |= 0x40000000u;
-		v4->pstru7 = &_479D48_stru7;
-		v5 = stru29_list_47C610;
-		if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
-		{
-			while (v5->sprite != v3)
-			{
-				v5 = v5->next;
-				if ((stru29 **)v5 == &stru29_list_47C610)
-					goto LABEL_8;
-			}
-			v5->field_C |= 1u;
-		}
-	LABEL_8:
-		script_443380(a1, 464, 0);
-		v3->drawjob->flags &= 0xBFFFFFFF;
-		v4->drawjob->flags &= 0xBFFFFFFF;
-		v4->pstru7 = _4640E0_stru7_array;
-	}
-	netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
-	netz_47C6C0_mapd_idx = 2;
-	script_408500_anim(a1);
-	stru29_list_remove_all(a1);
-	_47C6D4_stru29 = 0;
-	v6 = (stru29 *)malloc(0x1E0u);
-	stru29_list = v6;
-	if (v6)
-	{
-		stru29_list_free_pool = v6;
-		v7 = 0;
-		do
-		{
-			v6[v7].next = &v6[v7 + 1];
-			v6 = stru29_list;
-			++v7;
-		} while (v7 < 29);
-		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-		stru29_list_initialized = 1;
-	}
-	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v8 = (DataMapd *)LVL_FindSection((const char *)MAPD);
-	_40E400_set_palette(&v8[2].items->palette);
-	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)2, 0, -10);
-	cplc_select(2);
-	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
-	script_4084A0_animation(a1);
-	script_445470_yield(a1);
-}
-// 47C6C8: using guessed type int stru29_list_initialized;
-
-//----- (0043C310) --------------------------------------------------------
-void script_43C310_mobd79_evt19(Script *a1)
-{
-	Sprite *v1; // esi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // ebx@3
-	Sprite *v4; // esi@3
-	stru29 *v5; // eax@3
-
-	_47C6D8_use__466098_cost_multipliers = 0;
-	single_player_game = 1;
-	a1->sprite->y = 0x10E00;
-	a1->sprite->z_index = 6;
-	script_445370_yield(a1, 0x80000000, 1);
-	v1 = a1->sprite;
-	v2 = sprite_create(MOBD_79, 0, v1);
-	v1->parent = v2;
-	v2->parent = 0;
-	v2->z_index = v1->z_index - 1;
-	a1->script_type = SCRIPT_TYPE_19;
-	v1->_80_entity__stru29__sprite__initial_hitpoints = stru29_list_4439F0(v1, 0, 0, 1, 1);
-	while (1)
-	{
-		while (!script_443380(a1, 448, 0))
-			;
-		script_trigger_event_group(a1, EVT_MSG_1546, 0, SCRIPT_TYPE_1);
-		script_432510_ingame_menu_create_sprites(a1);
-		v3 = a1->sprite;
-		v4 = v3->parent;
-		v3->drawjob->flags |= 0x40000000u;
-		v4->drawjob->flags |= 0x40000000u;
-		v4->pstru7 = &_479D48_stru7;
-		v5 = stru29_list_47C610;
-		if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
-		{
-			while (v5->sprite != v3)
-			{
-				v5 = v5->next;
-				if ((stru29 **)v5 == &stru29_list_47C610)
-					goto LABEL_8;
-			}
-			v5->field_C |= 1u;
-		}
-	LABEL_8:
-		script_443380(a1, 464, 0);
-		v3->drawjob->flags &= 0xBFFFFFFF;
-		v4->drawjob->flags &= 0xBFFFFFFF;
-		v4->pstru7 = _4640E0_stru7_array;
-	}
-}
-// 468B5C: using guessed type int single_player_game;
-
-//----- (0043C430) --------------------------------------------------------
-void script_43C430_mobd79_evt1(Script *a1)
-{
-	Sprite *v1; // esi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // edi@3
-	Sprite *v4; // esi@3
-	stru29 *v5; // eax@3
-	stru29 *v6; // eax@9
-	int v7; // ecx@10
-	DataMapd *v8; // eax@13
-
-	a1->sprite->y = 0x12C00;
-	a1->sprite->z_index = 8;
-	script_445370_yield(a1, 0x80000000, 1);
-	v1 = a1->sprite;
-	v2 = sprite_create(MOBD_79, 0, v1);
-	v1->parent = v2;
-	v2->parent = 0;
-	v2->z_index = v1->z_index - 1;
-	a1->script_type = SCRIPT_TYPE_1;
-	v1->_80_entity__stru29__sprite__initial_hitpoints = stru29_list_4439F0(v1, 0, 0, 1, 1);
-	while (!script_443380(a1, 416, 0))
-	{
-		v3 = a1->sprite;
-		v4 = v3->parent;
-		v3->drawjob->flags |= 0x40000000u;
-		v4->drawjob->flags |= 0x40000000u;
-		v4->pstru7 = &_479D48_stru7;
-		v5 = stru29_list_47C610;
-		if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
-		{
-			while (v5->sprite != v3)
-			{
-				v5 = v5->next;
-				if ((stru29 **)v5 == &stru29_list_47C610)
-					goto LABEL_8;
-			}
-			v5->field_C |= 1u;
-		}
-	LABEL_8:
-		script_443380(a1, 464, 0);
-		v3->drawjob->flags &= 0xBFFFFFFF;
-		v4->drawjob->flags &= 0xBFFFFFFF;
-		v4->pstru7 = _4640E0_stru7_array;
-	}
-	_4240E0_kknd_sve_read(pKknd_sve);
-	netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
-	netz_47C6C0_mapd_idx = 11;
-	script_408500_anim(a1);
-	stru29_list_remove_all(a1);
-	_47C6D4_stru29 = 0;
-	v6 = (stru29 *)malloc(0x1E0u);
-	stru29_list = v6;
-	if (v6)
-	{
-		stru29_list_free_pool = v6;
-		v7 = 0;
-		do
-		{
-			v6[v7].next = &v6[v7 + 1];
-			v6 = stru29_list;
-			++v7;
-		} while (v7 < 29);
-		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-		stru29_list_initialized = 1;
-	}
-	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v8 = (DataMapd *)LVL_FindSection((const char *)MAPD);
-	_40E400_set_palette(&v8[11].items->palette);
-	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)11, 0, -10);
-	cplc_select(11);
-	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
-	script_4084A0_animation(a1);
-	script_445470_yield(a1);
-}
-// 47C6C8: using guessed type int stru29_list_initialized;
-
-//----- (0043C630) --------------------------------------------------------
-void script_43C630_mobd79_evt1(Script *a1)
-{
-	Sprite *v1; // esi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // edi@3
-	Sprite *v4; // esi@3
-	stru29 *v5; // eax@3
-	stru29 *v6; // eax@9
-	int v7; // ecx@10
-	DataMapd *v8; // eax@13
-
-	a1->sprite->y = 92160;
-	a1->sprite->z_index = 11;
-	script_445370_yield(a1, 0x80000000, 1);
-	v1 = a1->sprite;
-	v2 = sprite_create(MOBD_79, 0, v1);
-	v1->parent = v2;
-	v2->parent = 0;
-	v2->z_index = v1->z_index - 1;
-	a1->script_type = SCRIPT_TYPE_1;
-	v1->_80_entity__stru29__sprite__initial_hitpoints = stru29_list_4439F0(v1, 0, 0, 1, 1);
-	while (!script_443380(a1, 388, 0))
-	{
-		v3 = a1->sprite;
-		v4 = v3->parent;
-		v3->drawjob->flags |= 0x40000000u;
-		v4->drawjob->flags |= 0x40000000u;
-		v4->pstru7 = &_479D48_stru7;
-		v5 = stru29_list_47C610;
-		if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
-		{
-			while (v5->sprite != v3)
-			{
-				v5 = v5->next;
-				if ((stru29 **)v5 == &stru29_list_47C610)
-					goto LABEL_8;
-			}
-			v5->field_C |= 1u;
-		}
-	LABEL_8:
-		script_443380(a1, 464, 0);
-		v3->drawjob->flags &= 0xBFFFFFFF;
-		v4->drawjob->flags &= 0xBFFFFFFF;
-		v4->pstru7 = _4640E0_stru7_array;
-	}
-	netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
-	netz_47C6C0_mapd_idx = 14;
-	script_408500_anim(a1);
-	stru29_list_remove_all(a1);
-	_47C6D4_stru29 = 0;
-	v6 = (stru29 *)malloc(0x1E0u);
-	stru29_list = v6;
-	if (v6)
-	{
-		stru29_list_free_pool = v6;
-		v7 = 0;
-		do
-		{
-			v6[v7].next = &v6[v7 + 1];
-			v6 = stru29_list;
-			++v7;
-		} while (v7 < 29);
-		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-		stru29_list_initialized = 1;
-	}
-	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v8 = (DataMapd *)LVL_FindSection((const char *)MAPD);
-	_40E400_set_palette(&v8[14].items->palette);
-	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)14, 0, -10);
-	cplc_select(14);
-	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
-	script_4084A0_animation(a1);
-	script_445470_yield(a1);
-}
-// 47C6C8: using guessed type int stru29_list_initialized;
-
-//----- (0043C820) --------------------------------------------------------
-void script_43C820_mobd79_evt1(Script *a1)
-{
-	Sprite *v1; // esi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // edi@3
-	Sprite *v4; // esi@3
-	stru29 *v5; // eax@3
-	stru29 *v6; // eax@9
-	int v7; // ecx@10
-	DataMapd *v8; // eax@13
-
-	a1->sprite->y = 0x18600;
-	a1->sprite->z_index = 12;
-	script_445370_yield(a1, 0x80000000, 1);
-	v1 = a1->sprite;
-	v2 = sprite_create(MOBD_79, 0, v1);
-	v1->parent = v2;
-	v2->parent = 0;
-	v2->z_index = v1->z_index - 1;
-	a1->script_type = SCRIPT_TYPE_1;
-	v1->_80_entity__stru29__sprite__initial_hitpoints = stru29_list_4439F0(v1, 0, 0, 1, 1);
-	while (!script_443380(a1, 372, 0))
-	{
-		v3 = a1->sprite;
-		v4 = v3->parent;
-		v3->drawjob->flags |= 0x40000000u;
-		v4->drawjob->flags |= 0x40000000u;
-		v4->pstru7 = &_479D48_stru7;
-		v5 = stru29_list_47C610;
-		if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
-		{
-			while (v5->sprite != v3)
-			{
-				v5 = v5->next;
-				if ((stru29 **)v5 == &stru29_list_47C610)
-					goto LABEL_8;
-			}
-			v5->field_C |= 1u;
-		}
-	LABEL_8:
-		script_443380(a1, 464, 0);
-		v3->drawjob->flags &= 0xBFFFFFFF;
-		v4->drawjob->flags &= 0xBFFFFFFF;
-		v4->pstru7 = _4640E0_stru7_array;
-	}
-	netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
-	netz_47C6C0_mapd_idx = 15;
-	script_408500_anim(a1);
-	stru29_list_remove_all(a1);
-	_47C6D4_stru29 = 0;
-	v6 = (stru29 *)malloc(0x1E0u);
-	stru29_list = v6;
-	if (v6)
-	{
-		stru29_list_free_pool = v6;
-		v7 = 0;
-		do
-		{
-			v6[v7].next = &v6[v7 + 1];
-			v6 = stru29_list;
-			++v7;
-		} while (v7 < 29);
-		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-		stru29_list_initialized = 1;
-	}
-	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v8 = (DataMapd *)LVL_FindSection((const char *)MAPD);
-	_40E400_set_palette(&v8[15].items->palette);
-	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)15, 0, -10);
-	cplc_select(15);
-	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
-	script_4084A0_animation(a1);
-	script_445470_yield(a1);
-}
-// 47C6C8: using guessed type int stru29_list_initialized;
-
-//----- (0043CA10) --------------------------------------------------------
-void script_43CA10_mobd79_evt1(Script *a1)
-{
-	Sprite *v1; // esi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // edi@3
-	Sprite *v4; // esi@3
-	stru29 *v5; // eax@3
-	stru29 *v6; // eax@9
-	int v7; // ecx@10
-	DataMapd *v8; // eax@13
-
-	script_445370_yield(a1, 0x80000000, 1);
-	a1->sprite->y = 0x14A00;
-	a1->sprite->z_index = 10;
-	v1 = a1->sprite;
-	v2 = sprite_create(MOBD_79, 0, v1);
-	v1->parent = v2;
-	v2->parent = 0;
-	v2->z_index = v1->z_index - 1;
-	a1->script_type = SCRIPT_TYPE_1;
-	v1->_80_entity__stru29__sprite__initial_hitpoints = stru29_list_4439F0(v1, 0, 1, 1, 0);
-	while (!script_443380(a1, 432, 0))
-	{
-		v3 = a1->sprite;
-		v4 = v3->parent;
-		v3->drawjob->flags |= 0x40000000u;
-		v4->drawjob->flags |= 0x40000000u;
-		v4->pstru7 = &_479D48_stru7;
-		v5 = stru29_list_47C610;
-		if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
-		{
-			while (v5->sprite != v3)
-			{
-				v5 = v5->next;
-				if ((stru29 **)v5 == &stru29_list_47C610)
-					goto LABEL_8;
-			}
-			v5->field_C |= 1u;
-		}
-	LABEL_8:
-		script_443380(a1, 464, 0);
-		v3->drawjob->flags &= 0xBFFFFFFF;
-		v4->drawjob->flags &= 0xBFFFFFFF;
-		v4->pstru7 = _4640E0_stru7_array;
-	}
-	netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
-	netz_47C6C0_mapd_idx = 1;
-	script_408500_anim(a1);
-	stru29_list_remove_all(a1);
-	_47C6D4_stru29 = 0;
-	v6 = (stru29 *)malloc(0x1E0u);
-	stru29_list = v6;
-	if (v6)
-	{
-		stru29_list_free_pool = v6;
-		v7 = 0;
-		do
-		{
-			v6[v7].next = &v6[v7 + 1];
-			v6 = stru29_list;
-			++v7;
-		} while (v7 < 29);
-		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-		stru29_list_initialized = 1;
-	}
-	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v8 = (DataMapd *)LVL_FindSection((const char *)MAPD);
-	_40E400_set_palette(&v8[1].items->palette);
-	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
-	cplc_select(1);
-	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
-	script_4084A0_animation(a1);
-	script_445470_yield(a1);
-}
-// 47C6C8: using guessed type int stru29_list_initialized;
-
-//----- (0043CC00) --------------------------------------------------------
-void script_43CC00_mobd79_evt1(Script *a1)
-{
-	Sprite *v1; // esi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // edi@3
-	Sprite *v4; // esi@3
-	stru29 *v5; // eax@3
-
-	script_445370_yield(a1, 0x80000000, 1);
-	a1->sprite->y = 0x1A400;
-	a1->sprite->z_index = 13;
-	v1 = a1->sprite;
-	v2 = sprite_create(MOBD_79, 0, v1);
-	v1->parent = v2;
-	v2->parent = 0;
-	v2->z_index = v1->z_index - 1;
-	a1->script_type = SCRIPT_TYPE_1;
-	v1->_80_entity__stru29__sprite__initial_hitpoints = stru29_list_4439F0(v1, 0, 0, 1, 0);
-	while (!script_443380(a1, 404, 0))
-	{
-		v3 = a1->sprite;
-		v4 = v3->parent;
-		v3->drawjob->flags |= 0x40000000u;
-		v4->drawjob->flags |= 0x40000000u;
-		v4->pstru7 = &_479D48_stru7;
-		v5 = stru29_list_47C610;
-		if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
-		{
-			while (v5->sprite != v3)
-			{
-				v5 = v5->next;
-				if ((stru29 **)v5 == &stru29_list_47C610)
-					goto LABEL_8;
-			}
-			v5->field_C |= 1u;
-		}
-	LABEL_8:
-		script_443380(a1, 464, 0);
-		v3->drawjob->flags &= 0xBFFFFFFF;
-		v4->drawjob->flags &= 0xBFFFFFFF;
-		v4->pstru7 = _4640E0_stru7_array;
-	}
-	script_408500_anim(a1);
-	stru29_list_remove_all(a1);
-	game_state = 3;
-}
-// 47A2C4: using guessed type int game_state;
 
 //----- (0043CD20) --------------------------------------------------------
 void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
@@ -38353,7 +37731,7 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 	v3 = 0;
 	do
 	{
-		script_445370_yield(a1, 0x40000000, 0);
+		script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 		for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 		{
 			v5 = i->event;
@@ -38418,7 +37796,7 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 	v3 = 0;
 	do
 	{
-		script_445370_yield(a1, 0x40000000, 0);
+		script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 		for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 		{
 			v5 = i->event;
@@ -38505,15 +37883,15 @@ void script_43CF50_mobd45(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v5 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -38577,15 +37955,15 @@ void script_43D090_mobd45_directx_ipx(Script *a1)
 					stru29_list_initialized = 1;
 				}
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-				script_445370_yield(a1, 0x80000000, 3);
-				v7 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+				script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+				v7 = LVL_FindMapd();
 				_40E400_set_palette(&v7[4].items->palette);
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
 				cplc_select(4);
 				cplc_406320();
-				script_445370_yield(a1, 0x80000000, 1);
+				script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 				script_4084A0_animation(a1);
-				script_445470_yield(a1);
+				script_yield(a1);
 			}
 		}
 		else
@@ -38651,15 +38029,15 @@ void script_43D270_mobd45_directx_serial(Script *a1)
 					stru29_list_initialized = 1;
 				}
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-				script_445370_yield(a1, 0x80000000, 3);
-				v6 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+				script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+				v6 = LVL_FindMapd();
 				_40E400_set_palette(&v6[5].items->palette);
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)5, 0, -10);
 				cplc_select(5);
 				cplc_406320();
-				script_445370_yield(a1, 0x80000000, 1);
+				script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 				script_4084A0_animation(a1);
-				script_445470_yield(a1);
+				script_yield(a1);
 			}
 		}
 		else
@@ -38724,15 +38102,15 @@ void script_43D430_mobd45_directx_modem(Script *a1)
 					stru29_list_initialized = 1;
 				}
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-				script_445370_yield(a1, 0x80000000, 3);
-				v6 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+				script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+				v6 = LVL_FindMapd();
 				_40E400_set_palette(&v6[6].items->palette);
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 				cplc_select(6);
 				cplc_406320();
-				script_445370_yield(a1, 0x80000000, 1);
+				script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 				script_4084A0_animation(a1);
-				script_445470_yield(a1);
+				script_yield(a1);
 			}
 		}
 		else
@@ -38789,15 +38167,15 @@ void script_43D5F0_mobd45(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v5 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -38844,15 +38222,15 @@ void script_43D740_mobd45_evt17(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v5 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5[6].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -38899,15 +38277,15 @@ void script_43D890_mobd45(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v5 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5[6].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -38975,7 +38353,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 	if (!_47C65C_render_string)
 	{
 		sprite_list_remove(v1);
-		script_445470_yield(a1);
+		script_yield(a1);
 	}
 	v1->x = 0x16800;
 	v1->y = 0xB000;
@@ -38997,7 +38375,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 		v6 = 0;
 		do
 		{
-			script_445370_yield(a1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				v8 = i->event;
@@ -39135,7 +38513,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 	if (!_47C604_mission_briefing)
 	{
 		sprite_list_remove(v3);
-		script_445470_yield(a1);
+		script_yield(a1);
 	}
 	v3->x = 85504;
 	v3->y = 59392;
@@ -39156,7 +38534,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 		render_string_443D80(_47C604_mission_briefing, v7, 0);
 		do
 		{
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v9 = i->event;
@@ -39245,7 +38623,7 @@ void script_43E010_mobd45_modem(Script *a1)
 	if (!v3)
 	{
 		sprite_list_remove(v2);
-		script_445470_yield(a1);
+		script_yield(a1);
 	}
 	v2->x = 32512;
 	v2->y = 67584;
@@ -39433,15 +38811,15 @@ void script_43E230_mobd45_modems(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(v1, 0x80000000, 3);
-	v10 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(v1, 0x80000000, 3);
+	v10 = LVL_FindMapd();
 	_40E400_set_palette(&v10[6].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
-	script_445370_yield(v1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(v1, 0x80000000, 1);
 	script_4084A0_animation(v1);
-	script_445470_yield(v1);
+	script_yield(v1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -39523,15 +38901,15 @@ void script_43E470_mobd45_modems(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v9 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v9 = LVL_FindMapd();
 	_40E400_set_palette(&v9[6].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 // 47C6CC: using guessed type int netz_modem_47C6CC_idx;
@@ -39579,15 +38957,15 @@ void script_43E670_mobd45(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v5 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -39715,7 +39093,7 @@ void script_43E890_mobd45_modems(Script *a1)
 			} while ((int)v8 < (int)&unk_47C690);
 		}
 		v1 = 0;
-		script_445370_yield(a1, 0x40000000, 0);
+		script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 		for (j = script_get_next_event(a1); j; j = script_get_next_event(a1))
 		{
 			switch (j->event)
@@ -39776,7 +39154,7 @@ void script_43EA90_mobd45(Script *a1)
 		v3 = 0;
 		do
 		{
-			script_445370_yield(a1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				v5 = i->event;
@@ -39833,7 +39211,7 @@ void script_43EB80_mobd45(Script *a1)
 		v3 = 0;
 		do
 		{
-			script_445370_yield(a1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				v5 = i->event;
@@ -39892,7 +39270,7 @@ void script_43EC70_mobd45(Script *a1)
 		v4 = 0;
 		do
 		{
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v6 = i->event;
@@ -40021,7 +39399,7 @@ void script_43EE90_mobd45(Script *a1)
 	if (!v5)
 	{
 		sprite_list_remove(v13);
-		script_445470_yield(v1);
+		script_yield(v1);
 		v5 = _47C65C_render_string;
 	}
 	v6 = v1->sprite;
@@ -40061,15 +39439,15 @@ void script_43EE90_mobd45(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(v1, 0x80000000, 3);
-	v12 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(v1, 0x80000000, 3);
+	v12 = LVL_FindMapd();
 	_40E400_set_palette(&v12[9].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)9, 0, -10);
 	cplc_select(9);
 	cplc_406320();
-	script_445370_yield(v1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(v1, 0x80000000, 1);
 	script_4084A0_animation(v1);
-	script_445470_yield(v1);
+	script_yield(v1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -40154,15 +39532,15 @@ void script_43F0E0_mobd45_modems(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v11 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v11 = LVL_FindMapd();
 	_40E400_set_palette(&v11[8].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 477344: using guessed type int _477344_esp;
 // 47734C: using guessed type int _47734C_coroutine_int;
@@ -40240,15 +39618,15 @@ void script_43F330_mobd45(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v10 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v10 = LVL_FindMapd();
 	_40E400_set_palette(&v10[7].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 	cplc_select(7);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 477344: using guessed type int _477344_esp;
 // 47734C: using guessed type int _47734C_coroutine_int;
@@ -40300,15 +39678,15 @@ void script_43F520_mobd45(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v6 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v6 = LVL_FindMapd();
 	_40E400_set_palette(&v6[10].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)10, 0, -10);
 	cplc_select(10);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -40356,15 +39734,15 @@ void script_43F670_mobd45(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v5 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5[1].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 	cplc_select(1);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -40390,12 +39768,12 @@ void script_43F7C0(Script *a1)
 	v14 = 1;
 	v2 = sprite_create(MOBD_FONT_ITALIC, a1, 0);
 	if (!v2)
-		script_445470_yield(a1);
+		script_yield(a1);
 	v3 = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 69, 219, 27, 10, 90, 14, 16);
 	if (!v3)
 	{
 		sprite_list_remove(v2);
-		script_445470_yield(a1);
+		script_yield(a1);
 	}
 	v4 = stru29_list_4439F0(v2, v3, 0, 1, 0);
 	v4->field_C |= 1u;
@@ -40411,7 +39789,7 @@ void script_43F7C0(Script *a1)
 		dword_47C700 = 0;
 	while (1)
 	{
-		v13 = script_445370_yield(v1, 0xC0000000, 1);
+		v13 = script_445370_yield_to_main_thread(v1, 0xC0000000, 1);
 		_477340_coroutine_yield_item = (void *)v13;
 		if (coroutine_list_head != coroutine_current && ++_47734C_coroutine_int == 1)
 		{
@@ -40488,7 +39866,7 @@ void script_43F9E0_mobd45(Script *a1)
 		v4 = 0;
 		do
 		{
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v6 = i->event;
@@ -40551,7 +39929,7 @@ void script_43FAD0_mobd45_evt5(Script *a1)
 	v2 = sprite_create(MOBD_FONT_ITALIC, a1, 0);
 	v18 = v2;
 	if (!v2)
-		script_445470_yield(a1);
+		script_yield(a1);
 	_47C664_ingame_menu_sprite = v2;
 	v3 = 38912;
 	while (1)
@@ -40573,7 +39951,7 @@ void script_43FAD0_mobd45_evt5(Script *a1)
 			if (!v6)
 			{
 				sprite_list_remove(v18);
-				script_445470_yield(a1);
+				script_yield(a1);
 			}
 			v7 = stru29_list_4439F0(v18, v6, 0, 1, 0);
 			v7->field_C |= 1u;
@@ -40588,7 +39966,7 @@ void script_43FAD0_mobd45_evt5(Script *a1)
 			{
 				v8 = -(v17 != 0);
 				LOBYTE_HEXRAYS(v8) = v8 & 0x38;
-				v9 = script_445370_yield(a1, 0xC0000000, v8 + 300);
+				v9 = script_445370_yield_to_main_thread(a1, 0xC0000000, v8 + 300);
 				if (netz_42E430(0))
 					v17 = 0;
 				if (v16 && dword_46E3F0 == -2)
@@ -40717,15 +40095,15 @@ void script_43FDE0_mobd45(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v5 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5[1].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 	cplc_select(1);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -40758,7 +40136,7 @@ __debugbreak();
 	a1->script_type = SCRIPT_TYPE_5;
 	stru29_list_4439F0(v1, 0, 0, 1, 0);
 	dword_47C5F8 = -1;
-	if (!script_create_coroutine(SCRIPT_TYPE_5, (void(*)(Script *))script_43FAD0_mobd45_evt5, 0))
+	if (!script_create_coroutine(SCRIPT_TYPE_5, script_43FAD0_mobd45_evt5, 0))
 		game_state = 3;
 	while (1)
 	{
@@ -40789,7 +40167,7 @@ __debugbreak();
 			dword_46E3F0 = -1;
 			while ((dword_468B54 == -1 || v8 == (void *)-1) && v9 < 1800)
 			{
-				_477340_coroutine_yield_item = (void *)script_445370_yield(a1, 0x80000000, 1);
+				_477340_coroutine_yield_item = (void *)script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 				if (coroutine_list_head != coroutine_current && ++_47734C_coroutine_int == 1)
 				{
 					v10 = coroutine_list_head->stack;
@@ -40839,15 +40217,15 @@ __debugbreak();
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v14 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v14 = LVL_FindMapd();
 	_40E400_set_palette(&v14[8].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (004402A0) --------------------------------------------------------
@@ -40922,15 +40300,15 @@ void script_4402A0_mobd45_evt5(Script *a1)
 			stru29_list_initialized = 1;
 		}
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-		script_445370_yield(a1, 0x80000000, 3);
-		v11 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+		v11 = LVL_FindMapd();
 		_40E400_set_palette(&v11[7].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 		cplc_select(7);
 		cplc_406320();
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 		script_4084A0_animation(a1);
-		script_445470_yield(a1);
+		script_yield(a1);
 	}
 }
 // 46E3F0: using guessed type int dword_46E3F0;
@@ -41067,7 +40445,7 @@ void script_4404D0_mobd45_evt8(Script *a1)
 			v18->script_type = v1->script_type;
 	}
 	sprite_list_remove(v2);
-	script_445470_yield(v1);
+	script_yield(v1);
 }
 // 477344: using guessed type int _477344_esp;
 // 47734C: using guessed type int _47734C_coroutine_int;
@@ -41143,14 +40521,14 @@ void script_440810_mobd45(Script *a1)
 	if (!_47C65C_render_string)
 	{
 		sprite_list_remove(v2);
-		script_445470_yield(a1);
+		script_yield(a1);
 	}
 	_47C664_ingame_menu_sprite = sprite_create(MOBD_FONT_ITALIC, 0, v2);
 	if (!_47C664_ingame_menu_sprite)
 	{
 		sprite_list_remove(v2);
 		render_string_list_remove(_47C65C_render_string);
-		script_445470_yield(a1);
+		script_yield(a1);
 	}
 	if (netz_47C6C0_mapd_idx != LEVEL_MUTE_01 && !netz_47A834)
 	{
@@ -41198,7 +40576,7 @@ void script_440810_mobd45(Script *a1)
 		v8 = 0;
 		do
 		{
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v10 = i->event;
@@ -41952,15 +41330,15 @@ void script_441940_mobd45_evt17(Script *a1)
 		stru29_list_remove_all(a1);
 		stru29_list_alloc();
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-		script_445370_yield(a1, 0x80000000, 3);
-		v4 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+		v4 = LVL_FindMapd();
 		_40E400_set_palette(&v4->items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 		cplc_select(0);
 		cplc_406320();
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 		script_4084A0_animation(a1);
-		script_445470_yield(a1);
+		script_yield(a1);
 	}
 	else
 	{
@@ -42012,8 +41390,8 @@ void script_441940_mobd45_evt17(Script *a1)
 			stru29_list_initialized = 1;
 		}
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-		script_445370_yield(a1, 0x80000000, 3);
-		v14 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+		v14 = LVL_FindMapd();
 		_40E400_set_palette(&v14[1].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 		v10 = 1;
@@ -42043,17 +41421,17 @@ void script_441940_mobd45_evt17(Script *a1)
 			stru29_list_initialized = 1;
 		}
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-		script_445370_yield(a1, 0x80000000, 3);
-		v9 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+		v9 = LVL_FindMapd();
 		_40E400_set_palette(&v9[4].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
 		v10 = 4;
 	}
 	cplc_select(v10);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00441CE0) --------------------------------------------------------
@@ -42087,7 +41465,7 @@ void script_441CE0_mobd45_evt8(Script *a1)
 	}
 	else
 	{
-		if (!script_create_coroutine(SCRIPT_TYPE_8, (void(*)(Script *))script_43F7C0, 0))
+		if (!script_create_coroutine(SCRIPT_TYPE_8, script_43F7C0, 0))
 			game_state = 3;
 		do
 		{
@@ -42160,7 +41538,7 @@ void script_441F10(Script *a1)
 
 	while (1)
 	{
-		v1 = script_445370_yield(a1, 0xC0000000, 1);
+		v1 = script_445370_yield_to_main_thread(a1, 0xC0000000, 1);
 		if (netz_47A828)
 		{
 			netz_47A828 = 0;
@@ -42179,7 +41557,7 @@ void script_441F10(Script *a1)
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				if (i->event == EVT_MSG_MISSION_FAILED)
-					script_445470_yield(a1);
+					script_yield(a1);
 				script_discard_event(i);
 			}
 		}
@@ -42297,7 +41675,7 @@ void script_441FC0_mobd45_evt8(Script *a1)
 		v16->y = 38400;
 	}
 	sprite_list_remove(v5);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (004421F0) --------------------------------------------------------
@@ -42357,9 +41735,9 @@ void script_4421F0_mobd45_evt8(Script *a1)
 	v5->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_17;
 	stru29_list_4439F0(v5, 0, 1, 1, 0);
-	if (!script_create_coroutine(SCRIPT_TYPE_9, (void(*)(Script *))script_43F7C0, 0))
+	if (!script_create_coroutine(SCRIPT_TYPE_9, script_43F7C0, 0))
 		game_state = 3;
-	if (!script_create_coroutine(SCRIPT_TYPE_9, (void(*)(Script *))script_441F10, 0))
+	if (!script_create_coroutine(SCRIPT_TYPE_9, script_441F10, 0))
 		game_state = 3;
 	while (!script_443780(a1, 2044, 1, 0))
 		;
@@ -42409,8 +41787,8 @@ void script_4421F0_mobd45_evt8(Script *a1)
 			stru29_list_initialized = 1;
 		}
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-		script_445370_yield(a1, 0x80000000, 3);
-		v16 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+		v16 = LVL_FindMapd();
 		_40E400_set_palette(&v16[1].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 		v13 = 1;
@@ -42424,17 +41802,17 @@ void script_4421F0_mobd45_evt8(Script *a1)
 		stru29_list_remove_all(a1);
 		stru29_list_alloc();
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-		script_445370_yield(a1, 0x80000000, 3);
-		v12 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+		v12 = LVL_FindMapd();
 		_40E400_set_palette(&v12[4].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
 		v13 = 4;
 	}
 	cplc_select(v13);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00442580) --------------------------------------------------------
@@ -42481,15 +41859,15 @@ void script_442580_mobd45_evt17(Script *task)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(task, 0x80000000, 3);
-	v5 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(task, 0x80000000, 3);
+	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
-	script_445370_yield(task, 0x80000000, 1);
+	script_445370_yield_to_main_thread(task, 0x80000000, 1);
 	script_4084A0_animation(task);
-	script_445470_yield(task);
+	script_yield(task);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -42567,15 +41945,15 @@ __debugbreak();
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v11 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v11 = LVL_FindMapd();
 	_40E400_set_palette(&v11[7].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 	cplc_select(7);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (004428C0) --------------------------------------------------------
@@ -42641,7 +42019,7 @@ void script_4428C0_mobd45_evt6(Script *a1)
 			dword_46E3F0 = -1;
 			while ((dword_468B54 == -1 || v9 == -1) && v7 < 1800)
 			{
-				_477340_coroutine_yield_item = (void *)script_445370_yield(a1, 0x80000000, 1);
+				_477340_coroutine_yield_item = (void *)script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 				if (coroutine_list_head != coroutine_current && ++_47734C_coroutine_int == 1)
 				{
 					v10 = coroutine_list_head->stack;
@@ -42683,15 +42061,15 @@ void script_4428C0_mobd45_evt6(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v14 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v14 = LVL_FindMapd();
 	_40E400_set_palette(&v14[8].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 // 468B68: using guessed type int netz_468B6C_providers_idx;
 // 46E3F0: using guessed type int dword_46E3F0;
@@ -42748,7 +42126,7 @@ void script_442BB0_mobd46(Script *a1)
 	v1->script_type = SCRIPT_TYPE_14;
 	stru29_list_4439F0(v4, 0, 0, 1, 0);
 	sprite_4272A0_load_mobd_item(v4, 180);
-	script_445370_yield(v1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(v1, 0x80000000, 1);
 	if (netz_47C6C0_mapd_idx == SCRIPT_TYPE_14)
 	{
 		v5 = pstru6;
@@ -42797,7 +42175,7 @@ void script_442BB0_mobd46(Script *a1)
 				v13 = 0;
 				do
 				{
-					script_445370_yield(v1, 0x40000000, 0);
+					script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 					v14 = script_get_next_event(v1);
 					if (v14)
 					{
@@ -42849,7 +42227,7 @@ void script_442BB0_mobd46(Script *a1)
 			}
 		LABEL_40:
 			sprite_release_mobd_item(v5);
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 				script_discard_event(i);
 		}
@@ -42906,7 +42284,7 @@ void script_442BB0_mobd46(Script *a1)
 			}
 		LABEL_87:
 			sprite_release_mobd_item(v19);
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			v30 = script_get_next_event(v1);
 			if (v30)
 			{
@@ -42949,7 +42327,7 @@ void script_442BB0_mobd46(Script *a1)
 		v26 = 0;
 		do
 		{
-			script_445370_yield(v1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			v27 = script_get_next_event(v1);
 			if (v27)
 			{
@@ -43040,17 +42418,16 @@ void script_443000_mobd45(Script *a1)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(a1, 0x80000000, 3);
-	v5 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 3);
+	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
-	script_445370_yield(a1, 0x80000000, 1);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	script_4084A0_animation(a1);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
-// 47C6C8: using guessed type int stru29_list_initialized;
 
 //----- (00443140) --------------------------------------------------------
 void script_443140_mobd45(Script *a1)
@@ -43162,29 +42539,22 @@ void script_443290_mobd45(Script *a1)
 		}
 	}
 }
-// 47A2DC: using guessed type __int16 current_mute_level;
-// 47A2E0: using guessed type __int16 current_surv_level;
-// 47C6E4: using guessed type int dword_47C6E4;
-// 47C6E8: using guessed type int dword_47C6E8;
 
 //----- (00443380) --------------------------------------------------------
-int script_443380(Script *a1, int a2, int a3)
+int script_443380(Script *a1, int lookup_table_offset, bool a3)
 {
 	Script *v3; // edi@1
 	int v4; // ebx@1
 	Sprite *v5; // esi@1
 	Sprite *v6; // ebp@1
 	int v7; // eax@2
-	int v8; // ecx@2
 	ScriptEvent *i; // eax@12
 	int v10; // edx@13
 	stru29 *v11; // edx@16
 	int v12; // edx@24
 	int v13; // edx@25
-	int lookup_table_offset; // [sp+10h] [bp-4h]@1
 
 	v3 = a1;
-	lookup_table_offset = a2;
 	v4 = 0;
 	v5 = a1->sprite;
 	v6 = v5->parent;
@@ -43192,14 +42562,14 @@ int script_443380(Script *a1, int a2, int a3)
 	{
 		while (1)
 		{
-			v7 = script_445370_yield(v3, 0xC0000000, 1);
-			v8 = (int)v3->sprite->_80_entity__stru29__sprite__initial_hitpoints;
-			if (v8 && *(_BYTE *)(v8 + 12) & 2)
+			v7 = script_445370_yield_to_main_thread(v3, 0xC0000000, 1);
+			stru29 *v8 = (stru29 *)v3->sprite->_80_entity__stru29__sprite__initial_hitpoints; // stru29 for main menu sprites
+			if (v8 && v8->field_C & 2)
 			{
 				if (!dword_47C6EC || units_stats_parsed_from_argv)
-					v4 |= 0x20u;
+					v4 |= 0x20;
 				else
-					v4 &= 0xFFFFFFDF;
+					v4 &= ~0x20;
 			}
 			if (v7 != 0x80000000)
 				break;
@@ -43279,10 +42649,10 @@ int script_443380(Script *a1, int a2, int a3)
 	v6->pstru7 = &_479D48_stru7;
 	sprite_4272A0_load_mobd_item(v6, 24);
 	sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 1);
-	script_445370_yield(v3, 0x10000000, 0);
+	script_445370_yield_to_main_thread(v3, 0x10000000, 0);
 	sprite_4272A0_load_mobd_item(v6, 12);
 	sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 2);
-	script_445370_yield(v3, 0x10000000, 0);
+	script_445370_yield_to_main_thread(v3, 0x10000000, 0);
 	v6->pstru7 = _4640E0_stru7_array;
 	return 1;
 }
@@ -43311,7 +42681,7 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 	v7 = v5->parent;
 	lookup_table_offset = a2;
 	a1a = v5->parent;
-	if (script_445370_yield(a1, 0xC0000000, 1) == 0x80000000)
+	if (script_445370_yield_to_main_thread(a1, 0xC0000000, 1) == 0x80000000)
 	{
 		if (a3)
 		{
@@ -43394,10 +42764,10 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 				v7->pstru7 = &_479D48_stru7;
 				sprite_4272E0_load_mobd_item(a1a, 1704, a4);
 				sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 1);
-				script_445370_yield(v4, 0x10000000, 0);
+				script_445370_yield_to_main_thread(v4, 0x10000000, 0);
 				sprite_4272E0_load_mobd_item(a1a, 1716, a4);
 				sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 2);
-				script_445370_yield(v4, 0x10000000, 0);
+				script_445370_yield_to_main_thread(v4, 0x10000000, 0);
 				a1a->pstru7 = _4640E0_stru7_array;
 				return 2;
 			}
@@ -43434,7 +42804,7 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 	v7 = v5->parent;
 	v14 = a2;
 	v15 = v5->parent;
-	if (script_445370_yield(a1, 0xC0000000, 1) == 0x80000000)
+	if (script_445370_yield_to_main_thread(a1, 0xC0000000, 1) == 0x80000000)
 	{
 		if (a3)
 		{
@@ -43509,10 +42879,10 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 				v7->pstru7 = &_479D48_stru7;
 				sprite_4272E0_load_mobd_item(v15, 1704, a4);
 				sprite_4272E0_load_mobd_item(v5, v14, 1);
-				script_445370_yield(v4, 0x10000000, 0);
+				script_445370_yield_to_main_thread(v4, 0x10000000, 0);
 				sprite_4272E0_load_mobd_item(v15, 1716, a4);
 				sprite_4272E0_load_mobd_item(v5, v14, 2);
-				script_445370_yield(v4, 0x10000000, 0);
+				script_445370_yield_to_main_thread(v4, 0x10000000, 0);
 				v15->pstru7 = _4640E0_stru7_array;
 				return 2;
 			}
@@ -43779,16 +43149,16 @@ void script_443C40(Script *a1, int cplc_item)
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	script_445370_yield(v3, 0x80000000, 3);
-	v6 = (DataMapd *)LVL_FindSection((const char *)MAPD);
+	script_445370_yield_to_main_thread(v3, 0x80000000, 3);
+	v6 = LVL_FindMapd();
 	_40E400_set_palette(&v6[v2].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(v2, 0, -10);
 	cplc_select(v2);
 	cplc_406320();
-	script_445370_yield(v3, 0x80000000, 1);
+	script_445370_yield_to_main_thread(v3, 0x80000000, 1);
 	script_4084A0_animation(v3);
 	if (netz_47C6BC_mapd_idx || v2 != 12)
-		script_445470_yield(v3);
+		script_yield(v3);
 }
 // 47C6C8: using guessed type int stru29_list_initialized;
 
@@ -43796,7 +43166,7 @@ void script_443C40(Script *a1, int cplc_item)
 void script_443D40_mobd20(Script *a1)
 {
 	sprite_list_remove(a1->sprite);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00443D60) --------------------------------------------------------
@@ -44177,11 +43547,11 @@ void entity_oil_tanker_initialize(Entity *a1)
 		v1->script->script_type = SCRIPT_TYPE_INVALID;
 		v18 = v1->sprite;
 		v1->entity_id = 0;
-		v18->field_1C_speed = 0;
-		v1->sprite->field_20_neg_speed = 0;
+		v18->x_speed = 0;
+		v1->sprite->y_speed = 0;
 		sprite_list_remove(v1->sprite);
 		entity_list_remove(v1);
-		script_445470_yield(v1->script);
+		script_yield(v1->script);
 	}
 }
 
@@ -44192,7 +43562,7 @@ void entity_mode_4444D0_oiltanker(Entity *a1)
 
 	v1 = a1->script;
 	a1->mode = entity_mode_4448C0_oiltanker;
-	script_445370_yield(v1, 0x80000000, 5);
+	script_445370_yield_to_main_thread(v1, 0x80000000, 5);
 }
 
 //----- (004444F0) --------------------------------------------------------
@@ -44219,8 +43589,8 @@ void entity_mode_4444F0_oiltanker(Entity *a1)
 		}
 		else
 		{
-			v1->sprite->field_1C_speed = 0;
-			v1->sprite->field_20_neg_speed = 0;
+			v1->sprite->x_speed = 0;
+			v1->sprite->y_speed = 0;
 		}
 	}
 	v4 = v2->drillrig;
@@ -44237,7 +43607,7 @@ void entity_mode_4444F0_oiltanker(Entity *a1)
 			v1->sprite,
 			v1->stats->mobd_lookup_offset,
 			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
-		script_445370_yield(v1->script, 0x80000000, 20);
+		script_445370_yield_to_main_thread(v1->script, 0x80000000, 20);
 	}
 }
 
@@ -44265,8 +43635,8 @@ void entity_mode_444590_oiltanker(Entity *a1)
 		}
 		else
 		{
-			v1->sprite->field_1C_speed = 0;
-			v1->sprite->field_20_neg_speed = 0;
+			v1->sprite->x_speed = 0;
+			v1->sprite->y_speed = 0;
 		}
 	}
 	v4 = v2->powerstation;
@@ -44283,7 +43653,7 @@ void entity_mode_444590_oiltanker(Entity *a1)
 			v1->sprite,
 			v1->stats->mobd_lookup_offset,
 			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
-		script_445370_yield(v1->script, 0x80000000, 20);
+		script_445370_yield_to_main_thread(v1->script, 0x80000000, 20);
 	}
 }
 
@@ -44295,15 +43665,15 @@ void entity_mode_444630_oiltanker(Entity *a1)
 
 	v1 = a1;
 	v2 = &a1->mobd_lookup_idx;
-	a1->sprite->field_1C_speed = 0;
-	a1->sprite->field_20_neg_speed = 0;
+	a1->sprite->x_speed = 0;
+	a1->sprite->y_speed = 0;
 	sprite_4272E0_load_mobd_item(
 		a1->sprite,
 		a1->stats->mobd_lookup_offset,
 		_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
 	if (!_44CB60_advance_mobd_frame(v2, 160, v1->stats->turning_speed))
 		v1->mode = entity_mode_4446B0_oiltanker_load_oil;
-	script_445370_yield(v1->script, 0x80000000, 1);
+	script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
 }
 
 //----- (004446A0) --------------------------------------------------------
@@ -44369,7 +43739,7 @@ void entity_mode_4446B0_oiltanker_load_oil(Entity *a1)
 	}
 	v1->mode = entity_mode_4447C0_oiltanker;
 LABEL_23:
-	script_445370_yield(v1->script, 0x80000000, 1);
+	script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
 }
 // 470510: using guessed type int dword_470510[];
 
@@ -44415,8 +43785,8 @@ void entity_mode_4447C0_oiltanker(Entity *a1)
 		}
 		else
 		{
-			v1->sprite->field_1C_speed = 0;
-			v1->sprite->field_20_neg_speed = 0;
+			v1->sprite->x_speed = 0;
+			v1->sprite->y_speed = 0;
 		}
 	}
 	v7 = v2->powerstation;
@@ -44476,10 +43846,10 @@ void entity_mode_4448C0_oiltanker(Entity *a1)
 		if (!v3)
 			v2->drillrig = 0;
 	}
-	v1->sprite->field_1C_speed = 0;
-	v1->sprite->field_20_neg_speed = 0;
-	v1->sprite->field_1C_speed = 0;
-	v1->sprite->field_20_neg_speed = 0;
+	v1->sprite->x_speed = 0;
+	v1->sprite->y_speed = 0;
+	v1->sprite->x_speed = 0;
+	v1->sprite->y_speed = 0;
 	v1->script->event_handler = EventHandler_OilTanker;
 	if (!v2->drillrig)
 	{
@@ -44495,8 +43865,8 @@ void entity_mode_4448C0_oiltanker(Entity *a1)
 		}
 		else
 		{
-			v1->sprite->field_1C_speed = 0;
-			v1->sprite->field_20_neg_speed = 0;
+			v1->sprite->x_speed = 0;
+			v1->sprite->y_speed = 0;
 		}
 	}
 	v8 = v2->drillrig;
@@ -44534,15 +43904,15 @@ void entity_mode_4449D0_oiltanker(Entity *a1)
 
 	v1 = a1;
 	v2 = &a1->mobd_lookup_idx;
-	a1->sprite->field_1C_speed = 0;
-	a1->sprite->field_20_neg_speed = 0;
+	a1->sprite->x_speed = 0;
+	a1->sprite->y_speed = 0;
 	sprite_4272E0_load_mobd_item(
 		a1->sprite,
 		a1->stats->mobd_lookup_offset,
 		_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
 	if (!_44CB60_advance_mobd_frame(v2, 160, v1->stats->turning_speed))
 		v1->mode = entity_mode_444A40_oiltanker;
-	script_445370_yield(v1->script, 0x80000000, 1);
+	script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
 }
 
 //----- (00444A40) --------------------------------------------------------
@@ -44550,12 +43920,12 @@ void entity_mode_444A40_oiltanker(Entity *a1)
 {
 	Script *v1; // ST00_4@1
 
-	a1->sprite->field_1C_speed = -(a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]] >> 6);
-	a1->sprite->field_20_neg_speed = -(-(a1->stats->speed
+	a1->sprite->x_speed = -(a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]] >> 6);
+	a1->sprite->y_speed = -(-(a1->stats->speed
 		* _4731C8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]]) >> 6);
 	v1 = a1->script;
 	a1->mode = entity_mode_444B40_oiltanker_unload_oil;
-	script_445370_yield(v1, 0x80000000, 80);
+	script_445370_yield_to_main_thread(v1, 0x80000000, 80);
 }
 
 //----- (00444AB0) --------------------------------------------------------
@@ -44577,11 +43947,11 @@ void entity_mode_444AB0_oiltanker(Entity *a1)
 				*(_DWORD *)(v3 + 24) = 0;
 		}
 	}
-	a1->sprite->field_1C_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]] >> 6;
-	a1->sprite->field_20_neg_speed = -(a1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]]) >> 6;
+	a1->sprite->x_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]] >> 6;
+	a1->sprite->y_speed = -(a1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]]) >> 6;
 	v4 = a1->script;
 	a1->mode = entity_mode_4448C0_oiltanker;
-	script_445370_yield(v4, 0x80000000, 80);
+	script_445370_yield_to_main_thread(v4, 0x80000000, 80);
 }
 
 //----- (00444B40) --------------------------------------------------------
@@ -44592,8 +43962,8 @@ void entity_mode_444B40_oiltanker_unload_oil(Entity *a1)
 
 	v1 = a1;
 	v2 = (EntityOilTankerState *)a1->state;
-	a1->sprite->field_1C_speed = 0;
-	a1->sprite->field_20_neg_speed = 0;
+	a1->sprite->x_speed = 0;
+	a1->sprite->y_speed = 0;
 	entity_40DF50_boxd(a1, 0);
 	if (v2->_0_oil_loaded > 0)
 	{
@@ -44603,7 +43973,7 @@ void entity_mode_444B40_oiltanker_unload_oil(Entity *a1)
 			sound_play(SOUND_TANKER_OIL_UNLOADING, 0, _4690A8_unit_sounds_volume, 16, 0);
 		add_integer((int *)&game_globals_per_player + v1->player_side, 20);
 		entity_4107B0_oiltanker_oil_bar(v1);
-		script_445370_yield(v1->script, 0x80000000, 20);
+		script_445370_yield_to_main_thread(v1->script, 0x80000000, 20);
 	}
 	else
 	{
@@ -44716,8 +44086,8 @@ void entity_mode_444CC0_oiltanker(Entity *a1)
 	}
 	else
 	{
-		v1->sprite->field_1C_speed = 0;
-		v1->sprite->field_20_neg_speed = 0;
+		v1->sprite->x_speed = 0;
+		v1->sprite->y_speed = 0;
 	}
 }
 
@@ -44741,8 +44111,8 @@ void entity_mode_444D10_oiltanker(Entity *a1)
 	}
 	else
 	{
-		v1->sprite->field_1C_speed = 0;
-		v1->sprite->field_20_neg_speed = 0;
+		v1->sprite->x_speed = 0;
+		v1->sprite->y_speed = 0;
 	}
 }
 
@@ -44921,7 +44291,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
 				{
 					v21 = v5->script;
 				LABEL_65:
-					script_445370_yield(v21, 0x80000000, 1);
+					script_445370_yield_to_main_thread(v21, 0x80000000, 1);
 					v5->hitpoints = 0;
 					v5->mode = entity_419560_on_death;
 					v5->destroyed = 1;
@@ -44952,7 +44322,7 @@ bool script_list_alloc(int coroutine_stack_size)
 
 	v1 = coroutine_stack_size;
 	if (!coroutine_stack_size)
-		v1 = 2048;
+		v1 = 1048576;
 	result = (Script *)script_event_list_alloc();
 	if (result)
 	{
@@ -44983,48 +44353,48 @@ bool script_list_alloc(int coroutine_stack_size)
 	}
 	return (BOOL)result;
 }
-// 47C764: using guessed type __int16 is_coroutine_list_initialization_failed;
 
 //----- (00445210) --------------------------------------------------------
-Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size)
+Script *script_create_coroutine_impl(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size, const char *debug_handler_name)
 {
 	Script *v3; // esi@1
-	void(*v4)(Script *); // ebp@1
-	Script *result; // eax@2
 	int v6; // edx@3
 	Script *v7; // edx@6
 
 	v3 = script_list_free_pool;
-	v4 = handler;
 	if (script_list_free_pool)
 	{
 		v6 = stack_size;
 		if (!stack_size)
 			v6 = coroutine_default_stack_size;
+
 		script_list_free_pool = script_list_free_pool->next;
+
 		memset(v3, SCRIPT_COROUTINE, sizeof(Script));
 		v3->script_type = type;
 		v3->routine_type = SCRIPT_COROUTINE;
-		result = (Script *)couroutine_create((void(*)())coroutine_445650_execute, v6);
-		v3->handler = (void(*)(Script *))result;
-		if (result)
+
+        auto coroutine = couroutine_create(coroutine_main, v6, debug_handler_name);
+		v3->handler = (void(*)(Script *))coroutine;
+
+		if (coroutine)
 		{
-			_47C75C_task = v3;
+            task_creation_handler = handler;
+			task_creation_handler_arg = v3;
 			v7 = script_execute_list;
-			task_creation_yield_handler = v4;
 			v3->next = script_execute_list;
 			v7->prev = v3;
 			v3->prev = (Script *)&script_execute_list;
 			script_execute_list = v3;
-			coroutine_yield((Coroutine *)v3->handler);
-			result = v3;
+
+            // call coroutine_main to queue up execution of  task_creation_handler( task_creation_handler_arg )
+			coroutine_yield(coroutine);
+
+			return v3;
 		}
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+
+    return nullptr;
 }
 
 //----- (004452B0) --------------------------------------------------------
@@ -45089,20 +44459,16 @@ void script_deinit(Script *a1)
 }
 
 //----- (00445370) --------------------------------------------------------
-int script_445370_yield(Script *a1, int flags, int a3)
+int script_445370_yield_to_main_thread(Script *a1, int flags, int a3)
 {
-	int v3; // eax@3
-	int v4; // edx@3
 	int v5; // eax@8
 	unsigned int v6; // eax@8
-	enum SCRIPT_ROUTINE_TYPE v8; // eax@11
 
 	if (flags & 0x40000000 && a1->event_list)
 	{
-		v3 = a1->field_20 | 0x40000000;
-		v4 = v3 | a1->field_24;
-		a1->field_20 = v3;
-		a1->field_24 = v4;
+        int v4 = a1->flags_20 | 0x40000000;
+		a1->flags_20 = v4;
+		a1->field_24 |= v4;
 	}
 	if (flags & 0x80000000)
 	{
@@ -45110,11 +44476,10 @@ int script_445370_yield(Script *a1, int flags, int a3)
 			a1->field_14 = a3;
 		if (!a1->field_14)
 		{
-			v5 = a1->field_24;
 			a1->field_28 = 0;
-			a1->field_24 = v5 | 0x80000000;
-			v6 = a1->field_20 | 0x80000000;
-			a1->field_20 = 0;
+			a1->field_24 |= 0x80000000;
+            int v6 = a1->flags_20 | 0x80000000;
+			a1->flags_20 = 0;
 			return flags & v6;
 		}
 	}
@@ -45122,16 +44487,16 @@ int script_445370_yield(Script *a1, int flags, int a3)
 	{
 		a1->field_2C |= a3;
 	}
-	v8 = a1->routine_type;
-	a1->field_20 = 0;
+
+	a1->flags_20 = 0;
 	a1->field_28 = flags;
-	if (v8 == SCRIPT_COROUTINE)
+	if (a1->routine_type == SCRIPT_COROUTINE)
 	{
 		coroutine_yield(coroutine_list_head);
 		a1->field_28 = 0;
 		a1->field_2C = 0;
 	}
-	return a1->field_20;
+	return a1->flags_20;
 }
 
 //----- (00445400) --------------------------------------------------------
@@ -45176,20 +44541,14 @@ void script_free_local_object(Script *a1, void *data)
 }
 
 //----- (00445470) --------------------------------------------------------
-void script_445470_yield(Script *a1)
+void script_yield(Script *a1)
 {
-	int v1; // edx@1
 	int v2; // eax@1
-	int v3; // edx@1
-	enum SCRIPT_ROUTINE_TYPE v4; // eax@1
 
-	v1 = a1->field_24;
-	v2 = a1->field_20 | 0x20000000;
-	a1->field_20 = v2;
-	v3 = v2 | v1;
-	v4 = a1->routine_type;
-	a1->field_24 = v3;
-	if (v4 == SCRIPT_COROUTINE)
+	v2 = a1->flags_20 | 0x20000000;
+	a1->flags_20 = v2;
+	a1->field_24 |= v2;
+	if (a1->routine_type == SCRIPT_COROUTINE)
 		coroutine_yield(coroutine_list_head);
 }
 
@@ -45207,11 +44566,10 @@ void script_list_update()
 	unsigned int v8; // eax@14
 	int v9; // ecx@15
 	int v10; // eax@16
-	enum SCRIPT_ROUTINE_TYPE v11; // eax@18
 
 	for (i = script_execute_list; (Script **)i != &script_execute_list; i = i->next)
 	{
-		if (i->field_20 & 0x20000000)
+		if (i->flags_20 & 0x20000000)
 		{
 			i = i->prev;
 			v1 = i->next;
@@ -45250,23 +44608,25 @@ void script_list_update()
 					if (!v6)
 					{
 						v7 = i->field_24;
-						v8 = i->field_20 | 0x80000000;
-						i->field_20 = v8;
+						v8 = i->flags_20 | 0x80000000;
+						i->flags_20 = v8;
 						i->field_24 = v8 | v7;
 					}
 				}
 				v9 = i->field_28;
-				if (!v9 || (v10 = i->field_20, v9 & v10) || i->field_2C & ~v10)
+				if (!v9 || (v10 = i->flags_20, v9 & v10) || i->field_2C & ~v10)
 				{
-					v11 = i->routine_type;
-					if (v11)
-					{
-						if (v11 == 1)
-							script_yield_handler(i);
-					}
-					else
-					{
-						coroutine_yield((Coroutine *)i->handler);
+                    switch (i->routine_type)
+                    {
+                        case SCRIPT_COROUTINE:
+                            coroutine_yield((Coroutine *)i->handler);
+                            break;
+
+                        case SCRIPT_FUNCTION:
+                            script_yield_handler(i);
+                            break;
+
+                        default: __debugbreak();
 					}
 				}
 			}
@@ -45323,16 +44683,22 @@ void script_list_free()
 }
 
 //----- (00445650) --------------------------------------------------------
-void coroutine_445650_execute()
+void coroutine_main()
 {
-	Script *a1; // ST08_4@1
-	void(*v1)(Script *); // ST04_4@1
+	void(*script_main)(Script *); // ST04_4@1
 
-	a1 = _47C75C_task;
-	v1 = task_creation_yield_handler;
+	Script *arg = task_creation_handler_arg;
+	script_main = task_creation_handler;
+
+    log("Coroutine #%u %s (%08X, %08X), created", coroutine_current->id, coroutine_current->debug_handler_name, script_main, arg);
+
 	coroutine_yield(coroutine_current->yield_to);
-	v1(a1);
-	script_445470_yield(a1);
+
+    log("Coroutine #%u %s (%08X, %08X), start", coroutine_current->id, coroutine_current->debug_handler_name, script_main, arg);
+    script_main(arg);
+
+    log("Coroutine #%u %s (%08X, %08X), exit", coroutine_current->id, coroutine_current->debug_handler_name, script_main, arg);
+	script_yield(arg);
 }
 
 //----- (00445690) --------------------------------------------------------
@@ -46891,7 +46257,7 @@ void script_446ED0_sidebar_buttons(Script *a1)
 	SidebarButton **v1; // esi@1
 
 	_44A6B0_minimap(render_width - 32, 32);
-	script_445370_yield(a1, 0x80000000, 2);
+	script_445370_yield_to_main_thread(a1, 0x80000000, 2);
 	v1 = _47CA18_sidebar_production_buttons;
 	do
 	{
@@ -46909,7 +46275,7 @@ void script_446ED0_sidebar_buttons(Script *a1)
 			_47CA00_render_string->num_lines = 0;
 			render_string_445770(_47CA00_render_string, asc_470198, 0);
 		}
-		script_445370_yield(a1, 0x80000000, 1);
+		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 	}
 }
 // 47CA2C: using guessed type int _47CA2C_should_airstrike_mess_with_sidebar;
@@ -47227,7 +46593,7 @@ void entity_mode_tower_on_death(Entity *a1)
 	v1->script->script_type = SCRIPT_TYPE_INVALID;
 	v5 = v1->script;
 	v1->mode = entity_mode_tower_dead;
-	script_445370_yield(v5, 0x80000000, 60);
+	script_445370_yield_to_main_thread(v5, 0x80000000, 60);
 }
 
 //----- (00447580) --------------------------------------------------------
@@ -47243,7 +46609,7 @@ void entity_mode_tower_dead(Entity *a1)
 	{
 		v2->turret_sprite->param = 0;
 		sprite_list_remove(a1->turret->turret_sprite);
-		script_445470_yield(v1->turret->sprite_task);
+		script_yield(v1->turret->sprite_task);
 		v1->turret = 0;
 	}
 	if (v1->player_side == player_side && num_players_towers > 0)
@@ -47252,7 +46618,7 @@ void entity_mode_tower_dead(Entity *a1)
 	sprite_list_remove(v1->sprite);
 	v3 = v1->script;
 	v1->sprite = 0;
-	script_445470_yield(v3);
+	script_yield(v3);
 	entity_list_remove(v1);
 }
 // 47DCD0: using guessed type int num_players_towers;
@@ -47641,9 +47007,9 @@ void EntityTowerAttachment_handler_447C40(EntityTurret *a1)
 	{
 		v4 = v1->sprite_task;
 		v1->handler = EntityTowerAttachment_handler_447CA0;
-		script_445370_yield(v4, 0x80000000, 1);
+		script_445370_yield_to_main_thread(v4, 0x80000000, 1);
 	}
-	script_445370_yield(v1->sprite_task, 0x80000000, 90);
+	script_445370_yield_to_main_thread(v1->sprite_task, 0x80000000, 90);
 }
 
 //----- (00447CA0) --------------------------------------------------------
@@ -47970,7 +47336,7 @@ void EntityTowerAttachment_handler_448230(EntityTurret *a1)
 		a1->turret_sprite,
 		a1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
 		_47D3C4_entity_mobd_lookup_ids[129]);
-	script_445370_yield(v1->sprite_task, 0x10000000, 0);
+	script_445370_yield_to_main_thread(v1->sprite_task, 0x10000000, 0);
 	v2 = v1->_C_entity;
 	if (v2)
 		v3 = v2->entity_id == v1->_C_entity_idx;
@@ -48011,7 +47377,7 @@ void EntityTowerAttachment_handler_4482D0_missile_battery(EntityTurret *a1)
 		_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
 	v2 = v1->sprite_task;
 	v1->handler = EntityTowerAttachment_handler_448290;
-	script_445370_yield(v2, 0x80000000, 15);
+	script_445370_yield_to_main_thread(v2, 0x80000000, 15);
 }
 
 //----- (00448320) --------------------------------------------------------
@@ -48585,7 +47951,7 @@ void tower_attachment_handler_448E90(EntityTurret *a1)
 
 	v1 = a1;
 	sprite_list_remove(a1->turret_sprite);
-	script_445470_yield(v1->sprite_task);
+	script_yield(v1->sprite_task);
 	script_free_local_object(v1->entity->script, v1);
 }
 
@@ -48598,7 +47964,7 @@ void MessageHandler_448EC0(Script *receiver, Script *sender, enum SCRIPT_EVENT e
 	if (event == EVT_MSG_MISSION_FAILED)
 	{
 		sprite_list_remove(*(Sprite **)(v4 + 4));
-		script_445470_yield(*(Script **)v4);
+		script_yield(*(Script **)v4);
 		script_free_local_object(*(Script **)(*(_DWORD *)(v4 + 8) + 12), (void *)v4);
 	}
 }
@@ -49051,7 +48417,7 @@ bool UNIT_InitTasks()
 			v6 = (_47CAF0_task_attachment2 *)script_create_local_object(_47CAF0_tasks_evt39030[v2], 1200);
 			v5->attach2_list = v6;
 			if (!v6)
-				script_445470_yield(_47CAF0_tasks_evt39030[v2]);
+				script_yield(_47CAF0_tasks_evt39030[v2]);
 			v7 = 0;
 			v5->attach2_list_free_pool = v5->attach2_list;
 			do
@@ -49087,7 +48453,8 @@ bool UNIT_InitTasks()
 	}
 	else
 	{
-		script_create_coroutine(SCRIPT_TYPE_INVALID, script_449820_netz, 0)->field_1C = 1;
+        auto cr = script_create_coroutine(SCRIPT_TYPE_INVALID, script_449820_netz, 0);
+		cr->field_1C = 1;
 		result = 1;
 	}
 	return result;
@@ -49293,7 +48660,7 @@ void script_449820_netz(Script *a1)
 					v34 = 1;
 					v31 = a1;
 				}
-				script_445370_yield(v31, 0x80000000, v34);
+				script_445370_yield_to_main_thread(v31, 0x80000000, v34);
 				if (dword_47CB1C != 1)
 					break;
 				dword_47CB14 = netz_468B50_available_units_denom - 1;
@@ -49382,7 +48749,7 @@ void script_449820_netz(Script *a1)
 					v35 = 1;
 					v32 = a1;
 				}
-				script_445370_yield(v32, 0x80000000, v35);
+				script_445370_yield_to_main_thread(v32, 0x80000000, v35);
 				v28 = (_47A660_global *)dword_47CB1C;
 				if (dword_47CB1C != 1)
 					goto LABEL_57;
@@ -49436,7 +48803,7 @@ LABEL_57:
 	}
 	if (netz_468B50_available_units_denom <= 2)
 		*(_DWORD *)&netz_47A740[2].str_0[0] = 1;
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (00449E00) --------------------------------------------------------
@@ -49802,7 +49169,7 @@ void script_44A500_fog_of_war(Script *a1)
 	while (1)
 	{
 		v1 = a1;
-		script_445370_yield(a1, 0xC0000000, 1);
+		script_445370_yield_to_main_thread(a1, 0xC0000000, 1);
 		for (i = script_get_next_event(a1); i; i = script_get_next_event(v1))
 		{
 			if (i->event == 1511)
@@ -49886,7 +49253,7 @@ void script_44A700_minimap(Script *a1)
 		{
 			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v2->script);
 			script_trigger_event(0, EVT_MSG_neg2, 0, v2->script);
-			script_445370_yield(v1, 0x80000000, 1);
+			script_445370_yield_to_main_thread(v1, 0x80000000, 1);
 			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, v2->script);
 			script_trigger_event(0, EVT_MSG_neg2, 0, v2->script);
 		}
@@ -49958,28 +49325,18 @@ _BYTE *_44A780_gof_of_war()
 //----- (0044A840) --------------------------------------------------------
 bool mapd_init_fog_of_war()
 {
-	Bitmap *result; // eax@1
-	Bitmap *v1; // edi@1
 	int v2; // eax@4
 	unsigned int v3; // ebp@6
-	int v4; // ebx@6
+    MapdScrlImageTile **v4; // ebx@6
 	int v5; // esi@6
-	int v6; // eax@9
 	char *v7; // edi@9
-	int v8; // edx@9
-	int v9; // ebp@10
 	int v10; // ecx@10
 	int v11; // ebx@11
 	int v12; // esi@12
-	_BYTE *v13; // edx@12
-	int v14; // edi@13
-	int v15; // ecx@14
+	unsigned char *v13; // edx@12
 	int v16; // eax@15
 	char v17; // dl@17
 	char v18; // cl@17
-	int *v19; // eax@17
-	char *v20; // edi@31
-	int v21; // eax@31
 	int v22; // edx@31
 	int v23; // esi@31
 	char *v24; // ebp@32
@@ -50000,286 +49357,234 @@ bool mapd_init_fog_of_war()
 	char v39; // dl@53
 	Sprite *v40; // eax@54
 	char *v41; // [sp+10h] [bp-24h]@9
-	_DWORD *v42; // [sp+14h] [bp-20h]@10
-	int v43; // [sp+18h] [bp-1Ch]@6
+    MapdScrlImageTile **v42; // [sp+14h] [bp-20h]@10
 	char v44; // [sp+1Ch] [bp-18h]@17
-	char *v45; // [sp+20h] [bp-14h]@9
-	int v46; // [sp+24h] [bp-10h]@9
-	int v47; // [sp+28h] [bp-Ch]@10
-	int v48; // [sp+2Ch] [bp-8h]@11
 	int v49; // [sp+30h] [bp-4h]@6
 	int v50; // [sp+30h] [bp-4h]@42
 
-	result = (Bitmap *)LVL_FindSection((const char *)MAPD);
-	v1 = result;
-	if (result)
-	{
-		result = MAPD_Draw(MAPD_FOG_OF_WAR, 0, 0x10000000);
-		fog_of_war_bitmap = result;
-		if (result)
-		{
-			result->draw_job->on_update_handler = drawjob_update_handler_448390_fog_of_war;
-			fog_of_war_scrl_source = (MapdScrlImage *)fog_of_war_bitmap->draw_job->job_details.image;
-			__4793F8_map_width_plus4 = _4793F8_map_width + 4;
-			__478AAC_map_height_plus4 = _478AAC_map_height + 4;
-			result = (Bitmap *)malloc(4 * (_4793F8_map_width + 4) * (_478AAC_map_height + 4) + 20);
-			map_fog_of_war_scrl = (MapdScrlImage *)result;
-			if (result)
-			{
-				result->next = (Bitmap *)fog_of_war_scrl_source->on_draw_handler;
-				map_fog_of_war_scrl->tile_x_size = fog_of_war_scrl_source->tile_x_size;
-				map_fog_of_war_scrl->tile_y_size = fog_of_war_scrl_source->tile_y_size;
-				map_fog_of_war_scrl->num_x_tiles = __4793F8_map_width_plus4;
-				map_fog_of_war_scrl->num_y_tiles = __478AAC_map_height_plus4;
-				map_fog_of_war_scrl_tiles = map_fog_of_war_scrl->tiles;
-				dword_47CFC0 = 0;
-				fog_of_war_tile_1 = fog_of_war_scrl_source->tiles[1];
-				fog_of_war_tile_2 = fog_of_war_scrl_source->tiles[2];
-				fog_of_war_tile_3 = fog_of_war_scrl_source->tiles[3];
-				fog_of_war_tile_4 = fog_of_war_scrl_source->tiles[4];
-				fog_of_war_tile_5 = fog_of_war_scrl_source->tiles[5];
-				fog_of_war_tile_6 = fog_of_war_scrl_source->tiles[6];
-				fog_of_war_tile_7 = fog_of_war_scrl_source->tiles[7];
-				fog_of_war_tile_8 = fog_of_war_scrl_source->tiles[8];
-				fog_of_war_tile_9 = fog_of_war_scrl_source->tiles[9];
-				fog_of_war_tile_10 = fog_of_war_scrl_source->tiles[10];
-				fog_of_war_tile_11 = fog_of_war_scrl_source->tiles[11];
-				fog_of_war_tile_12 = fog_of_war_scrl_source->tiles[12];
-				fog_of_war_tile_13 = fog_of_war_scrl_source->tiles[13];
-				fog_of_war_tile_14 = fog_of_war_scrl_source->tiles[14];
-				v2 = 0;
-				for (fog_of_war_tile_15 = fog_of_war_scrl_source->tiles[15];
-					v2 < __4793F8_map_width_plus4 * __478AAC_map_height_plus4;
-					++v2)
-				{
-					map_fog_of_war_scrl_tiles[v2] = fog_of_war_tile_1;
-				}
-				fog_of_war_bitmap->draw_job->job_details.image = map_fog_of_war_scrl;
-				LOBYTE_HEXRAYS(dword_47CB4C) = fog_of_war_tile_1->pixels[0];
-				__4793F8_map_width_x2 = 2 * _4793F8_map_width;
-				v3 = 2 * _4793F8_map_width * 2 * _478AAC_map_height;
-				__478AAC_map_height_x2 = 2 * _478AAC_map_height;
-				v49 = 2 * _4793F8_map_width * 2 * _478AAC_map_height;
-				v4 = (int)&v1->next->prev[1];
-				v5 = 4 * (2 * _4793F8_map_width + 2 * _478AAC_map_height) + 16;
-				v43 = (int)&v1->next->prev[1];
-				result = (Bitmap *)malloc(v3);
-				_47CB74_fow_map_x2 = result;
-				if (result)
-				{
-					result = (Bitmap *)malloc(v3);
-					_47CB88_fow_map_x2 = result;
-					if (result)
-					{
-						result = (Bitmap *)malloc(v5 + v3 + 12);
-						_47CB8C_fow = (DrawHandlerData_Units *)result;
-						if (result)
-						{
-							LOBYTE_HEXRAYS(result->draw_job) = 0;
-							v6 = __4793F8_map_width_x2;
-							v7 = (char *)_47CB74_fow_map_x2;
-							v45 = (char *)_47CB74_fow_map_x2;
-							v41 = (char *)_47CB8C_fow->sprite_data;
-							dword_47CBAC = (int)(&_47CB8C_fow[1].type + 2 * __4793F8_map_width_x2);
-							v8 = 0;
-							v46 = 0;
-							if (__478AAC_map_height_x2 > 0)
-							{
-								do
-								{
-									v9 = 0;
-									v42 = (_DWORD *)v4;
-									v10 = 16 * (v8 & 1);
-									v47 = 16 * (v8 & 1);
-									if (v6 > 0)
-									{
-										v11 = (v8 & 1) << 9;
-										v48 = (v8 & 1) << 9;
-										do
-										{
-											v12 = 16 * (v9 & 1);
-											v13 = (_BYTE *)(v12 + *v42 + v11 + 4);
-											if (*v42)
-											{
-												memset(_47CBC0_fow, 0, sizeof(_47CBC0_fow));
-												v14 = 16;
-												do
-												{
-													v15 = 16;
-													do
-													{
-														v16 = *v13++;
-														--v15;
-														++_47CBC0_fow[v16];
-													} while (v15);
-													v13 += 16;
-													--v14;
-												} while (v14);
-												v17 = 0;
-												v18 = 1;
-												v44 = 0;
-												v19 = &_47CBC0_fow[1];
-												do
-												{
-													if (*v19 > _47CBC0_fow[(unsigned __int8)v44])
-													{
-														v17 = v18;
-														v44 = v18;
-													}
-													++v19;
-													++v18;
-												} while ((int)v19 < (int)&dword_47CFC0);
-												v7 = v45;
-												v10 = v47;
-												v11 = v48;
-												*v45 = v17;
-											}
-											else
-											{
-												*v7 = 1;
-											}
-											if (v12 == 16)
-												++v42;
-											v6 = __4793F8_map_width_x2;
-											++v9;
-											v45 = ++v7;
-										} while (v9 < __4793F8_map_width_x2);
-										v4 = v43;
-										v8 = v46;
-									}
-									if (v10 == 16)
-									{
-										v43 = v4 + 4 * _4793F8_map_width;
-										v4 += 4 * _4793F8_map_width;
-									}
-									v46 = ++v8;
-								} while (v8 < __478AAC_map_height_x2);
-								v3 = v49;
-							}
-							v20 = (char *)_47CB88_fow_map_x2;
-							LOBYTE_HEXRAYS(v4) = dword_47CB4C;
-							BYTE1(v4) = dword_47CB4C;
-							v21 = v4 << 16;
-							LOWORD_HEXRAYS(v21) = v4;
-							memset32(_47CB88_fow_map_x2, v21, v3 >> 2);
-							memset(&v20[4 * (v3 >> 2)], v4, v3 & 3);
-							v22 = __4793F8_map_width_x2 + 4;
-							v23 = __478AAC_map_height_x2 + 4;
-							if (__4793F8_map_width_x2 + 4 <= 2)
-							{
-								v24 = v41;
-							}
-							else
-							{
-								v24 = v41;
-								memset(v41, 0xA6u, __4793F8_map_width_x2 + 2);
-							}
-							v25 = v24;
-							if (v23 > 2)
-							{
-								v26 = v23 - 2;
-								do
-								{
-									*v25 = -90;
-									v25 += v22;
-									--v26;
-								} while (v26);
-							}
-							v27 = &v24[v22 + 1];
-							if (v22 > 3)
-								memset(v27, 0xA0u, v22 - 3);
-							v28 = v27;
-							if (v23 > 3)
-							{
-								v29 = v23 - 3;
-								do
-								{
-									*v28 = -96;
-									v28 += v22;
-									--v29;
-								} while (v29);
-							}
-							v30 = v22 * (v23 - 1);
-							v31 = &v41[v30];
-							v50 = (int)&v41[v30];
-							if (v22 > 2)
-								memset(&v41[v30 + 1], 0xA0u, v22 - 2);
-							v32 = &v41[2 * v22 - 1];
-							if (v23 > 2)
-							{
-								v33 = v23 - 2;
-								do
-								{
-									*v32 = -96;
-									v32 += v22;
-									--v33;
-								} while (v33);
-							}
-							v34 = (int)&v41[v22 * (v23 - 2)];
-							if (v22 > 3)
-							{
-								memset((void *)(v34 + 2), 0xA6u, v22 - 3);
-								v31 = (char *)v50;
-							}
-							v35 = &v41[2 * v22 - 2] + v22;
-							if (v23 > 3)
-							{
-								v36 = v23 - 3;
-								do
-								{
-									*v35 = -90;
-									v35 += v22;
-									--v36;
-								} while (v36);
-							}
-							v37 = 1;
-							v41[v22 - 1] = -93;
-							v41[2 * v22 - 2] = -93;
-							*(_BYTE *)(v34 + 1) = -93;
-							*v31 = -93;
-							v38 = &player_sprite_color_by_player_side[1];
-							do
-							{
-								v39 = *(_BYTE *)v38;
-								++v38;
-								byte_47CB50[v37++] = 16 * v39 + 12;
-							} while ((int)v38 < (int)&UNIT_num_player_units);
-							_47CB8C_fow->width = __4793F8_map_width_x2 + 4;
-							_47CB8C_fow->height = __478AAC_map_height_x2 + 4;
-							_47CBA0_MobdSprtImage_fog_of_war.data = _47CB8C_fow;
-							dword_470598 = (__4793F8_map_width_x2 + 4) << 8;
-							_47CBA0_MobdSprtImage_fog_of_war.flags = 0;
-							_47CBA0_MobdSprtImage_fog_of_war.handler = render_sprt_draw_handler;
-							dword_47059C = (__478AAC_map_height_x2 + 4) << 8;
-							v40 = sprite_create_scripted(MOBD_MUTE_ALCHEMY_HALL, 0, (void(*)(Script *))script_44A500_fog_of_war, SCRIPT_COROUTINE, 0);
-							_47CB58_minimap_sprite = v40;
-							v40->_54_inside_mobd_ptr4 = &_4705B0_minimap;
-							_47CB58_minimap_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-							_47CB58_minimap_sprite->script->script_type = SCRIPT_TYPE_47802_fog_of_war;
-							_47CB58_minimap_sprite->drawjob->flags |= 0x40000000u;
-							_47CB98_fow_map_x2 = _47CB88_fow_map_x2;
-							result = (Bitmap *)1;
-						}
-					}
-				}
-			}
-		}
-	}
-	return (BOOL)result;
+    DataMapd *v1 = LVL_FindMapd();
+    if (v1)
+    {
+        fog_of_war_bitmap = MAPD_Draw(MAPD_FOG_OF_WAR, 0, 0x10000000);
+        if (fog_of_war_bitmap)
+        {
+            fog_of_war_bitmap->draw_job->on_update_handler = drawjob_update_handler_448390_fog_of_war;
+            fog_of_war_scrl_source = (MapdScrlImage *)fog_of_war_bitmap->draw_job->job_details.image;
+            __4793F8_map_width_plus4 = _4793F8_map_width + 4;
+            __478AAC_map_height_plus4 = _478AAC_map_height + 4;
+            map_fog_of_war_scrl = (MapdScrlImage *)malloc(4 * (_4793F8_map_width + 4) * (_478AAC_map_height + 4) + 20);
+            if (map_fog_of_war_scrl)
+            {
+                map_fog_of_war_scrl->on_draw_handler = fog_of_war_scrl_source->on_draw_handler;
+                map_fog_of_war_scrl->tile_x_size = fog_of_war_scrl_source->tile_x_size;
+                map_fog_of_war_scrl->tile_y_size = fog_of_war_scrl_source->tile_y_size;
+                map_fog_of_war_scrl->num_x_tiles = __4793F8_map_width_plus4;
+                map_fog_of_war_scrl->num_y_tiles = __478AAC_map_height_plus4;
+                map_fog_of_war_scrl_tiles = map_fog_of_war_scrl->tiles;
+                dword_47CFC0 = 0;
+                fog_of_war_tile_1 = fog_of_war_scrl_source->tiles[1];
+                fog_of_war_tile_2 = fog_of_war_scrl_source->tiles[2];
+                fog_of_war_tile_3 = fog_of_war_scrl_source->tiles[3];
+                fog_of_war_tile_4 = fog_of_war_scrl_source->tiles[4];
+                fog_of_war_tile_5 = fog_of_war_scrl_source->tiles[5];
+                fog_of_war_tile_6 = fog_of_war_scrl_source->tiles[6];
+                fog_of_war_tile_7 = fog_of_war_scrl_source->tiles[7];
+                fog_of_war_tile_8 = fog_of_war_scrl_source->tiles[8];
+                fog_of_war_tile_9 = fog_of_war_scrl_source->tiles[9];
+                fog_of_war_tile_10 = fog_of_war_scrl_source->tiles[10];
+                fog_of_war_tile_11 = fog_of_war_scrl_source->tiles[11];
+                fog_of_war_tile_12 = fog_of_war_scrl_source->tiles[12];
+                fog_of_war_tile_13 = fog_of_war_scrl_source->tiles[13];
+                fog_of_war_tile_14 = fog_of_war_scrl_source->tiles[14];
+                v2 = 0;
+                for (fog_of_war_tile_15 = fog_of_war_scrl_source->tiles[15];
+                    v2 < __4793F8_map_width_plus4 * __478AAC_map_height_plus4;
+                    ++v2)
+                {
+                    map_fog_of_war_scrl_tiles[v2] = fog_of_war_tile_1;
+                }
+
+                fog_of_war_bitmap->draw_job->job_details.image = map_fog_of_war_scrl;
+                LOBYTE_HEXRAYS(dword_47CB4C) = fog_of_war_tile_1->pixels[0];
+                __4793F8_map_width_x2 = 2 * _4793F8_map_width;
+                v3 = 2 * _4793F8_map_width * 2 * _478AAC_map_height;
+                __478AAC_map_height_x2 = 2 * _478AAC_map_height;
+                v49 = 2 * _4793F8_map_width * 2 * _478AAC_map_height;
+                v4 = v1->items[0].images[0]->tiles;
+                v5 = 4 * (2 * _4793F8_map_width + 2 * _478AAC_map_height) + 16;
+                _47CB74_fow_map_x2 = malloc(v3);
+                if (_47CB74_fow_map_x2)
+                {
+                    _47CB88_fow_map_x2 = malloc(v3);
+                    if (_47CB88_fow_map_x2)
+                    {
+                        _47CB8C_fow = (DrawHandlerData_Units *)malloc(v5 + v3 + 12);
+                        if (_47CB8C_fow)
+                        {
+                            _47CB8C_fow->type = 0;
+                            v7 = (char *)_47CB74_fow_map_x2;
+                            v41 = (char *)_47CB8C_fow->sprite_data;
+                            dword_47CBAC = (int)(&_47CB8C_fow[1].type + 2 * __4793F8_map_width_x2);
+
+                            for (int v8 = 0; v8 < __478AAC_map_height_x2; ++v8)
+                            {
+                                v42 = v4;
+                                v10 = 16 * (v8 & 1);
+                                v11 = (v8 & 1) << 9;
+                                for (int v9 = 0; v9 < __4793F8_map_width_x2; ++v9)
+                                {
+                                    v12 = 16 * (v9 & 1);
+                                    v13 = &(*v42)->pixels[v11 + v12];
+                                    if (*v42)
+                                    {
+                                        memset(_47CBC0_fow, 0, sizeof(_47CBC0_fow));
+                                        for (int v14 = 16; v14 > 0; --v14)
+                                        {
+                                            for (int v15 = 16; v15 > 0; --v15)
+                                            {
+                                                v16 = *v13++;
+                                                ++_47CBC0_fow[v16];
+                                            }
+                                            v13 += 16;
+                                        }
+                                        v17 = 0;
+                                        v18 = 1;
+                                        v44 = 0;
+                                        for (int v19 = 1; v19 < sizeof(_47CBC0_fow); ++v19)
+                                        {
+                                            if (_47CBC0_fow[v19] > _47CBC0_fow[(unsigned __int8)v44])
+                                            {
+                                                v17 = v18;
+                                                v44 = v18;
+                                            }
+                                            ++v19;
+                                            ++v18;
+                                        }
+                                        *v7 = v17;
+                                    }
+                                    else
+                                    {
+                                        *v7 = 1;
+                                    }
+                                    if (v12 == 16)
+                                        ++v42;
+                                    ++v7;
+                                }
+
+                                if (v10 == 16)
+                                {
+                                    v4 += _4793F8_map_width;
+                                }
+                            }
+                            v3 = v49;
+
+                            memset(_47CB88_fow_map_x2, dword_47CB4C, v3);
+                            //memset32(_47CB88_fow_map_x2, v21, v3 >> 2);
+                            //memset(&v20[4 * (v3 >> 2)], v4, v3 & 3);
+                            v22 = __4793F8_map_width_x2 + 4;
+                            v23 = __478AAC_map_height_x2 + 4;
+                            if (__4793F8_map_width_x2 + 4 <= 2)
+                            {
+                                v24 = v41;
+                            }
+                            else
+                            {
+                                v24 = v41;
+                                memset(v41, 0xA6u, __4793F8_map_width_x2 + 2);
+                            }
+                            v25 = v24;
+                            if (v23 > 2)
+                            {
+                                v26 = v23 - 2;
+                                do
+                                {
+                                    *v25 = -90;
+                                    v25 += v22;
+                                    --v26;
+                                } while (v26);
+                            }
+                            v27 = &v24[v22 + 1];
+                            if (v22 > 3)
+                                memset(v27, 0xA0u, v22 - 3);
+                            v28 = v27;
+                            if (v23 > 3)
+                            {
+                                v29 = v23 - 3;
+                                do
+                                {
+                                    *v28 = -96;
+                                    v28 += v22;
+                                    --v29;
+                                } while (v29);
+                            }
+                            v30 = v22 * (v23 - 1);
+                            v31 = &v41[v30];
+                            v50 = (int)&v41[v30];
+                            if (v22 > 2)
+                                memset(&v41[v30 + 1], 0xA0u, v22 - 2);
+                            v32 = &v41[2 * v22 - 1];
+                            if (v23 > 2)
+                            {
+                                v33 = v23 - 2;
+                                do
+                                {
+                                    *v32 = -96;
+                                    v32 += v22;
+                                    --v33;
+                                } while (v33);
+                            }
+                            v34 = (int)&v41[v22 * (v23 - 2)];
+                            if (v22 > 3)
+                            {
+                                memset((void *)(v34 + 2), 0xA6u, v22 - 3);
+                                v31 = (char *)v50;
+                            }
+                            v35 = &v41[2 * v22 - 2] + v22;
+                            if (v23 > 3)
+                            {
+                                v36 = v23 - 3;
+                                do
+                                {
+                                    *v35 = -90;
+                                    v35 += v22;
+                                    --v36;
+                                } while (v36);
+                            }
+                            v37 = 1;
+                            v41[v22 - 1] = -93;
+                            v41[2 * v22 - 2] = -93;
+                            *(_BYTE *)(v34 + 1) = -93;
+                            *v31 = -93;
+                            v38 = &player_sprite_color_by_player_side[1];
+                            do
+                            {
+                                v39 = *(_BYTE *)v38;
+                                ++v38;
+                                byte_47CB50[v37++] = 16 * v39 + 12;
+                            } while ((int)v38 < (int)&UNIT_num_player_units);
+                            _47CB8C_fow->width = __4793F8_map_width_x2 + 4;
+                            _47CB8C_fow->height = __478AAC_map_height_x2 + 4;
+                            _47CBA0_MobdSprtImage_fog_of_war.data = _47CB8C_fow;
+                            dword_470598 = (__4793F8_map_width_x2 + 4) << 8;
+                            _47CBA0_MobdSprtImage_fog_of_war.flags = 0;
+                            _47CBA0_MobdSprtImage_fog_of_war.handler = render_sprt_draw_handler;
+                            dword_47059C = (__478AAC_map_height_x2 + 4) << 8;
+                            v40 = sprite_create_scripted(MOBD_MUTE_ALCHEMY_HALL, 0, (void(*)(Script *))script_44A500_fog_of_war, SCRIPT_COROUTINE, 0);
+                            _47CB58_minimap_sprite = v40;
+                            v40->_54_inside_mobd_ptr4 = &_4705B0_minimap;
+                            _47CB58_minimap_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+                            _47CB58_minimap_sprite->script->script_type = SCRIPT_TYPE_47802_fog_of_war;
+                            _47CB58_minimap_sprite->drawjob->flags |= 0x40000000u;
+                            _47CB98_fow_map_x2 = _47CB88_fow_map_x2;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
 }
-// 470598: using guessed type int dword_470598;
-// 47059C: using guessed type int dword_47059C;
-// 4705B0: using guessed type DataMobdItem_stru0 _4705B0_minimap;
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
-// 47CB2C: using guessed type int __478AAC_map_height_plus4;
-// 47CB34: using guessed type int __478AAC_map_height_x2;
-// 47CB4C: using guessed type int dword_47CB4C;
-// 47CB7C: using guessed type int __4793F8_map_width_x2;
-// 47CB80: using guessed type int __4793F8_map_width_plus4;
-// 47CBAC: using guessed type int dword_47CBAC;
-// 47CFC0: using guessed type int dword_47CFC0;
-// 47DCC8: using guessed type int UNIT_num_player_units;
 
 //----- (0044AE30) --------------------------------------------------------
 void mapd_44AE30_fog_of_war()
@@ -51314,10 +50619,10 @@ void script_44BE60_explosions(Script *a1)
 	v1->z_index = 0;
 	v2->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4484A0_explosions;
 	sprite_4272A0_load_mobd_item(v1, 144);
-	script_445370_yield(a1, 0x10000000, 0);
+	script_445370_yield_to_main_thread(a1, 0x10000000, 0);
 	decrease_num_explosions();
 	sprite_list_remove(a1->sprite);
-	script_445470_yield(a1);
+	script_yield(a1);
 }
 
 //----- (0044BF00) --------------------------------------------------------
@@ -51342,7 +50647,7 @@ void EntityTurret_44BF00_handler(EntityTurret *a1)
 		v1->turret_sprite,
 		v1->stats_attachment_point->mobd_lookup_table_offset,
 		_47D3C4_entity_mobd_lookup_ids[*v2 + 1]);
-	script_445370_yield(v1->sprite_task, 0xC0000000, 2);
+	script_445370_yield_to_main_thread(v1->sprite_task, 0xC0000000, 2);
 }
 
 //----- (0044BF70) --------------------------------------------------------
@@ -51361,7 +50666,7 @@ void EntityTurret_44BF70(EntityTurret *a1)
 		v1->turret_sprite,
 		v1->stats_attachment_point->mobd_lookup_table_offset,
 		_47D3C4_entity_mobd_lookup_ids[*(_DWORD *)v2 + 1]);
-	script_445370_yield(v1->sprite_task, 0xC0000000, 2);
+	script_445370_yield_to_main_thread(v1->sprite_task, 0xC0000000, 2);
 }
 
 //----- (0044BFC0) --------------------------------------------------------
@@ -51372,7 +50677,7 @@ void sub_44BFC0(int a1)
 	v1 = a1;
 	*(_DWORD *)(*(_DWORD *)(a1 + 4) + 124) = 0;
 	sprite_list_remove(*(Sprite **)(a1 + 4));
-	script_445470_yield(*(Script **)v1);
+	script_yield(*(Script **)v1);
 	script_free_local_object(*(Script **)(*(_DWORD *)(v1 + 8) + 12), (void *)v1);
 }
 
@@ -51573,8 +50878,8 @@ int UNIT_Init()
 	stru11unit_list_47DC70 = (stru11unit *)&stru11unit_list_47DC70;
 	stru11unit_list_47DC74 = (stru11unit *)&stru11unit_list_47DC70;
 	dword_47DCE8 = 1;
-	pscript_show_message_ex = script_create_coroutine(SCRIPT_TYPE_INVALID, (void(*)(Script *))script_show_message_ex, 0);
-	pscript_show_message = script_create_coroutine(SCRIPT_TYPE_INVALID, (void(*)(Script *))script_show_message, 0);
+	pscript_show_message_ex = script_create_coroutine(SCRIPT_TYPE_INVALID, script_show_message_ex, 0);
+	pscript_show_message = script_create_coroutine(SCRIPT_TYPE_INVALID, script_show_message, 0);
 	j_drawjob_update_handler_426C40_default_sprite_handler = drawjob_update_handler_44C430_default_sprite;
 	v4 = (UnitAttachmentPoint *)&unit_stats[0].attach;
 	do
@@ -52196,7 +51501,7 @@ void script_show_message_ex(Script *a1)
 		else
 		{
 			v3 = a1;
-			script_445370_yield(a1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 		}
 		v1 = 0;
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
@@ -52249,7 +51554,7 @@ void script_show_message_ex(Script *a1)
 				8,
 				8);
 			render_string_445770(v13, text, 0);
-			v1 = script_445370_yield(a1, 0xC0000000, 4 * strlen(text)) & 0x40000000;
+			v1 = script_445370_yield_to_main_thread(a1, 0xC0000000, 4 * strlen(text)) & 0x40000000;
 			render_string_list_remove(v13);
 		}
 	}
@@ -52339,7 +51644,7 @@ void script_show_message(Script *a1)
 		else
 		{
 			v3 = a1;
-			script_445370_yield(a1, 0x40000000, 0);
+			script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 		}
 		v1 = 0;
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
@@ -52391,7 +51696,7 @@ void script_show_message(Script *a1)
 				8,
 				8);
 			render_string_445770(v12, v2, 0);
-			v1 = script_445370_yield(a1, 0xC0000000, 200) & 0x40000000;
+			v1 = script_445370_yield_to_main_thread(a1, 0xC0000000, 200) & 0x40000000;
 			render_string_list_remove(v12);
 		}
 	}
@@ -52709,9 +52014,28 @@ void message_pump()
 	}
 }
 
+void log_init()
+{
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout);
+}
+
+void log(const char *fmt, ...)
+{
+    va_list args;
+
+    va_start(args, fmt);
+    vprintf(fmt, args);
+    va_end(args);
+
+    printf("\n");
+}
+
 //----- (0044D5D0) --------------------------------------------------------
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
+    log_init();
+
 	global_win32_nCmdShow = nShowCmd;
 	global_hinstance = hInstance;
 	return GAME_Main();
