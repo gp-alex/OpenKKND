@@ -12,8 +12,6 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
     stru29 *v5; // eax@3
-    stru29 *v6; // eax@9
-    int v7; // ecx@10
     DataMapd *v8; // eax@13
 
     _47C65C_render_string = 0;
@@ -57,25 +55,7 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
     netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
     netz_47C6C0_mapd_idx = 2;
     script_408500_anim(a1);
-    stru29_list_remove_all(a1);
-    _47C6D4_stru29 = 0;
-    v6 = (stru29 *)malloc(0x1E0u);
-    stru29_list = v6;
-    if (v6)
-    {
-        stru29_list_free_pool = v6;
-        v7 = 0;
-        do
-        {
-            v6[v7].next = &v6[v7 + 1];
-            v6 = stru29_list;
-            ++v7;
-        } while (v7 < 29);
-        stru29_list[29].next = 0;
-        stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-        stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-        stru29_list_initialized = 1;
-    }
+    stru29_list_realloc(a1);
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_445370_yield_to_main_thread(a1, 0x80000000, 3);
     v8 = LVL_FindMapd();
@@ -147,8 +127,6 @@ void script_mobd79_evt1__main_menu_play_mission(Script *a1)
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
     stru29 *v5; // eax@3
-    stru29 *v6; // eax@9
-    int v7; // ecx@10
     DataMapd *v8; // eax@13
 
     a1->sprite->y = 300 * 256;
@@ -189,25 +167,7 @@ void script_mobd79_evt1__main_menu_play_mission(Script *a1)
     netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
     netz_47C6C0_mapd_idx = 11;
     script_408500_anim(a1);
-    stru29_list_remove_all(a1);
-    _47C6D4_stru29 = 0;
-    v6 = (stru29 *)malloc(0x1E0u);
-    stru29_list = v6;
-    if (v6)
-    {
-        stru29_list_free_pool = v6;
-        v7 = 0;
-        do
-        {
-            v6[v7].next = &v6[v7 + 1];
-            v6 = stru29_list;
-            ++v7;
-        } while (v7 < 29);
-        stru29_list[29].next = 0;
-        stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-        stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-        stru29_list_initialized = 1;
-    }
+    stru29_list_realloc(a1);
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_445370_yield_to_main_thread(a1, 0x80000000, 3);
     v8 = LVL_FindMapd();
@@ -228,8 +188,6 @@ void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
     stru29 *v5; // eax@3
-    stru29 *v6; // eax@9
-    int v7; // ecx@10
     DataMapd *v8; // eax@13
 
     script_445370_yield_to_main_thread(a1, 0x80000000, 1);
@@ -269,25 +227,7 @@ void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
     netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
     netz_47C6C0_mapd_idx = 1;
     script_408500_anim(a1);
-    stru29_list_remove_all(a1);
-    _47C6D4_stru29 = 0;
-    v6 = (stru29 *)malloc(0x1E0u);
-    stru29_list = v6;
-    if (v6)
-    {
-        stru29_list_free_pool = v6;
-        v7 = 0;
-        do
-        {
-            v6[v7].next = &v6[v7 + 1];
-            v6 = stru29_list;
-            ++v7;
-        } while (v7 < 29);
-        stru29_list[29].next = 0;
-        stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-        stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-        stru29_list_initialized = 1;
-    }
+    stru29_list_realloc(a1);
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_445370_yield_to_main_thread(a1, 0x80000000, 3);
     v8 = LVL_FindMapd();
@@ -308,8 +248,6 @@ void script_mobd79_evt1__main_menu_new_missions(Script *a1)
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
     stru29 *v5; // eax@3
-    stru29 *v6; // eax@9
-    int v7; // ecx@10
     DataMapd *v8; // eax@13
 
     a1->sprite->y = 360 * 256;
@@ -349,25 +287,7 @@ void script_mobd79_evt1__main_menu_new_missions(Script *a1)
     netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
     netz_47C6C0_mapd_idx = 14;
     script_408500_anim(a1);
-    stru29_list_remove_all(a1);
-    _47C6D4_stru29 = 0;
-    v6 = (stru29 *)malloc(0x1E0u);
-    stru29_list = v6;
-    if (v6)
-    {
-        stru29_list_free_pool = v6;
-        v7 = 0;
-        do
-        {
-            v6[v7].next = &v6[v7 + 1];
-            v6 = stru29_list;
-            ++v7;
-        } while (v7 < 29);
-        stru29_list[29].next = 0;
-        stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-        stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-        stru29_list_initialized = 1;
-    }
+    stru29_list_realloc(a1);
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_445370_yield_to_main_thread(a1, 0x80000000, 3);
     v8 = LVL_FindMapd();
@@ -388,8 +308,6 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
     stru29 *v5; // eax@3
-    stru29 *v6; // eax@9
-    int v7; // ecx@10
     DataMapd *v8; // eax@13
 
     a1->sprite->y = 390 * 256;
@@ -429,25 +347,7 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
     netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
     netz_47C6C0_mapd_idx = 15;
     script_408500_anim(a1);
-    stru29_list_remove_all(a1);
-    _47C6D4_stru29 = 0;
-    v6 = (stru29 *)malloc(0x1E0u);
-    stru29_list = v6;
-    if (v6)
-    {
-        stru29_list_free_pool = v6;
-        v7 = 0;
-        do
-        {
-            v6[v7].next = &v6[v7 + 1];
-            v6 = stru29_list;
-            ++v7;
-        } while (v7 < 29);
-        stru29_list[29].next = 0;
-        stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-        stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-        stru29_list_initialized = 1;
-    }
+    stru29_list_realloc(a1);
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_445370_yield_to_main_thread(a1, 0x80000000, 3);
     v8 = LVL_FindMapd();

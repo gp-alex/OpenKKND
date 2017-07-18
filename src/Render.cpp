@@ -1039,52 +1039,28 @@ void REND_DirectDrawClearScreen(int a2)
 {
     int v2; // esi@1
     int v3; // eax@3
-    void *v4; // eax@4
     int v8; // [sp+0h] [bp-6Ch]@3
     DDBLTFX v9; // [sp+8h] [bp-64h]@7
 
     v2 = a2;
 
-    _477340_coroutine_yield_item = __EAX__;
-    if (coroutine_list_head != coroutine_current && ++_47734C_coroutine_int == 1)
-    {
-        v3 = coroutine_list_head->stack;
-        __asm
-        {
-            mov _477344_esp, esp
-            mov esp, v3
-        }
-    }
-    v4 = _477340_coroutine_yield_item;
     if (global_fullscreen == 1)
     {
-        v4 = (void *)pdds_primary->EnumAttachedSurfaces(0, EnumAttachedSurfacesCallback);
+        pdds_primary->EnumAttachedSurfaces(0, EnumAttachedSurfacesCallback);
     }
     else if (pdds_backbuffer)
     {
         memset(&v9, 0, sizeof(v9));
         v9.dwFillColor = 0;
         v9.dwSize = 100;
-        v4 = (void *)pdds_backbuffer->Blt(&_46BB50_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v9);
+        pdds_backbuffer->Blt(&_46BB50_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v9);
     }
     if (v2 && pdds_primary)
     {
         memset(&v9, 0, sizeof(v9));
         v9.dwFillColor = 0;
         v9.dwSize = 100;
-        v4 = (void *)pdds_primary->Blt(&_46BB50_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v9);
-    }
-    _477340_coroutine_yield_item = v4;
-    if (coroutine_list_head != coroutine_current)
-    {
-        if (--_47734C_coroutine_int == 0)
-        {
-            v3 = coroutine_list_head->stack;
-            __asm
-            {
-                mov esp, _477344_esp
-            }
-        }
+        pdds_primary->Blt(&_46BB50_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v9);
     }
 }
 

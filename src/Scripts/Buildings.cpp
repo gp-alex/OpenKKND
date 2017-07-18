@@ -477,32 +477,22 @@ void entity_4038B0(Entity *a1, enum PLAYER_SIDE side)
 //----- (00403960) --------------------------------------------------------
 int building_limits_list_alloc()
 {
-    BuildingLimits *v0; // eax@1
-    int v1; // ecx@2
-    int result; // eax@4
-
-    v0 = (BuildingLimits *)malloc(0x140u);
-    building_limits_list = v0;
-    if (v0)
+    building_limits_list = new BuildingLimits[20];
+    if (building_limits_list)
     {
-        building_limits_list_free_pool = v0;
-        v1 = 0;
-        do
+        building_limits_list_free_pool = building_limits_list;
+        building_limits_list[19].next = nullptr;
+
+        for (int i = 0; i < 20; ++i)
         {
-            v0[v1].next = &v0[v1 + 1];
-            v0 = building_limits_list;
-            ++v1;
-        } while (v1 < 19);
-        building_limits_list[19].next = 0;
+            building_limits_list[i].next = &building_limits_list[i + 1];
+        }
+
         building_limits_list_head = (BuildingLimits *)&building_limits_list_head;
         building_limits_list_end = (BuildingLimits *)&building_limits_list_head;
-        result = 1;
+        return true;
     }
-    else
-    {
-        result = 0;
-    }
-    return result;
+    return false;
 }
 
 //----- (004039C0) --------------------------------------------------------

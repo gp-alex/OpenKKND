@@ -5,10 +5,6 @@
 #include "src/_unsorted_data.h"
 #include "src/_unsorted_functions.h"
 
-#define LVL_SECTION_MAPD "MAPD"
-
-extern void *__EAX__;
-
 extern _UNKNOWN loc_45D19B; // weak
 extern _UNKNOWN loc_45D1A4; // weak
 extern _UNKNOWN loc_45D267; // weak
@@ -668,10 +664,7 @@ extern stru31 *stru31_list_free_pool;
 extern int __477318_beastenclosure_negindex[]; // weak
 extern stru15unit _477318_beastenclosure;
 extern int max_beastenclosure_level; // weak
-extern void *_477340_coroutine_yield_item;
-extern int _477344_esp; // weak
 extern int coroutine_current_stack; // weak
-extern int _47734C_coroutine_int; // weak
 extern Coroutine *coroutine_list_next;
 extern Coroutine *coroutine_list;
 extern int dword_477358; // weak
@@ -1219,7 +1212,7 @@ extern MapdScrlImageTile *fog_of_war_tile_2;
 extern int _47CBC0_fow[256];
 extern int dword_47CFC0; // weak
 extern int __47CFC4_mobd_lookup_speeds[256];
-extern int _47D3C4_entity_mobd_lookup_ids[256];
+extern int _47D3C4_entity_mobd_lookup_ids[];
 extern unsigned __int8 player_sprite_palette_tmp[256];
 extern stru12_game_globals game_globals_cpu[7];
 extern int dword_47D98C; // weak

@@ -14,6 +14,7 @@
 #include "src/hexrays-defs.h"
 
 #include "src/File.h"
+#include "src/Netz.h"
 
 struct UnitAttachmentPoint;
 struct UnitDamageSource;
@@ -62,6 +63,8 @@ struct stru24_struC;
 struct Sprite_stru58;
 struct Sprite_stru58_stru0;
 struct Entity_stru_dmg_related;
+
+struct EVT_MSG_1523_param;
 
 /* 63 */
 struct UnitNameId
@@ -1290,6 +1293,13 @@ struct ScriptLocalObject
 	char data;
 };
 
+
+struct EVT_MSG_1523_param
+{
+    PLAYER_SIDE side;
+    Entity *entity;
+};
+
 /* 336 */
 struct stru24
 {
@@ -2211,27 +2221,6 @@ struct _4269B0_task_attachment
 	int field_28;
 };
 
-/* 400 */
-struct netz_stru0
-{
-	char player_name[8];
-	int field_8;
-	char date[12];
-	char time[9];
-};
-
-/* 401 */
-struct netz_stru1
-{
-	char field_0;
-	char field_1;
-	char field_2;
-	char field_3;
-	netz_stru0 stru0;
-	char field_25[247];
-	int field_11C;
-};
-
 /* 402 */
 struct stru48
 {
@@ -2742,90 +2731,6 @@ struct _47A780_global
 	int field_18;
 };
 
-/* 440 */
-struct netz_provider
-{
-	char *(*get_error_name)();
-	const char *string_4;
-	const char *string_8;
-	const char *string_C;
-	int is_directplay_initialized;
-	int field_14;
-	int field_18;
-	void *pfn_1C;
-	void *pfn_20;
-	void *field_24;
-	void *field_28;
-	void *field_2C;
-	void *field_30;
-	void *field_34;
-	void *field_38;
-	void *field_3C;
-	void *field_40;
-	void *field_44;
-	void *field_48;
-	void *field_4C;
-	void *field_50;
-	void *field_54;
-	void *field_58;
-	void *field_5C;
-	void *field_60;
-	void *field_64;
-};
-
-/* 441 */
-struct netz_stru_3
-{
-	int field_0;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	int field_24;
-	int field_28;
-	int field_2C;
-	int field_30;
-	const char *str_34;
-	int field_38;
-	int field_3C;
-	int field_40;
-	int field_44;
-	int field_48;
-	int field_4C;
-	int field_50;
-	int field_54;
-	int field_58;
-};
-
-/* 442 */
-struct netz_stru_4
-{
-	int field_0;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	int field_24;
-	int field_28;
-	int field_2C;
-	int field_30;
-	int field_34;
-	int field_38;
-	int field_3C;
-	int field_40;
-	int field_44;
-	int field_48;
-	int field_4C;
-};
-
 /* 444 */
 struct Boxd_stru0
 {
@@ -2849,35 +2754,6 @@ struct Sprite_stru58_stru0
 	int field_C;
 	int z;
 	int w;
-};
-
-/* 448 */
-struct netz_stru_5
-{
-	int field_0;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	int field_24;
-	int field_28;
-};
-
-/* 450 */
-struct netz_stru6_per_player
-{
-	char str_0[4];
-	int ptr_4;
-	char field_8;
-	char field_9;
-	char field_A;
-	char player_name[9];
-	int field_14;
-	int field_18;
 };
 
 /* 451 */
@@ -2935,17 +2811,5 @@ struct Mapd_stru0
 	int mapd_cplc_render_y;
 	int mapd_cplc_item0_ptr_field_C;
 };
-
-
-/* 463 */
-struct netz_modem
-{
-	netz_modem *next;
-	netz_modem *prev;
-	char name[12];
-	char phone[12];
-	int baud;
-};
-
 
 #pragma pack(pop)

@@ -1240,7 +1240,6 @@ void UNIT_DmgHandler_Bow(Script *a1)
     Sprite *v1; // esi@1
     Entity *v2; // eax@1
     Entity *v3; // ebp@1
-    int v4; // edx@1
     Sprite *v5; // eax@1
     int v6; // ebx@1
     int v7; // edi@1
@@ -1270,11 +1269,10 @@ void UNIT_DmgHandler_Bow(Script *a1)
     v19 = (int)v1->param;
     v3 = (Entity *)v1->parent->param;
     v2->sprite->field_88 = 1;
-    v4 = v1->x;
     v1->field_88 = 1;
     v5 = v2->sprite;
     v6 = (v5->y - v1->y) >> 8;
-    v7 = (v5->x - v4) >> 8;
+    v7 = (v5->x - v1->x) >> 8;
     v24 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v7, v6);
     sprite_408800_play_sound(v3->sprite, SOUND_89_dmg_handler, _4690A8_unit_sounds_volume, 0);
     v1->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[v3->player_side]];

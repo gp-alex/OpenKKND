@@ -5578,7 +5578,7 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
             entity_show_hint(v4);
             break;
         case EVT_MSG_1523:
-            entity_419F00_evt1523(v4, (int)param);
+            entity_419F00_evt1523(v4, (EVT_MSG_1523_param *)param);
             break;
         case EVT_MSG_1528:
             entity_41A890_evt1528(v4);

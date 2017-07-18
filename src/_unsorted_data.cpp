@@ -6984,10 +6984,7 @@ stru31 *stru31_list_free_pool = NULL;
 int __477318_beastenclosure_negindex[] = { 0 }; // weak
 stru15unit _477318_beastenclosure = { { 0, 0, 0, 0, 0 }, 0, 0, 0, 0 };
 int max_beastenclosure_level = 0; // weak
-void *_477340_coroutine_yield_item = NULL;
-int _477344_esp = 0; // weak
 int coroutine_current_stack = 0; // weak
-int _47734C_coroutine_int = 0; // weak
 Coroutine *coroutine_list_next = NULL;
 Coroutine *coroutine_list = NULL;
 int dword_477358 = 0; // weak
@@ -7585,7 +7582,7 @@ MapdScrlImageTile *fog_of_war_tile_2;
 int _47CBC0_fow[256];
 int dword_47CFC0; // weak
 int __47CFC4_mobd_lookup_speeds[256];
-int _47D3C4_entity_mobd_lookup_ids[256];
+int _47D3C4_entity_mobd_lookup_ids[257];
 unsigned __int8 player_sprite_palette_tmp[256];
 stru12_game_globals game_globals_cpu[7];
 int dword_47D98C; // weak

@@ -52,9 +52,9 @@ void entity_mode_blacksmith_on_death(Entity *a1);
 bool coroutine_list_alloc();
 Coroutine *couroutine_create(void(*function)(), size_t stack_size, const char *debug_handler_name);
 void coroutine_list_remove(Coroutine *a1);
-int script_yield_handler(Script *self);
+int script_execute(Script *self);
 void coroutine_list_free();
-int coroutine_yield(Coroutine *self); // idb
+int coroutine_resume(Coroutine *self); // idb
 void entity_mode_402AB0(Entity *);
 bool entity_402AC0_is_mode_402AB0(Entity *a1);
 void entity_attach_docking_point(Entity *a1);
@@ -373,7 +373,7 @@ void EventHandler_419CA0(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void EventHandler_419DF0(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void EventHandler_419E80(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void entity_419F00_evt1523(Entity *a1, int a2);
+void entity_419F00_evt1523(Entity *a1, EVT_MSG_1523_param *param);
 void entity_41A060_evt1525(Entity *a1, void *a2); // idb
 void entity_41A170_evt1524(Entity *a1, int a2);
 void entity_41A270_evt_mission_accomplished(Entity *a1, int a2);
@@ -579,54 +579,6 @@ void script_42DF20(Script *a1);
 Entity *stru24_42DF40(stru24 *a1, Entity *a2, int *a3); // idb
 void stru24_42E030(stru24 *a1, Entity *a2);
 void stru24_42E070(stru24 *a1);
-int netz_42E170(int a1, char *a2);
-bool netz_free_provider_async();
-void *netz_42E400(void *a1);
-char *netz_42E410(int a1);
-bool netz_42E430(int a1);
-bool netz_42E7B0();
-void netz_42E7F0();
-int netz_42E820(netz_stru_3 *a1);
-void netz_42F620();
-int __stdcall netz_nullsub_5(int a1, int a2);
-int netz_init(int netz_provider_id, void(*a2)(), int(*a3)(int)); // idb
-int netz_42F8C0(int a1);
-int netz_42F8E0(int a1);
-int netz_42F930_switch_provider(int netz_provider_id);
-void netz_free_provider();
-void netz_deinit();
-int netz_42F9C0(int a1, int a2);
-int netz_42F9E0(int a1);
-int netz_42FA00(int a1, int a2, void *a3, int a4, int a5); // idb
-int netz_42FAC0(const char *provider);
-bool netz_42FB60_init_provider(int provider_id);
-void netz_cleanup();
-void netz_42FD30(int a1);
-bool netz_42FF10(int a1, char a2, void *a3, unsigned int a4, int a5); // idb
-bool netz_42FFB0(int a1, int a2);
-bool j_netz_42FFB0(int a1, int a2);
-int netz_4300C0(int a1);
-int netz_4301E0(int a1);
-int netz_430340();
-int netz_430610();
-int j_netz_430610();
-int netz_430640();
-int j_netz_430640();
-int netz_430670(int a1);
-int j_netz_430670(int a1);
-int netz_430690();
-int j_netz_430690();
-BOOL __stdcall DirectPlayEnumerateACallback(LPGUID lpguidSP, LPSTR lpSPName, DWORD dwMajorVersion, DWORD dwMinorVersion, LPVOID lpContext); // idb
-int netz_create_direct_play(int a1);
-bool netz_430910_dplay();
-bool __stdcall netz_4309A0(int a1, int a2, char a3, int a4);
-bool __stdcall netz_430A70(int a1, int a2, int a3, char a4, int a5);
-int netz_430B10(int a1, int a2);
-int netz_430CE0();
-int netz_430D10();
-int netz_430D70(int a1);
-int netz_430DA0(unsigned int a1);
-char *netz_get_error_string(int error_code); // idb
 void _430F10_unit_inits();
 void entity_register_player_main_building(Entity *a1);
 void entity_430F90_clanhall(Entity *a1);
@@ -875,6 +827,7 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3);
 int script_443570(Script *a1, int a2, int a3, int a4);
 int script_443780(Script *a1, int a2, int a3, int a4);
 bool stru29_list_alloc();
+bool stru29_list_realloc(Script *a1);
 stru29 *stru29_list_4439F0(Sprite *a1, void *param, int a3, int a4, int a5);
 stru29 *stru29_list_443AE0_find_by_sprite(Sprite *a1);
 void stru29_list_free();
@@ -1018,15 +971,6 @@ void MessageHandler_task4_evt39030(Script *receiver, Script *sender, enum SCRIPT
 void script_evt39030_handler(Script *a1);
 bool UNIT_InitTasks();
 void __47CAF0_tasks_evt39030_array_free();
-void script_449820_netz(Script *); // idb
-bool netz_449E00(_DWORD *a1, unsigned int a2, const char *a3);
-void netz_449FF0();
-void netz_44A160(char a1, char *a2, int a3);
-void *netz_44A220(char a1, char *a2, int a3);
-void netz_44A2A0(char a1, int a2, int a3);
-void *netz_42E450(void *a1, char a2, char a3);
-void *netz_42E690(void *a1, char a2);
-void *netz_42F650(void *a1);
 void script_44A500_fog_of_war(Script *a1); // idb
 void show_minimap_sprite();
 void hide_minimap_sprite();
