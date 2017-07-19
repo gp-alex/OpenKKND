@@ -821,12 +821,6 @@ int render_sprt_draw_handler(DrawJobDetails *data, int mode)
     return result;
 }
 
-//----- (00412850) --------------------------------------------------------
-int nullsub_3(void)
-{
-    return 1;
-}
-
 //----- (00412860) --------------------------------------------------------
 int render_scrl_draw_handler(DrawJobDetails *data, int mode)
 {

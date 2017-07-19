@@ -3279,99 +3279,6 @@ int netz_468B50_available_units_denom = 1; // weak
 int dword_468B54 = -1;
 void *__47CA80_array_idx_and_netz_player_side = (void *)0xFFFFFFFF; // idb
 int single_player_game = 1; // weak
-int netz_468B6C_providers_idx = -1; // weak
-netz_provider netz_468B6C_providers[3] =
-{
-	{
-		NULL,
-		"DirectX IPX",
-		"DirectX IPX",
-		"DirectX IPX",
-		0,
-		0,
-		0,
-		&nullsub_3,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_1,
-		&nullsub_4,
-		&netz_nullsub_5,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_1,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_1,
-		&nullsub_1
-	},
-	{
-		NULL,
-		"DirectX serial",
-		"DirectX serial",
-		"DirectX serial",
-		0,
-		0,
-		0,
-		&nullsub_3,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_1,
-		&nullsub_4,
-		&netz_nullsub_5,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_1,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_1,
-		&nullsub_1
-	},
-	{
-		NULL,
-		"DirectX modem",
-		"DirectX modem",
-		"DirectX modem",
-		0,
-		0,
-		0,
-		&nullsub_3,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_1,
-		&nullsub_4,
-		&netz_nullsub_5,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_1,
-		&nullsub_4,
-		&nullsub_4,
-		&nullsub_1,
-		&nullsub_1
-	}
-};
-char aDirectxModem[] = "DirectX modem"; // idb
-char aDirectxSerial[] = "DirectX serial"; // idb
-char aDirectxIpx[] = "DirectX IPX"; // idb
-char *netz_468CD8_datetime[2] = { "Oct 23 1997", "17:00:00" };
-char netz_default_player_name[7] = "PLAYER";
 int dword_468CE8 = 0; // weak
 int netz_468CF0 = 1750844416; // weak
 int netz_468CF4 = 298818860; // weak
@@ -7356,12 +7263,10 @@ int _47A660_array_num_items; // weak
 RenderString *_47A730_render_string; // idb
 Script *_47A734_sidebar_tooltips_task; // idb
 int dword_47A738; // weak
-netz_stru6_per_player netz_47A740[8];
 int netz_47A828; // weak
 int netz_47A82C; // weak
 int dword_47A830; // weak
 void *netz_47A834; // idb
-int(*netz_pfn_47A838)(netz_stru_3 *);
 int dword_47A83C; // weak
 int netz_47A840; // weak
 int netz_47A844; // weak
@@ -7378,11 +7283,8 @@ int netz_47A8A4; // weak
 int netz_47A8A8; // weak
 int netz_47A8DC; // weak
 void *dword_47A8E0; // idb
-netz_stru_4 netz_47A8E4;
 int netz_47A934; // weak
 char byte_47A938; // weak
-netz_stru_5 netz_47A940[8];
-netz_stru1 netz_47AAA0[8];
 int netz_47B3A0; // weak
 int nezt_47B3B0; // weak
 ProductionGroup *_47B3B8_tower_production_group;
@@ -7456,10 +7358,6 @@ int _46E420_starting_cash_idx; // weak
 char byte_47C600; // weak
 RenderString *_47C604_mission_briefing; // idb
 int dword_47C608; // idb
-stru29 *stru29_list_47C610;
-stru29 *stru29_list_47C614;
-stru29 *stru29_list;
-stru29 *stru29_list_free_pool;
 netz_modem *netz_modem_list;
 netz_modem *netz_modem_list_free_pool;
 char byte_47C654; // weak
@@ -7476,7 +7374,6 @@ int dword_47C6C4; // weak
 int stru29_list_initialized; // weak
 int netz_modem_47C6CC_idx; // weak
 int netz_modem_list_used; // idb
-stru29 *_47C6D4_stru29;
 int _47C6D8_use__466098_cost_multipliers;
 int _47C6DC_dont_execute_unit_handlers; // weak
 Script *_47C6E0_task; // idb

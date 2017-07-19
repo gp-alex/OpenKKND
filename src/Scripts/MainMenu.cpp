@@ -3,6 +3,7 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
+#include "src/stru29.h"
 
 //----- (0043C0E0) --------------------------------------------------------
 void script_mobd79_evt1__main_menu_new_game(Script *a1)
@@ -35,13 +36,13 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610;
-        if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+        v5 = stru29_list_47C610.next;
+        if (v5 != &stru29_list_47C610)
         {
             while (v5->sprite != v3)
             {
                 v5 = v5->next;
-                if ((stru29 **)v5 == &stru29_list_47C610)
+                if (v5 == &stru29_list_47C610)
                     goto LABEL_8;
             }
             v5->field_C |= 1u;
@@ -100,13 +101,13 @@ void script_mobd79_evt19__main_menu_load(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610;
-        if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+        v5 = stru29_list_47C610.next;
+        if (v5 != &stru29_list_47C610)
         {
             while (v5->sprite != v3)
             {
                 v5 = v5->next;
-                if ((stru29 **)v5 == &stru29_list_47C610)
+                if (v5 == &stru29_list_47C610)
                     goto LABEL_8;
             }
             v5->field_C |= 1u;
@@ -146,13 +147,13 @@ void script_mobd79_evt1__main_menu_play_mission(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610;
-        if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+        v5 = stru29_list_47C610.next;
+        if (v5 != &stru29_list_47C610)
         {
             while (v5->sprite != v3)
             {
                 v5 = v5->next;
-                if ((stru29 **)v5 == &stru29_list_47C610)
+                if (v5 == &stru29_list_47C610)
                     goto LABEL_8;
             }
             v5->field_C |= 1u;
@@ -207,13 +208,13 @@ void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610;
-        if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+        v5 = stru29_list_47C610.next;
+        if (v5 != &stru29_list_47C610)
         {
             while (v5->sprite != v3)
             {
                 v5 = v5->next;
-                if ((stru29 **)v5 == &stru29_list_47C610)
+                if (v5 == &stru29_list_47C610)
                     goto LABEL_8;
             }
             v5->field_C |= 1u;
@@ -267,13 +268,13 @@ void script_mobd79_evt1__main_menu_new_missions(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610;
-        if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+        v5 = stru29_list_47C610.next;
+        if (v5 != &stru29_list_47C610)
         {
             while (v5->sprite != v3)
             {
                 v5 = v5->next;
-                if ((stru29 **)v5 == &stru29_list_47C610)
+                if (v5 == &stru29_list_47C610)
                     goto LABEL_8;
             }
             v5->field_C |= 1u;
@@ -327,13 +328,13 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610;
-        if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+        v5 = stru29_list_47C610.next;
+        if (v5 != &stru29_list_47C610)
         {
             while (v5->sprite != v3)
             {
                 v5 = v5->next;
-                if ((stru29 **)v5 == &stru29_list_47C610)
+                if (v5 == &stru29_list_47C610)
                     goto LABEL_8;
             }
             v5->field_C |= 1u;
@@ -386,13 +387,13 @@ void script_mobd79_evt1__main_menu_quit(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610;
-        if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+        v5 = stru29_list_47C610.next;
+        if (v5 != &stru29_list_47C610)
         {
             while (v5->sprite != v3)
             {
                 v5 = v5->next;
-                if ((stru29 **)v5 == &stru29_list_47C610)
+                if (v5 == &stru29_list_47C610)
                     goto LABEL_8;
             }
             v5->field_C |= 1u;

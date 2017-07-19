@@ -120,6 +120,9 @@
     <ClInclude Include="..\..\src\Netz.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\stru29.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kknd.cpp">
@@ -168,6 +171,9 @@
       <Filter>src\Scripts</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Netz.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\stru29.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

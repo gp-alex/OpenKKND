@@ -63,8 +63,9 @@ struct stru24_struC;
 struct Sprite_stru58;
 struct Sprite_stru58_stru0;
 struct Entity_stru_dmg_related;
-
 struct EVT_MSG_1523_param;
+
+struct stru29;
 
 /* 63 */
 struct UnitNameId
@@ -1614,15 +1615,6 @@ struct stru28
 	stru28 *prev;
 	int mobd_offset_idx;
 	Sprite *sprite;
-};
-
-/* 355 */
-struct stru29
-{
-	stru29 *next;
-	stru29 *prev;
-	Sprite *sprite;
-	int field_C;
 };
 
 /* 356 */

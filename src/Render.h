@@ -19,7 +19,6 @@ int render_call_draw_handler_mode2(DrawJobDetails *a1);
 void render_cleanup();
 int render_sprt_draw_handler_setup_palettes();
 int render_sprt_draw_handler(DrawJobDetails *data, int mode); // idb
-int nullsub_3(void); // idb
 int render_scrl_draw_handler(DrawJobDetails *data, int mode);
 int render_video_draw_handler(DrawJobDetails *a1, int mode);
 

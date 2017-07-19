@@ -7,6 +7,111 @@
 #include "src/Random.h"
 
 
+
+
+netz_stru6_per_player netz_47A740[8];
+int(*netz_pfn_47A838)(netz_stru_3 *);
+
+netz_stru_4 netz_47A8E4;
+netz_stru_5 netz_47A940[8];
+netz_stru1 netz_47AAA0[8];
+
+int netz_468B6C_providers_idx = -1; // weak
+netz_provider netz_468B6C_providers[3] =
+{
+    {
+        NULL,
+        "DirectX IPX",
+        "DirectX IPX",
+        "DirectX IPX",
+        0,
+        0,
+        0,
+        &nullsub_3,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_1,
+        &nullsub_4,
+        &netz_nullsub_5,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_1,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_1,
+        &nullsub_1
+    },
+    {
+        NULL,
+        "DirectX serial",
+        "DirectX serial",
+        "DirectX serial",
+        0,
+        0,
+        0,
+        &nullsub_3,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_1,
+        &nullsub_4,
+        &netz_nullsub_5,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_1,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_1,
+        &nullsub_1
+    },
+    {
+        NULL,
+        "DirectX modem",
+        "DirectX modem",
+        "DirectX modem",
+        0,
+        0,
+        0,
+        &nullsub_3,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_1,
+        &nullsub_4,
+        &netz_nullsub_5,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_1,
+        &nullsub_4,
+        &nullsub_4,
+        &nullsub_1,
+        &nullsub_1
+    }
+};
+char aDirectxModem[] = "DirectX modem"; // idb
+char aDirectxSerial[] = "DirectX serial"; // idb
+char aDirectxIpx[] = "DirectX IPX"; // idb
+char *netz_468CD8_datetime[2] = { "Oct 23 1997", "17:00:00" };
+char netz_default_player_name[7] = "PLAYER";
+
+
+
 //----- (0042E170) --------------------------------------------------------
 int netz_42E170(int a1, char *a2)
 {

@@ -211,3 +211,18 @@ void netz_44A2A0(char a1, int a2, int a3);
 void *netz_42E450(void *a1, char a2, char a3);
 void *netz_42E690(void *a1, char a2);
 void *netz_42F650(void *a1);
+
+extern netz_stru6_per_player netz_47A740[8];
+extern int(*netz_pfn_47A838)(netz_stru_3 *);
+
+extern netz_stru_4 netz_47A8E4;
+extern netz_stru_5 netz_47A940[8];
+extern netz_stru1 netz_47AAA0[8];
+
+extern int netz_468B6C_providers_idx; // weak
+extern netz_provider netz_468B6C_providers[3];
+extern char aDirectxModem[]; // idb
+extern char aDirectxSerial[]; // idb
+extern char aDirectxIpx[]; // idb
+extern char *netz_468CD8_datetime[2];
+extern char netz_default_player_name[7];

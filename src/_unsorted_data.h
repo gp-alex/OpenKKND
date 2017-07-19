@@ -223,13 +223,6 @@ extern int netz_468B50_available_units_denom; // weak
 extern int dword_468B54;
 extern void *__47CA80_array_idx_and_netz_player_side; // idb
 extern int single_player_game; // weak
-extern int netz_468B6C_providers_idx; // weak
-extern netz_provider netz_468B6C_providers[3];
-extern char aDirectxModem[]; // idb
-extern char aDirectxSerial[]; // idb
-extern char aDirectxIpx[]; // idb
-extern char *netz_468CD8_datetime[2];
-extern char netz_default_player_name[7];
 extern int dword_468CE8; // weak
 extern int netz_468CF0; // weak
 extern int netz_468CF4; // weak
@@ -986,12 +979,10 @@ extern int _47A660_array_num_items; // weak
 extern RenderString *_47A730_render_string; // idb
 extern Script *_47A734_sidebar_tooltips_task; // idb
 extern int dword_47A738; // weak
-extern netz_stru6_per_player netz_47A740[8];
 extern int netz_47A828; // weak
 extern int netz_47A82C; // weak
 extern int dword_47A830; // weak
 extern void *netz_47A834; // idb
-extern int(*netz_pfn_47A838)(netz_stru_3 *);
 extern int dword_47A83C; // weak
 extern int netz_47A840; // weak
 extern int netz_47A844; // weak
@@ -1008,11 +999,8 @@ extern int netz_47A8A4; // weak
 extern int netz_47A8A8; // weak
 extern int netz_47A8DC; // weak
 extern void *dword_47A8E0; // idb
-extern netz_stru_4 netz_47A8E4;
 extern int netz_47A934; // weak
 extern char byte_47A938; // weak
-extern netz_stru_5 netz_47A940[8];
-extern netz_stru1 netz_47AAA0[8];
 extern int netz_47B3A0; // weak
 extern int nezt_47B3B0; // weak
 extern ProductionGroup *_47B3B8_tower_production_group;
@@ -1086,10 +1074,6 @@ extern int _46E420_starting_cash_idx; // weak
 extern char byte_47C600; // weak
 extern RenderString *_47C604_mission_briefing; // idb
 extern int dword_47C608; // idb
-extern stru29 *stru29_list_47C610;
-extern stru29 *stru29_list_47C614;
-extern stru29 *stru29_list;
-extern stru29 *stru29_list_free_pool;
 extern netz_modem *netz_modem_list;
 extern netz_modem *netz_modem_list_free_pool;
 extern char byte_47C654; // weak
@@ -1106,7 +1090,6 @@ extern int dword_47C6C4; // weak
 extern int stru29_list_initialized; // weak
 extern int netz_modem_47C6CC_idx; // weak
 extern int netz_modem_list_used; // idb
-extern stru29 *_47C6D4_stru29;
 extern int _47C6D8_use__466098_cost_multipliers;
 extern int _47C6DC_dont_execute_unit_handlers; // weak
 extern Script *_47C6E0_task; // idb

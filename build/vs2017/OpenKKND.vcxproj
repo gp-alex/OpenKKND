@@ -131,6 +131,7 @@
     <ClCompile Include="..\..\src\Scripts\Projectiles.cpp" />
     <ClCompile Include="..\..\src\Scripts\Scar.cpp" />
     <ClCompile Include="..\..\src\Scripts\Schrap.cpp" />
+    <ClCompile Include="..\..\src\stru29.cpp" />
     <ClCompile Include="..\..\src\_unsorted_data.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +167,7 @@
     <ClInclude Include="..\..\src\Netz.h" />
     <ClInclude Include="..\..\src\Random.h" />
     <ClInclude Include="..\..\src\Render.h" />
+    <ClInclude Include="..\..\src\stru29.h" />
     <ClInclude Include="..\..\src\_unsorted_data.h" />
     <ClInclude Include="..\..\src\_unsorted_functions.h" />
   </ItemGroup>

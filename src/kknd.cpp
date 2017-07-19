@@ -6,6 +6,7 @@
 #include "src/File.h"
 #include "src/Random.h"
 #include "src/Render.h"
+#include "src/stru29.h"
 
 #pragma comment(lib, "Winmm.lib") // timeGetTime
 #pragma comment(lib, "ddraw.lib") // DirectDrawCreate
@@ -18367,6 +18368,12 @@ return 1;
 	return result;
 }
 
+//----- (00412850) --------------------------------------------------------
+int nullsub_3(void)
+{
+    return 1;
+}
+
 //----- (00422F60) --------------------------------------------------------
 void GAME_PrepareLevel()
 {
@@ -34676,8 +34683,8 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 				++v4;
 			} while (v4 < 29);
 			stru29_list[29].next = 0;
-			stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-			stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 			stru29_list_initialized = 1;
 		}
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -34749,12 +34756,12 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 							script_yield(v1);
 						}
 					}
-					v10 = stru29_list_47C610;
-					if (v9 & 0x80 && (stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+					v10 = stru29_list_47C610.next;
+					if (v9 & 0x80 && v10 != &stru29_list_47C610)
 					{
 						script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47C6D4_stru29->sprite->script);
 						script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47C6D4_stru29->sprite->script);
-						v10 = stru29_list_47C610;
+						v10 = stru29_list_47C610.next;
 					}
 					if (v9 & 0x10F)
 						break;
@@ -34782,7 +34789,7 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 	{
 		if (BYTE1(out.pressed_keys_mask) & 0xC)
 		{
-			if ((stru29 **)v10 == &stru29_list_47C610)
+			if (v10 == &stru29_list_47C610)
 			{
 				v11 = 0;
 				goto LABEL_54;
@@ -34794,12 +34801,12 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 				{
 					v12 = v12->prev;
 					_47C6D4_stru29 = v12;
-				} while ((stru29 **)v12 == &stru29_list_47C610);
+				} while (v12 == &stru29_list_47C610);
 			} while (v12->field_C & 1);
 		}
 		else
 		{
-			if ((stru29 **)v10 == &stru29_list_47C610)
+			if (v10 == &stru29_list_47C610)
 			{
 				v11 = 0;
 				goto LABEL_54;
@@ -34811,13 +34818,13 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 				{
 					v12 = v12->next;
 					_47C6D4_stru29 = v12;
-				} while ((stru29 **)v12 == &stru29_list_47C610);
+				} while (v12 == &stru29_list_47C610);
 			} while (v12->field_C & 1);
 		}
 	}
 	else if (v9 & 5)
 	{
-		if ((stru29 **)v10 == &stru29_list_47C610)
+		if (v10 == &stru29_list_47C610)
 		{
 			v11 = 0;
 			goto LABEL_54;
@@ -34829,12 +34836,12 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 			{
 				v12 = v12->prev;
 				_47C6D4_stru29 = v12;
-			} while ((stru29 **)v12 == &stru29_list_47C610);
+			} while (v12 == &stru29_list_47C610);
 		} while (v12->field_C & 1);
 	}
 	else
 	{
-		if ((stru29 **)v10 == &stru29_list_47C610)
+		if (v10 == &stru29_list_47C610)
 		{
 			v11 = 0;
 			goto LABEL_54;
@@ -34846,7 +34853,7 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 			{
 				v12 = v12->next;
 				_47C6D4_stru29 = v12;
-			} while ((stru29 **)v12 == &stru29_list_47C610);
+			} while (v12 == &stru29_list_47C610);
 		} while (v12->field_C & 1);
 	}
 	v11 = v12->sprite;
@@ -34880,8 +34887,8 @@ void script_43C040_cursors_handler(Script *a1)
 				++v2;
 			} while (v2 < 29);
 			stru29_list[29].next = 0;
-			stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-			stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 			stru29_list_initialized = 1;
 		}
 		sprite_create_scripted(MOBD_79, 0, (void(*)(Script *))script_43BBA0_cursors_mobd79_handler, SCRIPT_COROUTINE, 0);
@@ -34918,13 +34925,13 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 			switch (v5)
 			{
 			case EVT_MSG_neg2:
-				v6 = stru29_list_47C610;
-				if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+				v6 = stru29_list_47C610.next;
+				if (v6 != &stru29_list_47C610)
 				{
 					while (a1->sprite != v6->sprite)
 					{
 						v6 = v6->next;
-						if ((stru29 **)v6 == &stru29_list_47C610)
+						if (v6 == &stru29_list_47C610)
 							goto LABEL_13;
 					}
 					_47C6D4_stru29 = v6;
@@ -34983,13 +34990,13 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 			switch (v5)
 			{
 			case EVT_MSG_neg2:
-				v6 = stru29_list_47C610;
-				if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+				v6 = stru29_list_47C610.next;
+				if (v6 != &stru29_list_47C610)
 				{
 					while (a1->sprite != v6->sprite)
 					{
 						v6 = v6->next;
-						if ((stru29 **)v6 == &stru29_list_47C610)
+						if (v6 == &stru29_list_47C610)
 							goto LABEL_13;
 					}
 					_47C6D4_stru29 = v6;
@@ -35058,8 +35065,8 @@ void script_43CF50_mobd45(Script *a1)
 			++v4;
 		} while (v4 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -35130,8 +35137,8 @@ void script_43D090_mobd45_directx_ipx(Script *a1)
 						++v6;
 					} while (v6 < 29);
 					stru29_list[29].next = 0;
-					stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-					stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+					stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+					stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 					stru29_list_initialized = 1;
 				}
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -35204,8 +35211,8 @@ void script_43D270_mobd45_directx_serial(Script *a1)
 						++v5;
 					} while (v5 < 29);
 					stru29_list[29].next = 0;
-					stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-					stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+					stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+					stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 					stru29_list_initialized = 1;
 				}
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -35277,8 +35284,8 @@ void script_43D430_mobd45_directx_modem(Script *a1)
 						++v5;
 					} while (v5 < 29);
 					stru29_list[29].next = 0;
-					stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-					stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+					stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+					stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 					stru29_list_initialized = 1;
 				}
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -35342,8 +35349,8 @@ void script_43D5F0_mobd45(Script *a1)
 			++v4;
 		} while (v4 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -35397,8 +35404,8 @@ void script_43D740_mobd45_evt17(Script *a1)
 			++v4;
 		} while (v4 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -35452,8 +35459,8 @@ void script_43D890_mobd45(Script *a1)
 			++v4;
 		} while (v4 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -35562,13 +35569,13 @@ void script_43DA80_mobd45_modem(Script *a1)
 				switch (v8)
 				{
 				case EVT_MSG_neg2:
-					v9 = stru29_list_47C610;
-					if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+					v9 = stru29_list_47C610.next;
+					if (v9 != &stru29_list_47C610)
 					{
 						while (a1->sprite != v9->sprite)
 						{
 							v9 = v9->next;
-							if ((stru29 **)v9 == &stru29_list_47C610)
+							if (v9 == &stru29_list_47C610)
 								goto LABEL_16;
 						}
 						_47C6D4_stru29 = v9;
@@ -35721,13 +35728,13 @@ void script_43DD90_mobd45_modem(Script *a1)
 				switch (v9)
 				{
 				case EVT_MSG_neg2:
-					v10 = stru29_list_47C610;
-					if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+					v10 = stru29_list_47C610.next;
+					if (v10 != &stru29_list_47C610)
 					{
 						while (v1->sprite != v10->sprite)
 						{
 							v10 = v10->next;
-							if ((stru29 **)v10 == &stru29_list_47C610)
+							if (v10 == &stru29_list_47C610)
 								goto LABEL_16;
 						}
 						_47C6D4_stru29 = v10;
@@ -35986,8 +35993,8 @@ void script_43E230_mobd45_modems(Script *a1)
 			++v9;
 		} while (v9 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -36076,8 +36083,8 @@ void script_43E470_mobd45_modems(Script *a1)
 			++v8;
 		} while (v8 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -36132,8 +36139,8 @@ void script_43E670_mobd45(Script *a1)
 			++v4;
 		} while (v4 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -36230,13 +36237,13 @@ void script_43E890_mobd45_modems(Script *a1)
 			v6 = _47C668_ingame_menu_sprites;
 			do
 			{
-				v7 = stru29_list_47C610;
-				if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+				v7 = stru29_list_47C610.next;
+				if (v7 != &stru29_list_47C610)
 				{
 					while (v7->sprite != *v6)
 					{
 						v7 = v7->next;
-						if ((stru29 **)v7 == &stru29_list_47C610)
+						if (v7 == &stru29_list_47C610)
 							goto LABEL_12;
 					}
 					v7->field_C &= 0xFFFFFFFE;
@@ -36256,14 +36263,14 @@ void script_43E890_mobd45_modems(Script *a1)
 			do
 			{
 				v9 = *v8;
-				v10 = stru29_list_47C610;
+				v10 = stru29_list_47C610.next;
 				++v8;
-				if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+				if (v10 != &stru29_list_47C610)
 				{
 					while (v10->sprite != v9)
 					{
 						v10 = v10->next;
-						if ((stru29 **)v10 == &stru29_list_47C610)
+						if (v10 == &stru29_list_47C610)
 							goto LABEL_21;
 					}
 					v10->field_C |= 1u;
@@ -36341,13 +36348,13 @@ void script_43EA90_mobd45(Script *a1)
 				switch (v5)
 				{
 				case EVT_MSG_neg2:
-					v6 = stru29_list_47C610;
-					if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+					v6 = stru29_list_47C610.next;
+					if (v6 != &stru29_list_47C610)
 					{
 						while (a1->sprite != v6->sprite)
 						{
 							v6 = v6->next;
-							if ((stru29 **)v6 == &stru29_list_47C610)
+							if (v6 == &stru29_list_47C610)
 								goto LABEL_14;
 						}
 						_47C6D4_stru29 = v6;
@@ -36398,13 +36405,13 @@ void script_43EB80_mobd45(Script *a1)
 				switch (v5)
 				{
 				case EVT_MSG_neg2:
-					v6 = stru29_list_47C610;
-					if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+					v6 = stru29_list_47C610.next;
+					if (v6 != &stru29_list_47C610)
 					{
 						while (a1->sprite != v6->sprite)
 						{
 							v6 = v6->next;
-							if ((stru29 **)v6 == &stru29_list_47C610)
+							if (v6 == &stru29_list_47C610)
 								goto LABEL_14;
 						}
 						_47C6D4_stru29 = v6;
@@ -36457,13 +36464,13 @@ void script_43EC70_mobd45(Script *a1)
 				switch (v6)
 				{
 				case EVT_MSG_neg2:
-					v7 = stru29_list_47C610;
-					if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+					v7 = stru29_list_47C610.next;
+					if (v7 != &stru29_list_47C610)
 					{
 						while (v1->sprite != v7->sprite)
 						{
 							v7 = v7->next;
-							if ((stru29 **)v7 == &stru29_list_47C610)
+							if (v7 == &stru29_list_47C610)
 								goto LABEL_14;
 						}
 						_47C6D4_stru29 = v7;
@@ -36614,8 +36621,8 @@ void script_43EE90_mobd45(Script *a1)
 			++v11;
 		} while (v11 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -36693,8 +36700,8 @@ void script_43F0E0_mobd45_modems(Script *a1)
 			++v10;
 		} while (v10 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -36772,8 +36779,8 @@ void script_43F330_mobd45(Script *a1)
 			++v9;
 		} while (v9 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -36832,8 +36839,8 @@ void script_43F520_mobd45(Script *a1)
 			++v5;
 		} while (v5 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -36888,8 +36895,8 @@ void script_43F670_mobd45(Script *a1)
 			++v4;
 		} while (v4 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -37024,13 +37031,13 @@ void script_43F9E0_mobd45(Script *a1)
 				switch (v6)
 				{
 				case 0xFFFFFFFE:
-					v7 = stru29_list_47C610;
-					if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+					v7 = stru29_list_47C610.next;
+					if (v7 != &stru29_list_47C610)
 					{
 						while (v1->sprite != v7->sprite)
 						{
 							v7 = v7->next;
-							if ((stru29 **)v7 == &stru29_list_47C610)
+							if (v7 == &stru29_list_47C610)
 								goto LABEL_14;
 						}
 						_47C6D4_stru29 = v7;
@@ -37233,8 +37240,8 @@ void script_43FDE0_mobd45(Script *a1)
 			++v4;
 		} while (v4 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -37329,8 +37336,8 @@ __debugbreak();
 			++v13;
 		} while (v13 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -37404,8 +37411,8 @@ void script_4402A0_mobd45_evt5(Script *a1)
 				++v10;
 			} while (v10 < 29);
 			stru29_list[29].next = 0;
-			stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-			stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 			stru29_list_initialized = 1;
 		}
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -37684,13 +37691,13 @@ void script_440810_mobd45(Script *a1)
 				switch (v10)
 				{
 				case EVT_MSG_neg2:
-					v11 = stru29_list_47C610;
-					if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+					v11 = stru29_list_47C610.next;
+					if (v11 != &stru29_list_47C610)
 					{
 						while (v1->sprite != v11->sprite)
 						{
 							v11 = v11->next;
-							if ((stru29 **)v11 == &stru29_list_47C610)
+							if (v11 == &stru29_list_47C610)
 								goto LABEL_29;
 						}
 						_47C6D4_stru29 = v11;
@@ -38014,13 +38021,13 @@ void script_441150_mobd45_evt8(Script *a1)
 	v3->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_8;
 	stru29_list_4439F0(v3, v2, 0, 1, 0);
-	v5 = stru29_list_47C610;
-	if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+	v5 = stru29_list_47C610.next;
+	if (v5 != &stru29_list_47C610)
 	{
 		while (v5->sprite != a1->sprite)
 		{
 			v5 = v5->next;
-			if ((stru29 **)v5 == &stru29_list_47C610)
+			if (v5 == &stru29_list_47C610)
 				goto LABEL_6;
 		}
 		v5->field_C |= 1u;
@@ -38109,13 +38116,13 @@ void script_441340_mobd45_evt8(Script *a1)
 	v2->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_8;
 	stru29_list_4439F0(v2, v1, 0, 1, 0);
-	v4 = stru29_list_47C610;
-	if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+	v4 = stru29_list_47C610.next;
+	if (v4 != &stru29_list_47C610)
 	{
 		while (v4->sprite != a1->sprite)
 		{
 			v4 = v4->next;
-			if ((stru29 **)v4 == &stru29_list_47C610)
+			if (v4 == &stru29_list_47C610)
 				goto LABEL_6;
 		}
 		v4->field_C |= 1u;
@@ -38205,13 +38212,13 @@ void script_441550_mobd45_evt8(Script *a1)
 	v3->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_8;
 	stru29_list_4439F0(v3, v2, 0, 1, 0);
-	v5 = stru29_list_47C610;
-	if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+	v5 = stru29_list_47C610.next;
+	if (v5 != &stru29_list_47C610)
 	{
 		while (v5->sprite != a1->sprite)
 		{
 			v5 = v5->next;
-			if ((stru29 **)v5 == &stru29_list_47C610)
+			if (v5 == &stru29_list_47C610)
 				goto LABEL_6;
 		}
 		v5->field_C |= 1u;
@@ -38357,13 +38364,13 @@ void script_441780_mobd45_evt8(Script *a1)
 	v7->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_8;
 	stru29_list_4439F0(v7, v6, 0, 1, 0);
-	v9 = stru29_list_47C610;
-	if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+	v9 = stru29_list_47C610.next;
+	if (v9 != &stru29_list_47C610)
 	{
 		while (v9->sprite != a1->sprite)
 		{
 			v9 = v9->next;
-			if ((stru29 **)v9 == &stru29_list_47C610)
+			if (v9 == &stru29_list_47C610)
 				goto LABEL_13;
 		}
 		v9->field_C |= 1u;
@@ -38461,8 +38468,8 @@ void script_441940_mobd45_evt17(Script *a1)
 				++v13;
 			} while (v13 < 29);
 			stru29_list[29].next = 0;
-			stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-			stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 			stru29_list_initialized = 1;
 		}
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -38492,8 +38499,8 @@ void script_441940_mobd45_evt17(Script *a1)
 				++v8;
 			} while (v8 < 29);
 			stru29_list[29].next = 0;
-			stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-			stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 			stru29_list_initialized = 1;
 		}
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -38842,8 +38849,8 @@ void script_4421F0_mobd45_evt8(Script *a1)
 				++v15;
 			} while (v15 < 29);
 			stru29_list[29].next = 0;
-			stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-			stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 			stru29_list_initialized = 1;
 		}
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -38914,8 +38921,8 @@ void script_442580_mobd45_evt17(Script *task)
 			++v4;
 		} while (v4 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -38991,8 +38998,8 @@ __debugbreak();
 			++v10;
 		} while (v10 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -39086,8 +39093,8 @@ void script_4428C0_mobd45_evt6(Script *a1)
 			++v13;
 		} while (v13 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -39177,15 +39184,15 @@ void script_442BB0_mobd46(Script *a1)
 				v7 = BYTE2(a1a->field_14);
 				v8 = v7 < 9u;
 				v9 = v7 == 9;
-				v10 = stru29_list_47C610;
+				v10 = stru29_list_47C610.next;
 				if (!v8 && !v9)
 					break;
-				if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+				if (v10 != &stru29_list_47C610)
 				{
 					while (v10->sprite != v5)
 					{
 						v10 = v10->next;
-						if ((stru29 **)v10 == &stru29_list_47C610)
+						if (v10 == &stru29_list_47C610)
 							goto LABEL_16;
 					}
 					v10->field_C &= 0xFFFFFFFE;
@@ -39215,13 +39222,13 @@ void script_442BB0_mobd46(Script *a1)
 							switch (v15)
 							{
 							case EVT_MSG_neg2:
-								v16 = stru29_list_47C610;
-								if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+								v16 = stru29_list_47C610.next;
+								if (v16 != &stru29_list_47C610)
 								{
 									while (v1->sprite != v16->sprite)
 									{
 										v16 = v16->next;
-										if ((stru29 **)v16 == &stru29_list_47C610)
+										if (v16 == &stru29_list_47C610)
 											goto LABEL_30;
 									}
 									_47C6D4_stru29 = v16;
@@ -39245,12 +39252,12 @@ void script_442BB0_mobd46(Script *a1)
 				if (v12)
 					dword_47C6E8 = BYTE2(a1a->field_14);
 			}
-			if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+			if (stru29_list_47C610.next != &stru29_list_47C610)
 			{
 				while (v10->sprite != v5)
 				{
 					v10 = v10->next;
-					if ((stru29 **)v10 == &stru29_list_47C610)
+					if (v10 == &stru29_list_47C610)
 						goto LABEL_40;
 				}
 				v10->field_C |= 1u;
@@ -39299,15 +39306,15 @@ void script_442BB0_mobd46(Script *a1)
 			v22 = BYTE2(a1a->field_14);
 			v8 = v22 < (unsigned __int16)v20;
 			v9 = v22 == v20;
-			v23 = stru29_list_47C610;
+			v23 = stru29_list_47C610.next;
 			if (v8 || v9)
 				break;
-			if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+			if (v23 != &stru29_list_47C610)
 			{
 				while (v23->sprite != v19)
 				{
 					v23 = v23->next;
-					if ((stru29 **)v23 == &stru29_list_47C610)
+					if (v23 == &stru29_list_47C610)
 						goto LABEL_87;
 				}
 				v23->field_C |= 1u;
@@ -39331,12 +39338,12 @@ void script_442BB0_mobd46(Script *a1)
 				v18 = dword_47C6E8;
 			}
 		}
-		if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+		if (stru29_list_47C610.next != &stru29_list_47C610)
 		{
 			while (v23->sprite != v19)
 			{
 				v23 = v23->next;
-				if ((stru29 **)v23 == &stru29_list_47C610)
+				if (v23 == &stru29_list_47C610)
 					goto LABEL_63;
 			}
 			v23->field_C &= 0xFFFFFFFE;
@@ -39367,13 +39374,13 @@ void script_442BB0_mobd46(Script *a1)
 					switch (v28)
 					{
 					case EVT_MSG_neg2:
-						v29 = stru29_list_47C610;
-						if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+						v29 = stru29_list_47C610.next;
+						if (v29 != &stru29_list_47C610)
 						{
 							while (v1->sprite != v29->sprite)
 							{
 								v29 = v29->next;
-								if ((stru29 **)v29 == &stru29_list_47C610)
+								if (v29 == &stru29_list_47C610)
 									goto LABEL_77;
 							}
 							_47C6D4_stru29 = v29;
@@ -39443,8 +39450,8 @@ void script_443000_mobd45(Script *a1)
 			++v4;
 		} while (v4 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -39645,13 +39652,13 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 			}
 			else if (v10 == EVT_MSG_neg2)
 			{
-				v11 = stru29_list_47C610;
-				if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+				v11 = stru29_list_47C610.next;
+				if (v11 != &stru29_list_47C610)
 				{
 					while (v5 != v11->sprite)
 					{
 						v11 = v11->next;
-						if ((stru29 **)v11 == &stru29_list_47C610)
+						if (v11 == &stru29_list_47C610)
 						{
 							v4 |= 8u;
 							goto LABEL_30;
@@ -39759,13 +39766,13 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 			}
 			else if (v11 == EVT_MSG_neg2)
 			{
-				v12 = stru29_list_47C610;
-				if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+				v12 = stru29_list_47C610.next;
+				if (v12 != &stru29_list_47C610)
 				{
 					while (v5 != v12->sprite)
 					{
 						v12 = v12->next;
-						if ((stru29 **)v12 == &stru29_list_47C610)
+						if (v12 == &stru29_list_47C610)
 						{
 							v9 |= 8u;
 							goto LABEL_22;
@@ -39874,13 +39881,13 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 			}
 			else if (v11 == EVT_MSG_neg2)
 			{
-				v12 = stru29_list_47C610;
-				if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
+				v12 = stru29_list_47C610.next;
+				if (v12 != &stru29_list_47C610)
 				{
 					while (v5 != v12->sprite)
 					{
 						v12 = v12->next;
-						if ((stru29 **)v12 == &stru29_list_47C610)
+						if (v12 == &stru29_list_47C610)
 						{
 							v9 |= 8u;
 							goto LABEL_20;
@@ -39927,215 +39934,6 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 	return result;
 }
 
-bool stru29_list_realloc(Script *a1)
-{
-    stru29_list_remove_all(a1);
-    return stru29_list_alloc();
-}
-
-//----- (00443980) --------------------------------------------------------
-bool stru29_list_alloc()
-{
-    _47C6D4_stru29 = 0;
-
-    stru29_list = new stru29[30];
-    if (stru29_list)
-    {
-        stru29_list_free_pool = stru29_list;
-        stru29_list[29].next = nullptr;
-
-        for (int i = 0; i < 30; ++i)
-        {
-            stru29_list[i].next = &stru29_list[i + 1];
-        }
-
-        stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-        stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
-
-        stru29_list_initialized = true;
-        return true;
-    }
-    return false;
-}
-
-//----- (004439F0) --------------------------------------------------------
-stru29 *stru29_list_4439F0(Sprite *a1, void *param, int a3, int a4, int a5)
-{
-	int v5; // esi@1
-	stru29 *i; // eax@2
-	stru29 *v7; // esi@5
-	stru29 *v8; // eax@5
-	stru29 *v9; // edx@10
-	stru29 *v10; // edx@16
-	int v11; // eax@20
-
-	v5 = a1->y;
-	a1->param = param;
-	if (a4)
-	{
-		for (i = stru29_list_47C610; (stru29 **)i != &stru29_list_47C610; i = i->next)
-		{
-			if (v5 < i->sprite->y)
-				break;
-		}
-		v7 = stru29_list_free_pool;
-		v8 = i->prev;
-		if (stru29_list_free_pool)
-			stru29_list_free_pool = stru29_list_free_pool->next;
-		else
-			v7 = 0;
-		if (v7)
-		{
-			v7->sprite = a1;
-			v7->field_C = 0;
-			v9 = v8->next;
-			v7->prev = v8;
-			v7->next = v9;
-			v8->next->prev = v7;
-			v8->next = v7;
-		}
-		else
-		{
-			game_state = 3;
-		}
-	}
-	else
-	{
-		v7 = stru29_list_free_pool;
-		if (stru29_list_free_pool)
-			stru29_list_free_pool = stru29_list_free_pool->next;
-		else
-			v7 = 0;
-		if (v7)
-		{
-			v7->sprite = a1;
-			v7->field_C = 0;
-			v10 = stru29_list_47C610;
-			v7->prev = (stru29 *)&stru29_list_47C610;
-			v7->next = v10;
-			stru29_list_47C610->prev = v7;
-			stru29_list_47C610 = v7;
-		}
-		else
-		{
-			game_state = 3;
-		}
-	}
-	if (a3)
-	{
-		_43BAB0_move_cursor(a1);
-		_47C6D4_stru29 = v7;
-	}
-	if (a5)
-	{
-		v11 = v7->field_C;
-		LOBYTE_HEXRAYS(v11) = v11 | 2;
-		v7->field_C = v11;
-	}
-	return v7;
-}
-// 47A2C4: using guessed type int game_state;
-
-//----- (00443AE0) --------------------------------------------------------
-stru29 *stru29_list_443AE0_find_by_sprite(Sprite *a1)
-{
-	stru29 *result; // eax@1
-
-	result = stru29_list_47C610;
-	if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
-	{
-		while (a1 != result->sprite)
-		{
-			result = result->next;
-			if ((stru29 **)result == &stru29_list_47C610)
-				return result;
-		}
-		_47C6D4_stru29 = result;
-	}
-	return result;
-}
-
-//----- (00443B10) --------------------------------------------------------
-void stru29_list_free()
-{
-	if (stru29_list && stru29_list_initialized)
-	{
-		delete[] stru29_list;
-		stru29_list_initialized = false;
-	}
-}
-
-//----- (00443B40) --------------------------------------------------------
-void stru29_list_remove_all(Script *a1)
-{
-	stru29 *v1; // esi@1
-	Script *v2; // ebp@1
-	Sprite *v3; // edi@2
-	RenderString *v4; // ecx@2
-	Script *v5; // ebx@2
-	Sprite *v6; // eax@4
-	Sprite *v7; // eax@5
-	stru29 **v8; // eax@11
-
-	v1 = stru29_list_47C610;
-	v2 = a1;
-	if ((stru29 **)stru29_list_47C610 != &stru29_list_47C610)
-	{
-		do
-		{
-			v3 = v1->sprite;
-			v4 = (RenderString *)v3->param;
-			v5 = v3->script;
-			if (v4)
-				render_string_list_remove(v4);
-			v6 = v3->parent;
-			if (v6)
-			{
-				v7 = v6->parent;
-				if (v7)
-					sprite_list_remove(v7);
-				sprite_list_remove(v3->parent);
-			}
-			sprite_list_remove(v3);
-			if (v5 != v2 && v5)
-				script_deinit(v5);
-			v8 = &v1->prev->next;
-			v1->next->prev = (stru29 *)v8;
-			v1->prev->next = v1->next;
-			v1->next = stru29_list_free_pool;
-			stru29_list_free_pool = v1;
-			v1 = *v8;
-		} while ((stru29 **)*v8 != &stru29_list_47C610);
-	}
-    stru29_list_free();
-}
-
-//----- (00443BF0) --------------------------------------------------------
-void stru29_list_443BF0_remove_some()
-{
-	stru29 *i; // eax@1
-	int v1; // ecx@2
-	stru29 *v2; // ecx@4
-
-	for (i = stru29_list_47C610; (stru29 **)i != &stru29_list_47C610; i = i->next)
-	{
-		v1 = i->field_C;
-		if (v1 & 1)
-		{
-			i->field_C = v1 & 0xFFFFFFFE;
-		}
-		else
-		{
-			v2 = i->prev;
-			i->next->prev = v2;
-			i->prev->next = i->next;
-			i->next = stru29_list_free_pool;
-			stru29_list_free_pool = i;
-			i = v2;
-		}
-	}
-}
-
 //----- (00443C40) --------------------------------------------------------
 void script_443C40(Script *a1, int cplc_item)
 {
@@ -40165,8 +39963,8 @@ void script_443C40(Script *a1, int cplc_item)
 			++v5;
 		} while (v5 < 29);
 		stru29_list[29].next = 0;
-		stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-		stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+		stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 		stru29_list_initialized = 1;
 	}
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
@@ -40407,8 +40205,8 @@ void sub_444080(int mapd_idx)
 				++v3;
 			} while (v3 < 29);
 			stru29_list[29].next = 0;
-			stru29_list_47C610 = (stru29 *)&stru29_list_47C610;
-			stru29_list_47C614 = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.next = (stru29 *)&stru29_list_47C610;
+			stru29_list_47C610.prev = (stru29 *)&stru29_list_47C610;
 			stru29_list_initialized = 1;
 		}
 		v4 = sprite_create_scripted(MOBD_79, 0, (void(*)(Script *))script_43BBA0_cursors_mobd79_handler, SCRIPT_COROUTINE, 0);
