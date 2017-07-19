@@ -20,10 +20,10 @@ void stru29_list_remove_all(Script *a1);
 void stru29_list_443BF0_remove_some();
 void stru29_list_free();
 
+stru29 *stru29_list_first();
+stru29 *stru29_list_end();
+stru29 *stru29_list_toggle_by_sprite(Sprite *sprite, int flag);
 
-extern stru29 stru29_list_47C610;
+
+//extern stru29 stru29_list_47C610;
 extern stru29 *_47C6D4_stru29;
-
-
-extern stru29 *stru29_list;
-extern stru29 *stru29_list_free_pool;

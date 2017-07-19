@@ -12,7 +12,6 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
     Sprite *v2; // eax@1
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
-    stru29 *v5; // eax@3
     DataMapd *v8; // eax@13
 
     _47C65C_render_string = 0;
@@ -36,18 +35,7 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610.next;
-        if (v5 != &stru29_list_47C610)
-        {
-            while (v5->sprite != v3)
-            {
-                v5 = v5->next;
-                if (v5 == &stru29_list_47C610)
-                    goto LABEL_8;
-            }
-            v5->field_C |= 1u;
-        }
-    LABEL_8:
+        stru29_list_toggle_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -76,7 +64,6 @@ void script_mobd79_evt19__main_menu_load(Script *a1)
     Sprite *v2; // eax@1
     Sprite *v3; // ebx@3
     Sprite *v4; // esi@3
-    stru29 *v5; // eax@3
 
     _47C6D8_use__466098_cost_multipliers = 0;
     single_player_game = 1;
@@ -101,18 +88,7 @@ void script_mobd79_evt19__main_menu_load(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610.next;
-        if (v5 != &stru29_list_47C610)
-        {
-            while (v5->sprite != v3)
-            {
-                v5 = v5->next;
-                if (v5 == &stru29_list_47C610)
-                    goto LABEL_8;
-            }
-            v5->field_C |= 1u;
-        }
-    LABEL_8:
+        stru29_list_toggle_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -127,7 +103,6 @@ void script_mobd79_evt1__main_menu_play_mission(Script *a1)
     Sprite *v2; // eax@1
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
-    stru29 *v5; // eax@3
     DataMapd *v8; // eax@13
 
     a1->sprite->y = 300 * 256;
@@ -147,18 +122,7 @@ void script_mobd79_evt1__main_menu_play_mission(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610.next;
-        if (v5 != &stru29_list_47C610)
-        {
-            while (v5->sprite != v3)
-            {
-                v5 = v5->next;
-                if (v5 == &stru29_list_47C610)
-                    goto LABEL_8;
-            }
-            v5->field_C |= 1u;
-        }
-    LABEL_8:
+        stru29_list_toggle_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -188,7 +152,6 @@ void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
     Sprite *v2; // eax@1
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
-    stru29 *v5; // eax@3
     DataMapd *v8; // eax@13
 
     script_445370_yield_to_main_thread(a1, 0x80000000, 1);
@@ -208,18 +171,7 @@ void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610.next;
-        if (v5 != &stru29_list_47C610)
-        {
-            while (v5->sprite != v3)
-            {
-                v5 = v5->next;
-                if (v5 == &stru29_list_47C610)
-                    goto LABEL_8;
-            }
-            v5->field_C |= 1u;
-        }
-    LABEL_8:
+        stru29_list_toggle_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -248,7 +200,6 @@ void script_mobd79_evt1__main_menu_new_missions(Script *a1)
     Sprite *v2; // eax@1
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
-    stru29 *v5; // eax@3
     DataMapd *v8; // eax@13
 
     a1->sprite->y = 360 * 256;
@@ -268,18 +219,7 @@ void script_mobd79_evt1__main_menu_new_missions(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610.next;
-        if (v5 != &stru29_list_47C610)
-        {
-            while (v5->sprite != v3)
-            {
-                v5 = v5->next;
-                if (v5 == &stru29_list_47C610)
-                    goto LABEL_8;
-            }
-            v5->field_C |= 1u;
-        }
-    LABEL_8:
+        stru29_list_toggle_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -308,7 +248,6 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
     Sprite *v2; // eax@1
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
-    stru29 *v5; // eax@3
     DataMapd *v8; // eax@13
 
     a1->sprite->y = 390 * 256;
@@ -328,18 +267,7 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610.next;
-        if (v5 != &stru29_list_47C610)
-        {
-            while (v5->sprite != v3)
-            {
-                v5 = v5->next;
-                if (v5 == &stru29_list_47C610)
-                    goto LABEL_8;
-            }
-            v5->field_C |= 1u;
-        }
-    LABEL_8:
+        stru29_list_toggle_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -368,7 +296,6 @@ void script_mobd79_evt1__main_menu_quit(Script *a1)
     Sprite *v2; // eax@1
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
-    stru29 *v5; // eax@3
 
     script_445370_yield_to_main_thread(a1, 0x80000000, 1);
     a1->sprite->y = 420 * 256;
@@ -387,18 +314,7 @@ void script_mobd79_evt1__main_menu_quit(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        v5 = stru29_list_47C610.next;
-        if (v5 != &stru29_list_47C610)
-        {
-            while (v5->sprite != v3)
-            {
-                v5 = v5->next;
-                if (v5 == &stru29_list_47C610)
-                    goto LABEL_8;
-            }
-            v5->field_C |= 1u;
-        }
-    LABEL_8:
+        stru29_list_toggle_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;

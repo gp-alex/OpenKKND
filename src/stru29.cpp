@@ -14,6 +14,29 @@ stru29 *_47C6D4_stru29 = nullptr;
 
 
 
+
+stru29 *stru29_list_first()
+{
+    return stru29_list_47C610.next;
+}
+stru29 *stru29_list_end()
+{
+    return &stru29_list_47C610;
+}
+
+stru29 *stru29_list_toggle_by_sprite(Sprite *sprite, int flag)
+{
+    for (stru29 *i = stru29_list_first(); i != stru29_list_end(); i = i->next)
+    {
+        if (i->sprite == sprite)
+        {
+            i->field_C |= flag;
+            return i;
+        }
+    }
+    return nullptr;
+}
+
 bool stru29_list_realloc(Script *a1)
 {
     stru29_list_remove_all(a1);
@@ -60,7 +83,7 @@ stru29 *stru29_list_4439F0(Sprite *a1, void *param, int a3, int a4, int a5)
     a1->param = param;
     if (a4)
     {
-        for (i = stru29_list_47C610.next; i != &stru29_list_47C610; i = i->next)
+        for (i = stru29_list_first(); i != stru29_list_end(); i = i->next)
         {
             if (v5 < i->sprite->y)
                 break;
@@ -97,8 +120,8 @@ stru29 *stru29_list_4439F0(Sprite *a1, void *param, int a3, int a4, int a5)
         {
             v7->sprite = a1;
             v7->field_C = 0;
-            v10 = stru29_list_47C610.next;
-            v7->prev = (stru29 *)&stru29_list_47C610;
+            v10 = stru29_list_first();
+            v7->prev = stru29_list_end();
             v7->next = v10;
             stru29_list_47C610.next->prev = v7;
             stru29_list_47C610.next = v7;
@@ -127,13 +150,13 @@ stru29 *stru29_list_443AE0_find_by_sprite(Sprite *a1)
 {
     stru29 *result; // eax@1
 
-    result = stru29_list_47C610.next;
-    if (stru29_list_47C610.next != &stru29_list_47C610)
+    result = stru29_list_first();
+    if (result != stru29_list_end())
     {
         while (a1 != result->sprite)
         {
             result = result->next;
-            if (result == &stru29_list_47C610)
+            if (result == stru29_list_end())
                 return result;
         }
         _47C6D4_stru29 = result;
@@ -163,9 +186,9 @@ void stru29_list_remove_all(Script *a1)
     Sprite *v7; // eax@5
     stru29 **v8; // eax@11
 
-    v1 = stru29_list_47C610.next;
+    v1 = stru29_list_first();
     v2 = a1;
-    if (stru29_list_47C610.next != &stru29_list_47C610)
+    if (v1 != stru29_list_end())
     {
         do
         {
@@ -191,7 +214,7 @@ void stru29_list_remove_all(Script *a1)
             v1->next = stru29_list_free_pool;
             stru29_list_free_pool = v1;
             v1 = *v8;
-        } while (*v8 != (stru29 *)&stru29_list_47C610);
+        } while (*v8 != stru29_list_end());
     }
     stru29_list_free();
 }
@@ -203,7 +226,7 @@ void stru29_list_443BF0_remove_some()
     int v1; // ecx@2
     stru29 *v2; // ecx@4
 
-    for (i = stru29_list_47C610.next; i != &stru29_list_47C610; i = i->next)
+    for (i = stru29_list_first(); i != stru29_list_end(); i = i->next)
     {
         v1 = i->field_C;
         if (v1 & 1)
