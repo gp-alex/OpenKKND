@@ -453,13 +453,6 @@ int VIDEO_Play(int id);
 void GAME_PrepareLevel();
 bool on_level_finished();
 int GAME_Main();
-bool script_event_list_alloc();
-bool script_trigger_event(Script *sender, enum SCRIPT_EVENT event, void *param, Script *receiver);
-bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *param, enum SCRIPT_TYPE receiver_type);
-ScriptEvent *script_get_next_event(Script *a1);
-void script_discard_event(ScriptEvent *a1);
-void script_discard_all_events(Script *a1);
-void script_event_list_free();
 void script_custom_mission_briefing_loop(Script *a1); // idb
 void _423C60_custom_mission_make_briefing_lines(int a1);
 void cplc_init_sripts_with_reinit();
@@ -853,20 +846,7 @@ Entity *entity_444BE0_oiltanker_get_state_entity(Entity *a1);
 void entity_mode_444CC0_oiltanker(Entity *a1);
 void entity_mode_444D10_oiltanker(Entity *a1);
 void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-bool script_list_alloc(int coroutine_stack_size);
-
-Script *script_create_coroutine_impl(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size, const char *debug_handler_name);
-#define script_create_coroutine(type, handler, stack_size) script_create_coroutine_impl(type, handler, stack_size, #handler)
-
-Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *)); // idb
 void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result);
-void script_deinit(Script *a1);
-int script_445370_yield_to_main_thread(Script *a1, int flags, int a3);
-void *script_create_local_object(Script *a1, int size);
-void script_free_local_object(Script *a1, void *data); // idb
-void script_yield(Script *a1);
-void script_list_update();
-void script_list_free();
 void coroutine_main();
 bool render_string_list_alloc();
 void render_string_445770(RenderString *a1, const char *text, int a3); // idb

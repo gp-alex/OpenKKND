@@ -4,6 +4,7 @@
 #include "src/_unsorted_data.h"
 
 #include "src/stru29.h"
+#include "src/Script.h"
 
 
 stru29 stru29_list_47C610;

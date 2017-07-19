@@ -4,6 +4,10 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
+
+
 //----- (00412B60) --------------------------------------------------------
 void UNIT_Handler_Vehicle(Script *a1)
 {

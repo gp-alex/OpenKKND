@@ -4,6 +4,8 @@
 #include "src/_unsorted_data.h"
 
 #include "src/Random.h"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
 
 //----- (00435A40) --------------------------------------------------------
 void UNIT_DmgHandler_Sapper(Script *a1)
@@ -1047,7 +1049,6 @@ void UNIT_DmgHandler_Rifle(Script *a1)
     int v14; // eax@20
     enum UNIT_ID v15; // eax@21
     int v16; // esi@29
-    int v17; // [sp-8h] [bp-20h]@2
     int v18; // [sp+10h] [bp-8h]@1
     int v19; // [sp+14h] [bp-4h]@1
 
@@ -1060,34 +1061,33 @@ void UNIT_DmgHandler_Rifle(Script *a1)
     {
     case UNIT_STATS_MUTE_SHOTGUNNER:
     case UNIT_STATS_MUTE_DIRE_WOLF:
-        v17 = _4690A8_unit_sounds_volume;
         v4 = SOUND_SHOTGUN_FIRE;
         break;
+
     case UNIT_STATS_SURV_AUTOCANNON_TANK:
-        v17 = _4690A8_unit_sounds_volume;
         v4 = SOUND_CANNON_FIRE;
         break;
+
     case UNIT_STATS_MUTE_CRAZY_HARRY:
     case UNIT_STATS_SURV_ATV:
-        v17 = _4690A8_unit_sounds_volume;
         v4 = SOUND_MACHINEGUN_FIRE;
         break;
+
     case UNIT_STATS_SURV_DIRT_BIKE:
     case UNIT_STATS_SURV_4x4_PICKUP:
     case UNIT_STATS_MONSTER_TRUCK:
-        v17 = _4690A8_unit_sounds_volume;
         v4 = SOUND_LOW_CALIBER_MACHINEGUN_FIRE;
         break;
+
     case UNIT_STATS_MUTE_BIKE_AND_SIDECAR:
-        v17 = _4690A8_unit_sounds_volume;
         v4 = SOUND_BIKE_AND_SIDECAR_FIRE;
         break;
+
     default:
-        v17 = _4690A8_unit_sounds_volume;
         v4 = SOUND_RIFLE_FIRE;
         break;
     }
-    sprite_408800_play_sound(v3->sprite, v4, v17, 0);
+    sprite_408800_play_sound(v3->sprite, v4, _4690A8_unit_sounds_volume, 0);
     if (!v3->destroyed)
     {
         if (v3->turret)

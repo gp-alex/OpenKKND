@@ -123,6 +123,12 @@
     <ClInclude Include="..\..\src\stru29.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Script.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ScriptEvent.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kknd.cpp">
@@ -174,6 +180,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\stru29.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Script.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ScriptEvent.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

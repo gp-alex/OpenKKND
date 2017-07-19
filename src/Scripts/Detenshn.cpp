@@ -4,6 +4,8 @@
 #include "src/_unsorted_data.h"
 
 #include "src/Random.h"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
 
 
 //----- (004072A0) --------------------------------------------------------

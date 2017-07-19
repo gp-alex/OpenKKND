@@ -5,6 +5,8 @@
 
 #include "src/Netz.h"
 #include "src/Random.h"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
 
 
 

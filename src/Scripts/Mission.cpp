@@ -5,6 +5,8 @@
 
 #include "src/Random.h"
 #include "src/Render.h"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
 
 
 //----- (00424B90) --------------------------------------------------------

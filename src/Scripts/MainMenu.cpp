@@ -4,6 +4,8 @@
 #include "src/_unsorted_data.h"
 
 #include "src/stru29.h"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
 
 //----- (0043C0E0) --------------------------------------------------------
 void script_mobd79_evt1__main_menu_new_game(Script *a1)
