@@ -34681,7 +34681,6 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 	int v3; // ebx@1
 	ScriptEvent *i; // eax@2
 	enum SCRIPT_EVENT v5; // edx@3
-	stru29 *v6; // edx@8
 
 	v1 = a1->sprite;
 	v1->x = 48640;
@@ -34701,17 +34700,8 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 			switch (v5)
 			{
 			case EVT_MSG_neg2:
-				v6 = stru29_list_first();
-				if (v6 != stru29_list_end())
-				{
-					while (a1->sprite != v6->sprite)
-					{
-						v6 = v6->next;
-						if (v6 == stru29_list_end())
-							goto LABEL_13;
-					}
-					_47C6D4_stru29 = v6;
-				}
+                if (stru29_list_443AE0_find_by_sprite(a1->sprite) == stru29_list_end())
+                    goto LABEL_13;
 				break;
 			case EVT_MSG_1511_sidebar_click_category:
 				v3 = 1;
@@ -34746,7 +34736,6 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 	int v3; // ebx@1
 	ScriptEvent *i; // eax@2
 	enum SCRIPT_EVENT v5; // edx@3
-	stru29 *v6; // edx@8
 
 	v1 = a1->sprite;
 	v1->x = 0x1AC00;
@@ -34766,18 +34755,8 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 			switch (v5)
 			{
 			case EVT_MSG_neg2:
-				v6 = stru29_list_first();
-				if (v6 != stru29_list_end())
-				{
-					while (a1->sprite != v6->sprite)
-					{
-						v6 = v6->next;
-						if (v6 == stru29_list_end())
-							goto LABEL_13;
-					}
-					_47C6D4_stru29 = v6;
-				}
-				break;
+                if (stru29_list_443AE0_find_by_sprite(a1->sprite) == stru29_list_end())
+                    goto LABEL_13;
 			case EVT_MSG_1511_sidebar_click_category:
 				v3 = 1;
 				break;
@@ -34800,8 +34779,6 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 	script_deinit(_47C6E0_task);
 	_47C6E0_task = 0;
 }
-// 468B5C: using guessed type int single_player_game;
-// 47A2C4: using guessed type int game_state;
 
 //----- (0043CF50) --------------------------------------------------------
 void script_43CF50_mobd45(Script *a1)
@@ -35150,7 +35127,6 @@ void script_43DA80_mobd45_modem(Script *a1)
 	int v6; // edi@4
 	ScriptEvent *i; // eax@5
 	enum SCRIPT_EVENT v8; // edx@6
-	stru29 *v9; // edx@11
 	Sprite *v10; // eax@18
 	int v11; // edx@18
 	int v12; // ecx@18
@@ -35202,17 +35178,8 @@ void script_43DA80_mobd45_modem(Script *a1)
 				switch (v8)
 				{
 				case EVT_MSG_neg2:
-					v9 = stru29_list_first();
-					if (v9 != stru29_list_end())
-					{
-						while (a1->sprite != v9->sprite)
-						{
-							v9 = v9->next;
-							if (v9 == stru29_list_end())
-								goto LABEL_16;
-						}
-						_47C6D4_stru29 = v9;
-					}
+                    if (stru29_list_443AE0_find_by_sprite(a1->sprite) == stru29_list_end())
+                        goto LABEL_16;
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v6 = 1;
@@ -35301,7 +35268,6 @@ void script_43DD90_mobd45_modem(Script *a1)
 	const char *v7; // edi@3
 	ScriptEvent *i; // eax@5
 	enum SCRIPT_EVENT v9; // edx@6
-	stru29 *v10; // edx@11
 	const char *v11; // esi@18
 	int v12; // ebp@18
 	int v13; // edx@22
@@ -35361,17 +35327,8 @@ void script_43DD90_mobd45_modem(Script *a1)
 				switch (v9)
 				{
 				case EVT_MSG_neg2:
-					v10 = stru29_list_first();
-					if (v10 != stru29_list_end())
-					{
-						while (v1->sprite != v10->sprite)
-						{
-							v10 = v10->next;
-							if (v10 == stru29_list_end())
-								goto LABEL_16;
-						}
-						_47C6D4_stru29 = v10;
-					}
+                    if (stru29_list_443AE0_find_by_sprite(v1->sprite) == stru29_list_end())
+                        goto LABEL_16;
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v4 = 1;
@@ -35774,10 +35731,8 @@ void script_43E890_mobd45_modems(Script *a1)
 	int v4; // eax@2
 	netz_modem *i; // esi@2
 	Sprite **v6; // edi@6
-	stru29 *v7; // eax@7
 	Sprite **v8; // ecx@15
 	Sprite *v9; // edx@16
-	stru29 *v10; // eax@16
 	ScriptEvent *j; // eax@22
 	int v12; // [sp+10h] [bp-54h]@1
 	char v13[80]; // [sp+14h] [bp-50h]@12
@@ -35808,18 +35763,8 @@ void script_43E890_mobd45_modems(Script *a1)
 			v6 = _47C668_ingame_menu_sprites;
 			do
 			{
-				v7 = stru29_list_first();
-				if (v7 != stru29_list_end())
-				{
-					while (v7->sprite != *v6)
-					{
-						v7 = v7->next;
-						if (v7 == stru29_list_end())
-							goto LABEL_12;
-					}
-					v7->field_C &= 0xFFFFFFFE;
-				}
-			LABEL_12:
+                stru29_list_clear_bit_by_sprite(*v6, 1);
+
 				sprintf(v13, aSS_2, i->name, i->phone);
 				render_string_443D80(_47C65C_render_string, v13, 0);
 				render_string_443D80(_47C65C_render_string, asc_464C88, 0);
@@ -35834,19 +35779,8 @@ void script_43E890_mobd45_modems(Script *a1)
 			do
 			{
 				v9 = *v8;
-				v10 = stru29_list_first();
 				++v8;
-				if (v10 != stru29_list_end())
-				{
-					while (v10->sprite != v9)
-					{
-						v10 = v10->next;
-						if (v10 == stru29_list_end())
-							goto LABEL_21;
-					}
-					v10->field_C |= 1u;
-				}
-			LABEL_21:
+                stru29_list_set_bit_by_sprite(v9, 1);
 				;
 			} while ((int)v8 < (int)&unk_47C690);
 		}
@@ -35897,7 +35831,6 @@ void script_43EA90_mobd45(Script *a1)
 	int v3; // ebx@2
 	ScriptEvent *i; // eax@3
 	enum SCRIPT_EVENT v5; // edx@4
-	stru29 *v6; // edx@9
 
 	v1 = a1->sprite;
 	v1->x = 17408;
@@ -35919,17 +35852,8 @@ void script_43EA90_mobd45(Script *a1)
 				switch (v5)
 				{
 				case EVT_MSG_neg2:
-					v6 = stru29_list_first();
-					if (v6 != stru29_list_end())
-					{
-						while (a1->sprite != v6->sprite)
-						{
-							v6 = v6->next;
-							if (v6 == stru29_list_end())
-								goto LABEL_14;
-						}
-						_47C6D4_stru29 = v6;
-					}
+                    if (stru29_list_443AE0_find_by_sprite(a1->sprite) == stru29_list_end())
+                        goto LABEL_14;
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v3 = 1;
@@ -35954,7 +35878,6 @@ void script_43EB80_mobd45(Script *a1)
 	int v3; // ebx@2
 	ScriptEvent *i; // eax@3
 	enum SCRIPT_EVENT v5; // edx@4
-	stru29 *v6; // edx@9
 
 	v1 = a1->sprite;
 	v1->x = 131584;
@@ -35976,17 +35899,8 @@ void script_43EB80_mobd45(Script *a1)
 				switch (v5)
 				{
 				case EVT_MSG_neg2:
-					v6 = stru29_list_first();
-					if (v6 != stru29_list_end())
-					{
-						while (a1->sprite != v6->sprite)
-						{
-							v6 = v6->next;
-							if (v6 == stru29_list_end())
-								goto LABEL_14;
-						}
-						_47C6D4_stru29 = v6;
-					}
+                    if (stru29_list_443AE0_find_by_sprite(a1->sprite) == stru29_list_end())
+                        goto LABEL_14;
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v3 = 1;
@@ -36012,7 +35926,6 @@ void script_43EC70_mobd45(Script *a1)
 	int v4; // ebx@2
 	ScriptEvent *i; // eax@3
 	enum SCRIPT_EVENT v6; // edx@4
-	stru29 *v7; // edx@9
 
 	v1 = a1;
 	v2 = a1->sprite;
@@ -36035,17 +35948,8 @@ void script_43EC70_mobd45(Script *a1)
 				switch (v6)
 				{
 				case EVT_MSG_neg2:
-					v7 = stru29_list_first();
-					if (v7 != stru29_list_end())
-					{
-						while (v1->sprite != v7->sprite)
-						{
-							v7 = v7->next;
-							if (v7 == stru29_list_end())
-								goto LABEL_14;
-						}
-						_47C6D4_stru29 = v7;
-					}
+                    if (stru29_list_443AE0_find_by_sprite(v1->sprite) == stru29_list_end())
+                        goto LABEL_14;
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v4 = 1;
@@ -36456,10 +36360,6 @@ void script_43F7C0(Script *a1)
 		}
 	}
 }
-// 477344: using guessed type int _477344_esp;
-// 47734C: using guessed type int _47734C_coroutine_int;
-// 47A840: using guessed type int netz_47A840;
-// 47C700: using guessed type int dword_47C700;
 
 //----- (0043F9E0) --------------------------------------------------------
 void script_43F9E0_mobd45(Script *a1)
@@ -36470,7 +36370,6 @@ void script_43F9E0_mobd45(Script *a1)
 	int v4; // ebx@2
 	ScriptEvent *i; // eax@3
 	enum SCRIPT_EVENT v6; // edx@4
-	stru29 *v7; // edx@9
 
 	v1 = a1;
 	v2 = a1->sprite;
@@ -36493,17 +36392,8 @@ void script_43F9E0_mobd45(Script *a1)
 				switch (v6)
 				{
 				case 0xFFFFFFFE:
-					v7 = stru29_list_first();
-					if (v7 != stru29_list_end())
-					{
-						while (v1->sprite != v7->sprite)
-						{
-							v7 = v7->next;
-							if (v7 == stru29_list_end())
-								goto LABEL_14;
-						}
-						_47C6D4_stru29 = v7;
-					}
+                    if (stru29_list_443AE0_find_by_sprite(v1->sprite) == stru29_list_end())
+                        goto LABEL_14;
 					break;
 				case 0x5E7u:
 					v4 = 1;
@@ -37005,7 +36895,6 @@ void script_440810_mobd45(Script *a1)
 	int v8; // ebx@17
 	ScriptEvent *i; // eax@18
 	enum SCRIPT_EVENT v10; // edx@19
-	stru29 *v11; // edx@24
 	Sprite *v12; // eax@31
 	int v13; // edx@31
 	int v14; // ecx@31
@@ -37093,17 +36982,8 @@ void script_440810_mobd45(Script *a1)
 				switch (v10)
 				{
 				case EVT_MSG_neg2:
-					v11 = stru29_list_first();
-					if (v11 != stru29_list_end())
-					{
-						while (v1->sprite != v11->sprite)
-						{
-							v11 = v11->next;
-							if (v11 == stru29_list_end())
-								goto LABEL_29;
-						}
-						_47C6D4_stru29 = v11;
-					}
+                    if (stru29_list_443AE0_find_by_sprite(v1->sprite) == stru29_list_end())
+                        goto LABEL_29;
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v8 = 1;
@@ -37422,7 +37302,7 @@ void script_441150_mobd45_evt8(Script *a1)
 	v3->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_8;
 	stru29_list_4439F0(v3, v2, 0, 1, 0);
-    stru29_list_toggle_by_sprite(a1->sprite, 1);
+    stru29_list_set_bit_by_sprite(a1->sprite, 1);
 	while (1)
 	{
 		if (v1 != SBYTE3(_46E420_starting_cash_idx))
@@ -37504,7 +37384,7 @@ void script_441340_mobd45_evt8(Script *a1)
 	v2->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_8;
 	stru29_list_4439F0(v2, v1, 0, 1, 0);
-    stru29_list_toggle_by_sprite(a1->sprite, 1);
+    stru29_list_set_bit_by_sprite(a1->sprite, 1);
 	while (1)
 	{
 		if (v6 != SBYTE2(_46E420_starting_cash_idx))
@@ -37588,7 +37468,7 @@ void script_441550_mobd45_evt8(Script *a1)
 	v3->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_8;
 	stru29_list_4439F0(v3, v2, 0, 1, 0);
-    stru29_list_toggle_by_sprite(a1->sprite, 1);
+    stru29_list_set_bit_by_sprite(a1->sprite, 1);
 	while (1)
 	{
 		if (v1 != (char)_46E420_starting_cash_idx)
@@ -37728,7 +37608,7 @@ void script_441780_mobd45_evt8(Script *a1)
 	v7->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_8;
 	stru29_list_4439F0(v7, v6, 0, 1, 0);
-    stru29_list_toggle_by_sprite(a1->sprite, 1);
+    stru29_list_set_bit_by_sprite(a1->sprite, 1);
 	while (1)
 	{
 		if (*(_DWORD *)a2 != SBYTE1(_46E420_starting_cash_idx))
@@ -38341,12 +38221,6 @@ void script_4428C0_mobd45_evt6(Script *a1)
 	script_4084A0_animation(a1);
 	script_yield(a1);
 }
-// 468B68: using guessed type int netz_468B6C_providers_idx;
-// 46E3F0: using guessed type int dword_46E3F0;
-// 477344: using guessed type int _477344_esp;
-// 47734C: using guessed type int _47734C_coroutine_int;
-// 47A934: using guessed type int netz_47A934;
-// 47C6C8: using guessed type int stru29_list_initialized;
 
 //----- (00442BB0) --------------------------------------------------------
 void script_442BB0_mobd46(Script *a1)
@@ -38360,26 +38234,22 @@ void script_442BB0_mobd46(Script *a1)
 	unsigned __int8 v7; // al@10
 	bool v8; // cf@10
 	bool v9; // zf@10
-	stru29 *v10; // eax@10
 	int v11; // ecx@17
 	int v12; // ebx@18
 	int v13; // edi@18
 	ScriptEvent *v14; // eax@19
 	enum SCRIPT_EVENT v15; // edx@20
-	stru29 *v16; // edx@25
 	ScriptEvent *i; // eax@40
 	int v18; // ecx@43
 	Sprite *v19; // esi@43
 	__int16 v20; // ax@46
 	int v21; // edx@46
 	unsigned __int16 v22; // bx@57
-	stru29 *v23; // eax@57
 	int v24; // ecx@64
 	int v25; // ebx@65
 	int v26; // edi@65
 	ScriptEvent *v27; // eax@66
 	enum SCRIPT_EVENT v28; // edx@67
-	stru29 *v29; // edx@72
 	ScriptEvent *v30; // eax@87
 	Sprite *pstru6; // [sp+10h] [bp-4h]@1
 	Script *a1a; // [sp+18h] [bp+4h]@1
@@ -38417,20 +38287,9 @@ void script_442BB0_mobd46(Script *a1)
 				v7 = BYTE2(a1a->field_14);
 				v8 = v7 < 9u;
 				v9 = v7 == 9;
-				v10 = stru29_list_first();
 				if (!v8 && !v9)
 					break;
-				if (v10 != stru29_list_end())
-				{
-					while (v10->sprite != v5)
-					{
-						v10 = v10->next;
-						if (v10 == stru29_list_end())
-							goto LABEL_16;
-					}
-					v10->field_C &= 0xFFFFFFFE;
-				}
-			LABEL_16:
+                stru29_list_clear_bit_by_sprite(v5, 1);
 				if (BYTE2(a1a->field_14) == dword_47C6E8)
 				{
 					_47C664_ingame_menu_sprite->field_88 = 1;
@@ -38455,18 +38314,8 @@ void script_442BB0_mobd46(Script *a1)
 							switch (v15)
 							{
 							case EVT_MSG_neg2:
-								v16 = stru29_list_first();
-								if (v16 != stru29_list_end())
-								{
-									while (v1->sprite != v16->sprite)
-									{
-										v16 = v16->next;
-										if (v16 == stru29_list_end())
-											goto LABEL_30;
-									}
-									_47C6D4_stru29 = v16;
-								}
-								break;
+                                stru29_list_443AE0_find_by_sprite(a1->sprite);
+                                break;
 							case EVT_MSG_1511_sidebar_click_category:
 								v13 = 1;
 								break;
@@ -38475,7 +38324,7 @@ void script_442BB0_mobd46(Script *a1)
 								v12 = 0;
 								break;
 							}
-						LABEL_30:
+
 							script_discard_event(v14);
 							v14 = script_get_next_event(v1);
 						} while (v14);
@@ -38485,17 +38334,7 @@ void script_442BB0_mobd46(Script *a1)
 				if (v12)
 					dword_47C6E8 = BYTE2(a1a->field_14);
 			}
-			if (stru29_list_first() != stru29_list_end())
-			{
-				while (v10->sprite != v5)
-				{
-					v10 = v10->next;
-					if (v10 == stru29_list_end())
-						goto LABEL_40;
-				}
-				v10->field_C |= 1u;
-			}
-		LABEL_40:
+            stru29_list_set_bit_by_sprite(v5, 1);
 			sprite_release_mobd_item(v5);
 			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
@@ -38539,20 +38378,9 @@ void script_442BB0_mobd46(Script *a1)
 			v22 = BYTE2(a1a->field_14);
 			v8 = v22 < (unsigned __int16)v20;
 			v9 = v22 == v20;
-			v23 = stru29_list_first();
 			if (v8 || v9)
 				break;
-			if (v23 != stru29_list_end())
-			{
-				while (v23->sprite != v19)
-				{
-					v23 = v23->next;
-					if (v23 == stru29_list_end())
-						goto LABEL_87;
-				}
-				v23->field_C |= 1u;
-			}
-		LABEL_87:
+            stru29_list_set_bit_by_sprite(v19, 1);
 			sprite_release_mobd_item(v19);
 			script_445370_yield_to_main_thread(v1, 0x40000000, 0);
 			v30 = script_get_next_event(v1);
@@ -38571,18 +38399,7 @@ void script_442BB0_mobd46(Script *a1)
 				v18 = dword_47C6E8;
 			}
 		}
-		if (stru29_list_first() != stru29_list_end())
-		{
-			while (v23->sprite != v19)
-			{
-				v23 = v23->next;
-				if (v23 == stru29_list_end())
-					goto LABEL_63;
-			}
-			v23->field_C &= 0xFFFFFFFE;
-			v18 = dword_47C6E8;
-		}
-	LABEL_63:
+        stru29_list_clear_bit_by_sprite(v19, 1);
 		if (BYTE2(a1a->field_14) == v18)
 		{
 			_47C664_ingame_menu_sprite->field_88 = 1;
@@ -38607,17 +38424,7 @@ void script_442BB0_mobd46(Script *a1)
 					switch (v28)
 					{
 					case EVT_MSG_neg2:
-						v29 = stru29_list_first();
-						if (v29 != stru29_list_end())
-						{
-							while (v1->sprite != v29->sprite)
-							{
-								v29 = v29->next;
-								if (v29 == stru29_list_end())
-									goto LABEL_77;
-							}
-							_47C6D4_stru29 = v29;
-						}
+                        stru29_list_443AE0_find_by_sprite(v1->sprite);
 						break;
 					case EVT_MSG_1511_sidebar_click_category:
 						v26 = 1;
@@ -38627,7 +38434,7 @@ void script_442BB0_mobd46(Script *a1)
 						v25 = 0;
 						break;
 					}
-				LABEL_77:
+
 					script_discard_event(v27);
 					v27 = script_get_next_event(v1);
 				} while (v27);
@@ -38796,7 +38603,6 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 	int v7; // eax@2
 	ScriptEvent *i; // eax@12
 	int v10; // edx@13
-	stru29 *v11; // edx@16
 	int v12; // edx@24
 	int v13; // edx@25
 
@@ -38861,23 +38667,10 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 			}
 			else if (v10 == EVT_MSG_neg2)
 			{
-				v11 = stru29_list_first();
-				if (v11 != stru29_list_end())
-				{
-					while (v5 != v11->sprite)
-					{
-						v11 = v11->next;
-						if (v11 == stru29_list_end())
-						{
-							v4 |= 8u;
-							goto LABEL_30;
-						}
-					}
-					_47C6D4_stru29 = v11;
-				}
+                stru29_list_443AE0_find_by_sprite(v5);
 				v4 |= 8u;
 			}
-		LABEL_30:
+
 			script_discard_event(i);
 		}
 		if (v4 & 0x10)
@@ -38915,7 +38708,6 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 	int v9; // ebx@5
 	ScriptEvent *i; // eax@5
 	enum SCRIPT_EVENT v11; // edx@6
-	stru29 *v12; // edx@9
 	unsigned __int32 v13; // edx@16
 	int v14; // edx@17
 	int lookup_table_offset; // [sp+10h] [bp-8h]@1
@@ -38975,23 +38767,9 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 			}
 			else if (v11 == EVT_MSG_neg2)
 			{
-				v12 = stru29_list_first();
-				if (v12 != stru29_list_end())
-				{
-					while (v5 != v12->sprite)
-					{
-						v12 = v12->next;
-						if (v12 == stru29_list_end())
-						{
-							v9 |= 8u;
-							goto LABEL_22;
-						}
-					}
-					_47C6D4_stru29 = v12;
-				}
+                stru29_list_443AE0_find_by_sprite(v5);
 				v9 |= 8u;
 			}
-		LABEL_22:
 			script_discard_event(i);
 		}
 		if (a3)
@@ -39039,7 +38817,6 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 	int v9; // ebx@5
 	ScriptEvent *i; // eax@5
 	int v11; // edx@6
-	stru29 *v12; // edx@9
 	int v13; // edx@16
 	int v14; // [sp+10h] [bp-8h]@1
 	Sprite *v15; // [sp+14h] [bp-4h]@1
@@ -39090,23 +38867,9 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 			}
 			else if (v11 == EVT_MSG_neg2)
 			{
-				v12 = stru29_list_first();
-				if (v12 != stru29_list_end())
-				{
-					while (v5 != v12->sprite)
-					{
-						v12 = v12->next;
-						if (v12 == stru29_list_end())
-						{
-							v9 |= 8u;
-							goto LABEL_20;
-						}
-					}
-					_47C6D4_stru29 = v12;
-				}
+                stru29_list_443AE0_find_by_sprite(v5);
 				v9 |= 8u;
 			}
-		LABEL_20:
 			script_discard_event(i);
 		}
 		if (a3)

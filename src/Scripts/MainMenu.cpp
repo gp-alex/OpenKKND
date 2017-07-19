@@ -37,7 +37,7 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        stru29_list_toggle_by_sprite(v3, 1);
+        stru29_list_set_bit_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -90,7 +90,7 @@ void script_mobd79_evt19__main_menu_load(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        stru29_list_toggle_by_sprite(v3, 1);
+        stru29_list_set_bit_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -124,7 +124,7 @@ void script_mobd79_evt1__main_menu_play_mission(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        stru29_list_toggle_by_sprite(v3, 1);
+        stru29_list_set_bit_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -173,7 +173,7 @@ void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        stru29_list_toggle_by_sprite(v3, 1);
+        stru29_list_set_bit_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -221,7 +221,7 @@ void script_mobd79_evt1__main_menu_new_missions(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        stru29_list_toggle_by_sprite(v3, 1);
+        stru29_list_set_bit_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -269,7 +269,7 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        stru29_list_toggle_by_sprite(v3, 1);
+        stru29_list_set_bit_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
@@ -316,7 +316,7 @@ void script_mobd79_evt1__main_menu_quit(Script *a1)
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
-        stru29_list_toggle_by_sprite(v3, 1);
+        stru29_list_set_bit_by_sprite(v3, 1);
         script_443380(a1, 464, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;

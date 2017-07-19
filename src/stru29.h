@@ -22,7 +22,8 @@ void stru29_list_free();
 
 stru29 *stru29_list_first();
 stru29 *stru29_list_end();
-stru29 *stru29_list_toggle_by_sprite(Sprite *sprite, int flag);
+stru29 *stru29_list_set_bit_by_sprite(Sprite *sprite, int flag);
+stru29 *stru29_list_clear_bit_by_sprite(Sprite *sprite, int flag);
 
 
 //extern stru29 stru29_list_47C610;

@@ -25,13 +25,26 @@ stru29 *stru29_list_end()
     return &stru29_list_47C610;
 }
 
-stru29 *stru29_list_toggle_by_sprite(Sprite *sprite, int flag)
+stru29 *stru29_list_set_bit_by_sprite(Sprite *sprite, int flag)
 {
     for (stru29 *i = stru29_list_first(); i != stru29_list_end(); i = i->next)
     {
         if (i->sprite == sprite)
         {
             i->field_C |= flag;
+            return i;
+        }
+    }
+    return nullptr;
+}
+
+stru29 *stru29_list_clear_bit_by_sprite(Sprite *sprite, int flag)
+{
+    for (stru29 *i = stru29_list_first(); i != stru29_list_end(); i = i->next)
+    {
+        if (i->sprite == sprite)
+        {
+            i->field_C &= ~flag;
             return i;
         }
     }
