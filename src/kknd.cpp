@@ -34700,8 +34700,7 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 			switch (v5)
 			{
 			case EVT_MSG_neg2:
-                if (stru29_list_443AE0_find_by_sprite(a1->sprite) == stru29_list_end())
-                    goto LABEL_13;
+                stru29_list_443AE0_find_by_sprite(a1->sprite);
 				break;
 			case EVT_MSG_1511_sidebar_click_category:
 				v3 = 1;
@@ -34710,7 +34709,6 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 				v3 = 1;
 				break;
 			}
-		LABEL_13:
 			script_discard_event(i);
 		}
 	} while (!v3);
@@ -34755,8 +34753,7 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 			switch (v5)
 			{
 			case EVT_MSG_neg2:
-                if (stru29_list_443AE0_find_by_sprite(a1->sprite) == stru29_list_end())
-                    goto LABEL_13;
+                stru29_list_443AE0_find_by_sprite(a1->sprite);
 			case EVT_MSG_1511_sidebar_click_category:
 				v3 = 1;
 				break;
@@ -34764,7 +34761,6 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 				v3 = 1;
 				break;
 			}
-		LABEL_13:
 			script_discard_event(i);
 		}
 	} while (!v3);
@@ -35178,8 +35174,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 				switch (v8)
 				{
 				case EVT_MSG_neg2:
-                    if (stru29_list_443AE0_find_by_sprite(a1->sprite) == stru29_list_end())
-                        goto LABEL_16;
+                    stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v6 = 1;
@@ -35188,7 +35183,6 @@ void script_43DA80_mobd45_modem(Script *a1)
 					v6 = 1;
 					break;
 				}
-			LABEL_16:
 				script_discard_event(i);
 			}
 		} while (!v6);
@@ -35327,8 +35321,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 				switch (v9)
 				{
 				case EVT_MSG_neg2:
-                    if (stru29_list_443AE0_find_by_sprite(v1->sprite) == stru29_list_end())
-                        goto LABEL_16;
+                    stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v4 = 1;
@@ -35337,7 +35330,6 @@ void script_43DD90_mobd45_modem(Script *a1)
 					v4 = 1;
 					break;
 				}
-			LABEL_16:
 				script_discard_event(i);
 			}
 		} while (!v4);
@@ -35852,8 +35844,7 @@ void script_43EA90_mobd45(Script *a1)
 				switch (v5)
 				{
 				case EVT_MSG_neg2:
-                    if (stru29_list_443AE0_find_by_sprite(a1->sprite) == stru29_list_end())
-                        goto LABEL_14;
+                    stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v3 = 1;
@@ -35862,7 +35853,6 @@ void script_43EA90_mobd45(Script *a1)
 					v3 = 1;
 					break;
 				}
-			LABEL_14:
 				script_discard_event(i);
 			}
 		} while (!v3);
@@ -35899,8 +35889,7 @@ void script_43EB80_mobd45(Script *a1)
 				switch (v5)
 				{
 				case EVT_MSG_neg2:
-                    if (stru29_list_443AE0_find_by_sprite(a1->sprite) == stru29_list_end())
-                        goto LABEL_14;
+                    stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v3 = 1;
@@ -35909,7 +35898,6 @@ void script_43EB80_mobd45(Script *a1)
 					v3 = 1;
 					break;
 				}
-			LABEL_14:
 				script_discard_event(i);
 			}
 		} while (!v3);
@@ -35948,8 +35936,7 @@ void script_43EC70_mobd45(Script *a1)
 				switch (v6)
 				{
 				case EVT_MSG_neg2:
-                    if (stru29_list_443AE0_find_by_sprite(v1->sprite) == stru29_list_end())
-                        goto LABEL_14;
+                    stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v4 = 1;
@@ -35958,7 +35945,6 @@ void script_43EC70_mobd45(Script *a1)
 					v4 = 1;
 					break;
 				}
-			LABEL_14:
 				script_discard_event(i);
 			}
 		} while (!v4);
@@ -36392,8 +36378,7 @@ void script_43F9E0_mobd45(Script *a1)
 				switch (v6)
 				{
 				case 0xFFFFFFFE:
-                    if (stru29_list_443AE0_find_by_sprite(v1->sprite) == stru29_list_end())
-                        goto LABEL_14;
+                    stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
 				case 0x5E7u:
 					v4 = 1;
@@ -36402,7 +36387,6 @@ void script_43F9E0_mobd45(Script *a1)
 					v4 = 1;
 					break;
 				}
-			LABEL_14:
 				script_discard_event(i);
 			}
 		} while (!v4);
@@ -36982,8 +36966,7 @@ void script_440810_mobd45(Script *a1)
 				switch (v10)
 				{
 				case EVT_MSG_neg2:
-                    if (stru29_list_443AE0_find_by_sprite(v1->sprite) == stru29_list_end())
-                        goto LABEL_29;
+                    stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
 					v8 = 1;
@@ -36992,7 +36975,6 @@ void script_440810_mobd45(Script *a1)
 					v8 = 1;
 					break;
 				}
-			LABEL_29:
 				script_discard_event(i);
 			}
 		} while (!v8);
