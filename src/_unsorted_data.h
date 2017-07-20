@@ -823,7 +823,6 @@ extern int render_clip_w; // weak
 extern int render_clip_z; // weak
 extern int render_clip_x; // weak
 extern int render_clip_y; // weak
-extern int _47C044_ds; // idb
 extern int _47C048_unit_bomberdmg; // weak
 extern int _47C04C_num_explosions_max20; // weak
 extern stru175 _47C050_array[20];

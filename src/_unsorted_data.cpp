@@ -6910,7 +6910,6 @@ int render_clip_w; // weak
 int render_clip_z; // weak
 int render_clip_x; // weak
 int render_clip_y; // weak
-int _47C044_ds; // idb
 int _47C048_unit_bomberdmg; // weak
 int _47C04C_num_explosions_max20; // weak
 stru175 _47C050_array[20];

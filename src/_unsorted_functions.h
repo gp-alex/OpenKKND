@@ -636,26 +636,7 @@ void script_434310_ingame_menu(Script *a1); // idb
 void script_434390_ingame_menu(Script *a1); // idb
 void script_434460_DA000007(Script *a1); // idb
 bool script_434500(Script *a1, int a2, int a3, int a4);
-void REND_SetClip(int a1, int a2, int a3, int a4);
-HRESULT __stdcall EnumAttachedSurfacesCallback(IDirectDrawSurface *lpDDSurface, DDSURFACEDESC *lpDDSurfaceDesc, void *lpContext);
-int REND_434890_set_ds();
-int render_clip(_DWORD *clipped_x, _DWORD *clipped_y, _DWORD *width, _DWORD *height, _DWORD *x, _DWORD *y); // idb
-void render_draw_tile_32x32(void *tile, int x_arg, int y_arg); // idb
-void render_4349D0_draw_tile_32x32(unsigned __int8 *tile, int a2, int a3);
-void render_draw_cursor_434A00(void *pixels, int x, __int16 y, __int16 width, __int16 height); // idb
-int render_434A90(int a1, int a2, char a3, char a4, char a5, int a6);
-void render_434AD0(int a1, int a2, __int16 a3, int a4, __int16 a5);
-int render_434B70(int a1, int a2, char a3, int a4, char a5, int a6);
-void render_434BD0(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
-void render_434C60(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
-void render_draw_tile(void *data, int image_off_x, int image_off_y, int image_x_size, int image_y_size); // idb
-void render_434EA0(int a1, int a2, int a3, unsigned int a4, int a5);
-char render_4351A0_draw(unsigned __int8 *pixels, int x, int y, int width, int height); // idb
-int render_435320(void *pixels, int x, int y, int w, int h);
-void render_4354A0_draw_tile(unsigned __int8 *tile, int a2, int a3, int a4, int a5); // idb
-void render_do_draw_cursor_43A910(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, _BYTE *a5, unsigned __int16 a6, unsigned __int16 a7, unsigned __int16 a8, __int16 a9, int a11, unsigned __int16 a12, unsigned __int16 a13, unsigned __int16 a14);
-void render_draw_43B59F(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, unsigned __int8 *sprite_data, unsigned __int16 x, unsigned __int16 y, unsigned __int16 width, __int16 height, unsigned __int8 *palette, __int16 reg_ds, unsigned __int8 *dst_surface, __int16 dst_surface_x, unsigned __int16 dst_surface_y, unsigned __int16 dst_surface_pitch);
-void REND_DirectDrawClearScreen(int a2);
+
 void EventHandler_PowerStation(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void UNIT_Handler_PowerStation(Script *a1);
 void entity_mode_powerstation_spawn_tanker(Entity *a1);
@@ -729,14 +710,6 @@ bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3);
 bool sound_stru_2_43A710(sound_stru_2 *a1, WAVEFORMATEX **a2, int *a3, unsigned int *out_buffer_size);
 void sound_list_43A800(int a1);
 void sound_list_remove(Sound *a1);
-void render_draw_43A9E7(_BYTE *a1, unsigned __int16 a2, unsigned __int16 a3, unsigned __int16 a4, __int16 a5, __int16 a6, int a7, __int16 a8, unsigned __int16 a9, unsigned __int16 a10);
-void render_draw_43B4A6(unsigned __int8 *sprite_data, unsigned __int16 clipped_x, unsigned __int16 clipped_y, unsigned __int16 clipped_width, __int16 clipped_height, unsigned __int8 *palette, __int16 reg_ds, int dst_surface, unsigned __int16 dst_surface_x, unsigned __int16 dst_surface_y, unsigned __int16 dst_surface_pitch); // idb
-bool draw_list_alloc();
-DrawJob *draw_list_add(void *param, void(*on_update_handler)(void *, DrawJob *)); // idb
-bool draw_list_update_and_draw();
-void draw_list_update(DrawJobList *list);
-void draw_list_z_order(DrawJobList *list);
-void draw_list_free();
 void script_43BA40(Script *a1, int a2, int(*a3)(void), int a4);
 void script_netz_43BA70(Script *a1);
 int nullsub_3(void);

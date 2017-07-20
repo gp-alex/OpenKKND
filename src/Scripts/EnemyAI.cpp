@@ -670,7 +670,7 @@ void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIP
                         }
                         else
                         {
-                            show_message_ex(0, aWarningOutOfAt);
+                            show_message_ex(0, "Warning: out of attacker nodes");
                         }
                     }
                 }

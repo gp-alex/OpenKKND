@@ -1407,8 +1407,6 @@ bool entity_414520_boxd(Entity *a1)
     }
     return 0;
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
 
 //----- (00414670) --------------------------------------------------------
 void entity_414670(Entity *a1)
@@ -1536,8 +1534,6 @@ void entity_414670(Entity *a1)
         }
     }
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
 
 //----- (00414870) --------------------------------------------------------
 bool entity_414870_boxd(Entity *a1)
