@@ -129,6 +129,9 @@
     <ClInclude Include="..\..\src\ScriptEvent.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Cursor.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kknd.cpp">
@@ -188,10 +191,16 @@
     <ClCompile Include="..\..\src\ScriptEvent.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Cursor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\lib\src\legacy_dx\d3dvec.inl">
       <Filter>lib\src\legacy_dx</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\__notes.txt" />
   </ItemGroup>
 </Project>

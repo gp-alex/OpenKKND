@@ -745,7 +745,6 @@ extern stru37 *stru37_list_47A500;
 extern stru37 *stru37_list_47A504;
 extern stru37 *stru37_list;
 extern stru37 *stru37_list_free_pool;
-extern int input_mouse_rbutton_mask; // weak
 extern MouseInput _47A540_mouse_input; // weak
 extern int input_mouse_prev_buttons_mask; // weak
 extern MouseInput input_mouse; // weak
@@ -753,8 +752,6 @@ extern int num_mouse_buttons; // weak
 extern int input_47A58C; // weak
 extern __int16 word_47A590; // weak
 extern int input_mouse_window_losing_focus_reset_to_defaults; // weak
-extern int input_mouse_lbutton_mask; // weak
-extern int input_mouse_mbutton_mask; // weak
 extern int dword_47A5A0; // weak
 extern char byte_47A5A8[56];
 extern MouseInput _47A5E0_mouse_input; // idb

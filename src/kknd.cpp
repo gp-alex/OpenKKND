@@ -9,6 +9,7 @@
 #include "src/stru29.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Cursor.h"
 
 #pragma comment(lib, "Winmm.lib") // timeGetTime
 #pragma comment(lib, "ddraw.lib") // DirectDrawCreate
@@ -20267,7 +20268,8 @@ void sprite_list_427020()
 			i->z_index += i->z_speed;
 			if (i->x_speed == 0 && i->y_speed == 0)
 			{
-                boxd_404F40_sprite(i, 0, i->field_88 ? 1 : 0);
+                //boxd_404F40_sprite(i, 0, i->field_88 ? 1 : 0);
+                boxd_404F40_sprite(i, 0, 1);
 			}
 
 			i->field_88 = 1;
@@ -21458,9 +21460,6 @@ void script_4280A0_stru38_list__production_loop(Script *task)
 //----- (00428310) --------------------------------------------------------
 bool input_initialize()
 {
-	input_mouse_lbutton_mask = 16;
-	input_mouse_rbutton_mask = 32;
-	input_mouse_mbutton_mask = 128;
 	input_mouse.just_pressed_buttons_mask = 0;
 	input_mouse.pressed_buttons_mask = 0;
 	input_mouse.just_released_buttons_mask = 0;
@@ -21546,11 +21545,11 @@ int input_process_mouse()
 		input_mouse_window_losing_focus_reset_to_defaults = 1;
 		input_mouse.pressed_buttons_mask = 0;
 		if (((unsigned __int16)GetAsyncKeyState(VK_LBUTTON) >> 8) & 0x80)
-			input_mouse.pressed_buttons_mask |= input_mouse_lbutton_mask;
+			input_mouse.pressed_buttons_mask |= INPUT_MOUSE_LBUTTON_MASK;
 		if (((unsigned __int16)GetAsyncKeyState(VK_RBUTTON) >> 8) & 0x80)
-			input_mouse.pressed_buttons_mask |= input_mouse_rbutton_mask;
+			input_mouse.pressed_buttons_mask |= INPUT_MOUSE_RBUTTON_MASK;
 		if (num_mouse_buttons == 3 && ((unsigned __int16)GetAsyncKeyState(VK_MBUTTON) >> 8) & 0x80)
-			input_mouse.pressed_buttons_mask |= input_mouse_mbutton_mask;
+			input_mouse.pressed_buttons_mask |= INPUT_MOUSE_MBUTTON_MASK;
 		input_mouse.just_pressed_buttons_mask = input_mouse.pressed_buttons_mask & ~input_mouse_prev_buttons_mask;
 		input_mouse.just_released_buttons_mask = ~input_mouse.pressed_buttons_mask & input_mouse_prev_buttons_mask;
 		input_mouse_prev_buttons_mask = input_mouse.pressed_buttons_mask;
@@ -22047,10 +22046,10 @@ void script_428940_cursors_handler(Script *a1)
 											v62._20_load_mobd_item_offset = 12;
 											sprite_4272A0_load_mobd_item(v62._70_sprite, 12);
 										}
-										if (_47A5E0_mouse_input.just_pressed_buttons_mask & 0x10 && !is_coroutine_list_initialization_failed)
+										if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && !is_coroutine_list_initialization_failed)
 										{
 											v62._70_sprite->field_88 = 1;
-											sub_42C9E0(&v62, v62._70_sprite->x, v62._70_sprite->y);
+											cursor_drag_selection(&v62, v62._70_sprite->x, v62._70_sprite->y);
 										}
 									}
 									else if (v62._20_load_mobd_item_offset != 12)
@@ -22063,7 +22062,7 @@ void script_428940_cursors_handler(Script *a1)
 								{
 									if (v62.next == &v62 || _47A5E0_mouse_input.cursor_x_x256 >= (render_width - 32) << 8)
 										goto LABEL_165;
-									sub_42A0A0(&v62);
+									_42A0A0_on_units_drag_selected(&v62);
 								}
 								else
 								{
@@ -22296,7 +22295,7 @@ void script_428940_cursors_handler(Script *a1)
 		else
 		{
 			v9 = &unit_stats[*(_DWORD *)v62._78_msg1522_param];
-			v10 = sprite_create(unit_stats[*(_DWORD *)v62._78_msg1522_param].mobd_idx, 0, 0);
+			v10 = sprite_create(v9->mobd_idx, 0, 0);
 			v11 = v63;
 			v12 = 20;
 			do
@@ -22344,7 +22343,7 @@ void script_428940_cursors_handler(Script *a1)
 				}
 				if (v62._18_script)
 				{
-					v15 = _47A5E0_mouse_input.just_pressed_buttons_mask & 0x10;
+					v15 = _47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK;
 					v16 = 1;
 					sub_42B600(&v62);
 					if (v15)
@@ -22392,9 +22391,9 @@ void script_428940_cursors_handler(Script *a1)
 				{
 					_429C20_load_mobd(&v62, 448);
 				}
-				if (_47A5E0_mouse_input.just_pressed_buttons_mask & 0x10 && v22)
+				if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && v22)
 					break;
-				if (_47A5E0_mouse_input.just_pressed_buttons_mask & 0x20)
+				if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK)
 					goto LABEL_75;
 			}
 			v23 = 1;
@@ -22441,15 +22440,6 @@ void script_428940_cursors_handler(Script *a1)
 		}
 	}
 }
-// 468980: using guessed type int dword_468980;
-// 468984: using guessed type int dword_468984;
-// 468B5C: using guessed type int single_player_game;
-// 477898: using guessed type int dword_477898;
-// 47789C: using guessed type int dword_47789C;
-// 47A5A0: using guessed type int dword_47A5A0;
-// 47A6FC: using guessed type int dword_47A6FC;
-// 47C764: using guessed type __int16 is_coroutine_list_initialization_failed;
-// 47DCD0: using guessed type int num_players_towers;
 
 //----- (00429770) --------------------------------------------------------
 void sub_429770(_428940_global *a1)
@@ -22746,7 +22736,7 @@ bool sub_429C40(_428940_local *a1)
 	int v11; // [sp+4h] [bp-4h]@2
 
 	v1 = a1;
-	if (_47A5E0_mouse_input.just_pressed_buttons_mask & 0x10)
+	if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
 	{
 		a1->_70_sprite->field_88 = 1;
 		v2 = a1->_70_sprite;
@@ -22754,7 +22744,7 @@ bool sub_429C40(_428940_local *a1)
 		v4 = 0;
 		v5 = v2->x;
 		v11 = v2->y;
-		if (!(_47A5E0_mouse_input.just_released_buttons_mask & 0x10))
+		if (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK))
 		{
 			while (1)
 			{
@@ -22778,7 +22768,7 @@ bool sub_429C40(_428940_local *a1)
 					v1->_20_load_mobd_item_offset = 12;
 					sprite_4272A0_load_mobd_item(v6, 12);
 				}
-				if (_47A5E0_mouse_input.just_released_buttons_mask & 0x10)
+				if (_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
 					return 1;
 			}
 			if (v1->_20_load_mobd_item_offset != 12)
@@ -22787,7 +22777,7 @@ bool sub_429C40(_428940_local *a1)
 				v1->_20_load_mobd_item_offset = 12;
 				sprite_4272A0_load_mobd_item(v10, 12);
 			}
-			sub_42C9E0(v1, v5, v11);
+			cursor_drag_selection(v1, v5, v11);
 			v3 = 1;
 		}
 		result = v3 == 0;
@@ -22996,7 +22986,7 @@ void sub_429D40(_428940_local *a1, Entity *a2)
 }
 
 //----- (0042A0A0) --------------------------------------------------------
-void sub_42A0A0(_428940_local *a1)
+void _42A0A0_on_units_drag_selected(_428940_local *a1)
 {
 	int v1; // ebx@1
 	_428940_local *v2; // esi@1
@@ -23157,7 +23147,7 @@ void sub_42A0A0(_428940_local *a1)
 		if (!v2->field_38 || !v2->field_40)
 		{
 			v88 = v2->_20_load_mobd_item_offset;
-			if (_47A5E0_mouse_input.just_pressed_buttons_mask & 0x10)
+			if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
 			{
 				if (v88 != 12)
 				{
@@ -23166,7 +23156,7 @@ void sub_42A0A0(_428940_local *a1)
 					sprite_4272A0_load_mobd_item(v89, 12);
 				}
 				v2->_70_sprite->field_88 = 1;
-				sub_42C9E0(v2, v2->_70_sprite->x, v2->_70_sprite->y);
+				cursor_drag_selection(v2, v2->_70_sprite->x, v2->_70_sprite->y);
 			}
 			else if (v88 != 12)
 			{
@@ -24116,18 +24106,18 @@ void sub_42B600(_428940_local *a1)
 		v1->_20_load_mobd_item_offset = 12;
 		sprite_4272A0_load_mobd_item(v2, 12);
 	}
-	if (_47A5E0_mouse_input.just_pressed_buttons_mask & 0x10)
+	if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
 	{
 		v3 = v1->_18_script;
 		script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v1->_18_script);
-		while (!(_47A5E0_mouse_input.just_released_buttons_mask & 0x10))
+		while (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK))
 			_42B740_cursors(v1, 0);
 		script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, v3);
 	}
-	if (_47A5E0_mouse_input.just_pressed_buttons_mask & 0x20)
+	if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK)
 	{
 		v4 = v1->_18_script;
-		while (!(_47A5E0_mouse_input.just_released_buttons_mask & 0x20))
+		while (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK))
 			_42B740_cursors(v1, 0);
 		script_trigger_event(0, EVT_MSG_1513, 0, v4);
 		if (v1->field_28)
@@ -24151,8 +24141,6 @@ void sub_42B600(_428940_local *a1)
 		}
 	}
 }
-// 47A5A0: using guessed type int dword_47A5A0;
-// 47C764: using guessed type __int16 is_coroutine_list_initialization_failed;
 
 //----- (0042B740) --------------------------------------------------------
 void _42B740_cursors(_428940_local *a1, int a2)
@@ -24411,15 +24399,15 @@ LABEL_27:
 	{
 		dword_47A6FC = (_47A700_input.pressed_keys_mask & 0x20) != 0 ? 0x38 : 0;
 	}
-	if (_47A5E0_mouse_input.pressed_buttons_mask & 0x20 && !is_coroutine_list_initialization_failed && dword_47A6F0 < 100)
+	if (_47A5E0_mouse_input.pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK && !is_coroutine_list_initialization_failed && dword_47A6F0 < 100)
 		++dword_47A6F0;
-	if (_47A5E0_mouse_input.just_pressed_buttons_mask & 0x20 && !is_coroutine_list_initialization_failed)
+	if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK && !is_coroutine_list_initialization_failed)
 	{
 		v2->field_4C = 1;
 		v2->cursor_x = _47A5E0_mouse_input.cursor_x_x256;
 		v2->cursor_y = _47A5E0_mouse_input.cursor_y_x256;
-		_47A5E0_mouse_input.cursor_x_x256 = render_width << 7;
-		_47A5E0_mouse_input.cursor_y_x256 = render_height << 7;
+		_47A5E0_mouse_input.cursor_x_x256 = (render_width << 8) / 2;
+		_47A5E0_mouse_input.cursor_y_x256 = (render_height << 8) / 2;
 		v2->field_64 = 0;
 		v2->field_60 = 0;
 		v2->field_5C = 0;
@@ -24427,7 +24415,7 @@ LABEL_27:
 		v22 = _47A700_input.pressed_keys_mask;
 		v21 = is_coroutine_list_initialization_failed;
 	}
-	if (v2->field_4C && (v21 || _47A5E0_mouse_input.just_released_buttons_mask & 0x20))
+	if (v2->field_4C && (v21 || _47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK))
 	{
 		v2->field_4C = 0;
 		if (dword_47A6F0 < 10)
@@ -24570,7 +24558,7 @@ LABEL_82:
 		_47C380_mapd.mapd_cplc_render_x = v32;
 		v23 = 0;
 	}
-	if (_47A5E0_mouse_input.just_released_buttons_mask & 0x20
+	if (_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK
 		&& is_coroutine_list_initialization_failed == v23
 		&& _47A5E0_mouse_input.cursor_x_x256 < (render_width - 32) << 8
 		&& v2->field_58 < 4096
@@ -25152,357 +25140,6 @@ void sub_42C9C0(Sprite **sprite_list)
 		--v2;
 	} while (v2);
 }
-
-//----- (0042C9E0) --------------------------------------------------------
-void sub_42C9E0(_428940_local *a1, int x, int y)
-{
-	_428940_local *v3; // esi@1
-	Sprite *v4; // edi@1
-	Sprite *v5; // ebp@1
-	int v6; // edx@2
-	Sprite *v7; // eax@3
-	Sprite *v8; // edx@5
-	int v9; // ecx@5
-	bool v10; // sf@5
-	unsigned __int8 v11; // of@5
-	task_428940_attach__cursors *v12; // ecx@9
-	char *v13; // eax@10
-	task_428940_attach__cursors *v14; // eax@11
-	_428940_local *v15; // eax@15
-	int v16; // ecx@21
-	Script *v17; // ecx@21
-	task_428940_attach__cursors_2 *v18; // eax@24
-	int v19; // eax@28
-	int v20; // ecx@29
-	int v21; // ecx@31
-	enum UNIT_ID v22; // edx@35
-	enum UNIT_ID v23; // ecx@35
-	int v24; // eax@40
-	int v25; // eax@46
-	enum SOUND_ID v26; // ecx@48
-	int v27; // edx@58
-	int v28; // ecx@58
-	int v29; // edx@58
-	task_428940_attach__cursors *v30; // ecx@58
-	task_428940_attach__cursors *v31; // edx@58
-	int v32; // eax@59
-	char v33; // bl@59
-	task_428940_attach__cursors *v34; // eax@60
-	Sprite *v35; // ecx@65
-	int v36; // [sp-Ch] [bp-2Ch]@48
-	Sprite *v37; // [sp+10h] [bp-10h]@1
-	Sprite *a1a; // [sp+14h] [bp-Ch]@1
-	int v39; // [sp+18h] [bp-8h]@21
-	int a2; // [sp+1Ch] [bp-4h]@1
-	Entity *a2a; // [sp+1Ch] [bp-4h]@21
-	task_428940_attach__cursors *ya; // [sp+24h] [bp+4h]@9
-	_428940_local *yb; // [sp+24h] [bp+4h]@15
-	Script *yc; // [sp+24h] [bp+4h]@21
-
-	a2 = x;
-	v3 = a1;
-	a1->field_40 = 0;
-	a1->_48_unit_stats_idx = (UNIT_ID)0;
-	a1->field_44 = 0;
-	v4 = sprite_create(MOBD_CURSORS, 0, 0);
-	sprite_4272A0_load_mobd_item(v4, 460);
-	a1a = sprite_create(MOBD_CURSORS, 0, 0);
-	sprite_4272A0_load_mobd_item(a1a, 472);
-	v37 = sprite_create(MOBD_CURSORS, 0, 0);
-	sprite_4272A0_load_mobd_item(v37, 484);
-	v5 = sprite_create(MOBD_CURSORS, 0, 0);
-	sprite_4272A0_load_mobd_item(v5, 496);
-	v4->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448430;
-	a1a->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448430;
-	v37->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448430;
-	v5->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448430;
-	while (!(_47A5E0_mouse_input.just_released_buttons_mask & 0x10))
-	{
-		v3->_70_sprite->field_88 = 1;
-		v6 = v3->_70_sprite->x;
-		v4->field_88 = 1;
-		if (v6 < a2)
-		{
-			v3->_70_sprite->field_88 = 1;
-			v4->x = v3->_70_sprite->x;
-			v37->field_88 = 1;
-			v3->_70_sprite->field_88 = 1;
-			v37->x = v3->_70_sprite->x;
-			a1a->field_88 = 1;
-			a1a->x = a2;
-			v5->x = a2;
-			v5->field_88 = 1;
-			v7 = a1a;
-		}
-		else
-		{
-			v4->x = a2;
-			v37->x = a2;
-			v7 = a1a;
-			v37->field_88 = 1;
-			a1a->field_88 = 1;
-			v3->_70_sprite->field_88 = 1;
-			a1a->x = v3->_70_sprite->x;
-			v5->field_88 = 1;
-			v3->_70_sprite->field_88 = 1;
-			v5->x = v3->_70_sprite->x;
-		}
-		v8 = v3->_70_sprite;
-		v9 = y;
-		v11 = __OFSUB__(v8->y, y);
-		v10 = v8->y - y < 0;
-		v4->field_88 = 1;
-		if (v10 ^ v11)
-		{
-			v4->y = v3->_70_sprite->y;
-			v7->field_88 = 1;
-			v7->y = v3->_70_sprite->y;
-			v37->field_88 = 1;
-			v37->y = y;
-			v5->field_88 = 1;
-		}
-		else
-		{
-			v4->y = y;
-			v7->field_88 = 1;
-			v7->y = y;
-			v37->field_88 = 1;
-			v37->y = v3->_70_sprite->y;
-			v5->field_88 = 1;
-			v9 = v3->_70_sprite->y;
-		}
-		v5->y = v9;
-		_42B740_cursors(v3, 0);
-	}
-	v12 = _47A714.ptr_0;
-	LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 3;
-	ya = task_428940_attach__cursors_list_free_pool;
-	if (task_428940_attach__cursors_list_free_pool)
-	{
-		v13 = (char *)&task_428940_attach__cursors_list_free_pool->field_4;
-		task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-		*(_DWORD *)v13 = (int)stru_47A718.ptr_0;
-		*((_DWORD *)v13 + 1) = stru_47A718.field_4;
-		*((_DWORD *)v13 + 2) = stru_47A718.field_8;
-		v13[12] = stru_47A718.field_C;
-		ya->next = 0;
-		if (_47A714.ptr_0)
-		{
-			v14 = v12->next;
-			if (v12->next)
-			{
-				do
-				{
-					v12 = v14;
-					v14 = v14->next;
-				} while (v14);
-			}
-			v12->next = ya;
-		}
-		else
-		{
-			_47A714.ptr_0 = ya;
-		}
-	}
-	v3->field_38 = 0;
-	v3->_68_entity = 0;
-	v3->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 0;
-	dword_468980 = -1;
-	v15 = v3->next;
-	yb = v3->next;
-	if (v3->next != v3)
-	{
-		while (1)
-		{
-			script_trigger_event(task_mobd17_cursor, EVT_MSG_TEXT_STRING, 0, v15->_8_task);
-			yb = yb->next;
-			if (yb == v3)
-				break;
-			v15 = yb;
-		}
-	}
-	if (v3->next != v3)
-	{
-		v3->prev->next = (_428940_local *)v3->ptr_10;
-		v3->ptr_10 = (task_428940_attach__cursors_2 *)v3->next;
-		v3->next = v3;
-		v3->prev = v3;
-	}
-	_42B740_cursors(v3, 0);
-	v5->field_88 = 1;
-	v16 = v4->y;
-	v4->field_88 = 1;
-	sub_44C970(v16, v4->x, v5->x, v5->y);
-	v39 = 0;
-	a2a = 0;
-	v3->field_38 = 0;
-	v17 = _44C9A0_get__47DCA4_entity_task();
-	yc = v17;
-	if (v17)
-	{
-		while (1)
-		{
-			v18 = v3->ptr_10;
-			if (v18)
-				v3->ptr_10 = v18->next;
-			else
-				v18 = 0;
-			if (v18)
-			{
-				v18->_8_task = v17;
-				v18->next = (task_428940_attach__cursors_2 *)v3->next;
-				v18->prev = (task_428940_attach__cursors_2 *)v3;
-				v3->next->prev = (_428940_local *)v18;
-				v3->next = (_428940_local *)v18;
-				script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v17);
-				v19 = (int)yc->param;
-				if (*(_DWORD *)(v19 + 20) == player_side)
-				{
-					v3->field_38 = 1;
-					a2a = (Entity *)v19;
-					++v39;
-					v20 = *(_DWORD *)(v19 + 16);
-					if (v20 <= (int)UNIT_STATS_MUTE_MISSILE_CRAB || v20 >= (int)UNIT_STATS_GORT)
-					{
-						v3->_68_entity = (Entity *)v19;
-						v3->field_40 = 1;
-						v21 = *(_DWORD *)(v19 + 16);
-						if ((v21 < (int)UNIT_STATS_SURV_MOBILE_DERRICK || v21 >(int)UNIT_STATS_TANKER_CONVOY)
-							&& (v21 < (int)UNIT_STATS_SURV_TECHNICIAN || v21 >(int)UNIT_STATS_MUTE_MEKANIK))
-						{
-							v22 = v3->_48_unit_stats_idx;
-							v3->field_44 = 1;
-							v23 = (UNIT_ID)*(_DWORD *)(v19 + 16);
-							if ((int)v23 > (int)v22 && v23 != UNIT_STATS_MUTE_BIKE_AND_SIDECAR)
-								v3->_48_unit_stats_idx = v23;
-						}
-						if (*(_DWORD *)(v19 + 16) == UNIT_STATS_TANKER_CONVOY)
-							v3->field_40 = 0;
-					}
-					v24 = *(_DWORD *)(v19 + 16);
-					if (v24 >= (int)UNIT_STATS_SURV_GUARD_TOWER && v24 <= (int)UNIT_STATS_MUTE_ROTARY_CANNON)
-						v3->field_44 = 1;
-				}
-			}
-			yc = _44C9A0_get__47DCA4_entity_task();
-			if (!yc)
-				break;
-			v17 = yc;
-		}
-	}
-	if (v39 == 1)
-	{
-		v3->field_3C = 1;
-		sub_429D40(v3, a2a);
-	}
-	else
-	{
-		v25 = v3->field_38;
-		v3->field_3C = 0;
-		if (v25)
-		{
-			switch (v3->_48_unit_stats_idx)
-			{
-			case UNIT_STATS_GORT:
-			case UNIT_STATS_PLASMA_TANK:
-			case UNIT_STATS_SENTINEL_DROID:
-			case UNIT_STATS_MECH:
-				v36 = _4690A8_unit_sounds_volume;
-				v26 = _4689A8_sound_ids[kknd_rand() % -2];
-				goto LABEL_57;
-			case UNIT_STATS_MUTE_DIRE_WOLF:
-				v36 = _4690A8_unit_sounds_volume;
-				v26 = (SOUND_ID)165;
-				goto LABEL_57;
-			case UNIT_STATS_MUTE_GIANT_BEETLE:
-				v36 = _4690A8_unit_sounds_volume;
-				v26 = (SOUND_ID)168;
-				goto LABEL_57;
-			case UNIT_STATS_MUTE_GIANT_SCORPION:
-				v36 = _4690A8_unit_sounds_volume;
-				v26 = (SOUND_ID)172;
-				goto LABEL_57;
-			case UNIT_STATS_MUTE_MISSILE_CRAB:
-				v36 = _4690A8_unit_sounds_volume;
-				v26 = (SOUND_ID)170;
-				goto LABEL_57;
-			case UNIT_STATS_MUTE_WAR_MASTADONT:
-				v36 = _4690A8_unit_sounds_volume;
-				v26 = (SOUND_ID)160;
-				goto LABEL_57;
-			default:
-				if (get_player_faction())
-				{
-					v36 = _4690A8_unit_sounds_volume;
-					v26 = _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
-				}
-				else
-				{
-					v36 = _4690A8_unit_sounds_volume;
-					v26 = _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
-				}
-			LABEL_57:
-				sound_play(v26, 0, v36, 16, 0);
-				break;
-			case UNIT_STATS_TANKER_CONVOY:
-				break;
-			}
-		}
-	}
-	v27 = v4->x;
-	v4->field_88 = 1;
-	*(_WORD *)((char *)&stru_47A718.ptr_0 + 1) = v27 >> 8;
-	*(_WORD *)((char *)&stru_47A718.ptr_0 + 3) = v4->y >> 8;
-	v28 = v5->x >> 8;
-	v5->field_88 = 1;
-	*(_WORD *)((char *)&stru_47A718.field_4 + 1) = v28;
-	v29 = v5->y;
-	v30 = _47A714.ptr_0;
-	LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 1;
-	*(_WORD *)((char *)&stru_47A718.field_4 + 3) = v29 >> 8;
-	v31 = task_428940_attach__cursors_list_free_pool;
-	if (task_428940_attach__cursors_list_free_pool)
-	{
-		task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-		v32 = (int)&v31->field_4;
-		v31->field_4 = (int)stru_47A718.ptr_0;
-		*(_DWORD *)(v32 + 4) = stru_47A718.field_4;
-		*(_DWORD *)(v32 + 8) = stru_47A718.field_8;
-		v33 = stru_47A718.field_C;
-		v31->next = 0;
-		*(_BYTE *)(v32 + 12) = v33;
-		if (_47A714.ptr_0)
-		{
-			v34 = v30->next;
-			if (v30->next)
-			{
-				do
-				{
-					v30 = v34;
-					v34 = v34->next;
-				} while (v34);
-			}
-			v30->next = v31;
-		}
-		else
-		{
-			_47A714.ptr_0 = v31;
-		}
-	}
-	sprite_list_remove(v4);
-	sprite_list_remove(a1a);
-	sprite_list_remove(v37);
-	sprite_list_remove(v5);
-	dword_468984 = -1;
-	if (v3->_20_load_mobd_item_offset != 12)
-	{
-		v35 = v3->_70_sprite;
-		v3->_20_load_mobd_item_offset = 12;
-		sprite_4272A0_load_mobd_item(v35, 12);
-	}
-}
-// 468980: using guessed type int dword_468980;
-// 468984: using guessed type int dword_468984;
 
 //----- (0042D030) --------------------------------------------------------
 void script_42D030_sidebar_tooltips(Script *a1)
@@ -31774,9 +31411,9 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 			{
 				if (i->event == EVT_MSG_neg2)
 				{
-					if (v16.just_pressed_buttons_mask & 0x10 && i->param && !dword_4778A0)
+					if (v16.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
 						script_trigger_event(v1, EVT_MSG_1511_sidebar_click_category, 0, (Script *)i->param);
-					if (v16.just_released_buttons_mask & 0x10 && i->param && !dword_4778A0)
+					if (v16.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
 						script_trigger_event(v1, EVT_MSG_TEXT_STRING, 0, (Script *)i->param);
 				}
 				script_discard_event(i);

@@ -544,14 +544,13 @@ void sub_4297D0(_428940_local *a1, int edx0);
 void _429C20_load_mobd(_428940_local *a1, int offset); // idb
 bool sub_429C40(_428940_local *a1);
 void sub_429D40(_428940_local *a1, Entity *a2);
-void sub_42A0A0(_428940_local *a1);
+void _42A0A0_on_units_drag_selected(_428940_local *a1);
 void sub_42AFD0(_428940_local *a1, Entity *a2); // idb
 void sub_42B230(_428940_local *a1);
 void sub_42B600(_428940_local *a1);
 void _42B740_cursors(_428940_local *a1, int a2);
 bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, int a7);
 void sub_42C9C0(Sprite **sprite_list);
-void sub_42C9E0(_428940_local *a1, int x, int y); // idb
 void script_42D030_sidebar_tooltips(Script *a1);
 void _41AC50_read_keyboard_input___42D220_handler(const char *a1, int a2);
 char render_string_42D260(RenderString *a1, const char *a2, int a3); // idb

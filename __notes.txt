@@ -1,0 +1,7 @@
+script_428940_cursors_handler
+	_42B740_cursors
+			ingame cursor handler - rightclick
+
+
+
+bool sub_429C40(_428940_local *a1) - order units to move

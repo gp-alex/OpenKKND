@@ -403,6 +403,9 @@ struct DrawJobDetails
     unsigned __int8 *palette;
 };
 
+
+typedef void(*DrawJobUpdateHandler)(void *param, struct DrawJob *job);
+
 /* 272 */
 struct DrawJob
 {
@@ -410,7 +413,7 @@ struct DrawJob
 	DrawJob *prev;
 	int flags;
 	void *on_update_handler_param;
-	void(*on_update_handler)(void *param, DrawJob *job);
+    DrawJobUpdateHandler on_update_handler;
 	DrawJobDetails job_details;
 	int field_34;
 	int field_38;
@@ -1455,6 +1458,11 @@ struct stru28
 	int mobd_offset_idx;
 	Sprite *sprite;
 };
+
+
+#define INPUT_MOUSE_LBUTTON_MASK 0x10
+#define INPUT_MOUSE_RBUTTON_MASK 0x20
+#define INPUT_MOUSE_MBUTTON_MASK 0x80
 
 /* 356 */
 struct MouseInput
