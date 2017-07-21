@@ -38,10 +38,10 @@ void entity_mode_407300_prison(Entity *a1)
     Script *v2; // eax@1
 
     v1 = a1;
-    a1->sprite->field_88 = 1;
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
+    a1->sprite->field_88_unused = 1;
     a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
     a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     v2 = v1->script;
@@ -92,7 +92,7 @@ void entity_mode_prison_spawn_unit(Entity *a1)
 
     if (a1->_12C_prison_bunker_spawn_type)
     {
-        a1->sprite->field_88 = 1;
+        a1->sprite->field_88_unused = 1;
         v1 = a1->sprite;
         v2 = v1->x;
         v3 = v1->y;
@@ -135,7 +135,7 @@ void entity_mode_prison_spawn_unit_surv09(Entity *a1)
     Script *v2; // eax@1
 
     v1 = a1;
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
     spawn_unit(UNIT_STATS_SURV_GENERAL, a1->sprite->x, a1->sprite->y, player_side);
     v2 = v1->script;
     v1->mode = entity_mode_403720_on_prison_death__or__prolly_any_generic_building;
@@ -203,7 +203,7 @@ void entity_mode_407630_bunker(Entity *a1)
     Entity *v1; // esi@1
 
     v1 = a1;
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
     spawn_unit(
         UNIT_STATS_SURV_EL_PRESIDENTE,
         a1->stru60.pstru4->x_offset + a1->sprite->x,
@@ -244,7 +244,7 @@ void entity_407690_techbunker_spawn(Entity *a1)
     v4 = v1->_12C_prison_bunker_spawn_type;
     if (v4 < 4)
     {
-        v1->sprite->field_88 = 1;
+        v1->sprite->field_88_unused = 1;
         spawn_unit(
             techbunker_spawns_table[v1->_12C_prison_bunker_spawn_type],
             v1->sprite->x + v1->stru60.pstru4->x_offset,
@@ -258,7 +258,7 @@ void entity_407690_techbunker_spawn(Entity *a1)
         {
             if (player_side == 1)
             {
-                v1->sprite->field_88 = 1;
+                v1->sprite->field_88_unused = 1;
             LABEL_16:
                 spawn_unit(
                     UNIT_STATS_SURV_TANKER,
@@ -270,10 +270,10 @@ void entity_407690_techbunker_spawn(Entity *a1)
         }
         else if (!netz_47A740[v1->player_side + 1].field_A)
         {
-            v1->sprite->field_88 = 1;
+            v1->sprite->field_88_unused = 1;
             goto LABEL_16;
         }
-        v1->sprite->field_88 = 1;
+        v1->sprite->field_88_unused = 1;
         spawn_unit(
             UNIT_STATS_MUTE_TANKER,
             v1->sprite->x + v1->stru60.pstru4->x_offset,
@@ -342,7 +342,7 @@ Entity *entity_4078B0_techbunker_find_entity(Entity *a1, int a2)
     int v13; // edi@7
     int v14; // [sp+10h] [bp-4h]@1
 
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
     v2 = a1->sprite;
     result = entity_list_head;
     v4 = v2->x;
@@ -358,10 +358,10 @@ Entity *entity_4078B0_techbunker_find_entity(Entity *a1, int a2)
         {
             if (!result->destroyed && result->player_side)
             {
-                result->sprite->field_88 = 1;
+                result->sprite->field_88_unused = 1;
                 v5 = result->sprite;
                 v6 = v5->x;
-                v5->field_88 = 1;
+                v5->field_88_unused = 1;
                 v7 = v6 - v4;
                 v8 = v7 == 0;
                 v9 = v7 < 0;
@@ -467,10 +467,10 @@ void entity_mode_407A90_techbunker(Entity *a1)
     Entity *v1; // esi@1
 
     v1 = a1;
-    a1->sprite->field_88 = 1;
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
+    a1->sprite->field_88_unused = 1;
     a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
     a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     if (current_level_idx == LEVEL_SURV_18)
@@ -652,10 +652,10 @@ void entity_mode_407E70_hut(Entity *a1)
     Script *v2; // eax@1
 
     v1 = a1;
-    a1->sprite->field_88 = 1;
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
+    a1->sprite->field_88_unused = 1;
     a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
     a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     v2 = v1->script;

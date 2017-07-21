@@ -582,7 +582,7 @@ struct Sprite
 	void *param;
 	void *_80_entity__stru29__sprite__initial_hitpoints;
 	int field_84;
-	int field_88;
+	int field_88_unused;
 	__int16 field_8C_infantry_damage;
 	__int16 field_8E_vehicle_damage;
 	__int16 field_90_building_damage;

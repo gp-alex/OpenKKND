@@ -690,17 +690,17 @@ int stru24_409540(stru24 *a1, Sprite *a2)
     int result; // eax@7
 
     v2 = a2->x;
-    a2->field_88 = 1;
+    a2->field_88_unused = 1;
     if (v2 < a1->field_250)
     {
-        a2->field_88 = 1;
+        a2->field_88_unused = 1;
         a1->field_250 = v2;
     }
     v3 = a2->x;
-    a2->field_88 = 1;
+    a2->field_88_unused = 1;
     if (v3 > a1->field_258)
     {
-        a2->field_88 = 1;
+        a2->field_88_unused = 1;
         a1->field_258 = v3;
     }
     v4 = a2->y;
@@ -731,7 +731,7 @@ stru24_stru310 *stru24_4095B0(stru24 *a1, Entity *a2)
     if (result)
     {
         result->unit_id = a2->unit_id;
-        a2->sprite->field_88 = 1;
+        a2->sprite->field_88_unused = 1;
         result->x = a2->sprite->x;
         result->y = a2->sprite->y;
         result->x_offset = a2->stru60.ptr_C->x_offset;
@@ -796,8 +796,8 @@ stru24_DrillRigNode **stru24_409650(stru24 *a1)
                     v7 = v4->entity;
                     if (!v7->destroyed)
                     {
-                        v7->sprite->field_88 = 1;
-                        v2->entity->sprite->field_88 = 1;
+                        v7->sprite->field_88_unused = 1;
+                        v2->entity->sprite->field_88_unused = 1;
                         v8 = v4->entity->sprite;
                         v9 = v2->entity->sprite;
                         v10 = v8->x - v9->x;
@@ -1093,7 +1093,7 @@ void script_409770_ai(Script *a1)
         v2 = 0;
         v6->y_offset = v10;
     LABEL_20:
-        v5->entity->sprite->field_88 = 1;
+        v5->entity->sprite->field_88_unused = 1;
         v11 = stru24_40B190(v1, 81920, v5->entity->sprite->x, v5->entity->sprite->y);
         v5->field_2C = v11;
         if (!v11)
@@ -1755,7 +1755,7 @@ LABEL_97:
             (stru24_AttackerNode **)i2 != &v1->marshalling_nodes_list__evmission8_only_60;
             i2 = i2->next)
         {
-            i2->entity->sprite->field_88 = 1;
+            i2->entity->sprite->field_88_unused = 1;
             v118 = i2->entity->sprite;
             v119 = v118->x - v1->_278_x_offset;
             v120 = v118->y - v1->_27C_y_offset;
@@ -2237,7 +2237,7 @@ stru24_EnemyNode **stru24_40B020(stru24 *a1, stru24_stru160 *a2)
             v9 = v4->entity;
             if (!v9->destroyed && v9->stats->field_58)
             {
-                v9->sprite->field_88 = 1;
+                v9->sprite->field_88_unused = 1;
                 v10 = v4->entity;
                 v11 = v10->sprite;
                 v12 = v11->x - v17->x_offset;
@@ -2319,7 +2319,7 @@ int stru24_40B190(stru24 *a1, int size, int x, int y)
             v6 = v4->entity;
             if (!v6->destroyed && v6->stats->field_54)
             {
-                v6->sprite->field_88 = 1;
+                v6->sprite->field_88_unused = 1;
                 v7 = v4->entity;
                 v8 = v7->sprite;
                 v9 = v8->x - x;
@@ -2374,7 +2374,7 @@ void stru24_40B230(stru24 *a1)
                 v4 = v2->entity;
                 if (!v4->destroyed)
                 {
-                    v4->sprite->field_88 = 1;
+                    v4->sprite->field_88_unused = 1;
                     v5 = v2->entity;
                     v6 = v5->sprite;
                     v7 = v6->x;
@@ -2408,7 +2408,7 @@ void stru24_40B230(stru24 *a1)
                 v12 = i->_8_entity;
                 if (!v12->destroyed && v12->stats->field_54)
                 {
-                    v12->sprite->field_88 = 1;
+                    v12->sprite->field_88_unused = 1;
                     v13 = i->_8_entity;
                     v14 = v13->sprite;
                     v15 = v14->x - *(_DWORD *)v9;
@@ -2549,10 +2549,10 @@ bool stru24_40B490(stru24 *a1, UNIT_ID a2, int *out_x, int *out_y)
         {
             while (1)
             {
-                v7->_8_entity->sprite->field_88 = 1;
+                v7->_8_entity->sprite->field_88_unused = 1;
                 v8 = v7->_8_entity->sprite;
                 v9 = v8->x;
-                v8->field_88 = 1;
+                v8->field_88_unused = 1;
                 v10 = v7->_8_entity->sprite;
                 v11 = (v9 - 0x2000) / 0x4000 - 1;
                 v12 = v10->x;

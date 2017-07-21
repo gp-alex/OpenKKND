@@ -5295,7 +5295,7 @@ char *entity_4192F0(Entity *a1)
         v5 = v4->stru60.ptr_14;
         v6 = *(_DWORD *)(v5 + 4);
         v7 = *(_DWORD *)(v5 + 8);
-        v4->sprite->field_88 = 1;
+        v4->sprite->field_88_unused = 1;
         v8 = v3->_4_entity->sprite;
         v9 = v7 + v8->y;
         v10 = v1->sprite;

@@ -548,7 +548,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1);
 void sub_42AFD0(_428940_local *a1, Entity *a2); // idb
 void sub_42B230(_428940_local *a1);
 void sub_42B600(_428940_local *a1);
-void _42B740_cursors(_428940_local *a1, int a2);
+void cursor_process_user_actions(_428940_local *a1, int a2);
 bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, int a7);
 void sub_42C9C0(Sprite **sprite_list);
 void script_42D030_sidebar_tooltips(Script *a1);
@@ -894,7 +894,7 @@ void MessageHandler_TowersAttachment(Script *receiver, Script *sender, enum SCRI
 void drawjob_update_handler_level_background(void *a1, DrawJob *a2);
 void drawjob_update_handler_448390_fog_of_war(void *unused, DrawJob *a2);
 void drawjob_update_handler_4483E0_sidebar(Sprite *a1, DrawJob *a2);
-void drawjob_update_handler_448430(Sprite *a1, DrawJob *a2);
+void drawjob_update_handler_cursors(Sprite *a1, DrawJob *a2);
 void drawjob_update_handler_4484A0_explosions(Sprite *a1, DrawJob *a2);
 void drawjob_update_handler_448510_aircraft(Sprite *sprite, DrawJob *job);
 void drawjob_update_handler_448580_entity_aircraft_turret(Sprite *sprite, DrawJob *job);

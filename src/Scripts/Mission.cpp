@@ -17,7 +17,7 @@ void UNIT_Handler_TechBunker_2(Script *a1)
 
     if (_47A300_stru51_tech_bunkers_num_items < 12)
     {
-        a1->sprite->field_88 = 1;
+        a1->sprite->field_88_unused = 1;
         v1 = _47A300_stru51_tech_bunkers_num_items;
         _47A300_stru51_tech_bunkers[_47A300_stru51_tech_bunkers_num_items].x = a1->sprite->x;
         v2 = a1->sprite->y;
@@ -36,7 +36,7 @@ void script_424BF0_mobd_20_handler(Script *a1)
     int v3; // edx@1
     Script *i; // eax@2
 
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
     v1 = _47A378_stru48_array_num_items;
     v2 = _47A378_stru48_array_num_items + 1;
     _47A378_stru48_array[v1].sprite_x = a1->sprite->x;
@@ -822,7 +822,7 @@ Entity *entity_425820_find(Entity *a1, int a2)
     int v13; // edi@7
     int v14; // [sp+10h] [bp-4h]@1
 
-    a1->sprite->field_88 = 1;
+    a1->sprite->field_88_unused = 1;
     v2 = a1->sprite;
     result = entity_list_head;
     v4 = v2->x;
@@ -838,10 +838,10 @@ Entity *entity_425820_find(Entity *a1, int a2)
         {
             if (!result->destroyed && result->player_side == player_side)
             {
-                result->sprite->field_88 = 1;
+                result->sprite->field_88_unused = 1;
                 v5 = result->sprite;
                 v6 = v5->x;
-                v5->field_88 = 1;
+                v5->field_88_unused = 1;
                 v7 = v6 - v4;
                 v8 = v7 == 0;
                 v9 = v7 < 0;
@@ -1034,7 +1034,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
             do
                 script_445370_yield_to_main_thread(a1, 0x80000000, 30);
             while (!entity_scout);
-            entity_scout->sprite->field_88 = 1;
+            entity_scout->sprite->field_88_unused = 1;
             v1 = entity_scout->sprite;
             v2 = v1->x;
             v3 = v1->y;
@@ -1088,7 +1088,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
                 {
                     if (v10->player_side == player_side)
                     {
-                        v10->sprite->field_88 = 1;
+                        v10->sprite->field_88_unused = 1;
                         v11 = v10->sprite;
                         if (v11->x > 76800 || v11->y <= 604160)
                             break;
@@ -1119,7 +1119,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
                 if (v12->unit_id == 24)
                 {
                     ++v13;
-                    v12->sprite->field_88 = 1;
+                    v12->sprite->field_88_unused = 1;
                     v15 = v12->sprite;
                     if (v15->x <= 118784 && v15->y >= 414208)
                         ++i;
@@ -1154,7 +1154,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
                 {
                     if (v18->unit_id == 8)
                     {
-                        v18->sprite->field_88 = 1;
+                        v18->sprite->field_88_unused = 1;
                         v19 = v18->sprite;
                         if (v19->x >= 866816 && v19->y >= 484864)
                             break;
@@ -1713,9 +1713,9 @@ void script_426680_cursor_mobd(Script *a1)
     v1 = a1->sprite;
     v1->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
     v1->z_index = 5;
-    v1->field_88 = 1;
+    v1->field_88_unused = 1;
     v2 = render_width;
-    v1->field_88 = 1;
+    v1->field_88_unused = 1;
     v1->x = v2 << 7;
     v1->y = render_height << 7;
     v1->pstru7 = &_479D48_stru7;
@@ -1751,7 +1751,7 @@ void script_426710_mission_objectives_draw_x_mark(Script *a1)
             if (current_level_idx == LEVEL_SURV_04_RESCUE_THE_SCOUT)
             {
                 v3->x = 47616;
-                v3->field_88 = 1;
+                v3->field_88_unused = 1;
                 v3->y = 390400;
             }
             else
@@ -1759,7 +1759,7 @@ void script_426710_mission_objectives_draw_x_mark(Script *a1)
                 if (current_level_idx == LEVEL_SURV_06_EXTERMINATE_THE_VILLAGE)
                 {
                     v3->x = 38400;
-                    v3->field_88 = 1;
+                    v3->field_88_unused = 1;
                     v3->y = 628736;
                     (v1->handler)(v1);
                     return;
@@ -1767,7 +1767,7 @@ void script_426710_mission_objectives_draw_x_mark(Script *a1)
                 if (current_level_idx == LEVEL_MUTE_04_RAID_THE_FORT)
                 {
                     v3->x = 59392;
-                    v3->field_88 = 1;
+                    v3->field_88_unused = 1;
                     v3->y = 465408;
                     (v1->handler)(v1);
                     return;

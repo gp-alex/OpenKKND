@@ -282,12 +282,12 @@ void script_401C30_sidebar(Script *a1)
 			a1->event_handler = EventHandler_401B80;
 			get_player_faction();
 			v3->x = 0x26000;
-			v3->field_88 = 1;
+			v3->field_88_unused = 1;
 			v3->y = 0x12000;
 			v3->z_index = 2;
 			v4 = v2->drawjob;
 			v2->x = 0x26400;
-			v2->field_88 = 1;
+			v2->field_88_unused = 1;
 			v2->y = 0x13800;
 			v2->z_index = 3;
 			v4->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
@@ -427,7 +427,7 @@ void EventHandler_BeastEnclosure(Script *receiver, Script *sender, enum SCRIPT_E
 			entity_sabotage(v6, param, entity_mode_beastenclosure_on_death);
 			return;
 		case EVT_MSG_PRODUCTION_READY:
-			v6->sprite->field_88 = 1;
+			v6->sprite->field_88_unused = 1;
 			if (spawn_unit(
 				(enum UNIT_ID)(int)param,
 				v6->stru60.pstru4->x_offset + v6->sprite->x,
@@ -1544,7 +1544,7 @@ void EventHandler_Clanhall(Script *receiver, Script *sender, enum SCRIPT_EVENT e
 		}
 		else
 		{
-			v4->sprite->field_88 = 1;
+			v4->sprite->field_88_unused = 1;
 			if (spawn_unit(
 				(enum UNIT_ID)(int)param,
 				v4->stru60.pstru4->x_offset + v4->sprite->x,
@@ -4443,7 +4443,7 @@ void entity_mode_406DC0_mobilederrick(Entity *a1)
 	Sprite *v4; // eax@3
 
 	v1 = a1;
-	a1->sprite->field_88 = 1;
+	a1->sprite->field_88_unused = 1;
 	v2 = oilspot_list_head;
 	if ((OilDeposit **)oilspot_list_head == &oilspot_list_head)
 	{
@@ -4688,7 +4688,7 @@ void UNIT_Handler_OilPatch(Script *a1)
 	v2 = v1->cplc_ptr1;
 	v3 = v1->y & 0xFFFFE000;
 	v1->x = (v1->x & 0xFFFFE000) + 4096;
-	v1->field_88 = 1;
+	v1->field_88_unused = 1;
 	v1->y = v3 + 4096;
 	if (v2)
 	{
@@ -4712,7 +4712,7 @@ void UNIT_Handler_OilPatch(Script *a1)
 		v4 = (OilDeposit *)a1->param;
 	}
 	v6 = v1->y;
-	v1->field_88 = 1;
+	v1->field_88_unused = 1;
 	v7 = &_478AA8_boxd_stru0_array[v1->x >> 13].flags2 + 24 * _4793F8_map_width * (v6 >> 13);
 	*v7 |= 0x80u;
 	script_445370_yield_to_main_thread(a1, 1, 0);
@@ -4784,7 +4784,7 @@ void UNIT_Handler_DrillRig(Script *a1)
 			entity_44B100_buildings__mess_with_fog_of_war(v2);
 			v1->script->script_type = SCRIPT_DRILLRIG_HANDLER;
 			entity_initialize_building(v1, 2, 0, 0);
-			v1->sprite->field_88 = 1;
+			v1->sprite->field_88_unused = 1;
 			v3 = oilspot_list_407090_find_by_sprite_coordinates(v1->sprite->x, v1->sprite->y);
 			if (v3)
 			{
@@ -4792,7 +4792,7 @@ void UNIT_Handler_DrillRig(Script *a1)
 				v1->sprite->y = (v3->sprite->y & 0xFFFFE000) + 4096;
 			}
 			v1->_11C__infantry_sprite_y___drillrig_oil_spot = (int)v3;
-			v1->sprite->field_88 = 1;
+			v1->sprite->field_88_unused = 1;
 			*(_DWORD *)v1->state = (int)oilspot_list_407040_find_by_coordinates(v1->sprite->x, v1->sprite->y);
 			if (v1->sprite->cplc_ptr1_pstru20)
 				v1->mode = entity_mode_408240_drillrig;
@@ -4862,7 +4862,7 @@ void entity_mode_408260_drillrig(Entity *a1)
 	v1 = a1;
 	if (!a1->_11C__infantry_sprite_y___drillrig_oil_spot)
 	{
-		a1->sprite->field_88 = 1;
+		a1->sprite->field_88_unused = 1;
 		v2 = oilspot_list_407090_find_by_sprite_coordinates(a1->sprite->x, a1->sprite->y);
 		if (v2)
 		{
@@ -4882,7 +4882,7 @@ void entity_mode_408260_drillrig(Entity *a1)
 		v1->mode = entity_mode_403650_building;
 		entity_40DD00_boxd(v1);
 	}
-	v1->sprite->field_88 = 1;
+	v1->sprite->field_88_unused = 1;
 	*(_DWORD *)v1->state = (int)oilspot_list_407040_find_by_coordinates(v1->sprite->x, v1->sprite->y);
 	*(_DWORD *)(*(_DWORD *)v1->state + 16) = (int)v1;
 	*(_DWORD *)(*(_DWORD *)v1->state + 20) = v1->entity_id;
@@ -5178,7 +5178,7 @@ void sprite_408800_play_sound(Sprite *a1, enum SOUND_ID sound, int volume, Scrip
 	if (v7 < 256)
 		v7 = 256;
 	v8 = a1->x;
-	a1->field_88 = 1;
+	a1->field_88_unused = 1;
 	v9 = v8 - _47C380_mapd.mapd_cplc_render_x - v7;
 	if (v9 <= v7)
 	{
@@ -5974,9 +5974,9 @@ bool _40D860_prolly_sprite_distance(Sprite *a1, Sprite *a2, int a3)
 {
 	int v3; // esi@1
 
-	a2->field_88 = 1;
+	a2->field_88_unused = 1;
 	v3 = a1->x;
-	a1->field_88 = 1;
+	a1->field_88_unused = 1;
 	return ((a2->y - a1->y) >> 8) * ((a2->y - a1->y) >> 8) + ((a2->x - v3) >> 8) * ((a2->x - v3) >> 8) <= a3 * a3;
 }
 
@@ -6064,9 +6064,9 @@ int sprite_40D8B0_dmg(Sprite *a1, int a2)
 						if (*v12)
 						{
 							v14 = (*v12)->sprite;
-							v14->field_88 = 1;
+							v14->field_88_unused = 1;
 							v15 = v3->x;
-							v3->field_88 = 1;
+							v3->field_88_unused = 1;
 							v16 = v14->x;
 							v17 = (v14->y - v3->y) >> 8;
 							if (v17 * v17 + ((v16 - v15) >> 8) * ((v16 - v15) >> 8) <= v2 * v2)
@@ -7851,9 +7851,9 @@ Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int heig
 		if (!v6)
 			v5->sprite = sprite_create(MOBD_SIDEBAR_BUTTONS, v5->script, 0);
 		v5->sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-		v5->sprite->field_88 = 1;
+		v5->sprite->field_88_unused = 1;
 		v5->sprite->x = v5->x;
-		v5->sprite->field_88 = 1;
+		v5->sprite->field_88_unused = 1;
 		v5->sprite->y = v5->w;
 		v5->sprite->z_index = 1;
 		v5->sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
@@ -8364,7 +8364,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 						v14 = v12->y + 6656;
 						v15 = v12->z_index + 2;
 						v12->x += 2048;
-						v12->field_88 = 1;
+						v12->field_88_unused = 1;
 						v12->y = v14;
 						v12->z_index = v15;
 						v12->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
@@ -8377,7 +8377,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 						sprite_4272E0_load_mobd_item(v9, 2312, lookup_idx);
 						v16 = v9->x + 256;
 						v17 = v9->z_index + 2;
-						v9->field_88 = 1;
+						v9->field_88_unused = 1;
 						v9->x = v16;
 						v9->z_index = v17;
 						v9->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
@@ -8644,16 +8644,16 @@ SidebarButton *sidebar_add_buttton_internal(Sidebar *a1, int mobd_lookup_table_o
 			v8->next = (SidebarButton *)&v10->button_list_free_pool;
 			v10->button_list_head->next = v8;
 			v10->button_list_head = v8;
-			v8->sprite->field_88 = 1;
+			v8->sprite->field_88_unused = 1;
 			v8->sprite->x = v10->x + v10->num_buttons * v10->sprite_width_step;
 			if (task_context == (void *)-11)
 			{
-				v8->sprite->field_88 = 1;
+				v8->sprite->field_88_unused = 1;
 				v15 = 13 * v10->sprite_height_step;
 			}
 			else
 			{
-				v8->sprite->field_88 = 1;
+				v8->sprite->field_88_unused = 1;
 				v15 = v10->num_buttons * v10->sprite_height_step;
 			}
 			v8->sprite->y = v10->w + v15;
@@ -10325,7 +10325,7 @@ void entity_41A470(Entity *a1, Entity *a2)
 	v2->_E4_entity = 0;
 	v2->_134_param__unitstats_after_mobile_outpost_plant = 600;
 	v2->mode_arrive = entity_mode_419230;
-	v3->sprite->field_88 = 1;
+	v3->sprite->field_88_unused = 1;
 	v2->sprite_width_2 = v3->sprite->x + *(_DWORD *)(v3->stru60.ptr_14 + 4);
 	v4 = *(_DWORD *)(v3->stru60.ptr_14 + 8);
 	v5 = v3->sprite->y;
@@ -14013,7 +14013,7 @@ bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data)
 				{
 					v3->state = 0;
 					entity_set_draw_handlers(v3);
-					v3->sprite->field_88 = 1;
+					v3->sprite->field_88_unused = 1;
 					v55 = v3->sprite;
 					v86 = v55->y;
 				LABEL_207:
@@ -14117,7 +14117,7 @@ bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data)
 				*(_DWORD *)(result + 8) = v2[1].entity_task_event;
 				entity_set_draw_handlers(v3);
 			LABEL_131:
-				v3->sprite->field_88 = 1;
+				v3->sprite->field_88_unused = 1;
 				v55 = v3->sprite;
 				v86 = v55->y;
 				goto LABEL_207;
@@ -14183,7 +14183,7 @@ bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data)
 			default:
 				v3->state = 0;
 				entity_set_draw_handlers(v3);
-				v3->sprite->field_88 = 1;
+				v3->sprite->field_88_unused = 1;
 				v55 = v3->sprite;
 				v86 = v55->y;
 				goto LABEL_207;
@@ -15400,7 +15400,7 @@ void *GAME_Save_PackAiPlayers(size_t *size)
 			else
 			{
 				*((_DWORD *)v38 + 64) = -1;
-				v93->task->sprite->field_88 = 1;
+				v93->task->sprite->field_88_unused = 1;
 				*((_DWORD *)v38 + 67) = v93->task->sprite->x;
 				*((_DWORD *)v38 + 68) = v93->task->sprite->y;
 			}
@@ -16987,14 +16987,14 @@ bool GAME_Load_UnpackMiscInfo(void *save_data)
 					v15->param = v13;
 					v13->__47C970_sidebar_task->sprite = v13->_8_sprite;
 					v13->_8_sprite->script = v13->__47C970_sidebar_task;
-					v13->_C_sprite_sidebar->field_88 = 1;
+					v13->_C_sprite_sidebar->field_88_unused = 1;
 					v13->_C_sprite_sidebar->x = 155648;
-					v13->_C_sprite_sidebar->field_88 = 1;
+					v13->_C_sprite_sidebar->field_88_unused = 1;
 					v13->_C_sprite_sidebar->y = 73728;
 					v13->_C_sprite_sidebar->z_index = 2;
-					v13->_8_sprite->field_88 = 1;
+					v13->_8_sprite->field_88_unused = 1;
 					v13->_8_sprite->x = 156672;
-					v13->_8_sprite->field_88 = 1;
+					v13->_8_sprite->field_88_unused = 1;
 					v13->_8_sprite->y = 79872;
 					v13->_8_sprite->z_index = 3;
 					v13->_8_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
@@ -17665,7 +17665,7 @@ void EventHandler_MachineShop(Script *receiver, Script *sender, enum SCRIPT_EVEN
 		switch (event)
 		{
 		case EVT_MSG_PRODUCTION_READY:
-			v4->sprite->field_88 = 1;
+			v4->sprite->field_88_unused = 1;
 			if (spawn_unit(
 				(enum UNIT_ID)(int)param,
 				v4->stru60.pstru4->x_offset + v4->sprite->x,
@@ -19727,7 +19727,7 @@ bool handler_4267F0(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE side)
 		v7 = v4 | (side << 16);
 		result->x = v5;
 		BYTE1(v7) |= 0x80u;
-		result->field_88 = 1;
+		result->field_88_unused = 1;
 		result->y = y;
 		result->cplc_ptr1 = 0;
 		result->param = (void *)v7;
@@ -19804,7 +19804,7 @@ void _4268B0_4269B0_task_attachment_handler(_4269B0_task_attachment *a1)
 		v6 = sprite_create_scripted(unit_stats[v3].mobd_idx, 0, unit_stats[v3].script_handler, SCRIPT_FUNCTION, 0);
 		if (v6)
 		{
-			v6->field_88 = 1;
+			v6->field_88_unused = 1;
 			v6->x = v8;
 			v6->y = v5;
 			v6->cplc_ptr1 = 0;
@@ -19849,7 +19849,7 @@ void task_4269B0_mobd_20_handler(Script *a1)
 	v3 = a1->sprite;
 	a1a = v3->y;
 	v4 = v3->cplc_ptr1_pstru20->field_18;
-	v3->field_88 = 1;
+	v3->field_88_unused = 1;
 	v5 = v1->sprite->x;
 	v17 = &_47A010_mapd_item_being_drawn[0]->draw_job->job_details;
 	if (v5 < (render_call_draw_handler_mode1(v17) + 0xFFFFC0) << 8)
@@ -20060,7 +20060,7 @@ void sprite_init_47A400()
 	sprite_47A400.field_84 = 0;
 	sprite_47A400.pstru7 = _4640E0_stru7_array;
 	sprite_47A400.pstru58 = 0;
-	sprite_47A400.field_88 = 0;
+	sprite_47A400.field_88_unused = 0;
 	sprite_47A400.field_8C_infantry_damage = 0;
 	sprite_47A400.field_8E_vehicle_damage = 0;
 	sprite_47A400.field_90_building_damage = 0;
@@ -20268,11 +20268,10 @@ void sprite_list_427020()
 			i->z_index += i->z_speed;
 			if (i->x_speed == 0 && i->y_speed == 0)
 			{
-                //boxd_404F40_sprite(i, 0, i->field_88 ? 1 : 0);
-                boxd_404F40_sprite(i, 0, 1);
+                boxd_404F40_sprite(i, 0, i->field_88_unused ? 1 : 0);
 			}
 
-			i->field_88 = 1;
+			i->field_88_unused = 1;
 			if (i->x_speed < 0)
 			{
 				i->x_speed += i->x_speed_factor_1;
@@ -20415,7 +20414,7 @@ void sprite_4272A0_load_mobd_item(Sprite *a1, int offset)
 	{
 		v2 = (DataMobdItem *)((char *)currently_running_lvl_mobd[a1->mobd_id].items + offset);
 		a1->_inside_mobd_item = v2;
-		v3 = (int)&v2->ptr_0->x_offset;
+		v3 = (int)v2->ptr_0;
 		if (v3)
 			a1->_60_mobd_field_0_int = v3;
 		v4 = a1->_inside_mobd_item;
@@ -20473,7 +20472,7 @@ void sprite_427320_load_mobd_item_sound(Sprite *a1, int offset)
 		a1->_54_inside_mobd_ptr4 = v8;
 		v9 = a1->_54_inside_mobd_ptr4;
 		v10 = (Sprite_stru58 *)v8->ptr_10;
-		a1->field_88 = 1;
+		a1->field_88_unused = 1;
 		a1->pstru58 = v10;
 		v11 = v9->_14_sound_id;
 		if (v11)
@@ -20524,7 +20523,7 @@ void sprite_4273B0_load_mobd_item_sound(Sprite *a1, int mobd_lookup_offset, int 
 			a1->_54_inside_mobd_ptr4 = v10;
 			v11 = a1->_54_inside_mobd_ptr4;
 			v12 = (Sprite_stru58 *)v10->ptr_10;
-			a1->field_88 = 1;
+			a1->field_88_unused = 1;
 			a1->pstru58 = v12;
 			v13 = v11->_14_sound_id;
 			if (v13)
@@ -20565,7 +20564,7 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
 	Sprite *v1; // esi@1
 	DataMobdItem *v2; // ecx@1
 	int v3; // eax@2
-	void **v4; // eax@3
+    DataMobdItem_stru0 **v4; // eax@3
 	DataMobdItem_stru0 *v5; // ecx@3
 	Script *v6; // eax@4
 	DataMobdItem *v7; // eax@7
@@ -20586,13 +20585,13 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
 		if (v3 < 0)
 		{
 			v1->field_64 = v3 & 0x7FFFFFFF;
-			v4 = (void **)&v2->ptr_4;
+			v4 = &v2->ptr_4;
 			v5 = v2->ptr_4;
 			if (v5)
 			{
 				if (v5 == (DataMobdItem_stru0 *)-1)
 				{
-					v7 = (DataMobdItem *)((char *)v1->_inside_mobd_item + 4);
+					v7 = (DataMobdItem *)&v1->_inside_mobd_item->ptr_4;
 					v1->_inside_mobd_item_2 = v7;
 					v8 = v7->ptr_0;
 					v1->_54_inside_mobd_ptr4 = v8;
@@ -20607,13 +20606,13 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
 				}
 				else
 				{
-					v1->_inside_mobd_item_2 = (DataMobdItem *)v4;
-					v11 = (DataMobdItem_stru0 *)*v4;
+					v1->_inside_mobd_item_2 = (DataMobdItem *)&v1->_inside_mobd_item_2->ptr_4;
+					v11 = *v4;
 					v1->_54_inside_mobd_ptr4 = v11;
 					v1->pstru58 = (Sprite_stru58 *)v11->ptr_10;
 				}
 				v12 = v1->_54_inside_mobd_ptr4;
-				v1->field_88 = 1;
+				v1->field_88_unused = 1;
 				v13 = v12->_14_sound_id;
 				if (v13)
 					sprite_408800_play_sound(v1, v13, 16, 0);
@@ -20916,8 +20915,8 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 		}
 		sprite_4272A0_load_mobd_item(v1->sprite, 0);
 		v9 = v7 == UNIT_STATS_SURV_OUTPOST;
-		v1->sprite->field_88 = 1;
-		v1->sprite->field_88 = 1;
+		v1->sprite->field_88_unused = 1;
+		v1->sprite->field_88_unused = 1;
 		v10 = v1->sprite;
 		v11 = v1->stru60.ptr_C->x_offset;
 		v12 = v10->x;
@@ -20925,14 +20924,14 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 		if (v9)
 		{
 			v10->x = ((v12 + v13) & 0xFFFFE000) - v11 + 2048;
-			v1->sprite->field_88 = 1;
+			v1->sprite->field_88_unused = 1;
 			v14 = v1->sprite;
 			v15 = ((v14->y + v1->stru60.ptr_C->y_offset) & 0xFFFFE000) - v1->stru60.ptr_C->y_offset + 4096;
 		}
 		else
 		{
 			v10->x = ((v12 + v13) & 0xFFFFE000) - v11 + 7936;
-			v1->sprite->field_88 = 1;
+			v1->sprite->field_88_unused = 1;
 			v14 = v1->sprite;
 			v15 = ((v14->y + v1->stru60.ptr_C->y_offset) & 0xFFFFE000) - v1->stru60.ptr_C->y_offset + 3328;
 		}
@@ -21886,7 +21885,7 @@ void script_428940_cursors_handler(Script *a1)
 	v62.field_3C = 0;
 	v62._70_sprite = sprite_create(MOBD_CURSORS, 0, 0);
 	v62._70_sprite->script = a1;
-	v62._70_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448430;
+	v62._70_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_cursors;
 	sprite_4272A0_load_mobd_item(v62._70_sprite, 12);
 	v62._70_sprite->z_index = 1;
 	v62._74_sprite = sprite_create(MOBD_CURSORS, 0, 0);
@@ -21899,7 +21898,7 @@ void script_428940_cursors_handler(Script *a1)
 	while (1)
 	{
 		v6 = v62._18_script;
-		_42B740_cursors(&v62, 1);
+		cursor_process_user_actions(&v62, 1);
 		if (!v62._18_script
 			&& v6
 			&& !_47A5E0_mouse_input.cursor_dx_x256
@@ -21961,7 +21960,7 @@ void script_428940_cursors_handler(Script *a1)
 								if (v7)
 								{
 								LABEL_165:
-									v62._70_sprite->field_88 = 1;
+									v62._70_sprite->field_88_unused = 1;
 									if (_44B0D0_not_fog_of_war(v62._70_sprite->x, v62._70_sprite->y)
 										&& v62._1C_script
 										&& !is_coroutine_list_initialization_failed
@@ -22048,7 +22047,7 @@ void script_428940_cursors_handler(Script *a1)
 										}
 										if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && !is_coroutine_list_initialization_failed)
 										{
-											v62._70_sprite->field_88 = 1;
+											v62._70_sprite->field_88_unused = 1;
 											cursor_drag_selection(&v62, v62._70_sprite->x, v62._70_sprite->y);
 										}
 									}
@@ -22164,7 +22163,7 @@ void script_428940_cursors_handler(Script *a1)
 						}
 					}
 					else if (v62._1C_script
-						&& (v62._70_sprite->field_88 = 1, _44B0D0_not_fog_of_war(v62._70_sprite->x, v62._70_sprite->y)))
+						&& (v62._70_sprite->field_88_unused = 1, _44B0D0_not_fog_of_war(v62._70_sprite->x, v62._70_sprite->y)))
 					{
 						if (v62._20_load_mobd_item_offset != 36)
 						{
@@ -22181,7 +22180,7 @@ void script_428940_cursors_handler(Script *a1)
 					}
 				}
 				else if (!v62._1C_script
-					|| (v62._70_sprite->field_88 = 1, !_44B0D0_not_fog_of_war(v62._70_sprite->x, v62._70_sprite->y))
+					|| (v62._70_sprite->field_88_unused = 1, !_44B0D0_not_fog_of_war(v62._70_sprite->x, v62._70_sprite->y))
 					|| (v32 = (Entity *)v62._1C_script->param, v32->player_side != player_side)
 					|| v32->stats->speed
 					|| (v33 = v32->unit_id, v33 == UNIT_STATS_SURV_DETENTION_CENTER)
@@ -22252,7 +22251,7 @@ void script_428940_cursors_handler(Script *a1)
 				if (sub_429C40(&v62))
 				{
 					*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)player_side;
-					v62._70_sprite->field_88 = 1;
+					v62._70_sprite->field_88_unused = 1;
 					*(int *)((char *)&stru_47A718.field_4 + 1) = v62._70_sprite->x;
 					v27 = _47A714.ptr_0;
 					*(int *)((char *)&stru_47A718.field_8 + 1) = v62._70_sprite->y;
@@ -22317,7 +22316,7 @@ void script_428940_cursors_handler(Script *a1)
 			v10->z_index = 2;
 			while (1)
 			{
-				_42B740_cursors(&v62, 1);
+				cursor_process_user_actions(&v62, 1);
 				v14 = *(_DWORD *)v62._78_msg1522_param;
 				if (*(_DWORD *)v62._78_msg1522_param < (int)UNIT_STATS_SURV_GUARD_TOWER
 					|| v14 >(int)UNIT_STATS_MUTE_ROTARY_CANNON)
@@ -22363,14 +22362,14 @@ void script_428940_cursors_handler(Script *a1)
 				v19 = v10->_54_inside_mobd_ptr4->field_18;
 				if (is_coroutine_list_initialization_failed)
 					goto LABEL_75;
-				v10->field_88 = 1;
-				v62._70_sprite->field_88 = 1;
+				v10->field_88_unused = 1;
+				v62._70_sprite->field_88_unused = 1;
 				v20 = v19->x_offset;
 				v21 = v62._70_sprite->x;
-				v10->field_88 = 1;
+				v10->field_88_unused = 1;
 				v10->x = ((v20 + v21) & 0xFFFFE000) - v20 + 4096;
 				v10->y = ((v19->y_offset + v62._70_sprite->y) & 0xFFFFE000) - v19->y_offset + 4096;
-				v62._70_sprite->field_88 = 1;
+				v62._70_sprite->field_88_unused = 1;
 				v22 = sub_42C810(
 					v63,
 					v19->x_offset + v62._70_sprite->x,
@@ -22417,7 +22416,7 @@ void script_428940_cursors_handler(Script *a1)
 					sound_play(SOUND_193, 0, _4690A8_unit_sounds_volume, 16, 0);
 					*(_WORD *)((char *)&stru_47A718.ptr_0 + 1) = *(_WORD *)v62._78_msg1522_param;
 					v25 = (task_428940_attach__cursors *)v10->x;
-					v10->field_88 = 1;
+					v10->field_88_unused = 1;
 					*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 3) = v25;
 					v26 = v10->y;
 					LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 9;
@@ -22738,7 +22737,7 @@ bool sub_429C40(_428940_local *a1)
 	v1 = a1;
 	if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
 	{
-		a1->_70_sprite->field_88 = 1;
+		a1->_70_sprite->field_88_unused = 1;
 		v2 = a1->_70_sprite;
 		v3 = 0;
 		v4 = 0;
@@ -22748,8 +22747,8 @@ bool sub_429C40(_428940_local *a1)
 		{
 			while (1)
 			{
-				_42B740_cursors(v1, 0);
-				v1->_70_sprite->field_88 = 1;
+				cursor_process_user_actions(v1, 0);
+				v1->_70_sprite->field_88_unused = 1;
 				v6 = v1->_70_sprite;
 				v7 = v6->x - v5;
 				if (v7 < 0)
@@ -23142,7 +23141,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 	if (a1->_18_script)
 		return;
 	v12 = 1;
-	if (!a1->_1C_script || (a1->_70_sprite->field_88 = 1, !_44B0D0_not_fog_of_war(a1->_70_sprite->x, a1->_70_sprite->y)))
+	if (!a1->_1C_script || (a1->_70_sprite->field_88_unused = 1, !_44B0D0_not_fog_of_war(a1->_70_sprite->x, a1->_70_sprite->y)))
 	{
 		if (!v2->field_38 || !v2->field_40)
 		{
@@ -23155,7 +23154,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 					v2->_20_load_mobd_item_offset = 12;
 					sprite_4272A0_load_mobd_item(v89, 12);
 				}
-				v2->_70_sprite->field_88 = 1;
+				v2->_70_sprite->field_88_unused = 1;
 				cursor_drag_selection(v2, v2->_70_sprite->x, v2->_70_sprite->y);
 			}
 			else if (v88 != 12)
@@ -23166,7 +23165,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 			}
 			return;
 		}
-		v2->_70_sprite->field_88 = 1;
+		v2->_70_sprite->field_88_unused = 1;
 		if (!_44B0D0_not_fog_of_war(v2->_70_sprite->x, v2->_70_sprite->y))
 			goto LABEL_246;
 		if (v2->field_34)
@@ -23181,7 +23180,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 			return;
 		}
 		if (v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 == 8
-			&& (v2->_70_sprite->field_88 = 1, oilspot_list_407040_find_by_coordinates(v2->_70_sprite->x, v2->_70_sprite->y)))
+			&& (v2->_70_sprite->field_88_unused = 1, oilspot_list_407040_find_by_coordinates(v2->_70_sprite->x, v2->_70_sprite->y)))
 		{
 			v86 = 572;
 			if (v2->_20_load_mobd_item_offset == 572)
@@ -23927,7 +23926,7 @@ void sub_42B230(_428940_local *a1)
 	int v19; // [sp-Ch] [bp-1Ch]@14
 
 	v1 = a1;
-	a1->_70_sprite->field_88 = 1;
+	a1->_70_sprite->field_88_unused = 1;
 	*(_QWORD *)((char *)&stru_47A718.ptr_0 + 1) = *(_QWORD *)&a1->_70_sprite->x;
 	v2 = _47A714.ptr_0;
 	LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 6;
@@ -24069,19 +24068,19 @@ void sub_42B230(_428940_local *a1)
 		LABEL_53:
 			sound_play(v10, 0, v19, 16, 0);
 			v16 = sprite_create(MOBD_CURSORS, 0, 0);
-			v16->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448430;
+			v16->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_cursors;
 			sprite_4272A0_load_mobd_item(v16, 508);
-			v16->field_88 = 1;
+			v16->field_88_unused = 1;
 			v17 = 10;
-			v1->_70_sprite->field_88 = 1;
+			v1->_70_sprite->field_88_unused = 1;
 			v18 = v1->_70_sprite->x;
-			v16->field_88 = 1;
+			v16->field_88_unused = 1;
 			v16->x = v18;
 			v16->y = v1->_70_sprite->y;
 			v16->z_index = v1->_70_sprite->z_index - 1;
 			do
 			{
-				_42B740_cursors(v1, 1);
+				cursor_process_user_actions(v1, 1);
 				--v17;
 			} while (v17);
 			sprite_list_remove(v16);
@@ -24111,14 +24110,14 @@ void sub_42B600(_428940_local *a1)
 		v3 = v1->_18_script;
 		script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v1->_18_script);
 		while (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK))
-			_42B740_cursors(v1, 0);
+			cursor_process_user_actions(v1, 0);
 		script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, v3);
 	}
 	if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK)
 	{
 		v4 = v1->_18_script;
 		while (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK))
-			_42B740_cursors(v1, 0);
+			cursor_process_user_actions(v1, 0);
 		script_trigger_event(0, EVT_MSG_1513, 0, v4);
 		if (v1->field_28)
 			v1->field_28 = 0;
@@ -24139,871 +24138,6 @@ void sub_42B600(_428940_local *a1)
 			if (v5)
 				script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, v5->param, _47A734_sidebar_tooltips_task);
 		}
-	}
-}
-
-//----- (0042B740) --------------------------------------------------------
-void _42B740_cursors(_428940_local *a1, int a2)
-{
-	_428940_local *v2; // ebp@1
-	stru13construct *v3; // esi@1
-	int v4; // eax@2
-	stru13construct *v5; // edi@3
-	task_428940_attach__cursors *v6; // ecx@3
-	task_428940_attach__cursors *v7; // edx@3
-	int v8; // eax@4
-	char v9; // bl@4
-	task_428940_attach__cursors *v10; // eax@5
-	int v11; // eax@10
-	task_428940_attach__cursors *v12; // ecx@12
-	task_428940_attach__cursors *v13; // ecx@12
-	task_428940_attach__cursors *v14; // edx@12
-	int v15; // eax@13
-	task_428940_attach__cursors *v16; // eax@14
-	task_428940_attach__cursors *v17; // ecx@15
-	task_428940_attach__cursors *v18; // edx@19
-	int v19; // eax@20
-	task_428940_attach__cursors *v20; // eax@21
-	__int16 v21; // dx@27
-	char v22; // al@27
-	__int16 v23; // si@27
-	int v24; // ecx@44
-	DrawJobDetails *v25; // ebx@48
-	int v26; // edx@55
-	int v27; // eax@55
-	int v28; // eax@59
-	int v29; // esi@65
-	int v30; // edi@65
-	DrawJobDetails *v31; // ebx@70
-	int v32; // esi@86
-	task_428940_attach__cursors *v33; // ecx@97
-	task_428940_attach__cursors *v34; // edx@97
-	int v35; // eax@98
-	char v36; // bl@98
-	task_428940_attach__cursors *v37; // eax@99
-	_428940_local *i; // esi@103
-	Sprite *v39; // eax@108
-	int v40; // ecx@108
-	int v41; // eax@108
-	char v42; // al@116
-	Script *v43; // ecx@116
-	ScriptEvent *j; // ebx@116
-	int v45; // eax@117
-	Script *v46; // ecx@122
-	SCRIPT_TYPE v47; // eax@122
-	task_428940_attach__cursors *v48; // ecx@132
-	task_428940_attach__cursors *v49; // edx@132
-	int v50; // edi@133
-	char v51; // al@133
-	task_428940_attach__cursors *v52; // eax@134
-	_DWORD *v53; // ecx@135
-	stru13construct *v54; // esi@138
-	void *v55; // ecx@138
-	int v56; // eax@142
-	int v57; // eax@142
-	stru13construct *v58; // ecx@142
-	void *v59; // eax@156
-	stru13construct *v60; // esi@157
-	void *v61; // edi@157
-	_428940_local *v62; // eax@162
-	char v63; // cl@166
-	_428940_local *v64; // edx@169
-	void *v65; // eax@170
-	int v66; // ecx@171
-	int v67; // ecx@173
-	enum UNIT_ID v68; // edi@177
-	enum UNIT_ID v69; // ecx@177
-	int v70; // eax@180
-	int v71; // eax@185
-	int v72; // edi@186
-	char v73; // al@186
-	task_428940_attach__cursors *v74; // eax@187
-	task_428940_attach__cursors *v75; // ecx@188
-	int v76; // edi@191
-	char v77; // al@191
-	task_428940_attach__cursors *v78; // eax@192
-	_DWORD *v79; // ecx@193
-	int v80; // edi@196
-	char v81; // al@196
-	task_428940_attach__cursors *v82; // eax@197
-	_DWORD *v83; // ecx@198
-	int v84; // edi@201
-	char v85; // al@201
-	task_428940_attach__cursors *v86; // eax@202
-	_DWORD *v87; // ecx@203
-	int v88; // edi@206
-	char v89; // al@206
-	task_428940_attach__cursors *v90; // eax@207
-	task_428940_attach__cursors *v91; // eax@212
-	int v92; // ecx@214
-	int v93; // edx@216
-	_47A660_global *v94; // eax@216
-	DrawJobDetails *a1a; // [sp+10h] [bp-Ch]@1
-	int v96; // [sp+14h] [bp-8h]@1
-
-	v2 = a1;
-	a1a = &_47A010_mapd_item_being_drawn[0]->draw_job->job_details;
-	a1->_18_script = 0;
-	a1->_1C_script = 0;
-	v3 = stru13construct_list_47A638;
-	v96 = a2;
-	if ((stru13construct **)stru13construct_list_47A638 != &stru13construct_list_47A638)
-	{
-		while (1)
-		{
-			v4 = v3->_18_cost;
-			if (v4 <= 0)
-			{
-				v5 = v3->prev;
-				*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v3->field_8;
-				v6 = _47A714.ptr_0;
-				*(int *)((char *)&stru_47A718.field_4 + 1) = 3;
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 11;
-				v7 = task_428940_attach__cursors_list_free_pool;
-				if (task_428940_attach__cursors_list_free_pool)
-				{
-					task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-					v8 = (int)&v7->field_4;
-					v7->field_4 = (int)stru_47A718.ptr_0;
-					*(_DWORD *)(v8 + 4) = stru_47A718.field_4;
-					*(_DWORD *)(v8 + 8) = stru_47A718.field_8;
-					v9 = stru_47A718.field_C;
-					v7->next = 0;
-					*(_BYTE *)(v8 + 12) = v9;
-					if (_47A714.ptr_0)
-					{
-						v10 = v6->next;
-						if (v6->next)
-						{
-							do
-							{
-								v6 = v10;
-								v10 = v10->next;
-							} while (v10);
-						}
-						v6->next = v7;
-					}
-					else
-					{
-						_47A714.ptr_0 = v7;
-					}
-				}
-				script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
-				v3->next->prev = v3->prev;
-				v3->prev->next = v3->next;
-				v3->next = stru13construct_list_free_pool;
-				stru13construct_list_free_pool = v3;
-				v3 = v5;
-				goto LABEL_26;
-			}
-			v11 = (v3->_18_cost << 8) / v3->_14_cost;
-			if (v11 > 85)
-				break;
-			if (v3->field_10 < 2)
-			{
-				v12 = (task_428940_attach__cursors *)v3->field_8;
-				v3->field_10 = 2;
-				*(int *)((char *)&stru_47A718.field_4 + 1) = 2;
-				*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = v12;
-				v13 = _47A714.ptr_0;
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 11;
-				v14 = task_428940_attach__cursors_list_free_pool;
-				if (!task_428940_attach__cursors_list_free_pool)
-					goto LABEL_25;
-				task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-				v15 = (int)&v14->field_4;
-				v14->field_4 = (int)stru_47A718.ptr_0;
-				*(_DWORD *)(v15 + 4) = stru_47A718.field_4;
-				*(_DWORD *)(v15 + 8) = stru_47A718.field_8;
-				LOBYTE_HEXRAYS(v15) = stru_47A718.field_C;
-				v14->next = 0;
-				LOBYTE_HEXRAYS(v14->field_10) = v15;
-				if (_47A714.ptr_0)
-				{
-					v16 = v13->next;
-					if (v13->next)
-					{
-						do
-						{
-							v17 = v16;
-							v16 = v16->next;
-						} while (v16);
-						v17->next = v14;
-						goto LABEL_25;
-					}
-				LABEL_23:
-					v13->next = v14;
-				LABEL_25:
-					script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
-					goto LABEL_26;
-				}
-			LABEL_24:
-				_47A714.ptr_0 = v14;
-				goto LABEL_25;
-			}
-		LABEL_26:
-			v3 = v3->next;
-			if ((stru13construct **)v3 == &stru13construct_list_47A638)
-				goto LABEL_27;
-		}
-		if (v11 > 171 || v3->field_10 >= 1)
-			goto LABEL_26;
-		v18 = (task_428940_attach__cursors *)v3->field_8;
-		v3->field_10 = 1;
-		v13 = _47A714.ptr_0;
-		*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = v18;
-		*(int *)((char *)&stru_47A718.field_4 + 1) = 1;
-		LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 11;
-		v14 = task_428940_attach__cursors_list_free_pool;
-		if (!task_428940_attach__cursors_list_free_pool)
-			goto LABEL_25;
-		task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-		v19 = (int)&v14->field_4;
-		v14->field_4 = (int)stru_47A718.ptr_0;
-		*(_DWORD *)(v19 + 4) = stru_47A718.field_4;
-		*(_DWORD *)(v19 + 8) = stru_47A718.field_8;
-		LOBYTE_HEXRAYS(v19) = stru_47A718.field_C;
-		v14->next = 0;
-		LOBYTE_HEXRAYS(v14->field_10) = v19;
-		if (_47A714.ptr_0)
-		{
-			v20 = v13->next;
-			if (v13->next)
-			{
-				do
-				{
-					v13 = v20;
-					v20 = v20->next;
-				} while (v20);
-			}
-			goto LABEL_23;
-		}
-		goto LABEL_24;
-	}
-LABEL_27:
-	script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
-	input_get_mouse_data(&_47A5E0_mouse_input);
-	input_get_keyboard_state(&_47A700_input);
-	v21 = is_coroutine_list_initialization_failed;
-	v22 = _47A700_input.pressed_keys_mask;
-	v23 = 0;
-	if (is_coroutine_list_initialization_failed)
-	{
-		dword_47A6FC = 0;
-	}
-	else if (_47A700_input.pressed_keys_mask & 0x10)
-	{
-		dword_47A6FC = 29;
-	}
-	else
-	{
-		dword_47A6FC = (_47A700_input.pressed_keys_mask & 0x20) != 0 ? 0x38 : 0;
-	}
-	if (_47A5E0_mouse_input.pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK && !is_coroutine_list_initialization_failed && dword_47A6F0 < 100)
-		++dword_47A6F0;
-	if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK && !is_coroutine_list_initialization_failed)
-	{
-		v2->field_4C = 1;
-		v2->cursor_x = _47A5E0_mouse_input.cursor_x_x256;
-		v2->cursor_y = _47A5E0_mouse_input.cursor_y_x256;
-		_47A5E0_mouse_input.cursor_x_x256 = (render_width << 8) / 2;
-		_47A5E0_mouse_input.cursor_y_x256 = (render_height << 8) / 2;
-		v2->field_64 = 0;
-		v2->field_60 = 0;
-		v2->field_5C = 0;
-		v2->field_58 = 0;
-		v22 = _47A700_input.pressed_keys_mask;
-		v21 = is_coroutine_list_initialization_failed;
-	}
-	if (v2->field_4C && (v21 || _47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK))
-	{
-		v2->field_4C = 0;
-		if (dword_47A6F0 < 10)
-			_447340_send_sidebar_buttons_message(-1);
-		dword_47A6F0 = 0;
-		input_4283A0_set_cursor_pos(v2->cursor_x >> 8, v2->cursor_y >> 8);
-		v24 = v2->cursor_x;
-		v21 = is_coroutine_list_initialization_failed;
-		_47A5E0_mouse_input.cursor_x_x256 = v2->cursor_x;
-		_47A5E0_mouse_input.cursor_y_x256 = v2->cursor_y;
-		v22 = _47A700_input.pressed_keys_mask;
-	}
-	else
-	{
-		v24 = _47A5E0_mouse_input.cursor_x_x256;
-	}
-	if (!v2->field_4C)
-	{
-		if (v21)
-		{
-		LABEL_81:
-			v25 = a1a;
-			v2->_70_sprite->field_88 = 1;
-			v2->_70_sprite->x = _47C380_mapd.mapd_cplc_render_x + _47A5E0_mouse_input.cursor_x_x256;
-			v2->_70_sprite->field_88 = 1;
-			v23 = 0;
-			v2->_70_sprite->y = _47C380_mapd.mapd_cplc_render_y + _47A5E0_mouse_input.cursor_y_x256;
-			v2->_74_sprite->field_88 = 1;
-			v2->_74_sprite->x = _47A5E0_mouse_input.cursor_x_x256;
-			v2->_74_sprite->field_88 = 1;
-			v2->_74_sprite->y = _47A5E0_mouse_input.cursor_y_x256;
-			goto LABEL_82;
-		}
-		v29 = _47C380_mapd.mapd_cplc_render_x - dword_477898;
-		v30 = _47C380_mapd.mapd_cplc_render_y - dword_47789C;
-		if ((v24 < 256 || v22 & 4) && v29 > 0)
-		{
-			_47C380_mapd.mapd_cplc_render_x = v29 - ((v22 & 4) != 0 ? 3840 : 1024);
-			if (_47C380_mapd.mapd_cplc_render_x < 0)
-				_47C380_mapd.mapd_cplc_render_x = 0;
-		}
-		else if (v24 >= (render_width << 8) - 256 || v22 & 8)
-		{
-			v31 = a1a;
-			if (v29 >= (32 - render_width + render_call_draw_handler_mode1(a1a)) << 8
-				|| (_47C380_mapd.mapd_cplc_render_x = v29 + ((_47A700_input.pressed_keys_mask & 8) != 0 ? 3840 : 1024),
-					_47C380_mapd.mapd_cplc_render_x < (32 - render_width + render_call_draw_handler_mode1(a1a)) << 8))
-			{
-				v22 = _47A700_input.pressed_keys_mask;
-			}
-			else
-			{
-				_47C380_mapd.mapd_cplc_render_x = (32 - render_width + render_call_draw_handler_mode1(a1a)) << 8;
-				v22 = _47A700_input.pressed_keys_mask;
-			}
-		LABEL_71:
-			if ((_47A5E0_mouse_input.cursor_y_x256 < 256 || v22 & 1) && v30 > 0)
-			{
-				_47C380_mapd.mapd_cplc_render_y = v30 - ((v22 & 1) != 0 ? 3840 : 1024);
-				if (_47C380_mapd.mapd_cplc_render_y < 0)
-					_47C380_mapd.mapd_cplc_render_y = 0;
-			}
-			else if ((_47A5E0_mouse_input.cursor_y_x256 >= (render_height << 8) - 256 || v22 & 2)
-				&& v30 < (render_call_draw_handler_mode2(v31) - render_height) << 8)
-			{
-				_47C380_mapd.mapd_cplc_render_y = v30 + ((_47A700_input.pressed_keys_mask & 2) != 0 ? 3840 : 1024);
-				if (_47C380_mapd.mapd_cplc_render_y >= (render_call_draw_handler_mode2(v31) - render_height) << 8)
-					_47C380_mapd.mapd_cplc_render_y = (render_call_draw_handler_mode2(v31) - render_height) << 8;
-			}
-			goto LABEL_81;
-		}
-		v31 = a1a;
-		goto LABEL_71;
-	}
-	_47C380_mapd.mapd_cplc_render_x += 2 * _47A5E0_mouse_input.cursor_dx_x256 - dword_477898;
-	if (_47C380_mapd.mapd_cplc_render_x >= 0)
-	{
-		v25 = a1a;
-		if (_47C380_mapd.mapd_cplc_render_x >= (32 - render_width + render_call_draw_handler_mode1(a1a)) << 8)
-			_47C380_mapd.mapd_cplc_render_x = (32 - render_width + render_call_draw_handler_mode1(a1a)) << 8;
-	}
-	else
-	{
-		v25 = a1a;
-		_47C380_mapd.mapd_cplc_render_x = 0;
-	}
-	_47C380_mapd.mapd_cplc_render_y += 2 * _47A5E0_mouse_input.cursor_dy_x256 - dword_47789C;
-	if (_47C380_mapd.mapd_cplc_render_y >= 0)
-	{
-		if (_47C380_mapd.mapd_cplc_render_y >= (render_call_draw_handler_mode2(v25) - render_height) << 8)
-			_47C380_mapd.mapd_cplc_render_y = (render_call_draw_handler_mode2(v25) - render_height) << 8;
-	}
-	else
-	{
-		_47C380_mapd.mapd_cplc_render_y = 0;
-	}
-	v2->_70_sprite->field_88 = 1;
-	v2->_70_sprite->x = v2->cursor_x + _47C380_mapd.mapd_cplc_render_x;
-	v2->_70_sprite->field_88 = 1;
-	v2->_70_sprite->y = v2->cursor_y + _47C380_mapd.mapd_cplc_render_y;
-	v2->_74_sprite->field_88 = 1;
-	v2->_74_sprite->x = v2->cursor_x;
-	v2->_74_sprite->field_88 = 1;
-	v2->_74_sprite->y = v2->cursor_y;
-	v26 = _47A5E0_mouse_input.cursor_x_x256 - (render_width << 7) + v2->field_60;
-	v27 = v26;
-	v2->field_60 = v26;
-	if (v26 < 0)
-		v27 = -v26;
-	if (v27 > v2->field_58)
-		v2->field_58 = v27;
-	v28 = _47A5E0_mouse_input.cursor_y_x256 - (render_height << 7) + v2->field_64;
-	v2->field_64 = v28;
-	if (v28 < 0)
-		v28 = -v28;
-	if (v28 > v2->field_5C)
-		v2->field_5C = v28;
-	input_4283A0_set_cursor_pos((unsigned int)render_width >> 1, (unsigned int)render_height >> 1);
-LABEL_82:
-	if ((dword_477890 || dword_477894) && is_coroutine_list_initialization_failed == v23 && dword_477890)
-	{
-		v32 = dword_477890 + _47C380_mapd.mapd_cplc_render_x;
-		if (dword_477890 + _47C380_mapd.mapd_cplc_render_x >= 0)
-		{
-			if (v32 <= (32 - render_width + render_call_draw_handler_mode1(v25)) << 8)
-			{
-				dword_477898 = dword_477890;
-			}
-			else
-			{
-				v32 = (32 - render_width + render_call_draw_handler_mode1(v25)) << 8;
-				dword_477898 = v32 - _47C380_mapd.mapd_cplc_render_x;
-			}
-		}
-		else
-		{
-			v32 = 0;
-			dword_477898 = -_47C380_mapd.mapd_cplc_render_x;
-		}
-		_47C380_mapd.mapd_cplc_render_x = v32;
-		v23 = 0;
-	}
-	if (_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK
-		&& is_coroutine_list_initialization_failed == v23
-		&& _47A5E0_mouse_input.cursor_x_x256 < (render_width - 32) << 8
-		&& v2->field_58 < 4096
-		&& v2->field_5C < 4096)
-	{
-		v33 = _47A714.ptr_0;
-		LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 3;
-		v34 = task_428940_attach__cursors_list_free_pool;
-		if (task_428940_attach__cursors_list_free_pool)
-		{
-			task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-			v35 = (int)&v34->field_4;
-			v34->field_4 = (int)stru_47A718.ptr_0;
-			*(_DWORD *)(v35 + 4) = stru_47A718.field_4;
-			*(_DWORD *)(v35 + 8) = stru_47A718.field_8;
-			v36 = stru_47A718.field_C;
-			v34->next = 0;
-			*(_BYTE *)(v35 + 12) = v36;
-			if (_47A714.ptr_0)
-			{
-				v37 = v33->next;
-				if (v33->next)
-				{
-					do
-					{
-						v33 = v37;
-						v37 = v37->next;
-					} while (v37);
-				}
-				v33->next = v34;
-			}
-			else
-			{
-				_47A714.ptr_0 = v34;
-			}
-		}
-		v2->field_38 = 0;
-		v2->_68_entity = 0;
-		v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 0;
-		dword_468980 = -1;
-		for (i = v2->next; i != v2; i = i->next)
-			script_trigger_event(task_mobd17_cursor, EVT_MSG_TEXT_STRING, 0, i->_8_task);
-		if (v2->next != v2)
-		{
-			v2->prev->next = (_428940_local *)v2->ptr_10;
-			v2->ptr_10 = (task_428940_attach__cursors_2 *)v2->next;
-			v2->next = v2;
-			v2->prev = v2;
-		}
-		script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
-	}
-	v2->_70_sprite->field_88 = 1;
-	v39 = v2->_70_sprite;
-	v40 = v39->x >> 13;
-	v41 = v39->y >> 13;
-	if (v40 >= 0)
-	{
-		if (v40 >= _4793F8_map_width)
-			v40 = _4793F8_map_width - 1;
-	}
-	else
-	{
-		v40 = 0;
-	}
-	if (v41 >= 0)
-	{
-		if (v41 >= _478AAC_map_height)
-			v41 = _478AAC_map_height - 1;
-	}
-	else
-	{
-		v41 = 0;
-	}
-	v42 = _478AA8_boxd_stru0_array[v40 + _4793F8_map_width * v41].flags;
-	v43 = v2->_14_task;
-	v2->field_34 = v42 & 0x60;
-	for (j = script_get_next_event(v43); j; j = script_get_next_event(v2->_14_task))
-	{
-		v45 = j->event;
-		if (v45 > (int)EVT_MSG_1510)
-		{
-			switch (v45)
-			{
-			case EVT_MSG_1529_ai:
-				v54 = stru13construct_list_free_pool;
-				v55 = j->param;
-				if (stru13construct_list_free_pool)
-					stru13construct_list_free_pool = stru13construct_list_free_pool->next;
-				else
-					v54 = 0;
-				if (v54)
-				{
-					v54->field_8 = *((_DWORD *)v55 + 76);
-					v54->field_C = *((_DWORD *)v55 + 5);
-					v54->field_10 = 0;
-					v56 = unit_stats[*((_DWORD *)v55 + 4)].cost;
-					v54->_18_cost = v56;
-					v54->_14_cost = v56;
-					v57 = (v56 << 8) / (60 * *(_DWORD *)(*((_DWORD *)v55 + 6) + 96));
-					v54->_1C_cost_per_time_step = v57;
-					stru37_list_427D60_enqueue_item(
-						(int *)&game_globals_per_player + v54->field_C,
-						&v54->_18_cost,
-						v57,
-						0,
-						0,
-						-1);
-					v58 = stru13construct_list_47A638;
-					v54->prev = (stru13construct *)&stru13construct_list_47A638;
-					v54->next = v58;
-					stru13construct_list_47A638->prev = v54;
-					stru13construct_list_47A638 = v54;
-				}
-				break;
-			case EVT_MSG_1519:
-				if (v96)
-					v2->field_28 = 1;
-				break;
-			case EVT_MSG_1520:
-				if (v96)
-					v2->field_28 = 0;
-				break;
-			case EVT_MSG_SHOW_UNIT_HINT:
-				if (v96)
-					v2->field_24 = 1;
-				break;
-			case EVT_MSG_DESTROY:
-				if (v96)
-					v2->field_30 = 1;
-				break;
-			case EVT_MSG_1516:
-				if (v96)
-					v2->field_24 = 0;
-				break;
-			case EVT_MSG_1518:
-				if (v96)
-					v2->field_30 = 0;
-				break;
-			case EVT_MSG_1522_plan_building_construction:
-				if (v96)
-				{
-					v59 = j->param;
-					v2->field_2C = 1;
-					v2->_78_msg1522_param = v59;
-				}
-				break;
-			case EVT_MSG_TEXT_STRING:
-				v60 = stru13construct_list_47A638;
-				v61 = j->sender->param;
-				dword_468980 = -1;
-				if ((stru13construct **)stru13construct_list_47A638 != &stru13construct_list_47A638)
-				{
-					while (v60->field_8 != *((_DWORD *)v61 + 76))
-					{
-						v60 = v60->next;
-						if ((stru13construct **)v60 == &stru13construct_list_47A638)
-							goto LABEL_162;
-					}
-					stru38_list_427FD0(&v60->_18_cost, 0);
-					v60->next->prev = v60->prev;
-					v60->prev->next = v60->next;
-					v60->next = stru13construct_list_free_pool;
-					stru13construct_list_free_pool = v60;
-				}
-			LABEL_162:
-				v62 = v2->next;
-				if (v2->next != v2)
-				{
-					while (v62->_8_task != j->sender)
-					{
-						v62 = v62->next;
-						if (v62 == v2)
-							goto LABEL_169;
-					}
-					v63 = *((_BYTE *)v61 + player_side + 660);
-					if (v63)
-						--_47A608_stru13_associated_array.field_0[v63];
-					v62->next->prev = v62->prev;
-					v62->prev->next = v62->next;
-					v62->next = (_428940_local *)v2->ptr_10;
-					v2->ptr_10 = (task_428940_attach__cursors_2 *)v62;
-				}
-			LABEL_169:
-				v64 = v2->next;
-				for (v2->_48_unit_stats_idx = (UNIT_ID)0; v64 != v2; v64 = v64->next)
-				{
-					v65 = v64->_8_task->param;
-					if (*((_DWORD *)v65 + 5) == player_side)
-					{
-						v66 = *((_DWORD *)v65 + 4);
-						if (v66 <= 39 || v66 >= 74)
-						{
-							v2->_68_entity = (Entity *)v65;
-							v67 = *((_DWORD *)v65 + 4);
-							if ((v67 < 21 || v67 > 25) && (v67 < 12 || v67 > 13))
-							{
-								v68 = v2->_48_unit_stats_idx;
-								v2->field_40 = 1;
-								v2->field_44 = 1;
-								v69 = (UNIT_ID)*((_DWORD *)v65 + 4);
-								if ((int)v69 > (int)v68 && v69 != 29)
-									v2->_48_unit_stats_idx = v69;
-							}
-						}
-						v70 = *((_DWORD *)v65 + 4);
-						if (v70 >= 52 && v70 <= 57)
-							v2->field_44 = 1;
-					}
-				}
-				break;
-			case EVT_MSG_PRODUCTION_READY:
-				v71 = (int)j->param;
-				*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = *(task_428940_attach__cursors **)(*(_DWORD *)(v71 + 8) + 304);
-				v48 = _47A714.ptr_0;
-				*(int *)((char *)&stru_47A718.field_4 + 1) = *(_DWORD *)(v71 + 12);
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 8;
-				v49 = task_428940_attach__cursors_list_free_pool;
-				if (task_428940_attach__cursors_list_free_pool)
-				{
-					task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-					v72 = (int)&v49->field_4;
-					*(_DWORD *)v72 = (int)stru_47A718.ptr_0;
-					*(_DWORD *)(v72 + 4) = stru_47A718.field_4;
-					*(_DWORD *)(v72 + 8) = stru_47A718.field_8;
-					v73 = stru_47A718.field_C;
-					v49->next = 0;
-					*(_BYTE *)(v72 + 12) = v73;
-					if (!_47A714.ptr_0)
-						goto LABEL_210;
-					v74 = v48->next;
-					if (!v48->next)
-						goto LABEL_209;
-					do
-					{
-						v75 = v74;
-						v74 = v74->next;
-					} while (v74);
-					v75->next = v49;
-				}
-				break;
-			case EVT_MSG_1532:
-				v48 = _47A714.ptr_0;
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 15;
-				v49 = task_428940_attach__cursors_list_free_pool;
-				if (task_428940_attach__cursors_list_free_pool)
-				{
-					task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-					v76 = (int)&v49->field_4;
-					*(_DWORD *)v76 = (int)stru_47A718.ptr_0;
-					*(_DWORD *)(v76 + 4) = stru_47A718.field_4;
-					*(_DWORD *)(v76 + 8) = stru_47A718.field_8;
-					v77 = stru_47A718.field_C;
-					v49->next = 0;
-					*(_BYTE *)(v76 + 12) = v77;
-					if (!_47A714.ptr_0)
-						goto LABEL_210;
-					v78 = v48->next;
-					if (!v48->next)
-						goto LABEL_209;
-					do
-					{
-						v79 = (int *)v78;
-						v78 = v78->next;
-					} while (v78);
-					*v79 = (int)v49;
-				}
-				break;
-			case EVT_MSG_UPGRADE_COMPLETE:
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 12;
-				v49 = task_428940_attach__cursors_list_free_pool;
-				*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)j->param;
-				v48 = _47A714.ptr_0;
-				if (task_428940_attach__cursors_list_free_pool)
-				{
-					task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-					v80 = (int)&v49->field_4;
-					*(_DWORD *)v80 = (int)stru_47A718.ptr_0;
-					*(_DWORD *)(v80 + 4) = stru_47A718.field_4;
-					*(_DWORD *)(v80 + 8) = stru_47A718.field_8;
-					v81 = stru_47A718.field_C;
-					v49->next = 0;
-					*(_BYTE *)(v80 + 12) = v81;
-					if (!_47A714.ptr_0)
-						goto LABEL_210;
-					v82 = v48->next;
-					if (!v48->next)
-						goto LABEL_209;
-					do
-					{
-						v83 = (int *)v82;
-						v82 = v82->next;
-					} while (v82);
-					*v83 = (int)v49;
-				}
-				break;
-			case EVT_MSG_1533:
-				v48 = _47A714.ptr_0;
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 16;
-				v49 = task_428940_attach__cursors_list_free_pool;
-				if (task_428940_attach__cursors_list_free_pool)
-				{
-					task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-					v84 = (int)&v49->field_4;
-					*(_DWORD *)v84 = (int)stru_47A718.ptr_0;
-					*(_DWORD *)(v84 + 4) = stru_47A718.field_4;
-					*(_DWORD *)(v84 + 8) = stru_47A718.field_8;
-					v85 = stru_47A718.field_C;
-					v49->next = 0;
-					*(_BYTE *)(v84 + 12) = v85;
-					if (!_47A714.ptr_0)
-						goto LABEL_210;
-					v86 = v48->next;
-					if (!v48->next)
-						goto LABEL_209;
-					do
-					{
-						v87 = (int *)v86;
-						v86 = v86->next;
-					} while (v86);
-					*v87 = (int)v49;
-				}
-				break;
-			case EVT_MSG_1532 | 0x2:
-				v48 = _47A714.ptr_0;
-				*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = *(task_428940_attach__cursors **)j->param;
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 18;
-				v49 = task_428940_attach__cursors_list_free_pool;
-				if (task_428940_attach__cursors_list_free_pool)
-				{
-					task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-					v88 = (int)&v49->field_4;
-					*(_DWORD *)v88 = (int)stru_47A718.ptr_0;
-					*(_DWORD *)(v88 + 4) = stru_47A718.field_4;
-					*(_DWORD *)(v88 + 8) = stru_47A718.field_8;
-					v89 = stru_47A718.field_C;
-					v49->next = 0;
-					*(_BYTE *)(v88 + 12) = v89;
-					if (!_47A714.ptr_0)
-						goto LABEL_210;
-					v90 = v48->next;
-					if (v48->next)
-					{
-						do
-						{
-							v48 = v90;
-							v90 = v90->next;
-						} while (v90);
-					}
-					goto LABEL_209;
-				}
-				break;
-			default:
-				break;
-			}
-		}
-		else if (v45 == EVT_MSG_1510)
-		{
-			LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 13;
-			*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)*((_DWORD *)j->param + 76);
-			v48 = _47A714.ptr_0;
-			*(_WORD *)((char *)&stru_47A718.field_4 + 1) = game_globals_per_player.cash[*((_DWORD *)j->param + 5)] != 0 ? 4 : 0;
-			v49 = task_428940_attach__cursors_list_free_pool;
-			if (task_428940_attach__cursors_list_free_pool)
-			{
-				task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-				v50 = (int)&v49->field_4;
-				*(_DWORD *)v50 = (int)stru_47A718.ptr_0;
-				*(_DWORD *)(v50 + 4) = stru_47A718.field_4;
-				*(_DWORD *)(v50 + 8) = stru_47A718.field_8;
-				v51 = stru_47A718.field_C;
-				v49->next = 0;
-				*(_BYTE *)(v50 + 12) = v51;
-				if (_47A714.ptr_0)
-				{
-					v52 = v48->next;
-					if (v48->next)
-					{
-						do
-						{
-							v53 = (int *)v52;
-							v52 = v52->next;
-						} while (v52);
-						*v53 = (int)v49;
-					}
-					else
-					{
-					LABEL_209:
-						v48->next = v49;
-					}
-				}
-				else
-				{
-				LABEL_210:
-					_47A714.ptr_0 = v49;
-				}
-			}
-		}
-		else if (v45 == EVT_MSG_neg2 && v96 && !dword_47C6C4)
-		{
-			v46 = (Script *)j->param;
-			v47 = v46->script_type;
-			if (v47 == SCRIPT_TYPE_60138_ENTITY_SCRIPTS || v47 >= SCRIPT_SURV_OUTPOST_HANDLER && v47 < SCRIPT_TYPE_CA000014)
-			{
-				v2->_1C_script = v46;
-			}
-			else if (v47 == SCRIPT_TYPE_47802_fog_of_war
-				|| v47 == SCRIPT_TYPE_48059
-				|| v47 == SCRIPT_TYPE_DA000002
-				|| v47 == SCRIPT_TYPE_DA000003
-				|| v47 == SCRIPT_TYPE_DA000001)
-			{
-				v2->_1C_script = v46;
-				v2->_18_script = v46;
-			}
-		}
-		script_discard_event(j);
-	}
-	v91 = _47A714.ptr_0;
-	if (_47A714.ptr_0)
-	{
-		dword_47CAE0 = _47A714.ptr_0->field_4;
-		dword_47CAE4 = _47A714.ptr_0->field_8;
-		dword_47CAE8 = _47A714.ptr_0->field_C;
-		byte_47CAEC = _47A714.ptr_0->field_10;
-		_47A714.ptr_0 = _47A714.ptr_0->next;
-		v91->next = task_428940_attach__cursors_list_free_pool;
-		task_428940_attach__cursors_list_free_pool = v91;
-		if (dword_47CB0C)
-		{
-			v92 = _47A660_array_num_items;
-			if (_47A660_array_num_items >= 10)
-				v92 = 0;
-			v93 = dword_47CAE0;
-			_47A660_array[v92]._D_is_free = 1;
-			v94 = &_47A660_array[v92];
-			_47A660_array_num_items = v92 + 1;
-			v94->field_0 = v93;
-			v94->field_4 = dword_47CAE4;
-			v94->field_8 = dword_47CAE8;
-			v94->field_C = byte_47CAEC;
-		}
-	}
-	else
-	{
-		LOBYTE_HEXRAYS(dword_47CAE0) = 0;
 	}
 }
 
@@ -25107,9 +24241,9 @@ bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, i
 							sprite_4272A0_load_mobd_item(*v19, 548);
 							v22 = 0;
 						}
-						(*v19)->field_88 = 1;
+						(*v19)->field_88_unused = 1;
 						(*v19)->x = v18 << 13;
-						(*v19)->field_88 = 1;
+						(*v19)->field_88_unused = 1;
 						(*v19)->y = v7 << 13;
 					}
 					++v18;
@@ -25895,7 +25029,7 @@ void script_42DA90_ai(Script *a2)
 				v3 = v2->entity;
 				v4 = 0;
 				v22 = 0x7FFFFFFF;
-				v3->sprite->field_88 = 1;
+				v3->sprite->field_88_unused = 1;
 				v5 = v3->sprite;
 				v6 = v5->x;
 				v21 = v5->y;
@@ -25904,10 +25038,10 @@ void script_42DA90_ai(Script *a2)
 					v8 = i->_8_entity;
 					if (!v8->destroyed)
 					{
-						v8->sprite->field_88 = 1;
+						v8->sprite->field_88_unused = 1;
 						v9 = i->_8_entity->sprite;
 						v10 = v9->x;
-						v9->field_88 = 1;
+						v9->field_88_unused = 1;
 						if (v10 - v6 <= 0)
 						{
 							v11 = i->_8_entity->sprite;
@@ -26203,7 +25337,7 @@ Entity *stru24_42DF40(stru24 *a1, Entity *a2, int *a3)
 	v3 = a2;
 	v22 = a2;
 	v21 = 0;
-	a2->sprite->field_88 = 1;
+	a2->sprite->field_88_unused = 1;
 	v4 = a2->sprite;
 	v5 = v4->x;
 	v20 = v4->y;
@@ -26219,10 +25353,10 @@ Entity *stru24_42DF40(stru24 *a1, Entity *a2, int *a3)
 				v8 = v7->_8_entity;
 				if (!v8->destroyed && v8->player_side != v3->player_side)
 				{
-					v8->sprite->field_88 = 1;
+					v8->sprite->field_88_unused = 1;
 					v9 = v7->_8_entity->sprite;
 					v10 = v9->x;
-					v9->field_88 = 1;
+					v9->field_88_unused = 1;
 					v11 = v10 - v5;
 					v12 = v11 == 0;
 					v13 = v11 < 0;
@@ -26547,7 +25681,7 @@ void EventHandler_Outpost(Script *receiver, Script *sender, enum SCRIPT_EVENT ev
 			}
 			else
 			{
-				v4->sprite->field_88 = 1;
+				v4->sprite->field_88_unused = 1;
 				if (spawn_unit(
 					(enum UNIT_ID)(int)param,
 					v4->sprite->x + v4->stru60.pstru4->x_offset,
@@ -27262,7 +26396,7 @@ void script_431F10_ingame_menu(Script *a1)
 		}
 		if (v17)
 		{
-			task_mobd17_cursor->sprite->field_88 = 1;
+			task_mobd17_cursor->sprite->field_88_unused = 1;
 			v10 = task_mobd17_cursor->sprite->x;
 			v3->x = v10;
 			v11 = v1->x;
@@ -27697,9 +26831,9 @@ void _41AC50_read_keyboard_input___handler_4328F0(const char *a1, int a2)
 	render_string_443D80(_47C65C_render_string, asc_46BB14, 0);
 	_47C65C_render_string->field_18 = 0;
 	render_string_443D80(_47C65C_render_string, v2, 0);
-	_47C664_ingame_menu_sprite->field_88 = 1;
+	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	_47C664_ingame_menu_sprite->x = render_string_443EE0(_47C65C_render_string, v3, 6) << 8;
-	_47C664_ingame_menu_sprite->field_88 = 1;
+	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	_47C664_ingame_menu_sprite->y = 0xC200;
 }
 
@@ -27946,7 +27080,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 			if (!v13)
 				break;
 		LABEL_59:
-			_47C664_ingame_menu_sprite->field_88 = 1;
+			_47C664_ingame_menu_sprite->field_88_unused = 1;
 			_47C664_ingame_menu_sprite->y = 0xC200;
 			sprite_4272A0_load_mobd_item(a1a, 1096);
 			dword_47C6C4 = 1;
@@ -28078,9 +27212,9 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 	task_47C028 = a1;
 	a1->script_type = SCRIPT_TYPE_DA000000;
 	v4 = v3->drawjob;
-	v3->field_88 = 1;
+	v3->field_88_unused = 1;
 	v5 = render_width;
-	v3->field_88 = 1;
+	v3->field_88_unused = 1;
 	LOBYTE_HEXRAYS(v5) = v5 & 0xFE;
 	v3->y = 0x4000;
 	v3->x = v5 << 7;
@@ -28328,11 +27462,11 @@ void script_433640(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offse
 	a1->script_type = event;
 	v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
 	v7 = v6->parent;
-	v6->field_88 = 1;
-	v7->field_88 = 1;
+	v6->field_88_unused = 1;
+	v7->field_88_unused = 1;
 	v8 = v6->parent;
 	v9 = v8->x;
-	v6->field_88 = 1;
+	v6->field_88_unused = 1;
 	v6->x = v9 + (x_offset << 8);
 	v6->y = v8->y + (y_offset << 8);
 	v6->z_index = v8->z_index + (z_index_offset << 8);
@@ -28362,11 +27496,11 @@ void script_4336E0(Script *script, enum SCRIPT_TYPE type, int x_offset, int y_of
 	script->script_type = type;
 	v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
 	v7 = v6->parent;
-	v6->field_88 = 1;
-	v7->field_88 = 1;
+	v6->field_88_unused = 1;
+	v7->field_88_unused = 1;
 	v8 = v6->parent;
 	v9 = v8->x;
-	v6->field_88 = 1;
+	v6->field_88_unused = 1;
 	v6->x = v9 + (x_offset << 8);
 	v6->y = v8->y + (y_offset << 8);
 	v6->z_index = v8->z_index + (z_index_offset << 8);
@@ -29133,7 +28267,7 @@ void entity_mode_powerstation_spawn_tanker(Entity *a1)
 		v3 = v1->unit_id;
 		if (v2->cplc_ptr1_pstru20)
 		{
-			v2->field_88 = 1;
+			v2->field_88_unused = 1;
 			v4 = v1->sprite;
 			v5 = v4->y;
 			v8 = v1->player_side;
@@ -29144,7 +28278,7 @@ void entity_mode_powerstation_spawn_tanker(Entity *a1)
 		}
 		else
 		{
-			v2->field_88 = 1;
+			v2->field_88_unused = 1;
 			v6 = v1->sprite;
 			v7 = v6->y;
 			v9 = v1->player_side;
@@ -29566,9 +28700,9 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
 					script_4381A0_upgrade_process,
 					SCRIPT_FUNCTION,
 					0);
-				v9->field_88 = 1;
+				v9->field_88_unused = 1;
 				v10 = *(_DWORD *)(*((_DWORD *)param + 26) + 4);
-				v9->field_88 = 1;
+				v9->field_88_unused = 1;
 				v9->x += v10;
 				v11 = *(_DWORD *)(*((_DWORD *)param + 26) + 8);
 				v12 = v9->y;
@@ -31275,13 +30409,13 @@ void _43BAB0_move_cursor(Sprite *a1)
 	v3 = 15360;
 	v4 = 10240;
 LABEL_21:
-	v1->field_88 = 1;
+	v1->field_88_unused = 1;
 	v7 = v3 + a1->x;
-	a1->field_88 = 1;
+	a1->field_88_unused = 1;
 	v1->x = v7;
-	v1->field_88 = 1;
+	v1->field_88_unused = 1;
 	v8 = v4 + a1->y;
-	v1->field_88 = 1;
+	v1->field_88_unused = 1;
 	v1->y = v8;
 	input_4283A0_set_cursor_pos(v7 >> 8, v8 >> 8);
 }
@@ -31361,10 +30495,10 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 		if (!dword_47C6C4)
 		{
 			input_get_mouse_data(&v16);
-			v2->field_88 = 1;
+			v2->field_88_unused = 1;
 			v7 = v16.cursor_x_x256;
 			v8 = _47C380_mapd.mapd_cplc_render_x;
-			v2->field_88 = 1;
+			v2->field_88_unused = 1;
 			v2->x = v8 + v7;
 			v2->y = _47C380_mapd.mapd_cplc_render_y + v16.cursor_y_x256;
 			input_get_keyboard_state(&out);
@@ -31936,7 +31070,7 @@ void input_get_string_43D9E0_handler(const char *a1, int a2)
 	_47C65C_render_string->field_18 = 0;
 	_47C65C_render_string->num_lines = 0;
 	render_string_443D80(_47C65C_render_string, v2, 0);
-	_47C664_ingame_menu_sprite->field_88 = 1;
+	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	v4 = _47C65C_render_string->pstru8;
 	v5 = _47C65C_render_string->field_C + v3 + 1;
 	if (_47C65C_render_string->field_C + v3 != -1)
@@ -31948,7 +31082,7 @@ void input_get_string_43D9E0_handler(const char *a1, int a2)
 		} while (v5);
 	}
 	_47C664_ingame_menu_sprite->x = v4->drawjob->job_details.x << 8;
-	_47C664_ingame_menu_sprite->field_88 = 1;
+	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	_47C664_ingame_menu_sprite->y = 46080;
 }
 
@@ -32026,9 +31160,9 @@ void script_43DA80_mobd45_modem(Script *a1)
 				script_discard_event(i);
 			}
 		} while (!v6);
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->x = 92672;
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->y = 46080;
 		_47C664_ingame_menu_sprite->z_index = 10;
 		sprite_4272A0_load_mobd_item(_47C664_ingame_menu_sprite, 1096);
@@ -32037,7 +31171,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 		v10 = _47C6E0_task->sprite;
 		v11 = v10->y >> 8;
 		v12 = v10->x >> 8;
-		v10->field_88 = 1;
+		v10->field_88_unused = 1;
 		input_4283A0_set_cursor_pos(v12, v11);
 		dword_47C6C4 = 0;
 		v13 = 0;
@@ -32051,9 +31185,9 @@ void script_43DA80_mobd45_modem(Script *a1)
 			++v13;
 		} while (v13 < 10);
 		v5[11] = 0;
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->x = 92672;
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->y = 46080;
 		sprite_release_mobd_item(_47C664_ingame_menu_sprite);
 	}
@@ -32074,7 +31208,7 @@ void input_get_string_43DCF0_handler(const char *a1, int a2)
 	_47C604_mission_briefing->field_18 = 0;
 	_47C604_mission_briefing->num_lines = 0;
 	render_string_443D80(_47C604_mission_briefing, v2, 0);
-	_47C664_ingame_menu_sprite->field_88 = 1;
+	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	v4 = _47C604_mission_briefing->pstru8;
 	v5 = _47C604_mission_briefing->field_C + v3 + 1;
 	if (_47C604_mission_briefing->field_C + v3 != -1)
@@ -32086,7 +31220,7 @@ void input_get_string_43DCF0_handler(const char *a1, int a2)
 		} while (v5);
 	}
 	_47C664_ingame_menu_sprite->x = v4->drawjob->job_details.x << 8;
-	_47C664_ingame_menu_sprite->field_88 = 1;
+	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	_47C664_ingame_menu_sprite->y = 60416;
 }
 
@@ -32173,9 +31307,9 @@ void script_43DD90_mobd45_modem(Script *a1)
 				script_discard_event(i);
 			}
 		} while (!v4);
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->x = 86016;
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->y = 60416;
 		_47C664_ingame_menu_sprite->z_index = 10;
 		sprite_4272A0_load_mobd_item(_47C664_ingame_menu_sprite, 1096);
@@ -32201,12 +31335,12 @@ void script_43DD90_mobd45_modem(Script *a1)
 		v15 = _47C6E0_task->sprite;
 		v16 = v15->y >> 8;
 		v17 = v15->x >> 8;
-		v15->field_88 = 1;
+		v15->field_88_unused = 1;
 		input_4283A0_set_cursor_pos(v17, v16);
 		dword_47C6C4 = 0;
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->x = 86016;
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->y = 60416;
 		sprite_release_mobd_item(_47C664_ingame_menu_sprite);
 		v7 = (const char *)a1a;
@@ -33137,7 +32271,7 @@ void script_43F7C0(Script *a1)
 	v4->field_C |= 1u;
 	sprite_4272A0_load_mobd_item(v2, 1080);
 	v2->x = 21248;
-	v2->field_88 = 1;
+	v2->field_88_unused = 1;
 	v2->y = 60160;
 	v2->z_index = 77;
 	v2->drawjob->flags |= 0x40000000u;
@@ -33291,7 +32425,7 @@ void script_43FAD0_mobd45_evt5(Script *a1)
 			v7->field_C |= 1u;
 			sprite_4272A0_load_mobd_item(v5, 1080);
 			v5->x = 50432;
-			v5->field_88 = 1;
+			v5->field_88_unused = 1;
 			v5->y = 38912;
 			v5->z_index = 77;
 			dword_47C5F8 = -1;
@@ -33361,7 +32495,7 @@ void script_43FAD0_mobd45_evt5(Script *a1)
 					}
 				}
 				v14 = dword_47C608;
-				v5->field_88 = 1;
+				v5->field_88_unused = 1;
 				if (v14 <= 0)
 					v5->y = 38912;
 				else
@@ -33370,12 +32504,6 @@ void script_43FAD0_mobd45_evt5(Script *a1)
 		}
 	}
 }
-// 46E3F0: using guessed type int dword_46E3F0;
-// 477344: using guessed type int _477344_esp;
-// 47734C: using guessed type int _47734C_coroutine_int;
-// 47A934: using guessed type int netz_47A934;
-// 47C5F8: using guessed type int dword_47C5F8;
-// 47C660: using guessed type int dword_47C660;
 
 //----- (0043FDE0) --------------------------------------------------------
 void script_43FDE0_mobd45(Script *a1)
@@ -33690,7 +32818,7 @@ void input_get_string_440770_handler(const char *a1, int a2)
 	_47C65C_render_string->field_18 = 0;
 	_47C65C_render_string->num_lines = 0;
 	render_string_443D80(_47C65C_render_string, v2, 0);
-	_47C664_ingame_menu_sprite->field_88 = 1;
+	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	v4 = _47C65C_render_string->pstru8;
 	v5 = _47C65C_render_string->field_C + v3 + 1;
 	if (_47C65C_render_string->field_C + v3 != -1)
@@ -33702,7 +32830,7 @@ void input_get_string_440770_handler(const char *a1, int a2)
 		} while (v5);
 	}
 	_47C664_ingame_menu_sprite->x = v4->drawjob->job_details.x << 8;
-	_47C664_ingame_menu_sprite->field_88 = 1;
+	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	_47C664_ingame_menu_sprite->y = 22528;
 }
 
@@ -33762,7 +32890,7 @@ void script_440810_mobd45(Script *a1)
 	_47C65C_render_string->field_18 = 0;
 	_47C65C_render_string->num_lines = 0;
 	render_string_443D80(_47C65C_render_string, netz_default_player_name, 0);
-	_47C664_ingame_menu_sprite->field_88 = 1;
+	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	v3 = _47C65C_render_string->pstru8;
 	v4 = _47C65C_render_string->field_C + 1;
 	if (_47C65C_render_string->field_C != -1)
@@ -33774,7 +32902,7 @@ void script_440810_mobd45(Script *a1)
 		} while (v4);
 	}
 	_47C664_ingame_menu_sprite->x = v3->drawjob->job_details.x << 8;
-	_47C664_ingame_menu_sprite->field_88 = 1;
+	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	_47C664_ingame_menu_sprite->y = 22528;
 	v2->parent = _47C664_ingame_menu_sprite;
 	v5 = v1->sprite;
@@ -33784,7 +32912,7 @@ void script_440810_mobd45(Script *a1)
 	stru29_list_4439F0(v5, v6, 0, 0, 0);
 	sprite_4272A0_load_mobd_item(v5, 1368);
 	v2->x = 40960;
-	v2->field_88 = 1;
+	v2->field_88_unused = 1;
 	v2->y = 22528;
 	while (1)
 	{
@@ -33818,9 +32946,9 @@ void script_440810_mobd45(Script *a1)
 				script_discard_event(i);
 			}
 		} while (!v8);
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->x = 40960;
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->y = 22528;
 		_47C664_ingame_menu_sprite->z_index = 10;
 		sprite_4272A0_load_mobd_item(_47C664_ingame_menu_sprite, 1096);
@@ -33829,7 +32957,7 @@ void script_440810_mobd45(Script *a1)
 		v12 = _47C6E0_task->sprite;
 		v13 = v12->y >> 8;
 		v14 = v12->x >> 8;
-		v12->field_88 = 1;
+		v12->field_88_unused = 1;
 		input_4283A0_set_cursor_pos(v14, v13);
 		v15 = 0;
 		dword_47C6C4 = 0;
@@ -33843,9 +32971,9 @@ void script_440810_mobd45(Script *a1)
 			++v15;
 		} while (v15 < 7);
 		LOBYTE_HEXRAYS(dword_468CE8) = 0;
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->x = 40960;
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->y = 22528;
 		sprite_release_mobd_item(_47C664_ingame_menu_sprite);
 		if (netz_47C6C0_mapd_idx != 15 && netz_47A834)
@@ -33857,7 +32985,7 @@ void script_440810_mobd45(Script *a1)
 		_47C65C_render_string->field_18 = 0;
 		_47C65C_render_string->num_lines = 0;
 		render_string_443D80(_47C65C_render_string, netz_default_player_name, 0);
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		v18 = _47C65C_render_string->pstru8;
 		v19 = _47C65C_render_string->field_C + 1;
 		if (_47C65C_render_string->field_C != -1)
@@ -33869,17 +32997,13 @@ void script_440810_mobd45(Script *a1)
 			} while (v19);
 		}
 		_47C664_ingame_menu_sprite->x = v18->drawjob->job_details.x << 8;
-		_47C664_ingame_menu_sprite->field_88 = 1;
+		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->y = 22528;
 		if (netz_47C6C0_mapd_idx != 15)
 			netz_42E450((void *)netz_47C6C0_mapd_idx, 0, 65);
 		v1 = a1;
 	}
 }
-// 468CE8: using guessed type int dword_468CE8;
-// 477344: using guessed type int _477344_esp;
-// 47734C: using guessed type int _47734C_coroutine_int;
-// 47C6C4: using guessed type int dword_47C6C4;
 
 //----- (00440CA0) --------------------------------------------------------
 void script_440CA0_mobd45_evt8(Script *a1)
@@ -34837,7 +33961,7 @@ void script_4421F0_mobd45_evt8(Script *a1)
 		v8 = _47C6E0_task->sprite;
 		v9 = v8->y >> 8;
 		v10 = v8->x >> 8;
-		v8->field_88 = 1;
+		v8->field_88_unused = 1;
 		input_4283A0_set_cursor_pos(v10, v9);
 		dword_47C6C4 = 0;
 		sprite_release_mobd_item(_47C664_ingame_menu_sprite);
@@ -35114,11 +34238,11 @@ void script_442BB0_mobd46(Script *a1)
                 stru29_list_clear_bit_by_sprite(v5, 1);
 				if (BYTE2(a1a->field_14) == dword_47C6E8)
 				{
-					_47C664_ingame_menu_sprite->field_88 = 1;
+					_47C664_ingame_menu_sprite->field_88_unused = 1;
 					v11 = v5->x;
-					v5->field_88 = 1;
+					v5->field_88_unused = 1;
 					_47C664_ingame_menu_sprite->x = v11;
-					_47C664_ingame_menu_sprite->field_88 = 1;
+					_47C664_ingame_menu_sprite->field_88_unused = 1;
 					_47C664_ingame_menu_sprite->y = v5->y;
 				}
 				sprite_4272A0_load_mobd_item(v5, v6);
@@ -35224,11 +34348,11 @@ void script_442BB0_mobd46(Script *a1)
         stru29_list_clear_bit_by_sprite(v19, 1);
 		if (BYTE2(a1a->field_14) == v18)
 		{
-			_47C664_ingame_menu_sprite->field_88 = 1;
+			_47C664_ingame_menu_sprite->field_88_unused = 1;
 			v24 = v19->x;
-			v19->field_88 = 1;
+			v19->field_88_unused = 1;
 			_47C664_ingame_menu_sprite->x = v24;
-			_47C664_ingame_menu_sprite->field_88 = 1;
+			_47C664_ingame_menu_sprite->field_88_unused = 1;
 			_47C664_ingame_menu_sprite->y = v19->y;
 		}
 		sprite_4272A0_load_mobd_item(v19, v21);
@@ -36377,7 +35501,7 @@ void entity_mode_4447C0_oiltanker(Entity *a1)
 			v10 = -8192;
 			v11 = 0x2000;
 		}
-		v7->sprite->field_88 = 1;
+		v7->sprite->field_88_unused = 1;
 		v1->sprite_width_2 = v10 + v2->_4_entity->sprite->x;
 		v12 = v2->_4_entity->sprite->y;
 		v1->field_DC = 7;
@@ -37464,7 +36588,7 @@ void sidebar_button_handler_infantry_open(SidebarButton *a1)
 					v1->sprite = v4;
 					v4->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
 					v5 = v4->y;
-					v4->field_88 = 1;
+					v4->field_88_unused = 1;
 					v4->y = v5 - 1024;
 					v4->z_index = 3;
 					sprite_4272A0_load_mobd_item(
@@ -37564,7 +36688,7 @@ void sidebar_button_handler_vehicles_open(SidebarButton *a1)
 					v1->sprite = v4;
 					v4->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
 					v5 = v4->y;
-					v4->field_88 = 1;
+					v4->field_88_unused = 1;
 					v4->y = v5 - 1024;
 					v4->z_index = 3;
 					sprite_4272A0_load_mobd_item(
@@ -38383,9 +37507,9 @@ LABEL_17:
 	{
 		v23->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
 		sprite_4272A0_load_mobd_item(_47C96C_mobd_1F_sidebar_empty_blocks, 72);
-		_47C96C_mobd_1F_sidebar_empty_blocks->field_88 = 1;
+		_47C96C_mobd_1F_sidebar_empty_blocks->field_88_unused = 1;
 		_47C96C_mobd_1F_sidebar_empty_blocks->x = (render_width - 32) << 8;
-		_47C96C_mobd_1F_sidebar_empty_blocks->field_88 = 1;
+		_47C96C_mobd_1F_sidebar_empty_blocks->field_88_unused = 1;
 		_47C96C_mobd_1F_sidebar_empty_blocks->y = 0x10000;
 		_47C96C_mobd_1F_sidebar_empty_blocks->z_index = 0;
 	}
@@ -38405,7 +37529,7 @@ void sidebar_button_handler_cash_open(SidebarButton *a1)
 	v1 = a1;
 	v2 = _445C00_text(asc_470198, 12);
 	v3 = _445C80_text(asc_470198, 12);
-	v1->sprite->field_88 = 1;
+	v1->sprite->field_88_unused = 1;
 	_47CA00_render_string = render_string_create(
 		0,
 		currently_running_lvl_mobd[MOBD_FONT_27].items,
@@ -39644,7 +38768,7 @@ void drawjob_update_handler_4483E0_sidebar(Sprite *a1, DrawJob *a2)
 }
 
 //----- (00448430) --------------------------------------------------------
-void drawjob_update_handler_448430(Sprite *a1, DrawJob *a2)
+void drawjob_update_handler_cursors(Sprite *a1, DrawJob *a2)
 {
 	DataMobdItem_stru0 *v2; // eax@1
 
@@ -39652,8 +38776,8 @@ void drawjob_update_handler_448430(Sprite *a1, DrawJob *a2)
 	if (v2)
 	{
 		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8) - (_47C380_mapd.mapd_cplc_render_y >> 8) - a1->_54_inside_mobd_ptr4->y_offset;
-		a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
+		a2->job_details.y = (a1->y >> 8) - (_47C380_mapd.mapd_cplc_render_y >> 8) - v2->y_offset;
+		a2->job_details.image = v2->sprt;
 	}
 	else
 	{
@@ -40704,7 +39828,7 @@ void script_44A500_fog_of_war(Script *a1)
 			{
 				v3 = &_47A010_mapd_item_being_drawn[0]->draw_job->job_details;
 				input_get_mouse_data(&v6);
-				_47CB58_minimap_sprite->field_88 = 1;
+				_47CB58_minimap_sprite->field_88_unused = 1;
 				v4 = 16 * (v6.cursor_x_x256 - _47CB58_minimap_sprite->x) - (render_width << 7);
 				v5 = 16 * (v6.cursor_y_x256 - _47CB58_minimap_sprite->y) - (render_height << 7);
 				if (v4 >= 0)
@@ -40760,9 +39884,9 @@ void hide_minimap_sprite()
 //----- (0044A6B0) --------------------------------------------------------
 void _44A6B0_minimap(int x, int y)
 {
-	_47CB58_minimap_sprite->field_88 = 1;
+	_47CB58_minimap_sprite->field_88_unused = 1;
 	_47CB58_minimap_sprite->x = (x - __4793F8_map_width_x2 - 4) << 8;
-	_47CB58_minimap_sprite->field_88 = 1;
+	_47CB58_minimap_sprite->field_88_unused = 1;
 	_47CB58_minimap_sprite->y = y << 8;
 }
 // 47CB7C: using guessed type int __4793F8_map_width_x2;
@@ -41185,7 +40309,7 @@ void mapd_44AE30_fog_of_war()
 			{
 				if (j->player_side == player_side)
 				{
-					j->sprite->field_88 = 1;
+					j->sprite->field_88_unused = 1;
 					v8 = j->sprite;
 					v9 = 2 * (v8->x >> 13);
 					v10 = 2 * (v8->y >> 13);
@@ -41219,7 +40343,7 @@ void mapd_44AE30_fog_of_war()
 			{
 				if (k->player_side)
 				{
-					k->sprite->field_88 = 1;
+					k->sprite->field_88_unused = 1;
 					v15 = k->sprite;
 					v16 = 2 * (v15->x >> 13);
 					v17 = 2 * (v15->y >> 13);
@@ -41395,7 +40519,7 @@ void entity_44B100_buildings__mess_with_fog_of_war(Entity *a1)
 
 	if (a1->player_side == player_side)
 	{
-		a1->sprite->field_88 = 1;
+		a1->sprite->field_88_unused = 1;
 		v1 = a1->sprite;
 		v2 = a1->stats->field_20;
 		v3 = 2 * (v1->x >> 13);
@@ -42559,10 +41683,10 @@ void _44C4B0_mess_with_turrets()
 						v5->ptr_24 = v7;
 					else
 						v5->ptr_24 = (Entity_stru_dmg_related *)&entity_default_stru60_ptr;
-					i->turret->turret_sprite->field_88 = 1;
-					i->sprite->field_88 = 1;
+					i->turret->turret_sprite->field_88_unused = 1;
+					i->sprite->field_88_unused = 1;
 					i->turret->turret_sprite->x = i->sprite->x + v1->ptr_0->x_offset;
-					i->turret->turret_sprite->field_88 = 1;
+					i->turret->turret_sprite->field_88_unused = 1;
 					i->turret->turret_sprite->y = i->sprite->y + v1->ptr_0->y_offset;
 				}
 			}
@@ -42768,7 +41892,7 @@ Sprite *spawn_unit(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE player_s
 	if (result)
 	{
 		result->x = v5;
-		result->field_88 = 1;
+		result->field_88_unused = 1;
 		result->y = y;
 		result->cplc_ptr1 = 0;
 		result->param = (void *)(v4 | (player_side << 16));
@@ -43052,7 +42176,7 @@ void script_show_message_ex(Script *a1)
 			{
 				v7 = sender_sprite->x;
 				v8 = sender_sprite->y;
-				sender_sprite->field_88 = 1;
+				sender_sprite->field_88_unused = 1;
 				v9 = (v7 - _47C380_mapd.mapd_cplc_render_x) >> 8;
 				v10 = (v8 - _47C380_mapd.mapd_cplc_render_y) >> 8;
 				if (v9 < 0x80)
@@ -43194,7 +42318,7 @@ void script_show_message(Script *a1)
 			{
 				v6 = v13->x;
 				v7 = v13->y;
-				v13->field_88 = 1;
+				v13->field_88_unused = 1;
 				v8 = (v6 - _47C380_mapd.mapd_cplc_render_x) >> 8;
 				v9 = (v7 - _47C380_mapd.mapd_cplc_render_y) >> 8;
 				if (v8 < 128)

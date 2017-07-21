@@ -47,9 +47,9 @@ void UNIT_DmgHandler_Sapper(Script *a1)
     v28 = v2;
     v3 = (int)v1->param;
     v4 = (Entity *)v1->parent->param;
-    v2->sprite->field_88 = 1;
+    v2->sprite->field_88_unused = 1;
     v5 = v1->y;
-    v1->field_88 = 1;
+    v1->field_88_unused = 1;
     v6 = v2->sprite;
     v7 = (v6->y - v5) >> 8;
     v8 = (v6->x - v1->x) >> 8;
@@ -208,17 +208,17 @@ void UNIT_DmgHandler_Rocket(Script *a1)
     v36 = (Entity *)v2->parent->param;
     v2->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[v3->player_side]];
     v2->drawjob->flags |= 0x10000000u;
-    v1->sprite->field_88 = 1;
+    v1->sprite->field_88_unused = 1;
     v4 = v2->x;
     v5 = v2->y;
-    v2->field_88 = 1;
+    v2->field_88_unused = 1;
     v6 = v1->sprite;
     v7 = (v6->x - v4) >> 8;
     v8 = (v6->y - v5) >> 8;
     if (v3->turret)
     {
         v9 = v2->z_index;
-        v2->field_88 = 1;
+        v2->field_88_unused = 1;
         v2->z_index = v9 + 5120;
         v2->y = v5 + 2560;
     }
@@ -337,9 +337,9 @@ void script_436140_flamethrower_dmg_handler(Script *a1)
     v1 = a1->sprite;
     v2 = (Entity *)a1->param;
     v3 = (int)v1->param;
-    v2->sprite->field_88 = 1;
+    v2->sprite->field_88_unused = 1;
     v4 = v1->x;
-    v1->field_88 = 1;
+    v1->field_88_unused = 1;
     v5 = v2->sprite;
     v6 = (v5->y - v1->y) >> 8;
     v7 = (v5->x - v4) >> 8;
@@ -381,8 +381,8 @@ void UNIT_DmgHandler_Flamethrower(Script *a1)
     v3 = (int)v1->param;
     v4 = 0;
     v5 = (Entity *)v1->parent->param;
-    v2->sprite->field_88 = 1;
-    v1->field_88 = 1;
+    v2->sprite->field_88_unused = 1;
+    v1->field_88_unused = 1;
     while (!v2->destroyed && v5->entity_id && !v5->destroyed && _47C048_unit_bomberdmg < 200)
     {
         ++_47C048_unit_bomberdmg;
@@ -447,9 +447,9 @@ void script_4363C0_giant_bettle_dmg(Script *a1)
     v3 = a1->sprite;
     v4 = (int)v3->param;
     v11 = (int)v3->param;
-    v2->sprite->field_88 = 1;
+    v2->sprite->field_88_unused = 1;
     v5 = v3->y;
-    v3->field_88 = 1;
+    v3->field_88_unused = 1;
     v6 = math_42D64D_prolly_vec_length((v2->sprite->x - v3->x) >> 8, (v2->sprite->y - v5) >> 8);
     v12 = v2->entity_id;
     v7 = v6 / *(_DWORD *)(v4 + 16);
@@ -528,9 +528,9 @@ void UNIT_DmgHandler_Beetle(Script *a1)
     v18 = (Entity *)a1->param;
     v2 = (int)v1->param;
     v3 = (Entity *)v1->parent->param;
-    v18->sprite->field_88 = 1;
+    v18->sprite->field_88_unused = 1;
     v4 = v1->x;
-    v1->field_88 = 1;
+    v1->field_88_unused = 1;
     v5 = v18->sprite;
     v28 = (v5->x - v4) >> 8;
     v27 = (v5->y - v1->y) >> 8;
@@ -631,10 +631,10 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     v1 = a1->sprite;
     v2 = (Entity *)a1->param;
     v12 = (int)v1->param;
-    v2->sprite->field_88 = 1;
+    v2->sprite->field_88_unused = 1;
     v3 = v1->y;
     v4 = v1->x;
-    v1->field_88 = 1;
+    v1->field_88_unused = 1;
     v5 = v2->sprite;
     v6 = v2->entity_id;
     v7 = (v5->x - v4) >> 8;
@@ -737,10 +737,10 @@ void UNIT_DmgHandler_Mech(Script *a1)
     v50 = 0;
     if (v4->turret->field_1C % 3)
     {
-        v3->field_88 = 1;
+        v3->field_88_unused = 1;
         v5 = v1->y;
         v6 = v1->x;
-        v1->field_88 = 1;
+        v1->field_88_unused = 1;
         v7 = v2->sprite;
         v8 = (v7->x - v6) >> 8;
         v59 = (v7->y - v5) >> 8;
@@ -794,9 +794,9 @@ void UNIT_DmgHandler_Mech(Script *a1)
     {
         v1->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[v4->player_side]];
         v1->drawjob->flags |= 0x10000000u;
-        v2->sprite->field_88 = 1;
+        v2->sprite->field_88_unused = 1;
         v21 = v1->x;
-        v1->field_88 = 1;
+        v1->field_88_unused = 1;
         v22 = v2->sprite;
         v23 = v4->turret;
         v24 = (v22->x - v21) >> 8;
@@ -940,15 +940,15 @@ void script_436FF0_rifle_dmg_handler(Script *a1)
         if (a1->flags_20 & 0x10000000)
             break;
         v3 = v2->turret;
-        v1->field_88 = 1;
+        v1->field_88_unused = 1;
         if (v3)
         {
-            v2->turret->turret_sprite->field_88 = 1;
+            v2->turret->turret_sprite->field_88_unused = 1;
             v4 = v2->turret;
             v5 = v4->turret_sprite;
             v6 = v4->ptr_24->x_offset;
             v7 = v5->x;
-            v1->field_88 = 1;
+            v1->field_88_unused = 1;
             v1->x = v7 + v6;
             v8 = v2->turret;
             v9 = v8->ptr_24;
@@ -956,10 +956,10 @@ void script_436FF0_rifle_dmg_handler(Script *a1)
         }
         else
         {
-            v2->sprite->field_88 = 1;
+            v2->sprite->field_88_unused = 1;
             v11 = v2->stru60.ptr_0->x_offset;
             v12 = v2->sprite->x;
-            v1->field_88 = 1;
+            v1->field_88_unused = 1;
             v1->x = v12 + v11;
             v9 = v2->stru60.ptr_0;
             v10 = v2->sprite;
@@ -1002,10 +1002,10 @@ void UNIT_DmgHandler_GORT(Script *a1)
     v4->parent = v1->parent;
     v5->param = v2;
     v4->z_index = v3->sprite->z_index + 5120;
-    v4->field_88 = 1;
-    v2->sprite->field_88 = 1;
+    v4->field_88_unused = 1;
+    v2->sprite->field_88_unused = 1;
     v6 = v2->sprite->x;
-    v4->field_88 = 1;
+    v4->field_88_unused = 1;
     v4->x = v6;
     v4->y = v2->sprite->y + 2560;
     sprite_4272A0_load_mobd_item(v4, 2112);
@@ -1015,10 +1015,10 @@ void UNIT_DmgHandler_GORT(Script *a1)
     {
         if (a1->flags_20 & 0x10000000)
             break;
-        v1->field_88 = 1;
-        v3->sprite->field_88 = 1;
+        v1->field_88_unused = 1;
+        v3->sprite->field_88_unused = 1;
         v7 = v3->stru60.ptr_0->x_offset + v3->sprite->x;
-        v1->field_88 = 1;
+        v1->field_88_unused = 1;
         v1->x = v7;
         v1->y = v3->sprite->y + v3->stru60.ptr_0->y_offset + 2560;
         if (!v3->destroyed)
@@ -1105,7 +1105,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
                 v5->parent = v2->parent;
                 v6->param = v1;
                 v7 = v3->turret->turret_sprite->z_index;
-                v5->field_88 = 1;
+                v5->field_88_unused = 1;
                 v5->z_index = v7 + 5120;
                 v5->y = v3->turret->ptr_24->y_offset + v3->turret->turret_sprite->y + 2560;
                 sprite_4272E0_load_mobd_item(v5, 2184, _47D3C4_entity_mobd_lookup_ids[v3->turret->mobd_lookup_id + 1]);
@@ -1119,7 +1119,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
             v8->parent = v2->parent;
             v9->param = v1;
             v10 = v3->sprite->z_index;
-            v8->field_88 = 1;
+            v8->field_88_unused = 1;
             v8->z_index = v10 + 5120;
             v8->y = v3->sprite->y + v3->stru60.ptr_0->y_offset + 2560;
             v11 = 2248;
@@ -1130,10 +1130,10 @@ void UNIT_DmgHandler_Rifle(Script *a1)
     }
     if (v18)
         v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448510_aircraft;
-    v2->field_88 = 1;
-    v1->sprite->field_88 = 1;
+    v2->field_88_unused = 1;
+    v1->sprite->field_88_unused = 1;
     v2->x = v1->sprite->x + (((kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 16) << 8);
-    v2->field_88 = 1;
+    v2->field_88_unused = 1;
     v2->y = v1->sprite->y + (((kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 16) << 8);
     v2->z_index = v1->sprite->z_index + 256;
     script_445370_yield_to_main_thread(a1, 0x80000000, 10);
@@ -1198,7 +1198,7 @@ int sub_437690(Script *a1)
     v3 = v1->parent->param;
     *(_DWORD *)(v2[23] + 136) = 1;
     v4 = v1->y;
-    v1->field_88 = 1;
+    v1->field_88_unused = 1;
     v5 = _42D560_get_mobd_lookup_id_rotation((*(_DWORD *)(v2[23] + 16) - v1->x) >> 8, (*(_DWORD *)(v2[23] + 20) - v4) >> 8);
     v6 = *((_DWORD *)v3 + 38);
     v7 = *((_DWORD *)v3 + 6);
@@ -1268,8 +1268,8 @@ void UNIT_DmgHandler_Bow(Script *a1)
     v26 = v2;
     v19 = (int)v1->param;
     v3 = (Entity *)v1->parent->param;
-    v2->sprite->field_88 = 1;
-    v1->field_88 = 1;
+    v2->sprite->field_88_unused = 1;
+    v1->field_88_unused = 1;
     v5 = v2->sprite;
     v6 = (v5->y - v1->y) >> 8;
     v7 = (v5->x - v1->x) >> 8;
@@ -1363,9 +1363,9 @@ void UNIT_DmgHandler_Projectile(Script *a1)
     v25 = (int)v1->param;
     v3 = (Entity *)v1->parent->param;
     v30 = (Entity *)v1->parent->param;
-    v2->sprite->field_88 = 1;
+    v2->sprite->field_88_unused = 1;
     v4 = v1->x;
-    v1->field_88 = 1;
+    v1->field_88_unused = 1;
     v5 = v2->sprite;
     v6 = (v5->y - v1->y) >> 8;
     v7 = (v5->x - v4) >> 8;

@@ -1209,7 +1209,7 @@ int render_434A90(int a1, int a2, char a3, char a4, char a5, int a6)
     v9 = 0;
     v10 = 0;
 
-    int _a3, _a4, _a5;
+    int _a3 = a3, _a4 = a4, _a5 = a5;
     auto r = render_clip(&v10, &v9, &_a4, &_a5, &v7, &_a3);
     a3 = _a3;
     a4 = _a4;
@@ -1233,7 +1233,7 @@ void render_434AD0(int a1, int a2, __int16 a3, int a4, __int16 a5)
     v9 = 0;
     v10 = a4;
 
-    int _a3, _a5;
+    int _a3 = a3, _a5 = a5;
     if (render_clip(&v9, &v8, &a4, &_a5, &v6, &_a3))
     {
         a3 = _a3;
@@ -1269,8 +1269,8 @@ int render_434B70(int a1, int a2, char a3, int a4, char a5, int a6)
     v10 = 0;
     v11 = a4;
 
-    int _a5;
-    int _a3;
+    int _a5 = a5;
+    int _a3 = a3;
     result = render_clip(&v10, &v9, &a4, &_a5, &v7, &_a3);
     a3 = _a3;
     a5 = _a5;

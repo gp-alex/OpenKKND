@@ -133,7 +133,7 @@ void UNIT_Handler_Aircraft(Script *a1)
             stru31_list_477300->prev = v4;
             stru31_list_477300 = v4;
         }
-        v2->sprite->field_88 = 1;
+        v2->sprite->field_88_unused = 1;
         v5 = v2->sprite;
         v2->sprite_width = v5->x;
         v2->sprite_height = v5->y;
@@ -155,9 +155,9 @@ void UNIT_Handler_Aircraft(Script *a1)
             else
                 v8 = (render_call_draw_handler_mode2(v3) + 32) << 8;
         }
-        v2->sprite->field_88 = 1;
+        v2->sprite->field_88_unused = 1;
         v2->sprite->x = v7;
-        v2->sprite->field_88 = 1;
+        v2->sprite->field_88_unused = 1;
         v2->sprite->y = v8;
         v2->sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448510_aircraft;
         v2->sprite->z_index = 46080;
