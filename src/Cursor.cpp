@@ -10,12 +10,103 @@
 #include "src/Render.h"
 
 
+
+task_428940_attach__cursors *task_428940_attach__cursors_list;
+task_428940_attach__cursors *task_428940_attach__cursors_list_free_pool;
+
+task_428940_attach__cursors _47A714;
+
+stru209 _47A660_array[10];
+
+stru209 stru_47CAE0; // weak
+
+
+
+
+void _428940_list_return(task_428940_attach__cursors *item)
+{
+    if (item)
+    {
+        item->next = task_428940_attach__cursors_list_free_pool;
+        task_428940_attach__cursors_list_free_pool = item;
+    }
+}
+
+task_428940_attach__cursors *_428940_list_get()
+{
+    auto next = task_428940_attach__cursors_list_free_pool;
+    if (next)
+    {
+        task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
+    }
+
+    return next;
+}
+
+
+int _47A660_list_current_idx = 0; // 0047A728
+
+//----- (0042D500) --------------------------------------------------------
+stru209 *_47A660_list_get()
+{
+    if (_47A660_list_current_idx >= 10)
+    {
+        _47A660_list_current_idx = 0;
+    }
+
+    if (_47A660_array[_47A660_list_current_idx]._is_free)
+    {
+        _47A660_array[_47A660_list_current_idx]._is_free = 0;
+        return &_47A660_array[_47A660_list_current_idx++];
+    }
+    return nullptr;
+}
+
+//----- (0042D540) --------------------------------------------------------
+int _47A660_list_reset()
+{
+    memset(_47A660_array, 0, sizeof(_47A660_array));
+    _47A660_array_num_items = 0;
+    return _47A660_list_current_idx = 0;
+}
+
+//----- (00429770) --------------------------------------------------------
+void _428940_list_do_stuff(stru209 *a1)
+{
+    task_428940_attach__cursors *ptr = _47A714.next;
+
+    if (auto i = _428940_list_get())
+    {
+        i->_stru209.type = a1->type;
+        i->_stru209.param = a1->param;
+        i->_stru209.param2 = a1->param2;
+        i->_stru209.param3 = a1->param3;
+
+        i->next = nullptr;
+        if (ptr)
+        {
+            auto v1 = ptr->next;
+            if (v1)
+            {
+                do
+                {
+                    ptr = v1;
+                    v1 = v1->next;
+                } while (v1);
+            }
+            ptr->next = i;
+        }
+        else
+        {
+            _47A714.next = i;
+        }
+    }
+}
+
 //----- (0042C9E0) --------------------------------------------------------
 void cursor_drag_selection(_428940_local *a1, int x, int y)
 {
     _428940_local *v3; // esi@1
-    task_428940_attach__cursors *v12; // ecx@9
-    char *v13; // eax@10
     task_428940_attach__cursors *v14; // eax@11
     _428940_local *v15; // eax@15
     int v16; // ecx@21
@@ -29,19 +120,10 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
     int v24; // eax@40
     int v25; // eax@46
     enum SOUND_ID v26; // ecx@48
-    int v27; // edx@58
-    int v28; // ecx@58
-    int v29; // edx@58
-    task_428940_attach__cursors *v30; // ecx@58
-    task_428940_attach__cursors *v31; // edx@58
-    int v32; // eax@59
-    char v33; // bl@59
-    task_428940_attach__cursors *v34; // eax@60
     Sprite *v35; // ecx@65
     int v36; // [sp-Ch] [bp-2Ch]@48
     int v39; // [sp+18h] [bp-8h]@21
     Entity *a2a; // [sp+1Ch] [bp-4h]@21
-    task_428940_attach__cursors *ya; // [sp+24h] [bp+4h]@9
     _428940_local *yb; // [sp+24h] [bp+4h]@15
     Script *yc; // [sp+24h] [bp+4h]@21
 
@@ -103,36 +185,10 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
     }
 
     // drag ended
-    v12 = _47A714.ptr_0;
-    LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 3;
-    ya = task_428940_attach__cursors_list_free_pool;
-    if (task_428940_attach__cursors_list_free_pool)
-    {
-        v13 = (char *)&task_428940_attach__cursors_list_free_pool->field_4;
-        task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-        *(_DWORD *)v13 = (int)stru_47A718.ptr_0;
-        *((_DWORD *)v13 + 1) = stru_47A718.field_4;
-        *((_DWORD *)v13 + 2) = stru_47A718.field_8;
-        v13[12] = stru_47A718.field_C;
-        ya->next = 0;
-        if (_47A714.ptr_0)
-        {
-            v14 = v12->next;
-            if (v12->next)
-            {
-                do
-                {
-                    v12 = v14;
-                    v14 = v14->next;
-                } while (v14);
-            }
-            v12->next = ya;
-        }
-        else
-        {
-            _47A714.ptr_0 = ya;
-        }
-    }
+
+    _47A714._stru209.type = 3;
+    _428940_list_do_stuff(&_47A714._stru209);
+
     v3->field_38 = 0;
     v3->_68_entity = 0;
     v3->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 0;
@@ -278,46 +334,14 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
             }
         }
     }
-    v27 = drag_frame_x->x;
-    drag_frame_x->field_88_unused = 1;
-    *(_WORD *)((char *)&stru_47A718.ptr_0 + 1) = v27 >> 8;
-    *(_WORD *)((char *)&stru_47A718.ptr_0 + 3) = drag_frame_x->y >> 8;
-    v28 = drag_frame_w->x >> 8;
-    drag_frame_w->field_88_unused = 1;
-    *(_WORD *)((char *)&stru_47A718.field_4 + 1) = v28;
-    v29 = drag_frame_w->y;
-    v30 = _47A714.ptr_0;
-    LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 1;
-    *(_WORD *)((char *)&stru_47A718.field_4 + 3) = v29 >> 8;
-    v31 = task_428940_attach__cursors_list_free_pool;
-    if (task_428940_attach__cursors_list_free_pool)
-    {
-        task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-        v32 = (int)&v31->field_4;
-        v31->field_4 = (int)stru_47A718.ptr_0;
-        *(_DWORD *)(v32 + 4) = stru_47A718.field_4;
-        *(_DWORD *)(v32 + 8) = stru_47A718.field_8;
-        v33 = stru_47A718.field_C;
-        v31->next = 0;
-        *(_BYTE *)(v32 + 12) = v33;
-        if (_47A714.ptr_0)
-        {
-            v34 = v30->next;
-            if (v30->next)
-            {
-                do
-                {
-                    v30 = v34;
-                    v34 = v34->next;
-                } while (v34);
-            }
-            v30->next = v31;
-        }
-        else
-        {
-            _47A714.ptr_0 = v31;
-        }
-    }
+
+    _47A714._stru209.type = 1;
+    ((short *)&_47A714._stru209.param)[0] = drag_frame_x->x >> 8;
+    ((short *)&_47A714._stru209.param)[1] = drag_frame_x->y >> 8;
+    ((short *)&_47A714._stru209.param)[2] = drag_frame_w->x >> 8;
+    ((short *)&_47A714._stru209.param)[3] = drag_frame_w->y >> 8;
+    _428940_list_do_stuff(&_47A714._stru209);
+
     sprite_list_remove(drag_frame_x);
     sprite_list_remove(drag_frame_y);
     sprite_list_remove(drag_frame_z);
@@ -341,21 +365,7 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
     stru13construct *v3; // esi@1
     int v4; // eax@2
     stru13construct *v5; // edi@3
-    task_428940_attach__cursors *v6; // ecx@3
-    task_428940_attach__cursors *v7; // edx@3
-    int v8; // eax@4
-    char v9; // bl@4
-    task_428940_attach__cursors *v10; // eax@5
     int v11; // eax@10
-    task_428940_attach__cursors *v12; // ecx@12
-    task_428940_attach__cursors *v13; // ecx@12
-    task_428940_attach__cursors *v14; // edx@12
-    int v15; // eax@13
-    task_428940_attach__cursors *v16; // eax@14
-    task_428940_attach__cursors *v17; // ecx@15
-    task_428940_attach__cursors *v18; // edx@19
-    int v19; // eax@20
-    task_428940_attach__cursors *v20; // eax@21
     __int16 v21; // dx@27
     char v22; // al@27
     __int16 v23; // si@27
@@ -368,11 +378,6 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
     int v30; // edi@65
     DrawJobDetails *v31; // ebx@70
     int v32; // esi@86
-    task_428940_attach__cursors *v33; // ecx@97
-    task_428940_attach__cursors *v34; // edx@97
-    int v35; // eax@98
-    char v36; // bl@98
-    task_428940_attach__cursors *v37; // eax@99
     _428940_local *i; // esi@103
     Sprite *v39; // eax@108
     int v40; // ecx@108
@@ -383,12 +388,6 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
     int v45; // eax@117
     Script *v46; // ecx@122
     SCRIPT_TYPE v47; // eax@122
-    task_428940_attach__cursors *v48; // ecx@132
-    task_428940_attach__cursors *v49; // edx@132
-    int v50; // edi@133
-    char v51; // al@133
-    task_428940_attach__cursors *v52; // eax@134
-    _DWORD *v53; // ecx@135
     stru13construct *v54; // esi@138
     void *v55; // ecx@138
     int v56; // eax@142
@@ -406,30 +405,8 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
     enum UNIT_ID v68; // edi@177
     enum UNIT_ID v69; // ecx@177
     int v70; // eax@180
-    int v71; // eax@185
-    int v72; // edi@186
-    char v73; // al@186
-    task_428940_attach__cursors *v74; // eax@187
-    task_428940_attach__cursors *v75; // ecx@188
-    int v76; // edi@191
-    char v77; // al@191
-    task_428940_attach__cursors *v78; // eax@192
-    _DWORD *v79; // ecx@193
-    int v80; // edi@196
-    char v81; // al@196
-    task_428940_attach__cursors *v82; // eax@197
-    _DWORD *v83; // ecx@198
-    int v84; // edi@201
-    char v85; // al@201
-    task_428940_attach__cursors *v86; // eax@202
-    _DWORD *v87; // ecx@203
-    int v88; // edi@206
-    char v89; // al@206
-    task_428940_attach__cursors *v90; // eax@207
-    task_428940_attach__cursors *v91; // eax@212
     int v92; // ecx@214
     int v93; // edx@216
-    _47A660_global *v94; // eax@216
     DrawJobDetails *a1a; // [sp+10h] [bp-Ch]@1
     int v96; // [sp+14h] [bp-8h]@1
 
@@ -447,39 +424,12 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
             if (v4 <= 0)
             {
                 v5 = v3->prev;
-                *(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v3->field_8;
-                v6 = _47A714.ptr_0;
-                *(int *)((char *)&stru_47A718.field_4 + 1) = 3;
-                LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 11;
-                v7 = task_428940_attach__cursors_list_free_pool;
-                if (task_428940_attach__cursors_list_free_pool)
-                {
-                    task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-                    v8 = (int)&v7->field_4;
-                    v7->field_4 = (int)stru_47A718.ptr_0;
-                    *(_DWORD *)(v8 + 4) = stru_47A718.field_4;
-                    *(_DWORD *)(v8 + 8) = stru_47A718.field_8;
-                    v9 = stru_47A718.field_C;
-                    v7->next = 0;
-                    *(_BYTE *)(v8 + 12) = v9;
-                    if (_47A714.ptr_0)
-                    {
-                        v10 = v6->next;
-                        if (v6->next)
-                        {
-                            do
-                            {
-                                v6 = v10;
-                                v10 = v10->next;
-                            } while (v10);
-                        }
-                        v6->next = v7;
-                    }
-                    else
-                    {
-                        _47A714.ptr_0 = v7;
-                    }
-                }
+
+                _47A714._stru209.type = 11;
+                _47A714._stru209.param = v3->field_8;
+                _47A714._stru209.param2 = 3;
+                _428940_list_do_stuff(&_47A714._stru209);
+
                 script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
                 v3->next->prev = v3->prev;
                 v3->prev->next = v3->next;
@@ -493,45 +443,15 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
                 break;
             if (v3->field_10 < 2)
             {
-                v12 = (task_428940_attach__cursors *)v3->field_8;
                 v3->field_10 = 2;
-                *(int *)((char *)&stru_47A718.field_4 + 1) = 2;
-                *(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = v12;
-                v13 = _47A714.ptr_0;
-                LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 11;
-                v14 = task_428940_attach__cursors_list_free_pool;
-                if (!task_428940_attach__cursors_list_free_pool)
-                    goto LABEL_25;
-                task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-                v15 = (int)&v14->field_4;
-                v14->field_4 = (int)stru_47A718.ptr_0;
-                *(_DWORD *)(v15 + 4) = stru_47A718.field_4;
-                *(_DWORD *)(v15 + 8) = stru_47A718.field_8;
-                LOBYTE_HEXRAYS(v15) = stru_47A718.field_C;
-                v14->next = 0;
-                LOBYTE_HEXRAYS(v14->field_10) = v15;
-                if (_47A714.ptr_0)
-                {
-                    v16 = v13->next;
-                    if (v13->next)
-                    {
-                        do
-                        {
-                            v17 = v16;
-                            v16 = v16->next;
-                        } while (v16);
-                        v17->next = v14;
-                        goto LABEL_25;
-                    }
-                LABEL_23:
-                    v13->next = v14;
-                LABEL_25:
-                    script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
-                    goto LABEL_26;
-                }
-            LABEL_24:
-                _47A714.ptr_0 = v14;
-                goto LABEL_25;
+
+                _47A714._stru209.type = 11;
+                _47A714._stru209.param = v3->field_8;
+                _47A714._stru209.param2 = 2;
+                _428940_list_do_stuff(&_47A714._stru209);
+
+                script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
+                goto LABEL_26;
             }
         LABEL_26:
             v3 = v3->next;
@@ -540,37 +460,16 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
         }
         if (v11 > 171 || v3->field_10 >= 1)
             goto LABEL_26;
-        v18 = (task_428940_attach__cursors *)v3->field_8;
+
         v3->field_10 = 1;
-        v13 = _47A714.ptr_0;
-        *(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = v18;
-        *(int *)((char *)&stru_47A718.field_4 + 1) = 1;
-        LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 11;
-        v14 = task_428940_attach__cursors_list_free_pool;
-        if (!task_428940_attach__cursors_list_free_pool)
-            goto LABEL_25;
-        task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-        v19 = (int)&v14->field_4;
-        v14->field_4 = (int)stru_47A718.ptr_0;
-        *(_DWORD *)(v19 + 4) = stru_47A718.field_4;
-        *(_DWORD *)(v19 + 8) = stru_47A718.field_8;
-        LOBYTE_HEXRAYS(v19) = stru_47A718.field_C;
-        v14->next = 0;
-        LOBYTE_HEXRAYS(v14->field_10) = v19;
-        if (_47A714.ptr_0)
-        {
-            v20 = v13->next;
-            if (v13->next)
-            {
-                do
-                {
-                    v13 = v20;
-                    v20 = v20->next;
-                } while (v20);
-            }
-            goto LABEL_23;
-        }
-        goto LABEL_24;
+
+        _47A714._stru209.type = 11;
+        _47A714._stru209.param = v3->field_8;
+        _47A714._stru209.param2 = 1;
+        _428940_list_do_stuff(&_47A714._stru209);
+
+        script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
+        goto LABEL_26;
     }
 LABEL_27:
     script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
@@ -756,37 +655,9 @@ LABEL_82:
         && v2->field_58 < 4096
         && v2->field_5C < 4096)
     {
-        v33 = _47A714.ptr_0;
-        LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 3;
-        v34 = task_428940_attach__cursors_list_free_pool;
-        if (task_428940_attach__cursors_list_free_pool)
-        {
-            task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-            v35 = (int)&v34->field_4;
-            v34->field_4 = (int)stru_47A718.ptr_0;
-            *(_DWORD *)(v35 + 4) = stru_47A718.field_4;
-            *(_DWORD *)(v35 + 8) = stru_47A718.field_8;
-            v36 = stru_47A718.field_C;
-            v34->next = 0;
-            *(_BYTE *)(v35 + 12) = v36;
-            if (_47A714.ptr_0)
-            {
-                v37 = v33->next;
-                if (v33->next)
-                {
-                    do
-                    {
-                        v33 = v37;
-                        v37 = v37->next;
-                    } while (v37);
-                }
-                v33->next = v34;
-            }
-            else
-            {
-                _47A714.ptr_0 = v34;
-            }
-        }
+        _47A714._stru209.type = 3;
+        _428940_list_do_stuff(&_47A714._stru209);
+
         v2->field_38 = 0;
         v2->_68_entity = 0;
         v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 0;
@@ -961,192 +832,48 @@ LABEL_82:
                     }
                 }
                 break;
+
             case EVT_MSG_PRODUCTION_READY:
-                v71 = (int)j->param;
-                *(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = *(task_428940_attach__cursors **)(*(_DWORD *)(v71 + 8) + 304);
-                v48 = _47A714.ptr_0;
-                *(int *)((char *)&stru_47A718.field_4 + 1) = *(_DWORD *)(v71 + 12);
-                LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 8;
-                v49 = task_428940_attach__cursors_list_free_pool;
-                if (task_428940_attach__cursors_list_free_pool)
-                {
-                    task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-                    v72 = (int)&v49->field_4;
-                    *(_DWORD *)v72 = (int)stru_47A718.ptr_0;
-                    *(_DWORD *)(v72 + 4) = stru_47A718.field_4;
-                    *(_DWORD *)(v72 + 8) = stru_47A718.field_8;
-                    v73 = stru_47A718.field_C;
-                    v49->next = 0;
-                    *(_BYTE *)(v72 + 12) = v73;
-                    if (!_47A714.ptr_0)
-                        goto LABEL_210;
-                    v74 = v48->next;
-                    if (!v48->next)
-                        goto LABEL_209;
-                    do
-                    {
-                        v75 = v74;
-                        v74 = v74->next;
-                    } while (v74);
-                    v75->next = v49;
-                }
+                _47A714._stru209.type = 8;
+                _47A714._stru209.param = *(_DWORD *)(*(_DWORD *)((int)j->param + 8) + 304);
+                _47A714._stru209.param2 = *(_DWORD *)((int)j->param + 12);
+                _428940_list_do_stuff(&_47A714._stru209);
                 break;
+
             case EVT_MSG_1532:
-                v48 = _47A714.ptr_0;
-                LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 15;
-                v49 = task_428940_attach__cursors_list_free_pool;
-                if (task_428940_attach__cursors_list_free_pool)
-                {
-                    task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-                    v76 = (int)&v49->field_4;
-                    *(_DWORD *)v76 = (int)stru_47A718.ptr_0;
-                    *(_DWORD *)(v76 + 4) = stru_47A718.field_4;
-                    *(_DWORD *)(v76 + 8) = stru_47A718.field_8;
-                    v77 = stru_47A718.field_C;
-                    v49->next = 0;
-                    *(_BYTE *)(v76 + 12) = v77;
-                    if (!_47A714.ptr_0)
-                        goto LABEL_210;
-                    v78 = v48->next;
-                    if (!v48->next)
-                        goto LABEL_209;
-                    do
-                    {
-                        v79 = (int *)v78;
-                        v78 = v78->next;
-                    } while (v78);
-                    *v79 = (int)v49;
-                }
+                _47A714._stru209.type = 15;
+                _428940_list_do_stuff(&_47A714._stru209);
                 break;
+
             case EVT_MSG_UPGRADE_COMPLETE:
-                LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 12;
-                v49 = task_428940_attach__cursors_list_free_pool;
-                *(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)j->param;
-                v48 = _47A714.ptr_0;
-                if (task_428940_attach__cursors_list_free_pool)
-                {
-                    task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-                    v80 = (int)&v49->field_4;
-                    *(_DWORD *)v80 = (int)stru_47A718.ptr_0;
-                    *(_DWORD *)(v80 + 4) = stru_47A718.field_4;
-                    *(_DWORD *)(v80 + 8) = stru_47A718.field_8;
-                    v81 = stru_47A718.field_C;
-                    v49->next = 0;
-                    *(_BYTE *)(v80 + 12) = v81;
-                    if (!_47A714.ptr_0)
-                        goto LABEL_210;
-                    v82 = v48->next;
-                    if (!v48->next)
-                        goto LABEL_209;
-                    do
-                    {
-                        v83 = (int *)v82;
-                        v82 = v82->next;
-                    } while (v82);
-                    *v83 = (int)v49;
-                }
+                _47A714._stru209.type = 12;
+                _47A714._stru209.param = (int)j->param;
+                _428940_list_do_stuff(&_47A714._stru209);
                 break;
+
             case EVT_MSG_1533:
-                v48 = _47A714.ptr_0;
-                LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 16;
-                v49 = task_428940_attach__cursors_list_free_pool;
-                if (task_428940_attach__cursors_list_free_pool)
-                {
-                    task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-                    v84 = (int)&v49->field_4;
-                    *(_DWORD *)v84 = (int)stru_47A718.ptr_0;
-                    *(_DWORD *)(v84 + 4) = stru_47A718.field_4;
-                    *(_DWORD *)(v84 + 8) = stru_47A718.field_8;
-                    v85 = stru_47A718.field_C;
-                    v49->next = 0;
-                    *(_BYTE *)(v84 + 12) = v85;
-                    if (!_47A714.ptr_0)
-                        goto LABEL_210;
-                    v86 = v48->next;
-                    if (!v48->next)
-                        goto LABEL_209;
-                    do
-                    {
-                        v87 = (int *)v86;
-                        v86 = v86->next;
-                    } while (v86);
-                    *v87 = (int)v49;
-                }
+                _47A714._stru209.type = 16;
+                _428940_list_do_stuff(&_47A714._stru209);
                 break;
+
             case EVT_MSG_1532 | 0x2:
-                v48 = _47A714.ptr_0;
-                *(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = *(task_428940_attach__cursors **)j->param;
-                LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 18;
-                v49 = task_428940_attach__cursors_list_free_pool;
-                if (task_428940_attach__cursors_list_free_pool)
-                {
-                    task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-                    v88 = (int)&v49->field_4;
-                    *(_DWORD *)v88 = (int)stru_47A718.ptr_0;
-                    *(_DWORD *)(v88 + 4) = stru_47A718.field_4;
-                    *(_DWORD *)(v88 + 8) = stru_47A718.field_8;
-                    v89 = stru_47A718.field_C;
-                    v49->next = 0;
-                    *(_BYTE *)(v88 + 12) = v89;
-                    if (!_47A714.ptr_0)
-                        goto LABEL_210;
-                    v90 = v48->next;
-                    if (v48->next)
-                    {
-                        do
-                        {
-                            v48 = v90;
-                            v90 = v90->next;
-                        } while (v90);
-                    }
-                    goto LABEL_209;
-                }
+                _47A714._stru209.type = 18;
+                _47A714._stru209.param = *(int *)j->param;
+                _428940_list_do_stuff(&_47A714._stru209);
+
+                script_discard_event(j);
                 break;
+
             default:
                 break;
             }
         }
         else if (v45 == EVT_MSG_1510)
         {
-            LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 13;
-            *(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)*((_DWORD *)j->param + 76);
-            v48 = _47A714.ptr_0;
-            *(_WORD *)((char *)&stru_47A718.field_4 + 1) = game_globals_per_player.cash[*((_DWORD *)j->param + 5)] != 0 ? 4 : 0;
-            v49 = task_428940_attach__cursors_list_free_pool;
-            if (task_428940_attach__cursors_list_free_pool)
-            {
-                task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-                v50 = (int)&v49->field_4;
-                *(_DWORD *)v50 = (int)stru_47A718.ptr_0;
-                *(_DWORD *)(v50 + 4) = stru_47A718.field_4;
-                *(_DWORD *)(v50 + 8) = stru_47A718.field_8;
-                v51 = stru_47A718.field_C;
-                v49->next = 0;
-                *(_BYTE *)(v50 + 12) = v51;
-                if (_47A714.ptr_0)
-                {
-                    v52 = v48->next;
-                    if (v48->next)
-                    {
-                        do
-                        {
-                            v53 = (int *)v52;
-                            v52 = v52->next;
-                        } while (v52);
-                        *v53 = (int)v49;
-                    }
-                    else
-                    {
-                    LABEL_209:
-                        v48->next = v49;
-                    }
-                }
-                else
-                {
-                LABEL_210:
-                    _47A714.ptr_0 = v49;
-                }
-            }
+            _47A714._stru209.type = 13;
+            _47A714._stru209.param = *((_DWORD *)j->param + 76);
+            ((short *)&_47A714._stru209.param)[2] = game_globals_per_player.cash[*((_DWORD *)j->param + 5)] != 0 ? 4 : 0;
+            _428940_list_do_stuff(&_47A714._stru209);
         }
         else if (v45 == EVT_MSG_neg2 && v96 && !dword_47C6C4)
         {
@@ -1168,33 +895,27 @@ LABEL_82:
         }
         script_discard_event(j);
     }
-    v91 = _47A714.ptr_0;
-    if (_47A714.ptr_0)
+
+    if (_47A714.next)
     {
-        dword_47CAE0 = _47A714.ptr_0->field_4;
-        dword_47CAE4 = _47A714.ptr_0->field_8;
-        dword_47CAE8 = _47A714.ptr_0->field_C;
-        byte_47CAEC = _47A714.ptr_0->field_10;
-        _47A714.ptr_0 = _47A714.ptr_0->next;
-        v91->next = task_428940_attach__cursors_list_free_pool;
-        task_428940_attach__cursors_list_free_pool = v91;
+        memcpy(&stru_47CAE0, &_47A714.next->_stru209, sizeof(stru_47CAE0));
+
+        _47A714.next = _47A714.next->next;
+
+        _428940_list_return(_47A714.next);
         if (dword_47CB0C)
         {
             v92 = _47A660_array_num_items;
             if (_47A660_array_num_items >= 10)
                 v92 = 0;
-            v93 = dword_47CAE0;
-            _47A660_array[v92]._D_is_free = 1;
-            v94 = &_47A660_array[v92];
             _47A660_array_num_items = v92 + 1;
-            v94->field_0 = v93;
-            v94->field_4 = dword_47CAE4;
-            v94->field_8 = dword_47CAE8;
-            v94->field_C = byte_47CAEC;
+
+            _47A660_array[v92]._is_free = 1;
+            memcpy(&_47A660_array[v92], &stru_47CAE0, sizeof(stru_47CAE0));
         }
     }
     else
     {
-        LOBYTE_HEXRAYS(dword_47CAE0) = 0;
+        stru_47CAE0.type = 0;
     }
 }

@@ -6848,15 +6848,10 @@ stru13construct *stru13construct_list_47A638;
 stru13construct *stru13construct_list_47A63C;
 stru13construct *stru13construct_list;
 stru13construct *stru13construct_list_free_pool;
-_47A660_global _47A660_array[10];
 _428940_local *ptr_47A6EC;
 int dword_47A6F0; // weak
-task_428940_attach__cursors *task_428940_attach__cursors_list;
-task_428940_attach__cursors *task_428940_attach__cursors_list_free_pool;
 int dword_47A6FC; // weak
 KeyboardInput _47A700_input; // idb
-_428940_global _47A714;
-_428940_global stru_47A718; // idb
 int _47A660_array_num_items; // weak
 RenderString *_47A730_render_string; // idb
 Script *_47A734_sidebar_tooltips_task; // idb
@@ -7029,10 +7024,6 @@ SidebarButton *_47CA18_sidebar_production_buttons[5];
 int _47CA2C_should_airstrike_mess_with_sidebar; // weak
 char netz_47CA30[80]; // idb
 _47CA80_global _47CA80_array[7];
-int dword_47CAE0; // weak
-int dword_47CAE4; // weak
-int dword_47CAE8; // weak
-char byte_47CAEC; // weak
 Script *_47CAF0_tasks_evt39030[7];
 int dword_47CB0C; // weak
 int dword_47CB10; // weak

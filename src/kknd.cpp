@@ -21793,20 +21793,8 @@ void script_428940_cursors_handler(Script *a1)
 	BOOL v22; // edi@57
 	BOOL v23; // edi@66
 	UnitAttachmentPoint *v24; // eax@66
-	task_428940_attach__cursors *v25; // eax@74
-	int v26; // ecx@74
-	task_428940_attach__cursors *v27; // ecx@84
-	task_428940_attach__cursors *v28; // edx@84
-	int v29; // eax@85
-	char v30; // bl@85
-	task_428940_attach__cursors *v31; // eax@86
 	Entity *v32; // esi@96
 	enum UNIT_ID v33; // eax@98
-	task_428940_attach__cursors *v34; // ecx@104
-	task_428940_attach__cursors *v35; // edx@104
-	int v36; // eax@105
-	char v37; // bl@105
-	task_428940_attach__cursors *v38; // eax@106
 	Entity *v39; // ecx@127
 	int v40; // edi@127
 	int v41; // eax@127
@@ -21817,16 +21805,7 @@ void script_428940_cursors_handler(Script *a1)
 	int v46; // esi@134
 	int v47; // edi@134
 	_DWORD *v48; // esi@154
-	task_428940_attach__cursors *v49; // ecx@156
-	task_428940_attach__cursors *v50; // edx@156
-	int v51; // eax@157
-	char v52; // bl@157
-	task_428940_attach__cursors *v53; // eax@158
 	void *v54; // esi@169
-	task_428940_attach__cursors *v55; // ecx@172
-	task_428940_attach__cursors *v56; // edx@172
-	int v57; // eax@173
-	char v58; // bl@173
 	task_428940_attach__cursors *v59; // eax@174
 	_428940_local *v60; // eax@179
 	int v61; // ecx@185
@@ -21850,7 +21829,8 @@ void script_428940_cursors_handler(Script *a1)
 	} while (v2 < 7);
 	task_428940_attach__cursors_list[7].next = 0;
 	task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list;
-	_47A714.ptr_0 = 0;
+	_47A714.next = nullptr;
+
 	v3 = (task_428940_attach__cursors_2 *)script_create_local_object(a1, 1200);
 	v62.pstru2 = v3;
 	if (!v3)
@@ -21974,38 +21954,10 @@ void script_428940_cursors_handler(Script *a1)
 										}
 										if (sub_429C40(&v62))
 										{
-											v55 = _47A714.ptr_0;
-											*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)*((_DWORD *)v54 + 76);
-											LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 2;
-											v56 = task_428940_attach__cursors_list_free_pool;
-											if (task_428940_attach__cursors_list_free_pool)
-											{
-												task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-												v57 = (int)&v56->field_4;
-												v56->field_4 = (int)stru_47A718.ptr_0;
-												*(_DWORD *)(v57 + 4) = stru_47A718.field_4;
-												*(_DWORD *)(v57 + 8) = stru_47A718.field_8;
-												v58 = stru_47A718.field_C;
-												v56->next = 0;
-												*(_BYTE *)(v57 + 12) = v58;
-												if (_47A714.ptr_0)
-												{
-													v59 = v55->next;
-													if (v55->next)
-													{
-														do
-														{
-															v55 = v59;
-															v59 = v59->next;
-														} while (v59);
-													}
-													v55->next = v56;
-												}
-												else
-												{
-													_47A714.ptr_0 = v56;
-												}
-											}
+                                            _47A714._stru209.type = 2;
+											_47A714._stru209.param = *((_DWORD *)v54 + 76);
+                                            _428940_list_do_stuff(&_47A714._stru209);
+
 											if (v62.next == &v62)
 											{
 												v60 = (_428940_local *)v62.ptr_10;
@@ -22070,38 +22022,9 @@ void script_428940_cursors_handler(Script *a1)
 									{
 										if (!single_player_game)
 										{
-											*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v48[5];
-											v49 = _47A714.ptr_0;
-											LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 27;
-											v50 = task_428940_attach__cursors_list_free_pool;
-											if (task_428940_attach__cursors_list_free_pool)
-											{
-												task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-												v51 = (int)&v50->field_4;
-												v50->field_4 = (int)stru_47A718.ptr_0;
-												*(_DWORD *)(v51 + 4) = stru_47A718.field_4;
-												*(_DWORD *)(v51 + 8) = stru_47A718.field_8;
-												v52 = stru_47A718.field_C;
-												v50->next = 0;
-												*(_BYTE *)(v51 + 12) = v52;
-												if (_47A714.ptr_0)
-												{
-													v53 = v49->next;
-													if (v49->next)
-													{
-														do
-														{
-															v49 = v53;
-															v53 = v53->next;
-														} while (v53);
-													}
-													v49->next = v50;
-												}
-												else
-												{
-													_47A714.ptr_0 = v50;
-												}
-											}
+                                            _47A714._stru209.type = 27;
+											_47A714._stru209.param = v48[5];
+                                            _428940_list_do_stuff(&_47A714._stru209);
 										}
 									}
 								}
@@ -22202,42 +22125,12 @@ void script_428940_cursors_handler(Script *a1)
 					}
 					if (sub_429C40(&v62))
 					{
-						v34 = _47A714.ptr_0;
-						LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 26;
-						*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v32->entity_id;
-						v35 = task_428940_attach__cursors_list_free_pool;
-						if (!task_428940_attach__cursors_list_free_pool)
-							goto LABEL_110;
-						task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-						v36 = (int)&v35->field_4;
-						v35->field_4 = (int)stru_47A718.ptr_0;
-						*(_DWORD *)(v36 + 4) = stru_47A718.field_4;
-						*(_DWORD *)(v36 + 8) = stru_47A718.field_8;
-						v37 = stru_47A718.field_C;
-						v35->next = 0;
-						*(_BYTE *)(v36 + 12) = v37;
-						if (_47A714.ptr_0)
-						{
-							v38 = v34->next;
-							if (v34->next)
-							{
-								do
-								{
-									v34 = v38;
-									v38 = v38->next;
-								} while (v38);
-							}
-							v34->next = v35;
-							_447340_send_sidebar_buttons_message(-1);
-							v62.field_30 = 0;
-						}
-						else
-						{
-							_47A714.ptr_0 = v35;
-						LABEL_110:
-							_447340_send_sidebar_buttons_message(-1);
-							v62.field_30 = 0;
-						}
+                        _47A714._stru209.type = 26;
+                        _47A714._stru209.param = v32->entity_id;
+                        _428940_list_do_stuff(&_47A714._stru209);
+
+                        _447340_send_sidebar_buttons_message(-1);
+                        v62.field_30 = 0;
 					}
 				}
 			}
@@ -22250,41 +22143,12 @@ void script_428940_cursors_handler(Script *a1)
 				}
 				if (sub_429C40(&v62))
 				{
-					*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)player_side;
-					v62._70_sprite->field_88_unused = 1;
-					*(int *)((char *)&stru_47A718.field_4 + 1) = v62._70_sprite->x;
-					v27 = _47A714.ptr_0;
-					*(int *)((char *)&stru_47A718.field_8 + 1) = v62._70_sprite->y;
-					LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 25;
-					v28 = task_428940_attach__cursors_list_free_pool;
-					if (task_428940_attach__cursors_list_free_pool)
-					{
-						task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-						v29 = (int)&v28->field_4;
-						v28->field_4 = (int)stru_47A718.ptr_0;
-						*(_DWORD *)(v29 + 4) = stru_47A718.field_4;
-						*(_DWORD *)(v29 + 8) = stru_47A718.field_8;
-						v30 = stru_47A718.field_C;
-						v28->next = 0;
-						*(_BYTE *)(v29 + 12) = v30;
-						if (_47A714.ptr_0)
-						{
-							v31 = v27->next;
-							if (v27->next)
-							{
-								do
-								{
-									v27 = v31;
-									v31 = v31->next;
-								} while (v31);
-							}
-							v27->next = v28;
-						}
-						else
-						{
-							_47A714.ptr_0 = v28;
-						}
-					}
+                    _47A714._stru209.type = 25;
+                    _47A714._stru209.param = player_side;
+                    _47A714._stru209.param2 = v62._70_sprite->x;
+                    _47A714._stru209.param3 = v62._70_sprite->y;
+                    _428940_list_do_stuff(&_47A714._stru209);
+
 					_447340_send_sidebar_buttons_message(-1);
 					_4471E0_send_sidebar_buttons_message();
 					v62.field_28 = 0;
@@ -22414,14 +22278,12 @@ void script_428940_cursors_handler(Script *a1)
 				if (v23)
 				{
 					sound_play(SOUND_193, 0, _4690A8_unit_sounds_volume, 16, 0);
-					*(_WORD *)((char *)&stru_47A718.ptr_0 + 1) = *(_WORD *)v62._78_msg1522_param;
-					v25 = (task_428940_attach__cursors *)v10->x;
-					v10->field_88_unused = 1;
-					*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 3) = v25;
-					v26 = v10->y;
-					LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 9;
-					*(int *)((char *)&stru_47A718.field_4 + 3) = v26;
-					sub_429770(&stru_47A718);
+
+                    _47A714._stru209.type = 9;
+                    ((short *)&_47A714._stru209.param)[0] = *(_WORD *)v62._78_msg1522_param;
+                    *(int *)((char *)&_47A714._stru209.param + 2) = v10->x;
+                    *(int *)((char *)&_47A714._stru209.param + 6) = v10->y;
+                    _428940_list_do_stuff(&_47A714._stru209);
 				}
 			}
 			else
@@ -22440,56 +22302,10 @@ void script_428940_cursors_handler(Script *a1)
 	}
 }
 
-//----- (00429770) --------------------------------------------------------
-void sub_429770(_428940_global *a1)
-{
-	task_428940_attach__cursors *v1; // edx@1
-	task_428940_attach__cursors *v2; // esi@1
-	int v3; // eax@2
-	char v4; // cl@2
-	task_428940_attach__cursors *v5; // eax@3
-
-	v1 = _47A714.ptr_0;
-	v2 = task_428940_attach__cursors_list_free_pool;
-	if (task_428940_attach__cursors_list_free_pool)
-	{
-		task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-		v3 = (int)&v2->field_4;
-		v2->field_4 = (int)a1->ptr_0;
-		*(_DWORD *)(v3 + 4) = a1->field_4;
-		*(_DWORD *)(v3 + 8) = a1->field_8;
-		v4 = a1->field_C;
-		v2->next = 0;
-		*(_BYTE *)(v3 + 12) = v4;
-		if (_47A714.ptr_0)
-		{
-			v5 = v1->next;
-			if (v1->next)
-			{
-				do
-				{
-					v1 = v5;
-					v5 = v5->next;
-				} while (v5);
-			}
-			v1->next = v2;
-		}
-		else
-		{
-			_47A714.ptr_0 = v2;
-		}
-	}
-}
-
 //----- (004297D0) --------------------------------------------------------
 void sub_4297D0(_428940_local *a1, int edx0)
 {
 	_428940_local *v2; // esi@1
-	task_428940_attach__cursors *v3; // ecx@2
-	task_428940_attach__cursors *v4; // edx@2
-	int v5; // eax@3
-	char v6; // bl@3
-	task_428940_attach__cursors *v7; // eax@4
 	_428940_local *v8; // edi@8
 	Entity *v9; // edi@12
 	Entity *i; // ebp@12
@@ -22516,39 +22332,12 @@ void sub_4297D0(_428940_local *a1, int edx0)
 	v2 = a1;
 	if (_47A608_stru13_associated_array.field_0[edx0] > 0)
 	{
-		v3 = _47A714.ptr_0;
-		*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)edx0;
 		v27 = 0;
-		LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 5;
-		v4 = task_428940_attach__cursors_list_free_pool;
-		if (task_428940_attach__cursors_list_free_pool)
-		{
-			task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-			v5 = (int)&v4->field_4;
-			v4->field_4 = (int)stru_47A718.ptr_0;
-			*(_DWORD *)(v5 + 4) = stru_47A718.field_4;
-			*(_DWORD *)(v5 + 8) = stru_47A718.field_8;
-			v6 = stru_47A718.field_C;
-			v4->next = 0;
-			*(_BYTE *)(v5 + 12) = v6;
-			if (_47A714.ptr_0)
-			{
-				v7 = v3->next;
-				if (v3->next)
-				{
-					do
-					{
-						v3 = v7;
-						v7 = v7->next;
-					} while (v7);
-				}
-				v3->next = v4;
-			}
-			else
-			{
-				_47A714.ptr_0 = v4;
-			}
-		}
+
+		_47A714._stru209.type = 5;
+        _47A714._stru209.param = edx0;
+        _428940_list_do_stuff(&_47A714._stru209);
+
 		v8 = v2->next;
 		v2->field_38 = 0;
 		v2->_68_entity = 0;
@@ -22993,11 +22782,6 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 	int v4; // edx@5
 	enum PLAYER_SIDE v5; // edi@6
 	char v6; // cl@7
-	task_428940_attach__cursors *v7; // ecx@11
-	task_428940_attach__cursors *v8; // edx@11
-	int v9; // eax@12
-	char v10; // bl@12
-	task_428940_attach__cursors *v11; // eax@13
 	int v12; // ebx@19
 	Entity *v13; // ebp@21
 	int v14; // edx@21
@@ -23010,18 +22794,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 	Sprite *v21; // ecx@46
 	Entity *v22; // eax@48
 	enum SOUND_ID v23; // ecx@50
-	task_428940_attach__cursors *v24; // ecx@52
-	task_428940_attach__cursors *v25; // edx@52
-	int v26; // eax@53
-	char v27; // bl@53
-	task_428940_attach__cursors *v28; // eax@54
-	task_428940_attach__cursors *v29; // ecx@55
 	Sprite *v30; // ecx@63
-	task_428940_attach__cursors *v31; // ecx@65
-	task_428940_attach__cursors *v32; // edx@65
-	int v33; // eax@66
-	char v34; // bl@66
-	task_428940_attach__cursors *v35; // eax@67
 	Entity *v36; // ecx@71
 	int v37; // eax@72
 	int v38; // esi@74
@@ -23034,26 +22807,11 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 	Sprite *v45; // ecx@123
 	Entity *v46; // eax@125
 	enum SOUND_ID v47; // ecx@127
-	int v48; // eax@130
-	char v49; // bl@130
-	task_428940_attach__cursors *v50; // eax@131
-	_DWORD *v51; // ecx@132
 	Sprite *v52; // ecx@142
-	int v53; // eax@146
-	char v54; // bl@146
-	task_428940_attach__cursors *v55; // eax@147
-	_DWORD *v56; // ecx@148
 	Sprite *v57; // ecx@152
-	int v58; // eax@156
-	char v59; // bl@156
-	task_428940_attach__cursors *v60; // eax@157
-	_DWORD *v61; // ecx@158
 	enum UNIT_ID v62; // edi@168
 	BOOL v63; // eax@168
 	Sprite *v64; // ecx@170
-	int v65; // eax@173
-	char v66; // bl@173
-	task_428940_attach__cursors *v67; // eax@174
 	int v68; // edi@183
 	int v69; // ebx@183
 	Sprite *v70; // ecx@186
@@ -23063,11 +22821,6 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 	Sprite *v74; // ecx@196
 	Sprite *v75; // ecx@200
 	int v76; // eax@203
-	task_428940_attach__cursors *v77; // ecx@207
-	task_428940_attach__cursors *v78; // edx@207
-	int v79; // eax@208
-	char v80; // bl@208
-	task_428940_attach__cursors *v81; // eax@209
 	_428940_local *i; // edi@213
 	task_428940_attach__cursors_2 *v83; // eax@217
 	int v84; // eax@221
@@ -23103,40 +22856,13 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 				v3 = v3->next;
 			} while (v3 != v2);
 		}
-		v7 = _47A714.ptr_0;
-		*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)(v1 - 1);
-		LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 4;
-		v8 = task_428940_attach__cursors_list_free_pool;
-		if (task_428940_attach__cursors_list_free_pool)
-		{
-			task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-			v9 = (int)&v8->field_4;
-			v8->field_4 = (int)stru_47A718.ptr_0;
-			*(_DWORD *)(v9 + 4) = stru_47A718.field_4;
-			*(_DWORD *)(v9 + 8) = stru_47A718.field_8;
-			v10 = stru_47A718.field_C;
-			v8->next = 0;
-			*(_BYTE *)(v9 + 12) = v10;
-			if (_47A714.ptr_0)
-			{
-				v11 = v7->next;
-				if (v7->next)
-				{
-					do
-					{
-						v7 = v11;
-						v11 = v11->next;
-					} while (v11);
-				}
-				v7->next = v8;
-				dword_468984 = _47A700_input._10_wndproc_mapped_key - 2;
-				return;
-			}
-			v1 = _47A700_input._10_wndproc_mapped_key;
-			_47A714.ptr_0 = v8;
-		}
-		dword_468984 = v1 - 2;
-		return;
+
+		_47A714._stru209.type = 4;
+        _47A714._stru209.param = v1 - 1;
+        _428940_list_do_stuff(&_47A714._stru209);
+
+        dword_468984 = v1 - 2;
+        return;
 	}
 	if (a1->_18_script)
 		return;
@@ -23238,41 +22964,13 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 					v91 = _4690A8_unit_sounds_volume;
 					v23 = SOUND_124_mute_saboteur;
 				}
+
 				sound_play(v23, 0, v91, 16, 0);
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 24;
-				*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v2->_68_entity->entity_id;
-				*(int *)((char *)&stru_47A718.field_4 + 1) = v13->entity_id;
-				v24 = _47A714.ptr_0;
-				v25 = task_428940_attach__cursors_list_free_pool;
-				if (task_428940_attach__cursors_list_free_pool)
-				{
-					task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-					v26 = (int)&v25->field_4;
-					v25->field_4 = (int)stru_47A718.ptr_0;
-					*(_DWORD *)(v26 + 4) = stru_47A718.field_4;
-					*(_DWORD *)(v26 + 8) = stru_47A718.field_8;
-					v27 = stru_47A718.field_C;
-					v25->next = 0;
-					*(_BYTE *)(v26 + 12) = v27;
-					if (_47A714.ptr_0)
-					{
-						v28 = v24->next;
-						if (v24->next)
-						{
-							do
-							{
-								v29 = v28;
-								v28 = v28->next;
-							} while (v28);
-							v29->next = v25;
-							return;
-						}
-						goto LABEL_176;
-					}
-				LABEL_177:
-					_47A714.ptr_0 = v25;
-					return;
-				}
+
+				_47A714._stru209.type = 24;
+                _47A714._stru209.param = v2->_68_entity->entity_id;
+                _47A714._stru209.param2 = v13->entity_id;
+                _428940_list_do_stuff(&_47A714._stru209);
 			}
 		}
 		return;
@@ -23287,38 +22985,11 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 		}
 		if (!sub_429C40(v2))
 			return;
-		*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v13->entity_id;
-		v31 = _47A714.ptr_0;
-		LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 7;
-		v32 = task_428940_attach__cursors_list_free_pool;
-		if (task_428940_attach__cursors_list_free_pool)
-		{
-			task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-			v33 = (int)&v32->field_4;
-			v32->field_4 = (int)stru_47A718.ptr_0;
-			*(_DWORD *)(v33 + 4) = stru_47A718.field_4;
-			*(_DWORD *)(v33 + 8) = stru_47A718.field_8;
-			v34 = stru_47A718.field_C;
-			v32->next = 0;
-			*(_BYTE *)(v33 + 12) = v34;
-			if (_47A714.ptr_0)
-			{
-				v35 = v31->next;
-				if (v31->next)
-				{
-					do
-					{
-						v31 = v35;
-						v35 = v35->next;
-					} while (v35);
-				}
-				v31->next = v32;
-			}
-			else
-			{
-				_47A714.ptr_0 = v32;
-			}
-		}
+
+		_47A714._stru209.type = 7;
+        _47A714._stru209.param = v13->entity_id;
+        _428940_list_do_stuff(&_47A714._stru209);
+
 		v36 = v2->_68_entity;
 		if (v36)
 		{
@@ -23452,35 +23123,11 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 			v47 = (SOUND_ID)124;
 		}
 		sound_play(v47, 0, v92, 16, 0);
-		LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 22;
-		*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v2->_68_entity->entity_id;
-		*(int *)((char *)&stru_47A718.field_4 + 1) = v13->entity_id;
-		v24 = _47A714.ptr_0;
-		v25 = task_428940_attach__cursors_list_free_pool;
-		if (!task_428940_attach__cursors_list_free_pool)
-			return;
-		task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-		v48 = (int)&v25->field_4;
-		v25->field_4 = (int)stru_47A718.ptr_0;
-		*(_DWORD *)(v48 + 4) = stru_47A718.field_4;
-		*(_DWORD *)(v48 + 8) = stru_47A718.field_8;
-		v49 = stru_47A718.field_C;
-		v25->next = 0;
-		*(_BYTE *)(v48 + 12) = v49;
-		if (!_47A714.ptr_0)
-			goto LABEL_177;
-		v50 = v24->next;
-		if (v24->next)
-		{
-			do
-			{
-				v51 = (int *)v50;
-				v50 = v50->next;
-			} while (v50);
-			*v51 = (int)v25;
-			return;
-		}
-		goto LABEL_176;
+
+        _47A714._stru209.type = 22;
+        _47A714._stru209.param = v2->_68_entity->entity_id;
+        _47A714._stru209.param2 = v13->entity_id;
+        _428940_list_do_stuff(&_47A714._stru209);
 	}
 	if (v44 == 1)
 	{
@@ -23495,39 +23142,17 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 					v2->_20_load_mobd_item_offset = 572;
 					sprite_4272A0_load_mobd_item(v52, 572);
 				}
-				if (!sub_429C40(v2))
-					return;
-				if (!v2->_68_entity)
-					return;
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 20;
-				*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v2->_68_entity->entity_id;
-				*(int *)((char *)&stru_47A718.field_4 + 1) = v13->entity_id;
-				v24 = _47A714.ptr_0;
-				v25 = task_428940_attach__cursors_list_free_pool;
-				if (!task_428940_attach__cursors_list_free_pool)
-					return;
-				task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-				v53 = (int)&v25->field_4;
-				v25->field_4 = (int)stru_47A718.ptr_0;
-				*(_DWORD *)(v53 + 4) = stru_47A718.field_4;
-				*(_DWORD *)(v53 + 8) = stru_47A718.field_8;
-				v54 = stru_47A718.field_C;
-				v25->next = 0;
-				*(_BYTE *)(v53 + 12) = v54;
-				if (!_47A714.ptr_0)
-					goto LABEL_177;
-				v55 = v24->next;
-				if (v24->next)
-				{
-					do
-					{
-						v56 = (int *)v55;
-						v55 = v55->next;
-					} while (v55);
-					*v56 = (int)v25;
-					return;
-				}
-				goto LABEL_176;
+                if (sub_429C40(v2))
+                {
+                    if (v2->_68_entity)
+                    {
+                        _47A714._stru209.type = 20;
+                        _47A714._stru209.param = v2->_68_entity->entity_id;
+                        _47A714._stru209.param2 = v13->entity_id;
+                        _428940_list_do_stuff(&_47A714._stru209);
+                    }
+                }
+                return;
 			}
 		LABEL_150:
 			if (v93 != SCRIPT_DRILLRIG_HANDLER)
@@ -23542,41 +23167,17 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 				v2->_20_load_mobd_item_offset = 572;
 				sprite_4272A0_load_mobd_item(v57, 572);
 			}
-			if (!sub_429C40(v2))
-				return;
-			if (!v2->_68_entity)
-				return;
-			LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 19;
-			v24 = _47A714.ptr_0;
-			*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v2->_68_entity->entity_id;
-			*(int *)((char *)&stru_47A718.field_4 + 1) = v13->entity_id;
-			v25 = task_428940_attach__cursors_list_free_pool;
-			if (!task_428940_attach__cursors_list_free_pool)
-				return;
-			task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-			v58 = (int)&v25->field_4;
-			v25->field_4 = (int)stru_47A718.ptr_0;
-			*(_DWORD *)(v58 + 4) = stru_47A718.field_4;
-			*(_DWORD *)(v58 + 8) = stru_47A718.field_8;
-			v59 = stru_47A718.field_C;
-			v25->next = 0;
-			*(_BYTE *)(v58 + 12) = v59;
-			if (!_47A714.ptr_0)
-				goto LABEL_177;
-			v60 = v24->next;
-			if (v24->next)
-			{
-				do
-				{
-					v61 = (int *)v60;
-					v60 = v60->next;
-				} while (v60);
-				*v61 = (int)v25;
-				return;
-			}
-		LABEL_176:
-			v24->next = v25;
-			return;
+            if (sub_429C40(v2))
+            {
+                if (v2->_68_entity)
+                {
+                    _47A714._stru209.type = 19;
+                    _47A714._stru209.param = v2->_68_entity->entity_id;
+                    _47A714._stru209.param2 = v13->entity_id;
+                    _428940_list_do_stuff(&_47A714._stru209);
+                }
+            }
+            return;
 		}
 		if (v93 == SCRIPT_DRILLRIG_HANDLER || v93 == SCRIPT_REPAIR_STATION_HANDLER)
 		{
@@ -23606,35 +23207,12 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 		}
 		if (sub_429C40(v2))
 		{
-			v24 = _47A714.ptr_0;
-			LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 10;
-			*(int *)((char *)&stru_47A718.field_4 + 1) = v13->entity_id;
-			v25 = task_428940_attach__cursors_list_free_pool;
-			if (task_428940_attach__cursors_list_free_pool)
-			{
-				task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-				v65 = (int)&v25->field_4;
-				v25->field_4 = (int)stru_47A718.ptr_0;
-				*(_DWORD *)(v65 + 4) = stru_47A718.field_4;
-				*(_DWORD *)(v65 + 8) = stru_47A718.field_8;
-				v66 = stru_47A718.field_C;
-				v25->next = 0;
-				*(_BYTE *)(v65 + 12) = v66;
-				if (_47A714.ptr_0)
-				{
-					v67 = v24->next;
-					if (v24->next)
-					{
-						do
-						{
-							v24 = v67;
-							v67 = v67->next;
-						} while (v67);
-					}
-					goto LABEL_176;
-				}
-				goto LABEL_177;
-			}
+            _47A714._stru209.type = 10;
+            //_47A714._stru209.param = ;
+            _47A714._stru209.param2 = v13->entity_id;
+            _428940_list_do_stuff(&_47A714._stru209);
+
+            return;
 		}
 	}
 	else if (v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 != 2
@@ -23661,38 +23239,10 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 			}
 			else
 			{
-				v77 = _47A714.ptr_0;
-				*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v13->entity_id;
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 2;
-				v78 = task_428940_attach__cursors_list_free_pool;
-				if (task_428940_attach__cursors_list_free_pool)
-				{
-					task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-					v79 = (int)&v78->field_4;
-					v78->field_4 = (int)stru_47A718.ptr_0;
-					*(_DWORD *)(v79 + 4) = stru_47A718.field_4;
-					*(_DWORD *)(v79 + 8) = stru_47A718.field_8;
-					v80 = stru_47A718.field_C;
-					v78->next = 0;
-					*(_BYTE *)(v79 + 12) = v80;
-					if (_47A714.ptr_0)
-					{
-						v81 = v77->next;
-						if (v77->next)
-						{
-							do
-							{
-								v77 = v81;
-								v81 = v81->next;
-							} while (v81);
-						}
-						v77->next = v78;
-					}
-					else
-					{
-						_47A714.ptr_0 = v78;
-					}
-				}
+                _47A714._stru209.type = 2;
+                _47A714._stru209.param = v13->entity_id;
+                _428940_list_do_stuff(&_47A714._stru209);
+
 				v2->_68_entity = 0;
 				v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 0;
 				dword_468980 = -1;
@@ -23768,10 +23318,6 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 		}
 	}
 }
-// 468980: using guessed type int dword_468980;
-// 468984: using guessed type int dword_468984;
-// 47A608: using guessed type stru13_stru0 _47A608_stru13_associated_array;
-// 47A6FC: using guessed type int dword_47A6FC;
 
 //----- (0042AFD0) --------------------------------------------------------
 void sub_42AFD0(_428940_local *a1, Entity *a2)
@@ -23780,11 +23326,6 @@ void sub_42AFD0(_428940_local *a1, Entity *a2)
 	_428940_local *v3; // esi@1
 	Entity *v4; // eax@3
 	Sprite *v5; // ecx@6
-	task_428940_attach__cursors *v6; // ecx@9
-	task_428940_attach__cursors *v7; // edx@9
-	int v8; // eax@10
-	char v9; // bl@10
-	task_428940_attach__cursors *v10; // eax@11
 	int v11; // ST00_4@22
 	int v12; // eax@22
 	int v13; // ST00_4@23
@@ -23816,39 +23357,11 @@ void sub_42AFD0(_428940_local *a1, Entity *a2)
 			}
 			if (sub_429C40(v3) && v3->_68_entity)
 			{
-				LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 21;
-				*(task_428940_attach__cursors **)((char *)&stru_47A718.ptr_0 + 1) = (task_428940_attach__cursors *)v3->_68_entity->entity_id;
-				v6 = _47A714.ptr_0;
-				*(int *)((char *)&stru_47A718.field_4 + 1) = v2->entity_id;
-				v7 = task_428940_attach__cursors_list_free_pool;
-				if (task_428940_attach__cursors_list_free_pool)
-				{
-					task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-					v8 = (int)&v7->field_4;
-					v7->field_4 = (int)stru_47A718.ptr_0;
-					*(_DWORD *)(v8 + 4) = stru_47A718.field_4;
-					*(_DWORD *)(v8 + 8) = stru_47A718.field_8;
-					v9 = stru_47A718.field_C;
-					v7->next = 0;
-					*(_BYTE *)(v8 + 12) = v9;
-					if (_47A714.ptr_0)
-					{
-						v10 = v6->next;
-						if (v6->next)
-						{
-							do
-							{
-								v6 = v10;
-								v10 = v10->next;
-							} while (v10);
-						}
-						v6->next = v7;
-					}
-					else
-					{
-						_47A714.ptr_0 = v7;
-					}
-				}
+                _47A714._stru209.type = 21;
+                _47A714._stru209.param = v3->_68_entity->entity_id;
+                _47A714._stru209.param2 = v2->entity_id;
+                _428940_list_do_stuff(&_47A714._stru209);
+
 				switch (v3->_68_entity->unit_id)
 				{
 				case UNIT_STATS_MUTE_DIRE_WOLF:
@@ -23906,11 +23419,6 @@ void sub_42AFD0(_428940_local *a1, Entity *a2)
 void sub_42B230(_428940_local *a1)
 {
 	_428940_local *v1; // edi@1
-	task_428940_attach__cursors *v2; // ecx@1
-	task_428940_attach__cursors *v3; // edx@1
-	int v4; // eax@2
-	char v5; // bl@2
-	task_428940_attach__cursors *v6; // eax@3
 	Entity *v7; // edx@7
 	int v8; // eax@8
 	int v9; // ecx@12
@@ -23927,38 +23435,12 @@ void sub_42B230(_428940_local *a1)
 
 	v1 = a1;
 	a1->_70_sprite->field_88_unused = 1;
-	*(_QWORD *)((char *)&stru_47A718.ptr_0 + 1) = *(_QWORD *)&a1->_70_sprite->x;
-	v2 = _47A714.ptr_0;
-	LOBYTE_HEXRAYS(stru_47A718.ptr_0) = 6;
-	v3 = task_428940_attach__cursors_list_free_pool;
-	if (task_428940_attach__cursors_list_free_pool)
-	{
-		task_428940_attach__cursors_list_free_pool = task_428940_attach__cursors_list_free_pool->next;
-		v4 = (int)&v3->field_4;
-		v3->field_4 = (int)stru_47A718.ptr_0;
-		*(_DWORD *)(v4 + 4) = stru_47A718.field_4;
-		*(_DWORD *)(v4 + 8) = stru_47A718.field_8;
-		v5 = stru_47A718.field_C;
-		v3->next = 0;
-		*(_BYTE *)(v4 + 12) = v5;
-		if (_47A714.ptr_0)
-		{
-			v6 = v2->next;
-			if (v2->next)
-			{
-				do
-				{
-					v2 = v6;
-					v6 = v6->next;
-				} while (v6);
-			}
-			v2->next = v3;
-		}
-		else
-		{
-			_47A714.ptr_0 = v3;
-		}
-	}
+
+    _47A714._stru209.type = 6;
+    _47A714._stru209.param = a1->_70_sprite->x;
+    _47A714._stru209.param2 = a1->_70_sprite->y;
+    _428940_list_do_stuff(&_47A714._stru209);
+
 	v7 = v1->_68_entity;
 	if (v7)
 	{
@@ -24537,45 +24019,6 @@ void script_42D390_cursors(Script *a1)
 }
 // 42D390: using guessed type char var_38[56];
 
-//----- (0042D500) --------------------------------------------------------
-_47A660_global *_42D500_get_47A660_item()
-{
-	int v0; // ecx@1
-	int v1; // eax@3
-	_47A660_global *result; // eax@4
-
-	v0 = stru_47A718._10_current_idx;
-	if (stru_47A718._10_current_idx >= 10)
-	{
-		v0 = 0;
-		stru_47A718._10_current_idx = 0;
-	}
-	v1 = v0;
-	if (_47A660_array[v0]._D_is_free)
-	{
-		_47A660_array[v1]._D_is_free = 0;
-		result = &_47A660_array[v1];
-		stru_47A718._10_current_idx = v0 + 1;
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
-//----- (0042D540) --------------------------------------------------------
-int _42D540_reset__47A660_array()
-{
-	int result; // eax@1
-
-	result = 0;
-	memset(_47A660_array, 0, sizeof(_47A660_array));
-	stru_47A718._10_current_idx = 0;
-	_47A660_array_num_items = 0;
-	return result;
-}
-// 47A72C: using guessed type int _47A660_array_num_items;
 
 //----- (0042D560) --------------------------------------------------------
 int _42D560_get_mobd_lookup_id_rotation(int x, int y)
@@ -39328,7 +38771,7 @@ void MessageHandler_task4_evt39030(Script *receiver, Script *sender, enum SCRIPT
 void script_evt39030_handler(Script *a1)
 {
 	_47CAF0_task_attachment1 *v1; // esi@1
-	int *v2; // ebp@2
+	stru209 *v2; // ebp@2
 	Script *v3; // eax@5
 	_47CAF0_task_attachment2 *v4; // ecx@6
 	_47CAF0_task_attachment2 *v5; // edi@16
@@ -39376,17 +38819,18 @@ void script_evt39030_handler(Script *a1)
 
 	v1 = (_47CAF0_task_attachment1 *)a1->param;
 	if (single_player_game)
-		v2 = &dword_47CAE0;
+		v2 = &stru_47CAE0;
 	else
-		v2 = (int *)&netz_47CA30[13 * v1->owning_task_idx_1 + 67];
+		v2 = (stru209 *)&netz_47CA30[13 * v1->owning_task_idx_1 + 67];
 	switch (*(_BYTE *)v2)
 	{
 	case 1:
 		sub_44C970(
-			*(_WORD *)((char *)v2 + 3) << 8,
-			*(_WORD *)((char *)v2 + 1) << 8,
-			*(_WORD *)((char *)v2 + 5) << 8,
-			*(_WORD *)((char *)v2 + 7) << 8);
+            HIWORD(v2->param) << 8,
+            LOWORD(v2->param) << 8,
+            LOWORD(v2->param2) << 8,
+            HIWORD(v2->param2) << 8
+        );
 		v1->field_1C = 0;
 		v3 = _44C9A0_get__47DCA4_entity_task();
 		if (!v3)

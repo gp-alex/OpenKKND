@@ -539,7 +539,6 @@ bool stru13construct_list_saveload_pack(stru13constructSaveStruct *a1);
 bool stru13construct_list_saveload_unpack(int save_data, int save_data_size);
 bool is_building_or_tower_available(enum UNIT_ID unit_id);
 void script_428940_cursors_handler(Script *a1); // idb
-void sub_429770(_428940_global *a1);
 void sub_4297D0(_428940_local *a1, int edx0);
 void _429C20_load_mobd(_428940_local *a1, int offset); // idb
 bool sub_429C40(_428940_local *a1);
@@ -555,8 +554,7 @@ void script_42D030_sidebar_tooltips(Script *a1);
 void _41AC50_read_keyboard_input___42D220_handler(const char *a1, int a2);
 char render_string_42D260(RenderString *a1, const char *a2, int a3); // idb
 void script_42D390_cursors(Script *a1); // idb
-_47A660_global *_42D500_get_47A660_item();
-int _42D540_reset__47A660_array();
+int _47A660_list_reset();
 int _42D560_get_mobd_lookup_id_rotation(int x, int y); // idb
 __int16 _42D639_mobd_lookup(int x, int y); // idb
 __int16 _42D63B_mobd_do_lookup(int x, int y); // idb

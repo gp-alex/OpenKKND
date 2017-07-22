@@ -63,6 +63,8 @@ struct Sprite_stru58;
 struct Sprite_stru58_stru0;
 struct Entity_stru_dmg_related;
 struct EVT_MSG_1523_param;
+struct task_428940_attach__cursors;
+struct task_428940_attach__cursors_2;
 
 /* 63 */
 struct UnitNameId
@@ -2199,24 +2201,6 @@ struct EnemyAI_stru57
 	enum UNIT_ID unit_id;
 };
 
-/* 421 */
-struct task_428940_attach__cursors
-{
-	task_428940_attach__cursors *next;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-};
-
-/* 422 */
-struct task_428940_attach__cursors_2
-{
-	task_428940_attach__cursors_2 *next;
-	task_428940_attach__cursors_2 *prev;
-	Script *_8_task;
-};
-
 /* 423 */
 struct BuildingPlanner
 {
@@ -2476,22 +2460,22 @@ struct _428940_local
 /* 436 */
 struct _428940_global
 {
-	task_428940_attach__cursors *ptr_0;
-	int field_4;
-	int field_8;
-	int field_C;
+    task_428940_attach__cursors *ptr;
+    int field_4;
+    int field_8;
+    int field_C;
 	int _10_current_idx;
 };
 
 /* 437 */
-struct _47A660_global
+/*struct _47A660_global
 {
 	int field_0;
 	int field_4;
 	int field_8;
 	char field_C;
 	char _D_is_free;
-};
+};*/
 
 /* 438 */
 struct _47CA80_global

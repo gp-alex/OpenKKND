@@ -7,6 +7,7 @@
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Cursor.h"
 
 
 
@@ -2806,7 +2807,7 @@ void script_449820_netz(Script *a1)
     void *v6; // eax@4
     int v7; // eax@7
     netz_stru6_per_player *v8; // eax@11
-    _47A660_global *v9; // eax@20
+    stru209 *v9; // eax@20
     void *v10; // edx@20
     _47CA80_global *v11; // ecx@22
     _BYTE *v12; // esi@24
@@ -2825,7 +2826,7 @@ void script_449820_netz(Script *a1)
     int v25; // eax@64
     int v26; // ecx@67
     int v27; // edx@76
-    _47A660_global *v28; // eax@76
+    stru209 *v28; // eax@76
     int v29; // eax@83
     void *v30; // esi@87
     Script *v31; // [sp-Ch] [bp-7Ch]@40
@@ -2843,7 +2844,7 @@ void script_449820_netz(Script *a1)
     dword_47953C = 0;
     sub_408460();
     dword_47CB0C = 1;
-    v1 = (void *)_42D540_reset__47A660_array();
+    v1 = (void *)_47A660_list_reset();
     if (netz_47A834)
     {
         dword_47A830 = 1;
@@ -2891,15 +2892,12 @@ void script_449820_netz(Script *a1)
             {
                 if (dword_47CB0C)
                 {
-                    v9 = _42D500_get_47A660_item();
+                    v9 = _47A660_list_get();
                     v10 = __47CA80_array_idx_and_netz_player_side;
                     if (v9)
                     {
                         v11 = &_47CA80_array[(_DWORD)__47CA80_array_idx_and_netz_player_side];
-                        v11->field_0 = v9->field_0;
-                        v11->field_4 = v9->field_4;
-                        v11->field_8 = v9->field_8;
-                        v11->field_C = v9->field_C;
+                        memcpy(v11, v9, 12);
                     }
                     else
                     {
@@ -3041,31 +3039,28 @@ void script_449820_netz(Script *a1)
                     v32 = a1;
                 }
                 script_445370_yield_to_main_thread(v32, 0x80000000, v35);
-                v28 = (_47A660_global *)dword_47CB1C;
+                v28 = (stru209 *)dword_47CB1C;
                 if (dword_47CB1C != 1)
                     goto LABEL_57;
                 if (dword_47CB0C)
                 {
-                    v28 = _42D500_get_47A660_item();
+                    v28 = _47A660_list_get();
                     if (v28)
                     {
-                        dword_47CAE0 = v28->field_0;
-                        v27 = v28->field_4;
-                        dword_47CAE4 = v28->field_4;
-                        dword_47CAE8 = v28->field_8;
-                        byte_47CAEC = v28->field_C;
+                        memcpy(&stru_47CAE0, v28, sizeof(stru_47CAE0));
+                        v27 = *(int *)((char *)&v28->param + 3);
                     }
                     else
                     {
-                        LOBYTE_HEXRAYS(dword_47CAE0) = 0;
+                        stru_47CAE0.type = 0;
                     }
                 }
-                if ((_BYTE)dword_47CAE0)
+                if (stru_47CAE0.type)
                     v33 = 13;
                 else
                     v33 = 1;
                 LOBYTE_HEXRAYS(v27) = 52;
-                v30 = (void *)netz_42FA00(dword_468B54, v27, &dword_47CAE0, v33, 0);
+                v30 = (void *)netz_42FA00(dword_468B54, v27, &stru_47CAE0, v33, 0);
                 netz_42E400(v30);
                 if (v30)
                     break;
