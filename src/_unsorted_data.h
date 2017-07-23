@@ -983,12 +983,12 @@ extern int __47CFC4_mobd_lookup_speeds[256];
 extern int _47D3C4_entity_mobd_lookup_ids[];
 extern unsigned __int8 player_sprite_palette_tmp[256];
 extern stru12_game_globals game_globals_cpu[7];
-extern int dword_47D98C; // weak
+extern int entity_drag_selection_x; // weak
 extern Script *pscript_show_message_ex; // idb
-extern int dword_47D994; // weak
-extern int dword_47D998; // weak
+extern int entity_drag_selection_w; // weak
+extern int entity_drag_selection_z; // weak
 extern Script *pscript_show_message; // idb
-extern int dword_47D9A0; // weak
+extern int entity_drag_selection_y; // weak
 extern Entity *entity_list_head;
 extern Entity *entity_list_47D9AC;
 extern Entity *entity_list;
@@ -999,7 +999,7 @@ extern stru11unit *stru11unit_list_47DC74;
 extern stru11unit *stru11unit_list;
 extern stru11unit *stru11unit_list_head;
 extern unsigned __int8 *per_player_sprite_palettes[7];
-extern Entity *_47DCA4_entity;
+extern Entity *entity_drag_selection_list;
 extern int player_sprite_color_by_player_side[7];
 extern int _47DCC4_entity_id_counter; // weak
 extern int UNIT_num_player_units; // weak

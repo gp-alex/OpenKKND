@@ -132,6 +132,9 @@
     <ClInclude Include="..\..\src\Cursor.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Entity.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kknd.cpp">
@@ -192,6 +195,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Cursor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Entity.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2438,11 +2438,11 @@ struct _428940_local
 	int field_2C;
 	int field_30;
 	int field_34;
-	int field_38;
+	int _38_are_owned_units_selected;
 	int field_3C;
-	int field_40;
-	int field_44;
-	enum UNIT_ID _48_unit_stats_idx;
+	int _40_is_infantry_or_vehicle_selected;
+	int _44_is_combat_unit_selected;
+	enum UNIT_ID _48_highest_ranking_selected_unit;
 	int field_4C;
 	int cursor_x;
 	int cursor_y;
@@ -2450,7 +2450,7 @@ struct _428940_local
 	int field_5C;
 	int field_60;
 	int field_64;
-	Entity *_68_entity;
+	Entity *_68_selected_moveable_entity;
 	int _68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40;
 	Sprite *_70_sprite;
 	Sprite *_74_sprite;

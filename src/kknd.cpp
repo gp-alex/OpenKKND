@@ -10,6 +10,7 @@
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
+#include "src/Entity.h"
 
 #pragma comment(lib, "Winmm.lib") // timeGetTime
 #pragma comment(lib, "ddraw.lib") // DirectDrawCreate
@@ -21860,7 +21861,7 @@ void script_428940_cursors_handler(Script *a1)
 	v62.field_2C = 0;
 	v62.field_24 = 0;
 	v62.field_4C = 0;
-	v62._68_entity = 0;
+	v62._68_selected_moveable_entity = nullptr;
 	v62._68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 0;
 	v62.field_3C = 0;
 	v62._70_sprite = sprite_create(MOBD_CURSORS, 0, 0);
@@ -21983,9 +21984,9 @@ void script_428940_cursors_handler(Script *a1)
 												v62.next = v60;
 												script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, *((Script **)v54 + 3));
 												v61 = *((_DWORD *)v54 + 5);
-												v62.field_38 = v61 == player_side;
+												v62._38_are_owned_units_selected = v61 == player_side;
 												if (v61 == player_side)
-													sub_429D40(&v62, (Entity *)v54);
+													_429D40_unit_selection_response_sound(&v62, (Entity *)v54);
 											}
 											dword_468984 = -1;
 										}
@@ -22339,11 +22340,11 @@ void sub_4297D0(_428940_local *a1, int edx0)
         _428940_list_do_stuff(&_47A714._stru209);
 
 		v8 = v2->next;
-		v2->field_38 = 0;
-		v2->_68_entity = 0;
-		v2->field_40 = 0;
-		v2->field_44 = 0;
-		v2->_48_unit_stats_idx = (UNIT_ID)0;
+		v2->_38_are_owned_units_selected = false;
+		v2->_68_selected_moveable_entity = nullptr;
+		v2->_40_is_infantry_or_vehicle_selected = false;
+		v2->_44_is_combat_unit_selected = false;
+		v2->_48_highest_ranking_selected_unit = UNIT_STATS_SURV_RIFLEMAN;
 		for (v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 0;
 			v8 != v2;
 			v8 = v8->next)
@@ -22376,7 +22377,7 @@ void sub_4297D0(_428940_local *a1, int edx0)
 					v2->next = (_428940_local *)v11;
 					script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v11->_8_task);
 					if (v9->player_side == player_side)
-						v2->field_38 = 1;
+						v2->_38_are_owned_units_selected = true;
 					++v27;
 					i = v9;
 					if (v9->player_side == player_side)
@@ -22387,24 +22388,24 @@ void sub_4297D0(_428940_local *a1, int edx0)
 							|| v12 == UNIT_STATS_SURV_MOBILE_OUTPOST
 							|| v12 == UNIT_STATS_MUTE_CLANHALL_WAGON)
 						{
-							v13 = v2->_48_unit_stats_idx;
-							v2->_68_entity = v9;
-							v2->field_40 = 1;
-							v2->field_44 = 1;
+							v13 = v2->_48_highest_ranking_selected_unit;
+							v2->_68_selected_moveable_entity = v9;
+							v2->_40_is_infantry_or_vehicle_selected = true;
+							v2->_44_is_combat_unit_selected = true;
 							v14 = v9->unit_id;
 							if ((int)v14 > (int)v13 && v14 != UNIT_STATS_MUTE_BIKE_AND_SIDECAR)
-								v2->_48_unit_stats_idx = v14;
+								v2->_48_highest_ranking_selected_unit = v14;
 						}
 						v15 = v9->unit_id;
 						if (v15 >= (int)UNIT_STATS_SURV_GUARD_TOWER && v15 <= (int)UNIT_STATS_MUTE_ROTARY_CANNON)
-							v2->field_44 = 1;
+							v2->_44_is_combat_unit_selected = true;
 					}
 				}
 			}
 		}
 		if (v27 > 1)
 		{
-			switch (v2->_48_unit_stats_idx)
+			switch (v2->_48_highest_ranking_selected_unit)
 			{
 			case 0x4Au:
 			case 0x4Cu:
@@ -22450,7 +22451,7 @@ void sub_4297D0(_428940_local *a1, int edx0)
 		}
 		v2->field_3C = v27 == 1;
 		if (v27 == 1)
-			sub_429D40(v2, i);
+			_429D40_unit_selection_response_sound(v2, i);
 		if (_47A700_input.pressed_keys_mask & 0x20)
 		{
 			v17 = v2->next;
@@ -22548,8 +22549,8 @@ bool sub_429C40(_428940_local *a1)
 				if (v4 > 6 && (v8 > 4096 || v7 > 4096))
 					break;
 				++v4;
-				if (!v1->_68_entity
-					&& !v1->field_38
+				if (!v1->_68_selected_moveable_entity
+					&& !v1->_38_are_owned_units_selected
 					&& !v1->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40
 					&& v1->_20_load_mobd_item_offset != 12)
 				{
@@ -22577,8 +22578,64 @@ bool sub_429C40(_428940_local *a1)
 	return result;
 }
 
+void unit_group_selection_response_sound(_428940_local *v3)
+{
+    enum SOUND_ID v26; // ecx@48
+    int v36; // [sp-Ch] [bp-2Ch]@48
+
+    if (v3->_38_are_owned_units_selected)
+    {
+        switch (v3->_48_highest_ranking_selected_unit)
+        {
+        case UNIT_STATS_GORT:
+        case UNIT_STATS_PLASMA_TANK:
+        case UNIT_STATS_SENTINEL_DROID:
+        case UNIT_STATS_MECH:
+            v36 = _4690A8_unit_sounds_volume;
+            v26 = _4689A8_sound_ids[kknd_rand() % -2];
+            goto LABEL_57;
+        case UNIT_STATS_MUTE_DIRE_WOLF:
+            v36 = _4690A8_unit_sounds_volume;
+            v26 = (SOUND_ID)165;
+            goto LABEL_57;
+        case UNIT_STATS_MUTE_GIANT_BEETLE:
+            v36 = _4690A8_unit_sounds_volume;
+            v26 = (SOUND_ID)168;
+            goto LABEL_57;
+        case UNIT_STATS_MUTE_GIANT_SCORPION:
+            v36 = _4690A8_unit_sounds_volume;
+            v26 = (SOUND_ID)172;
+            goto LABEL_57;
+        case UNIT_STATS_MUTE_MISSILE_CRAB:
+            v36 = _4690A8_unit_sounds_volume;
+            v26 = (SOUND_ID)170;
+            goto LABEL_57;
+        case UNIT_STATS_MUTE_WAR_MASTADONT:
+            v36 = _4690A8_unit_sounds_volume;
+            v26 = (SOUND_ID)160;
+            goto LABEL_57;
+        default:
+            if (get_player_faction())
+            {
+                v36 = _4690A8_unit_sounds_volume;
+                v26 = _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
+            }
+            else
+            {
+                v36 = _4690A8_unit_sounds_volume;
+                v26 = _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
+            }
+        LABEL_57:
+            sound_play(v26, 0, v36, 16, 0);
+            break;
+        case UNIT_STATS_TANKER_CONVOY:
+            break;
+        }
+    }
+}
+
 //----- (00429D40) --------------------------------------------------------
-void sub_429D40(_428940_local *a1, Entity *a2)
+void _429D40_unit_selection_response_sound(_428940_local *a1, Entity *a2)
 {
 	_428940_local *v2; // esi@1
 	Entity *v3; // edi@1
@@ -22596,7 +22653,7 @@ void sub_429D40(_428940_local *a1, Entity *a2)
 
 	v2 = a1;
 	v3 = a2;
-	a1->_48_unit_stats_idx = (UNIT_ID)0;
+	a1->_48_highest_ranking_selected_unit = UNIT_STATS_SURV_RIFLEMAN;
 	v4 = a2->unit_id;
 	if ((int)v4 < (int)UNIT_STATS_SURV_MOBILE_OUTPOST
 		|| (int)v4 >(int)UNIT_STATS_MUTE_CLANHALL_WAGON)
@@ -22609,19 +22666,19 @@ void sub_429D40(_428940_local *a1, Entity *a2)
 			{
 				if (v4 == UNIT_STATS_SURV_SCOUT)
 				{
-					a1->_68_entity = a2;
+					a1->_68_selected_moveable_entity = a2;
 					a1->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 9;
 				}
 				else if ((int)v4 < (int)UNIT_STATS_GORT || (int)v4 >(int)UNIT_STATS_MECH)
 				{
 					if (v4 == UNIT_STATS_SURV_SABOTEUR || v4 == UNIT_STATS_MUTE_VANDAL)
 					{
-						a1->_68_entity = a2;
+						a1->_68_selected_moveable_entity = a2;
 						a1->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 3;
 					}
 					else if (v4 == UNIT_STATS_SURV_TECHNICIAN || v4 == UNIT_STATS_MUTE_MEKANIK)
 					{
-						a1->_68_entity = a2;
+						a1->_68_selected_moveable_entity = a2;
 						a1->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 4;
 					}
 					else if ((v4 & 0x80000000) != 0 || (int)v4 > 20)
@@ -22629,54 +22686,54 @@ void sub_429D40(_428940_local *a1, Entity *a2)
 						v5 = a2->script->script_type;
 						if (v5 == SCRIPT_RESEARCH_BUILDING_HANDLER)
 						{
-							v2->_68_entity = a2;
+							v2->_68_selected_moveable_entity = a2;
 							v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 2;
 						}
 						else if (v5 == SCRIPT_TANKER_CONVOY_HANDLER)
 						{
 							if (v4 == UNIT_STATS_TANKER_CONVOY)
 							{
-								v2->_68_entity = 0;
+								v2->_68_selected_moveable_entity = 0;
 								v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 0;
-								v2->field_40 = 0;
-								v2->field_44 = 0;
+								v2->_40_is_infantry_or_vehicle_selected = false;
+								v2->_44_is_combat_unit_selected = false;
 								return;
 							}
-							v2->_68_entity = a2;
+							v2->_68_selected_moveable_entity = a2;
 							v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 1;
 						}
 						else
 						{
-							v2->_68_entity = 0;
+							v2->_68_selected_moveable_entity = 0;
 							v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 0;
 						}
 					}
 					else
 					{
-						a1->_68_entity = a2;
+						a1->_68_selected_moveable_entity = a2;
 						a1->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 9;
 					}
 				}
 				else
 				{
-					a1->_68_entity = a2;
+					a1->_68_selected_moveable_entity = a2;
 				}
 			}
 			else
 			{
-				a1->_68_entity = a2;
+				a1->_68_selected_moveable_entity = a2;
 				a1->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 6;
 			}
 		}
 		else
 		{
-			a1->_68_entity = a2;
+			a1->_68_selected_moveable_entity = a2;
 			a1->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 8;
 		}
 	}
 	else
 	{
-		a1->_68_entity = a2;
+		a1->_68_selected_moveable_entity = a2;
 		a1->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 7;
 	}
 	v6 = a2->unit_id;
@@ -22684,23 +22741,23 @@ void sub_429D40(_428940_local *a1, Entity *a2)
 	{
 	case UNIT_STATS_MUTE_DIRE_WOLF:
 		sound_play(SOUND_MUTE_UNIT_DIRE_WOLF_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
-		v2->_48_unit_stats_idx = v3->unit_id;
+		v2->_48_highest_ranking_selected_unit = v3->unit_id;
 		break;
 	case UNIT_STATS_MUTE_GIANT_BEETLE:
 		sound_play(SOUND_MUTE_UNIT_GIANT_BEETLE_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
-		v2->_48_unit_stats_idx = v3->unit_id;
+		v2->_48_highest_ranking_selected_unit = v3->unit_id;
 		break;
 	case UNIT_STATS_MUTE_GIANT_SCORPION:
 		sound_play(SOUND_MUTE_UNIT_GIANT_SCORPION_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
-		v2->_48_unit_stats_idx = v3->unit_id;
+		v2->_48_highest_ranking_selected_unit = v3->unit_id;
 		break;
 	case UNIT_STATS_MUTE_MISSILE_CRAB:
 		sound_play(SOUND_MUTE_UNIT_MISSILE_CRAB_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
-		v2->_48_unit_stats_idx = v3->unit_id;
+		v2->_48_highest_ranking_selected_unit = v3->unit_id;
 		break;
 	case UNIT_STATS_MUTE_WAR_MASTADONT:
 		sound_play(SOUND_MUTE_UNIT_WAR_MASTADONT_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
-		v2->_48_unit_stats_idx = v3->unit_id;
+		v2->_48_highest_ranking_selected_unit = v3->unit_id;
 		break;
 	case UNIT_STATS_SURV_SCOUT:
 		v14 = _4690A8_unit_sounds_volume;
@@ -22712,7 +22769,7 @@ void sub_429D40(_428940_local *a1, Entity *a2)
 			if (((int)v6 < (int)UNIT_STATS_SURV_OUTPOST || (int)v6 >(int)UNIT_WALL_4)
 				&& ((int)v6 < (int)UNIT_STATS_SURV_DRILL_RIG
 					|| (int)v6 >(int)UNIT_STATS_MUTE_POWER_STATION)
-				&& v2->field_38)
+				&& v2->_38_are_owned_units_selected)
 			{
 				v10 = get_player_faction() == 0;
 				v11 = v3->_98_465610_accuracy_dmg_bonus_idx;
@@ -22753,24 +22810,24 @@ void sub_429D40(_428940_local *a1, Entity *a2)
 				v8,
 				16,
 				0);
-			v2->_48_unit_stats_idx = v3->unit_id;
+			v2->_48_highest_ranking_selected_unit = v3->unit_id;
 		}
 		break;
 	}
-	v2->field_40 = 0;
-	v2->field_44 = 0;
+	v2->_40_is_infantry_or_vehicle_selected = false;
+	v2->_44_is_combat_unit_selected = false;
 	v12 = v3->unit_id;
 	if (v12 <= (int)UNIT_STATS_MUTE_MISSILE_CRAB
 		|| v12 >= (int)UNIT_STATS_GORT
 		|| v12 == UNIT_STATS_SURV_MOBILE_OUTPOST
 		|| v12 == UNIT_STATS_MUTE_CLANHALL_WAGON)
 	{
-		v2->field_40 = 1;
-		v2->field_44 = 1;
+		v2->_40_is_infantry_or_vehicle_selected = true;
+		v2->_44_is_combat_unit_selected = true;
 	}
 	v13 = v3->unit_id;
 	if (v13 >= (int)UNIT_STATS_SURV_GUARD_TOWER && v13 <= (int)UNIT_STATS_MUTE_ROTARY_CANNON)
-		v2->field_44 = 1;
+		v2->_44_is_combat_unit_selected = true;
 }
 
 //----- (0042A0A0) --------------------------------------------------------
@@ -22869,7 +22926,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 	v12 = 1;
 	if (!a1->_1C_script || (a1->_70_sprite->field_88_unused = 1, !_44B0D0_not_fog_of_war(a1->_70_sprite->x, a1->_70_sprite->y)))
 	{
-		if (!v2->field_38 || !v2->field_40)
+		if (!v2->_38_are_owned_units_selected || !v2->_40_is_infantry_or_vehicle_selected)
 		{
 			v88 = v2->_20_load_mobd_item_offset;
 			if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
@@ -22941,7 +22998,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 	v20 = v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40;
 	if (v20 && (v20 >= 1 && v20 <= 4 || v20 >= 7 && v20 <= 8))
 		v12 = 0;
-	if (v2->field_38 && v20 == 3 && v19)
+	if (v2->_38_are_owned_units_selected && v20 == 3 && v19)
 	{
 		if (v2->_20_load_mobd_item_offset != 244)
 		{
@@ -22951,7 +23008,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 		}
 		if (sub_429C40(v2))
 		{
-			v22 = v2->_68_entity;
+			v22 = v2->_68_selected_moveable_entity;
 			if (v22)
 			{
 				if (v22->unit_id == UNIT_STATS_SURV_SABOTEUR)
@@ -22968,14 +23025,14 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 				sound_play(v23, 0, v91, 16, 0);
 
 				_47A714._stru209.type = 24;
-                _47A714._stru209.param = v2->_68_entity->entity_id;
+                _47A714._stru209.param = v2->_68_selected_moveable_entity->entity_id;
                 _47A714._stru209.param2 = v13->entity_id;
                 _428940_list_do_stuff(&_47A714._stru209);
 			}
 		}
 		return;
 	}
-	if ((sub_44CE00(player_side, v13) || dword_47A6FC == 56) && v2->field_38 && v2->field_44 && v12)
+	if ((sub_44CE00(player_side, v13) || dword_47A6FC == 56) && v2->_38_are_owned_units_selected && v2->_44_is_combat_unit_selected && v12)
 	{
 		if (v2->_20_load_mobd_item_offset != 304)
 		{
@@ -22990,12 +23047,12 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
         _47A714._stru209.param = v13->entity_id;
         _428940_list_do_stuff(&_47A714._stru209);
 
-		v36 = v2->_68_entity;
+		v36 = v2->_68_selected_moveable_entity;
 		if (v36)
 		{
 			v37 = v36->unit_id;
 			if (v37 >= (int)UNIT_STATS_GORT && v37 <= (int)UNIT_STATS_MECH
-				|| (v38 = v2->_48_unit_stats_idx, v38 >= (int)UNIT_STATS_GORT) && v38 <= (int)UNIT_STATS_MECH)
+				|| (v38 = v2->_48_highest_ranking_selected_unit, v38 >= (int)UNIT_STATS_GORT) && v38 <= (int)UNIT_STATS_MECH)
 			{
 				v39 = _4690A8_unit_sounds_volume;
 				v40 = kknd_rand();
@@ -23056,7 +23113,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 		}
 		else
 		{
-			v41 = v2->_48_unit_stats_idx;
+			v41 = v2->_48_highest_ranking_selected_unit;
 			if (v41 >= (int)UNIT_STATS_GORT && v41 <= (int)UNIT_STATS_MECH)
 			{
 				v42 = _4690A8_unit_sounds_volume;
@@ -23109,7 +23166,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 		}
 		if (!sub_429C40(v2))
 			return;
-		v46 = v2->_68_entity;
+		v46 = v2->_68_selected_moveable_entity;
 		if (!v46)
 			return;
 		if (v46->unit_id == 12)
@@ -23125,7 +23182,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 		sound_play(v47, 0, v92, 16, 0);
 
         _47A714._stru209.type = 22;
-        _47A714._stru209.param = v2->_68_entity->entity_id;
+        _47A714._stru209.param = v2->_68_selected_moveable_entity->entity_id;
         _47A714._stru209.param2 = v13->entity_id;
         _428940_list_do_stuff(&_47A714._stru209);
 	}
@@ -23144,10 +23201,10 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 				}
                 if (sub_429C40(v2))
                 {
-                    if (v2->_68_entity)
+                    if (v2->_68_selected_moveable_entity)
                     {
                         _47A714._stru209.type = 20;
-                        _47A714._stru209.param = v2->_68_entity->entity_id;
+                        _47A714._stru209.param = v2->_68_selected_moveable_entity->entity_id;
                         _47A714._stru209.param2 = v13->entity_id;
                         _428940_list_do_stuff(&_47A714._stru209);
                     }
@@ -23169,10 +23226,10 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 			}
             if (sub_429C40(v2))
             {
-                if (v2->_68_entity)
+                if (v2->_68_selected_moveable_entity)
                 {
                     _47A714._stru209.type = 19;
-                    _47A714._stru209.param = v2->_68_entity->entity_id;
+                    _47A714._stru209.param = v2->_68_selected_moveable_entity->entity_id;
                     _47A714._stru209.param2 = v13->entity_id;
                     _428940_list_do_stuff(&_47A714._stru209);
                 }
@@ -23192,7 +23249,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 		return;
 	}
 	if (v44 == 7
-		&& v13->entity_id == v2->_68_entity->entity_id
+		&& v13->entity_id == v2->_68_selected_moveable_entity->entity_id
 		&& (v62 = v13->unit_id,
 			v13->unit_id = v62 == UNIT_STATS_SURV_MOBILE_OUTPOST ? UNIT_STATS_SURV_OUTPOST : UNIT_STATS_MUTE_CLANHALL,
 			v63 = entity_40DBF0_boxd(v13),
@@ -23243,7 +23300,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
                 _47A714._stru209.param = v13->entity_id;
                 _428940_list_do_stuff(&_47A714._stru209);
 
-				v2->_68_entity = 0;
+				v2->_68_selected_moveable_entity = nullptr;
 				v2->_68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40 = 0;
 				dword_468980 = -1;
 				for (i = v2->next; i != v2; i = i->next)
@@ -23269,9 +23326,9 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 					v2->next = (_428940_local *)v83;
 					script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v13->script);
 					v84 = v13->player_side == player_side;
-					v2->field_38 = v84;
+					v2->_38_are_owned_units_selected = v84;
 					if (v84)
-						sub_429D40(v2, v13);
+						_429D40_unit_selection_response_sound(v2, v13);
 				}
 			}
 		}
@@ -23279,7 +23336,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 	else
 	{
 		v68 = (int)v13->state;
-		v69 = (int)v2->_68_entity->state;
+		v69 = (int)v2->_68_selected_moveable_entity->state;
 		if (*(_DWORD *)(v68 + 4) >= _441630_get_current_level_field14(v13->unit_id) || *(_DWORD *)(v69 + 8))
 		{
 			if (v2->_20_load_mobd_item_offset != 448)
@@ -23288,7 +23345,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 				v2->_20_load_mobd_item_offset = 448;
 				sprite_4272A0_load_mobd_item(v72, 448);
 			}
-			v73 = v2->_68_entity;
+			v73 = v2->_68_selected_moveable_entity;
 			if (v73 && *(_DWORD *)(v69 + 8) && v73->sprite->parent == (Sprite *)v13->entity_id)
 			{
 				if (v2->_20_load_mobd_item_offset != 280)
@@ -23311,7 +23368,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 			}
 			if (sub_429C40(v2))
 			{
-				v71 = v2->_68_entity;
+				v71 = v2->_68_selected_moveable_entity;
 				if (v71)
 					script_trigger_event(v2->_14_task, EVT_MSG_COMMENCE_UPGRADE, v13, v71->script);
 			}
@@ -23346,7 +23403,7 @@ void sub_42AFD0(_428940_local *a1, Entity *a2)
 	}
 	else
 	{
-		v4 = v3->_68_entity;
+		v4 = v3->_68_selected_moveable_entity;
 		if (v4 && v4->hitpoints < v4->stats->hitpoints)
 		{
 			if (v3->_20_load_mobd_item_offset != 144)
@@ -23355,14 +23412,14 @@ void sub_42AFD0(_428940_local *a1, Entity *a2)
 				v3->_20_load_mobd_item_offset = 144;
 				sprite_4272A0_load_mobd_item(v5, 144);
 			}
-			if (sub_429C40(v3) && v3->_68_entity)
+			if (sub_429C40(v3) && v3->_68_selected_moveable_entity)
 			{
                 _47A714._stru209.type = 21;
-                _47A714._stru209.param = v3->_68_entity->entity_id;
+                _47A714._stru209.param = v3->_68_selected_moveable_entity->entity_id;
                 _47A714._stru209.param2 = v2->entity_id;
                 _428940_list_do_stuff(&_47A714._stru209);
 
-				switch (v3->_68_entity->unit_id)
+				switch (v3->_68_selected_moveable_entity->unit_id)
 				{
 				case UNIT_STATS_MUTE_DIRE_WOLF:
 					sound_play(SOUND_MUTE_UNIT_DIRE_WOLF_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
@@ -23441,14 +23498,14 @@ void sub_42B230(_428940_local *a1)
     _47A714._stru209.param2 = a1->_70_sprite->y;
     _428940_list_do_stuff(&_47A714._stru209);
 
-	v7 = v1->_68_entity;
+	v7 = v1->_68_selected_moveable_entity;
 	if (v7)
 	{
 		v8 = v7->unit_id;
 		if (v8 < (int)UNIT_STATS_SURV_DRILL_RIG || v8 >(int)UNIT_WALL_4)
 		{
 			if (v8 >= (int)UNIT_STATS_GORT && v8 <= (int)UNIT_STATS_MECH
-				|| (v9 = v1->_48_unit_stats_idx, v9 >= (int)UNIT_STATS_GORT) && v9 <= (int)UNIT_STATS_MECH)
+				|| (v9 = v1->_48_highest_ranking_selected_unit, v9 >= (int)UNIT_STATS_GORT) && v9 <= (int)UNIT_STATS_MECH)
 			{
 				v19 = _4690A8_unit_sounds_volume;
 				v10 = _4689C0_sound_ids[kknd_rand() % 22];
@@ -23497,7 +23554,7 @@ void sub_42B230(_428940_local *a1)
 					&& v9 != UNIT_STATS_MUTE_TANKER)
 				{
 					v11 = get_player_faction() == 0;
-					v12 = v1->_68_entity;
+					v12 = v1->_68_selected_moveable_entity;
 					if (v11)
 					{
 						if (v12)
@@ -38825,14 +38882,14 @@ void script_evt39030_handler(Script *a1)
 	switch (*(_BYTE *)v2)
 	{
 	case 1:
-		sub_44C970(
+		entity_drag_selection_init(
             HIWORD(v2->param) << 8,
             LOWORD(v2->param) << 8,
             LOWORD(v2->param2) << 8,
             HIWORD(v2->param2) << 8
         );
 		v1->field_1C = 0;
-		v3 = _44C9A0_get__47DCA4_entity_task();
+		v3 = entity_drag_selection_get_next_entity();
 		if (!v3)
 			goto LABEL_94;
 		do
@@ -38852,7 +38909,7 @@ void script_evt39030_handler(Script *a1)
 				if (*((_DWORD *)v3->param + 5) == v1->owning_task_idx_1)
 					v1->field_1C = 1;
 			}
-			v3 = _44C9A0_get__47DCA4_entity_task();
+			v3 = entity_drag_selection_get_next_entity();
 		} while (v3);
 		*(_BYTE *)v2 = 0;
 		break;
@@ -40912,7 +40969,7 @@ void per_player_sprite_palettes_47DC88_free()
 	{
 		free(*v0);
 		++v0;
-	} while ((int)v0 < (int) & _47DCA4_entity);
+	} while ((int)v0 < (int) & entity_drag_selection_list);
 }
 
 //----- (0044C1F0) --------------------------------------------------------
@@ -41345,68 +41402,43 @@ Sprite *spawn_unit(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE player_s
 }
 
 //----- (0044C970) --------------------------------------------------------
-void sub_44C970(int a1, int a2, int a3, int a4)
+void entity_drag_selection_init(int y, int x, int z, int w)
 {
-	dword_47D9A0 = a1;
-	dword_47D98C = a2;
-	_47DCA4_entity = entity_list_head;
-	dword_47D998 = a3;
-	dword_47D994 = a4;
+	entity_drag_selection_y = y;
+	entity_drag_selection_x = x;
+	entity_drag_selection_list = entity_list_head;
+	entity_drag_selection_z = z;
+	entity_drag_selection_w = w;
 }
-// 47D98C: using guessed type int dword_47D98C;
-// 47D994: using guessed type int dword_47D994;
-// 47D998: using guessed type int dword_47D998;
-// 47D9A0: using guessed type int dword_47D9A0;
 
 //----- (0044C9A0) --------------------------------------------------------
-Script * _44C9A0_get__47DCA4_entity_task()
+Script *entity_drag_selection_get_next_entity()
 {
 	Entity *v0; // ecx@1
 	Sprite *v1; // eax@2
-	int v2; // esi@2
-	int v3; // eax@2
-	void(*v4)(Entity *); // edx@3
 	Script *result; // eax@10
 
-	v0 = _47DCA4_entity;
-	if ((Entity **)_47DCA4_entity == &entity_list_head)
-	{
-		result = 0;
-	}
-	else
-	{
-		while (1)
-		{
-			v1 = v0->sprite;
-			v2 = v1->x;
-			v3 = v1->y;
-			if (!v0->destroyed)
-			{
-				v4 = v0->mode;
-				if (v4 != entity_mode_418D20
-					&& v4 != entity_mode_418B30
-					&& v2 > dword_47D98C
-					&& v2 <= dword_47D998
-					&& v3 > dword_47D9A0
-					&& v3 <= dword_47D994)
-				{
-					break;
-				}
-			}
-			v0 = v0->next;
-			_47DCA4_entity = v0;
-			if ((Entity **)v0 == &entity_list_head)
-				return 0;
-		}
-		result = v0->script;
-		_47DCA4_entity = v0->next;
-	}
-	return result;
+    for (Entity *v0 = entity_drag_selection_list; v0 != entity_list_end(); v0 = v0->next)
+    {
+        entity_drag_selection_list = v0;
+
+        v1 = v0->sprite;
+        if (!v0->destroyed)
+        {
+            if (v0->mode != entity_mode_418D20
+                && v0->mode != entity_mode_418B30
+                && v1->x > entity_drag_selection_x
+                && v1->x <= entity_drag_selection_z
+                && v1->y > entity_drag_selection_y
+                && v1->y <= entity_drag_selection_w)
+            {
+                entity_drag_selection_list = v0->next;
+                return v0->script;
+            }
+        }
+    }
+	return nullptr;
 }
-// 47D98C: using guessed type int dword_47D98C;
-// 47D994: using guessed type int dword_47D994;
-// 47D998: using guessed type int dword_47D998;
-// 47D9A0: using guessed type int dword_47D9A0;
 
 //----- (0044CA30) --------------------------------------------------------
 Entity *entity_find_by_id(int entity_id)

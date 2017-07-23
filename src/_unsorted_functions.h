@@ -542,7 +542,8 @@ void script_428940_cursors_handler(Script *a1); // idb
 void sub_4297D0(_428940_local *a1, int edx0);
 void _429C20_load_mobd(_428940_local *a1, int offset); // idb
 bool sub_429C40(_428940_local *a1);
-void sub_429D40(_428940_local *a1, Entity *a2);
+void _429D40_unit_selection_response_sound(_428940_local *a1, Entity *a2);
+void unit_group_selection_response_sound(_428940_local *a1);
 void _42A0A0_on_units_drag_selected(_428940_local *a1);
 void sub_42AFD0(_428940_local *a1, Entity *a2); // idb
 void sub_42B230(_428940_local *a1);
@@ -943,8 +944,6 @@ void _44C5C0_level_cleanup();
 Entity *entity_list_create(Script *a1);
 void entity_list_remove(Entity *a1);
 Sprite *spawn_unit(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE player_side); // idb
-void sub_44C970(int a1, int a2, int a3, int a4);
-Script *_44C9A0_get__47DCA4_entity_task();
 Entity *entity_find_by_id(int entity_id);
 bool sub_44CA50(enum UNIT_ID id); // idb
 Entity *entity_44CA70_find(Entity *a1, enum UNIT_ID a2, int player_side); // idb

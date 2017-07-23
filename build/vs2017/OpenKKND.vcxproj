@@ -117,6 +117,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Cursor.cpp" />
+    <ClCompile Include="..\..\src\Entity.cpp" />
     <ClCompile Include="..\..\src\File.cpp" />
     <ClCompile Include="..\..\src\kknd.cpp" />
     <ClCompile Include="..\..\src\Netz.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="..\..\lib\src\legacy_dx\rmxftmpl.h" />
     <ClInclude Include="..\..\lib\src\legacy_dx\strsafe.h" />
     <ClInclude Include="..\..\src\Cursor.h" />
+    <ClInclude Include="..\..\src\Entity.h" />
     <ClInclude Include="..\..\src\File.h" />
     <ClInclude Include="..\..\src\hexrays-defs.h" />
     <ClInclude Include="..\..\src\kknd.h" />

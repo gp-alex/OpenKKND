@@ -30,6 +30,7 @@ struct task_428940_attach__cursors_2
 
 
 void cursor_drag_selection(_428940_local *a1, int x, int y); // idb
+void cursor_classify_selected_unit(_428940_local *a1, Entity *entity);
 
 
 task_428940_attach__cursors *_428940_list_get();
