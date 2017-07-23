@@ -9,6 +9,7 @@
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/Entity.h"
+#include "src/Input.h"
 
 
 
@@ -427,7 +428,7 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
     }
 LABEL_27:
     script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
-    input_get_mouse_data(&_47A5E0_mouse_input);
+    input_get_mouse_state(&_47A5E0_mouse_input);
     input_get_keyboard_state(&_47A700_input);
     v21 = is_coroutine_list_initialization_failed;
     v22 = _47A700_input.pressed_keys_mask;

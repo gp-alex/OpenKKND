@@ -119,6 +119,7 @@
     <ClCompile Include="..\..\src\Cursor.cpp" />
     <ClCompile Include="..\..\src\Entity.cpp" />
     <ClCompile Include="..\..\src\File.cpp" />
+    <ClCompile Include="..\..\src\Input.cpp" />
     <ClCompile Include="..\..\src\kknd.cpp" />
     <ClCompile Include="..\..\src\Netz.cpp" />
     <ClCompile Include="..\..\src\Random.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="..\..\src\Entity.h" />
     <ClInclude Include="..\..\src\File.h" />
     <ClInclude Include="..\..\src\hexrays-defs.h" />
+    <ClInclude Include="..\..\src\Input.h" />
     <ClInclude Include="..\..\src\kknd.h" />
     <ClInclude Include="..\..\src\Netz.h" />
     <ClInclude Include="..\..\src\Random.h" />

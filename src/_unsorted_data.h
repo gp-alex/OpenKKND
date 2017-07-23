@@ -73,7 +73,6 @@ extern char *Caption;
 extern unsigned __int8 palette_465848_sprt[256];
 extern int _465948_per_mobd_lookup_idx[16];
 extern enum SOUND_ID _465988_sounds[5];
-extern VKeyMap vkey_map[25];
 extern int input_465A80_wndprockey_map[256];
 extern int virtual_keys[90];
 extern int input_465FE8[16];
@@ -647,16 +646,13 @@ extern int timer_render_skips; // weak
 extern char palette_4798F8_sprt_aligned[512];
 extern stru1_draw_params *current_drawing_params;
 extern char byte_479B00[88]; // idb
-extern KeyboardInput input_now_pressed_keys; // weak
 extern int input_479B6C_just_pressed_keys_mask; // weak
 extern int input_static_async_key_state; // weak
 extern int wnd_proc_pressed_key_id; // weak
-extern KeyboardInput input_previous_state; // weak
 extern int next_pressed_key; // weak
 extern int input_wnd_proc_pressed_key_id; // weak
 extern int array_479B98[25][2];
 extern int array_479C60[25][2];
-extern KeyboardInput input_keyboard_state; // weak
 extern int array_479B98_array_479C60_inited; // weak
 extern stru7 _479D48_stru7;
 extern int is_task_list_initialized; // weak
@@ -745,16 +741,9 @@ extern stru37 *stru37_list_47A500;
 extern stru37 *stru37_list_47A504;
 extern stru37 *stru37_list;
 extern stru37 *stru37_list_free_pool;
-extern MouseInput _47A540_mouse_input; // weak
-extern int input_mouse_prev_buttons_mask; // weak
-extern MouseInput input_mouse; // weak
-extern int num_mouse_buttons; // weak
-extern int input_47A58C; // weak
-extern __int16 word_47A590; // weak
 extern int input_mouse_window_losing_focus_reset_to_defaults; // weak
 extern int dword_47A5A0; // weak
 extern char byte_47A5A8[56];
-extern MouseInput _47A5E0_mouse_input; // idb
 extern Script *task_mobd17_cursor; // idb
 extern stru13_stru0 _47A608_stru13_associated_array; // weak
 extern stru13construct *stru13construct_list_47A638;

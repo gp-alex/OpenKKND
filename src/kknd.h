@@ -16,6 +16,7 @@
 #include "src/File.h"
 #include "src/Netz.h"
 #include "src/Script.h"
+#include "src/Input.h"
 
 struct UnitAttachmentPoint;
 struct UnitDamageSource;
@@ -1461,24 +1462,6 @@ struct stru28
 	Sprite *sprite;
 };
 
-
-#define INPUT_MOUSE_LBUTTON_MASK 0x10
-#define INPUT_MOUSE_RBUTTON_MASK 0x20
-#define INPUT_MOUSE_MBUTTON_MASK 0x80
-
-/* 356 */
-struct MouseInput
-{
-	int pressed_buttons_mask;
-	int just_pressed_buttons_mask;
-	int just_released_buttons_mask;
-	int field_C;
-	int cursor_x_x256;
-	int cursor_y_x256;
-	int cursor_dx_x256;
-	int cursor_dy_x256;
-};
-
 /* 357 */
 struct stru31
 {
@@ -1800,23 +1783,6 @@ struct DetailedDrawHandler_VideoPlayer
 	int field_10;
 	int field_14;
 	void *_18_img_data;
-};
-
-/* 378 */
-struct KeyboardInput
-{
-	int pressed_keys_mask;
-	int just_pressed_keys_mask;
-	int unpressed_keys_mask;
-	int field_C;
-	int _10_wndproc_mapped_key;
-};
-
-/* 379 */
-struct VKeyMap
-{
-	int virtual_key;
-	int mask;
 };
 
 /* 382 */

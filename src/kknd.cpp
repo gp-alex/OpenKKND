@@ -11,6 +11,7 @@
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
 #include "src/Entity.h"
+#include "src/Input.h"
 
 #pragma comment(lib, "Winmm.lib") // timeGetTime
 #pragma comment(lib, "ddraw.lib") // DirectDrawCreate
@@ -10664,79 +10665,6 @@ bool array_479B98_array_479C60_init()
 	} while (v0 < 25);
 	return 1;
 }
-// 479D3C: using guessed type int array_479B98_array_479C60_inited;
-
-//----- (0041AAE0) --------------------------------------------------------
-void input_update_keyboard()
-{
-	int nExt_pressed_key; // ecx@2
-	int v1; // eax@3
-	int v2; // eax@6
-	int vk; // eax@10
-	int v4; // edx@17
-
-	input_479B6C_just_pressed_keys_mask = 0;
-	input_now_pressed_keys.pressed_keys_mask = 0;
-	input_now_pressed_keys.just_pressed_keys_mask = 0;
-	input_now_pressed_keys.unpressed_keys_mask = 0;
-	input_now_pressed_keys.field_C = -1;
-	if (GetActiveWindow() == global_hwnd)
-	{
-		nExt_pressed_key = 0;
-		next_pressed_key = 0;
-		if (vkey_map[0].virtual_key)
-		{
-			do
-			{
-				LOWORD_HEXRAYS(input_static_async_key_state) = GetAsyncKeyState(virtual_keys[vkey_map[nExt_pressed_key].virtual_key]);
-				v1 = vkey_map[next_pressed_key].mask;
-				if (input_static_async_key_state & 0x8000)
-				{
-					input_now_pressed_keys.pressed_keys_mask |= v1;
-					if (!(input_previous_state.pressed_keys_mask & v1))
-						input_now_pressed_keys.just_pressed_keys_mask |= v1;
-					v2 = v1 & 0xF;
-					if (v2)
-						input_479B6C_just_pressed_keys_mask |= v2;
-				}
-				else if (v1 & input_previous_state.pressed_keys_mask)
-				{
-					input_now_pressed_keys.unpressed_keys_mask |= v1;
-				}
-				vk = vkey_map[next_pressed_key + 1].virtual_key;
-				nExt_pressed_key = next_pressed_key++ + 1;
-			} while (vk);
-		}
-	}
-	else
-	{
-		nExt_pressed_key = next_pressed_key;
-	}
-	if (nExt_pressed_key && wnd_proc_pressed_key_id)
-	{
-		if (wnd_proc_pressed_key_id == -1)
-		{
-			input_now_pressed_keys._10_wndproc_mapped_key = 0;
-		}
-		else
-		{
-			v4 = input_465A80_wndprockey_map[wnd_proc_pressed_key_id];
-			input_wnd_proc_pressed_key_id = wnd_proc_pressed_key_id;
-			input_now_pressed_keys._10_wndproc_mapped_key = v4;
-		}
-		wnd_proc_pressed_key_id = 0;
-	}
-	input_now_pressed_keys.field_C = input_465FE8[input_479B6C_just_pressed_keys_mask];
-	memcpy(&input_previous_state, &input_now_pressed_keys, sizeof(input_previous_state));
-	memcpy(&input_keyboard_state, &input_now_pressed_keys, sizeof(input_keyboard_state));
-}
-
-//----- (0041AC30) --------------------------------------------------------
-bool input_get_keyboard_state(KeyboardInput *state)
-{
-	memcpy(state, &input_keyboard_state, sizeof(KeyboardInput));
-	return true;
-}
 
 //----- (0041AC50) --------------------------------------------------------
 __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(const char *, int), int a4, Script *a5)
@@ -10857,12 +10785,10 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 				continue;
 			}
 			free(v12);
-			input_keyboard_state.pressed_keys_mask = 0;
-			input_keyboard_state.just_pressed_keys_mask = 0;
+
+            input_reset_keyboard();
+
 			v8 = input_wnd_proc_pressed_key_id == 27;
-			input_keyboard_state.unpressed_keys_mask = 0;
-			input_keyboard_state.field_C = 0;
-			input_keyboard_state._10_wndproc_mapped_key = 0;
 			input_wnd_proc_pressed_key_id = 0;
 			return !v8;
 		}
@@ -18622,7 +18548,7 @@ int GAME_Main()
 				sprite_list_init_mobd_items();
 				sprite_list_427020();
 				input_update_keyboard();
-				input_process_mouse();
+				input_update_mouse();
 				_43A370_process_sound();
 				stru1_animate();
 				script_list_update();
@@ -18672,7 +18598,7 @@ int GAME_Main()
 								sprite_list_init_mobd_items();
 								sprite_list_427020();
 								input_update_keyboard();
-								input_process_mouse();
+								input_update_mouse();
 								_43A370_process_sound();
 								stru1_animate();
 								script_list_update();
@@ -18715,7 +18641,7 @@ int GAME_Main()
 						sprite_list_init_mobd_items();
 						sprite_list_427020();
 						input_update_keyboard();
-						input_process_mouse();
+						input_update_mouse();
 						_43A370_process_sound();
 						stru1_animate();
 						boxd_40EA20();
@@ -21457,152 +21383,6 @@ void script_4280A0_stru38_list__production_loop(Script *task)
 	script_445370_yield_to_main_thread(task, 0x80000000, 1);
 }
 
-//----- (00428310) --------------------------------------------------------
-bool input_initialize()
-{
-	input_mouse.just_pressed_buttons_mask = 0;
-	input_mouse.pressed_buttons_mask = 0;
-	input_mouse.just_released_buttons_mask = 0;
-	input_mouse_prev_buttons_mask = 0;
-	input_47A58C = 0;
-	num_mouse_buttons = GetSystemMetrics(SM_CMOUSEBUTTONS);
-	if (num_mouse_buttons)
-	{
-		input_mouse_window_losing_focus_reset_to_defaults = 1;
-		num_mouse_buttons = 2;
-	}
-	else
-	{
-		input_mouse_window_losing_focus_reset_to_defaults = 0;
-	}
-	input_mouse_prev_buttons_mask = 0;
-	input_mouse.cursor_x_x256 = 0;
-	input_mouse.cursor_y_x256 = 0;
-	return input_mouse_window_losing_focus_reset_to_defaults != 0;
-}
-
-//----- (004283A0) --------------------------------------------------------
-bool input_4283A0_set_cursor_pos(__int16 x, __int16 y)
-{
-	BOOL result; // eax@2
-	int v3; // esi@3
-	int v4; // edi@3
-	int v5; // eax@5
-	int v6; // [sp-8h] [bp-14h]@5
-	int v7; // [sp+0h] [bp-Ch]@1
-	struct tagPOINT Point; // [sp+4h] [bp-8h]@1
-
-	LOWORD_HEXRAYS(v7) = y;
-	LOWORD_HEXRAYS(Point.y) = x;
-	if (input_mouse_window_losing_focus_reset_to_defaults)
-	{
-		v3 = LOWORD_HEXRAYS(Point.y);
-		v4 = (unsigned __int16)v7;
-		Point.x = LOWORD_HEXRAYS(Point.y);
-		Point.y = (unsigned __int16)v7;
-
-		ClientToScreen(global_hwnd, &Point);
-		SetCursorPos(Point.x, Point.y);
-
-		input_mouse.cursor_x_x256 = v3 << 8;
-		input_mouse.cursor_y_x256 = v4 << 8;
-		result = 1;
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
-//----- (00428470) --------------------------------------------------------
-bool input_428470(__int16 a1)
-{
-	word_47A590 = a1;
-	return 1;
-}
-// 47A590: using guessed type __int16 word_47A590;
-
-//----- (00428480) --------------------------------------------------------
-bool input_get_mouse_data(MouseInput *a1)
-{
-	memcpy(a1, &input_mouse, sizeof(MouseInput));
-	return input_mouse_window_losing_focus_reset_to_defaults != 0;
-}
-
-//----- (004284A0) --------------------------------------------------------
-int input_process_mouse()
-{
-	int result; // eax@3
-	int v1; // edx@13
-	bool v2; // zf@13
-	int v3; // edx@13
-	int v4; // eax@17
-	struct tagPOINT Point; // [sp+8h] [bp-8h]@13
-
-	if (GetActiveWindow() == global_hwnd)
-	{
-		input_mouse_window_losing_focus_reset_to_defaults = 1;
-		input_mouse.pressed_buttons_mask = 0;
-		if (((unsigned __int16)GetAsyncKeyState(VK_LBUTTON) >> 8) & 0x80)
-			input_mouse.pressed_buttons_mask |= INPUT_MOUSE_LBUTTON_MASK;
-		if (((unsigned __int16)GetAsyncKeyState(VK_RBUTTON) >> 8) & 0x80)
-			input_mouse.pressed_buttons_mask |= INPUT_MOUSE_RBUTTON_MASK;
-		if (num_mouse_buttons == 3 && ((unsigned __int16)GetAsyncKeyState(VK_MBUTTON) >> 8) & 0x80)
-			input_mouse.pressed_buttons_mask |= INPUT_MOUSE_MBUTTON_MASK;
-		input_mouse.just_pressed_buttons_mask = input_mouse.pressed_buttons_mask & ~input_mouse_prev_buttons_mask;
-		input_mouse.just_released_buttons_mask = ~input_mouse.pressed_buttons_mask & input_mouse_prev_buttons_mask;
-		input_mouse_prev_buttons_mask = input_mouse.pressed_buttons_mask;
-		GetCursorPos(&Point);
-		ScreenToClient(global_hwnd, &Point);
-		v1 = input_mouse.cursor_x_x256;
-		input_mouse.field_C = 0;
-		input_mouse.cursor_x_x256 = Point.x << 8;
-		input_mouse.cursor_dx_x256 = (Point.x << 8) - v1;
-		v3 = (Point.y << 8) - input_mouse.cursor_y_x256;
-		v2 = Point.y << 8 == input_mouse.cursor_y_x256;
-		input_mouse.cursor_y_x256 = Point.y << 8;
-		input_mouse.cursor_dy_x256 = v3;
-		if (!v2)
-		{
-			input_mouse.pressed_buttons_mask |= (input_mouse.cursor_dy_x256 >= 0) + 1;
-			input_mouse.field_C |= input_mouse.cursor_dy_x256 >= 0 ? 4 : 8;
-		}
-		if (input_mouse.cursor_dx_x256)
-		{
-			input_mouse.pressed_buttons_mask |= input_mouse.cursor_dx_x256 >= 0 ? 8 : 4;
-			input_mouse.field_C |= (input_mouse.cursor_dx_x256 < 0) + 1;
-		}
-		v4 = dword_468940[input_mouse.field_C];
-		input_mouse.field_C = input_465FE8[input_mouse.pressed_buttons_mask & 0xF];
-		input_mouse.just_pressed_buttons_mask = ~input_47A58C & input_mouse.pressed_buttons_mask;
-		input_mouse.just_released_buttons_mask = ~input_mouse.pressed_buttons_mask & input_47A58C;
-		input_47A58C = input_mouse.pressed_buttons_mask;
-		memcpy(&_47A540_mouse_input, &input_mouse, sizeof(_47A540_mouse_input));
-		result = 1;
-	}
-	else if (input_mouse_window_losing_focus_reset_to_defaults)
-	{
-		input_mouse_window_losing_focus_reset_to_defaults = 0;
-		input_mouse.just_released_buttons_mask = input_mouse.just_pressed_buttons_mask | input_mouse.pressed_buttons_mask;
-		input_mouse.just_pressed_buttons_mask = 0;
-		input_mouse.pressed_buttons_mask = 0;
-		input_mouse.cursor_x_x256 = 0x14000;
-		input_mouse.cursor_y_x256 = 0xF000;
-		input_mouse.cursor_dx_x256 = 0;
-		input_mouse.cursor_dy_x256 = 0;
-		input_mouse.field_C = 0;
-		input_mouse_prev_buttons_mask = 0;
-		input_47A58C = 0;
-		result = 0;
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
 //----- (00428730) --------------------------------------------------------
 bool stru13construct_list_alloc()
 {
@@ -22014,7 +21794,7 @@ void script_428940_cursors_handler(Script *a1)
 								{
 									if (v62.next == &v62 || _47A5E0_mouse_input.cursor_x_x256 >= (render_width - 32) << 8)
 										goto LABEL_165;
-									_42A0A0_on_units_drag_selected(&v62);
+									cursor_drag_selection_handler(&v62);
 								}
 								else
 								{
@@ -22831,7 +22611,7 @@ void _429D40_unit_selection_response_sound(_428940_local *a1, Entity *a2)
 }
 
 //----- (0042A0A0) --------------------------------------------------------
-void _42A0A0_on_units_drag_selected(_428940_local *a1)
+void cursor_drag_selection_handler(_428940_local *a1)
 {
 	int v1; // ebx@1
 	_428940_local *v2; // esi@1
@@ -22981,7 +22761,7 @@ void _42A0A0_on_units_drag_selected(_428940_local *a1)
 		sprite_4272A0_load_mobd_item(v87, v86);
 	LABEL_236:
 		if (sub_429C40(v2))
-			sub_42B230(v2);
+			cursor_unit_move_confirmation(v2);
 		return;
 	}
 	v13 = (Entity *)v2->_1C_script->param;
@@ -23473,7 +23253,7 @@ void sub_42AFD0(_428940_local *a1, Entity *a2)
 }
 
 //----- (0042B230) --------------------------------------------------------
-void sub_42B230(_428940_local *a1)
+void cursor_unit_move_confirmation(_428940_local *a1)
 {
 	_428940_local *v1; // edi@1
 	Entity *v7; // edx@7
@@ -29994,7 +29774,7 @@ void script_43BBA0_cursors_mobd79_handler(Script *a1)
 		}
 		if (!dword_47C6C4)
 		{
-			input_get_mouse_data(&v16);
+			input_get_mouse_state(&v16);
 			v2->field_88_unused = 1;
 			v7 = v16.cursor_x_x256;
 			v8 = _47C380_mapd.mapd_cplc_render_x;
@@ -39328,7 +39108,7 @@ void script_44A500_fog_of_war(Script *a1)
 			if (i->event == 1511)
 			{
 				v3 = &_47A010_mapd_item_being_drawn[0]->draw_job->job_details;
-				input_get_mouse_data(&v6);
+				input_get_mouse_state(&v6);
 				_47CB58_minimap_sprite->field_88_unused = 1;
 				v4 = 16 * (v6.cursor_x_x256 - _47CB58_minimap_sprite->x) - (render_width << 7);
 				v5 = 16 * (v6.cursor_y_x256 - _47CB58_minimap_sprite->y) - (render_height << 7);

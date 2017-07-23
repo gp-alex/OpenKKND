@@ -387,8 +387,6 @@ void entity_41A890_evt1528(Entity *a1);
 void entity_41A980_evt1509_unset_stru11(Entity *a1, void *param);
 void entity_41A9B0_unit(Entity *a1, int a2);
 bool array_479B98_array_479C60_init();
-void input_update_keyboard();
-bool input_get_keyboard_state(KeyboardInput *state);
 __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(const char *, int), int a4, Script *a5);
 bool _41B000_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5);
 bool _41B020_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5);
@@ -527,11 +525,6 @@ void stru38_list_427FD0(int *pcost, int a2); // idb
 void add_integer(int *a1, int a2); // idb
 void stru37_stru38_list_free();
 void script_4280A0_stru38_list__production_loop(Script *task);
-bool input_initialize();
-bool input_4283A0_set_cursor_pos(__int16 x, __int16 y);
-bool input_428470(__int16 a1);
-bool input_get_mouse_data(MouseInput *a1);
-int input_process_mouse();
 bool stru13construct_list_alloc();
 void stru13_list_free();
 int stru13construct_list_get_saveload_packed_size();
@@ -544,9 +537,9 @@ void _429C20_load_mobd(_428940_local *a1, int offset); // idb
 bool sub_429C40(_428940_local *a1);
 void _429D40_unit_selection_response_sound(_428940_local *a1, Entity *a2);
 void unit_group_selection_response_sound(_428940_local *a1);
-void _42A0A0_on_units_drag_selected(_428940_local *a1);
+void cursor_drag_selection_handler(_428940_local *a1);
 void sub_42AFD0(_428940_local *a1, Entity *a2); // idb
-void sub_42B230(_428940_local *a1);
+void cursor_unit_move_confirmation(_428940_local *a1);
 void sub_42B600(_428940_local *a1);
 void cursor_process_user_actions(_428940_local *a1, int a2);
 bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, int a7);

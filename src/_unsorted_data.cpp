@@ -1117,34 +1117,7 @@ int _465948_per_mobd_lookup_idx[16] =
 	4294965729
 };
 enum SOUND_ID _465988_sounds[5] = { SOUND_174, SOUND_175, SOUND_176, SOUND_177, SOUND_178 };
-VKeyMap vkey_map[25] =
-{
-	{ 72, 1 },
-	{ 80, 2 },
-	{ 75, 4 },
-	{ 77, 8 },
-	{ 29, 16 },
-	{ 56, 32 },
-	{ 71, 5 },
-	{ 79, 6 },
-	{ 73, 9 },
-	{ 81, 10 },
-	{ 42, 64 },
-	{ 28, 128 },
-	{ 15, 256 },
-	{ 1, 512 },
-	{ 30, 32768 },
-	{ 19, 16384 },
-	{ 33, 4096 },
-	{ 23, 8192 },
-	{ 35, 4096 },
-	{ 12, 2097152 },
-	{ 13, 1048576 },
-	{ 59, 4194304 },
-	{ 60, 8388608 },
-	{ 61, 16777216 },
-	{ 0, 0 }
-};
+
 int input_465A80_wndprockey_map[256] =
 {
 	-1,
@@ -6734,16 +6707,13 @@ int timer_render_skips; // weak
 char palette_4798F8_sprt_aligned[512];
 stru1_draw_params *current_drawing_params;
 char byte_479B00[88]; // idb
-KeyboardInput input_now_pressed_keys; // weak
 int input_479B6C_just_pressed_keys_mask; // weak
 int input_static_async_key_state; // weak
 int wnd_proc_pressed_key_id; // weak
-KeyboardInput input_previous_state; // weak
 int next_pressed_key; // weak
 int input_wnd_proc_pressed_key_id; // weak
 int array_479B98[25][2];
 int array_479C60[25][2];
-KeyboardInput input_keyboard_state; // weak
 int array_479B98_array_479C60_inited; // weak
 stru7 _479D48_stru7;
 int is_task_list_initialized; // weak
@@ -6832,16 +6802,9 @@ stru37 *stru37_list_47A500;
 stru37 *stru37_list_47A504;
 stru37 *stru37_list;
 stru37 *stru37_list_free_pool;
-MouseInput _47A540_mouse_input; // weak
-int input_mouse_prev_buttons_mask; // weak
-MouseInput input_mouse; // weak
-int num_mouse_buttons; // weak
-int input_47A58C; // weak
-__int16 word_47A590; // weak
 int input_mouse_window_losing_focus_reset_to_defaults; // weak
 int dword_47A5A0; // weak
 char byte_47A5A8[56];
-MouseInput _47A5E0_mouse_input; // idb
 Script *task_mobd17_cursor; // idb
 stru13_stru0 _47A608_stru13_associated_array; // weak
 stru13construct *stru13construct_list_47A638;
