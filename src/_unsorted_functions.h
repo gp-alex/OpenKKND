@@ -532,16 +532,6 @@ bool stru13construct_list_saveload_pack(stru13constructSaveStruct *a1);
 bool stru13construct_list_saveload_unpack(int save_data, int save_data_size);
 bool is_building_or_tower_available(enum UNIT_ID unit_id);
 void script_428940_cursors_handler(Script *a1); // idb
-void sub_4297D0(_428940_local *a1, int edx0);
-void _429C20_load_mobd(_428940_local *a1, int offset); // idb
-bool sub_429C40(_428940_local *a1);
-void _429D40_unit_selection_response_sound(_428940_local *a1, Entity *a2);
-void unit_group_selection_response_sound(_428940_local *a1);
-void cursor_drag_selection_handler(_428940_local *a1);
-void sub_42AFD0(_428940_local *a1, Entity *a2); // idb
-void cursor_unit_move_confirmation(_428940_local *a1);
-void sub_42B600(_428940_local *a1);
-void cursor_process_user_actions(_428940_local *a1, int a2);
 bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, int a7);
 void sub_42C9C0(Sprite **sprite_list);
 void script_42D030_sidebar_tooltips(Script *a1);
@@ -707,7 +697,7 @@ int nullsub_3(void);
 Script *netz_43BA90_create_script_43BA70();
 void sub_43BAA0();
 void _43BAB0_move_cursor(Sprite *a1);
-void script_43BBA0_cursors_mobd79_handler(Script *a1); // idb
+void script_mobd79__main_menu_mouse_handler(Script *a1); // idb
 void script_43C040_cursors_handler(Script *a1);
 void script_mobd79_evt1__main_menu_new_game(Script *a1);
 void script_mobd79_evt19__main_menu_load(Script *a1); // idb

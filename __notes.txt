@@ -1,6 +1,1 @@
-script_428940_cursors_handler
-
-cursor_drag_selection_handler
-	when drag selection is done
-
-bool sub_429C40(_428940_local *a1) - order selected units to move
+bool cursor_unit_move(_428940_local *a1) - order selected units to move

@@ -326,3 +326,217 @@ void script_mobd79_evt1__main_menu_quit(Script *a1)
     stru29_list_remove_all(a1);
     game_state = 3;
 }
+
+
+//----- (0043BBA0) --------------------------------------------------------
+void script_mobd79__main_menu_mouse_handler(Script *a1)
+{
+    Script *v1; // esi@1
+    Sprite *v2; // edi@1
+    DataMapd *v5; // eax@6
+    DataMapd *v6; // eax@12
+    int v7; // ecx@15
+    int v8; // edx@15
+    __int16 v9; // bx@15
+    stru29 *v10; // eax@23
+    Sprite *v11; // ecx@30
+    stru29 *v12; // eax@31
+    ScriptEvent *i; // edi@57
+    int v14; // [sp+10h] [bp-38h]@1
+    KeyboardInput out; // [sp+14h] [bp-34h]@15
+    MouseInput v16; // [sp+28h] [bp-20h]@15
+    Sprite *v17; // [sp+4Ch] [bp+4h]@1
+
+    v1 = a1;
+    _47C6E0_task = a1;
+    v2 = a1->sprite;
+    v14 = 18000;
+    v17 = v2;
+    sprite_4272A0_load_mobd_item(v2, 312);
+    v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+    v2->z_index = 2560;
+    dword_47C6F0 = 0;
+    dword_47C6EC = 1;
+    if (dword_47A184)
+    {
+        dword_47A184 = 0;
+        script_445370_yield_to_main_thread(v1, 0x80000000, 10);
+        netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
+        netz_47C6C0_mapd_idx = 12;
+        script_408500_anim(v1);
+        stru29_list_realloc(a1);
+        bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
+        script_445370_yield_to_main_thread(v1, 0x80000000, 3);
+        v5 = LVL_FindMapd();
+        _40E400_set_palette(&v5[12].items->palette);
+        _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)12, 0, -10);
+        cplc_select(12);
+        cplc_406320();
+        script_445370_yield_to_main_thread(v1, 0x80000000, 1);
+        script_4084A0_animation(v1);
+        if (netz_47C6BC_mapd_idx)
+            script_yield(v1);
+    }
+    while (1)
+    {
+        sub_443F20();
+        if (!netz_47C6C0_mapd_idx && !_47C65C_render_string && --v14 < 0)
+        {
+            v14 = 18000;
+            netz_47C6BC_mapd_idx = 0;
+            netz_47C6C0_mapd_idx = 12;
+            script_408500_anim(v1);
+            stru29_list_remove_all(v1);
+            stru29_list_alloc();
+            bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
+            script_445370_yield_to_main_thread(v1, 0x80000000, 3);
+            v6 = LVL_FindMapd();
+            _40E400_set_palette(&v6[12].items->palette);
+            _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)12, 0, -10);
+            cplc_select(12);
+            cplc_406320();
+            script_445370_yield_to_main_thread(v1, 0x80000000, 1);
+            script_4084A0_animation(v1);
+            if (netz_47C6BC_mapd_idx)
+                script_yield(v1);
+        }
+        if (!dword_47C6C4)
+        {
+            input_get_mouse_state(&v16);
+            v2->field_88_unused = 1;
+            v7 = v16.cursor_x_x256;
+            v8 = _47C380_mapd.mapd_cplc_render_x;
+            v2->field_88_unused = 1;
+            v2->x = v8 + v7;
+            v2->y = _47C380_mapd.mapd_cplc_render_y + v16.cursor_y_x256;
+            input_get_keyboard_state(&out);
+            v9 = out.just_pressed_keys_mask;
+            if (!dword_4778A0)
+            {
+                if (out.just_pressed_keys_mask)
+                {
+                    if (BYTE1(out.just_pressed_keys_mask) & 2)
+                    {
+                        if (netz_47C6C0_mapd_idx)
+                        {
+                            script_trigger_event_group(v1, EVT_MSG_1526, 0, SCRIPT_TYPE_17);
+                        }
+                        else if (_47C65C_render_string)
+                        {
+                            script_4325B0_ingame_menu_trigger_events(v1);
+                        }
+                        else
+                        {
+                            script_408500_anim(v1);
+                            stru29_list_remove_all(v1);
+                            game_state = 3;
+                            sprite_list_remove(v1->sprite);
+                            script_yield(v1);
+                        }
+                    }
+                    v10 = stru29_list_first();
+                    if (v9 & 0x80 && v10 != stru29_list_end())
+                    {
+                        script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47C6D4_stru29->sprite->script);
+                        script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47C6D4_stru29->sprite->script);
+                        v10 = stru29_list_first();
+                    }
+                    if (v9 & 0x10F)
+                        break;
+                }
+            }
+        }
+    LABEL_56:
+        if (script_445370_yield_to_main_thread(v1, 0xC0000000, 1) & 0x40000000)
+        {
+            for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
+            {
+                if (i->event == EVT_MSG_neg2)
+                {
+                    if (v16.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
+                        script_trigger_event(v1, EVT_MSG_1511_sidebar_click_category, 0, (Script *)i->param);
+                    if (v16.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
+                        script_trigger_event(v1, EVT_MSG_TEXT_STRING, 0, (Script *)i->param);
+                }
+                script_discard_event(i);
+            }
+            v2 = v17;
+        }
+    }
+    if (HIBYTE_HEXRAYS(v9) & 1)
+    {
+        if (BYTE1(out.pressed_keys_mask) & 0xC)
+        {
+            if (v10 == stru29_list_end())
+            {
+                v11 = 0;
+                goto LABEL_54;
+            }
+            v12 = _47C6D4_stru29;
+            do
+            {
+                do
+                {
+                    v12 = v12->prev;
+                    _47C6D4_stru29 = v12;
+                } while (v12 == stru29_list_end());
+            } while (v12->field_C & 1);
+        }
+        else
+        {
+            if (v10 == stru29_list_end())
+            {
+                v11 = 0;
+                goto LABEL_54;
+            }
+            v12 = _47C6D4_stru29;
+            do
+            {
+                do
+                {
+                    v12 = v12->next;
+                    _47C6D4_stru29 = v12;
+                } while (v12 == stru29_list_end());
+            } while (v12->field_C & 1);
+        }
+    }
+    else if (v9 & 5)
+    {
+        if (v10 == stru29_list_end())
+        {
+            v11 = 0;
+            goto LABEL_54;
+        }
+        v12 = _47C6D4_stru29;
+        do
+        {
+            do
+            {
+                v12 = v12->prev;
+                _47C6D4_stru29 = v12;
+            } while (v12 == stru29_list_end());
+        } while (v12->field_C & 1);
+    }
+    else
+    {
+        if (v10 == stru29_list_end())
+        {
+            v11 = 0;
+            goto LABEL_54;
+        }
+        v12 = _47C6D4_stru29;
+        do
+        {
+            do
+            {
+                v12 = v12->next;
+                _47C6D4_stru29 = v12;
+            } while (v12 == stru29_list_end());
+        } while (v12->field_C & 1);
+    }
+    v11 = v12->sprite;
+LABEL_54:
+    if (v11)
+        _43BAB0_move_cursor(v11);
+    goto LABEL_56;
+}
