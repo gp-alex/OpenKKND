@@ -1861,10 +1861,12 @@ struct DataMobdItem_stru0
 	DataMobdItem_stru1 *field_18;
 };
 
+
+#define DataBoxd_stru0_per_map_unit__flags__impassible_terrain 0x60
 /* 389 */
 struct DataBoxd_stru0_per_map_unit
 {
-	char flags;
+	char flags; // DataBoxd_stru0_per_map_unit__flags__impassible_terrain
 	char flags2;
 	char field_2;
 	char field_3;
@@ -2403,7 +2405,7 @@ struct _428940_local
 	int field_28;
 	int field_2C;
 	int field_30;
-	int field_34;
+	int _34_is_cursor_over_impassible_terrain;
 	int _38_are_owned_units_selected;
 	int field_3C;
 	int _40_is_infantry_or_vehicle_selected;

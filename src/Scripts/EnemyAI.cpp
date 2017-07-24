@@ -82,7 +82,7 @@ void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIP
     v4 = (stru24 *)receiver->param;
     if (event == EVT_MSG_TEXT_STRING)
     {
-        v48 = sub_44CE00(v4->_2A0_player_side, (Entity *)param) == 0;
+        v48 = is_enemy(v4->_2A0_player_side, (Entity *)param) == 0;
         v49 = v4->_2A0_player_side;
         if (v48)
         {
@@ -316,7 +316,7 @@ void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIP
     else if (event == EVT_MSG_1521_entity_created)
     {
         v5 = param;
-        if (sub_44CE00(v4->_2A0_player_side, (Entity *)param))
+        if (is_enemy(v4->_2A0_player_side, (Entity *)param))
         {
             if (*(_DWORD *)(*((_DWORD *)param + 6) + 80) != v4->_2A4_player_side
                 || (int)current_level_idx >= 48 && (int)current_level_idx <= 67
@@ -347,7 +347,7 @@ void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIP
                 game_globals_cpu[0].cash[7 * v4->_2A0_player_side + *((_DWORD *)param + 5)] = 1;
                 for (l = v4->enemy_list_108; (stru24_EnemyNode **)l != &v4->enemy_list_108; l = l->next)
                 {
-                    if (!sub_44CE00(v4->_2A0_player_side, l->entity))
+                    if (!is_enemy(v4->_2A0_player_side, l->entity))
                     {
                         v7 = l->prev;
                         l->next->prev = v7;

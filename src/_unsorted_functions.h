@@ -531,7 +531,6 @@ int stru13construct_list_get_saveload_packed_size();
 bool stru13construct_list_saveload_pack(stru13constructSaveStruct *a1);
 bool stru13construct_list_saveload_unpack(int save_data, int save_data_size);
 bool is_building_or_tower_available(enum UNIT_ID unit_id);
-void script_428940_cursors_handler(Script *a1); // idb
 bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, int a7);
 void sub_42C9C0(Sprite **sprite_list);
 void script_42D030_sidebar_tooltips(Script *a1);
@@ -907,7 +906,7 @@ void script_44A700_minimap(Script *a1);
 _BYTE *_44A780_gof_of_war();
 bool mapd_init_fog_of_war();
 void mapd_44AE30_fog_of_war();
-bool _44B0D0_not_fog_of_war(int x, int y); // idb
+bool is_map_revealed_at(int x, int y); // idb
 void entity_44B100_buildings__mess_with_fog_of_war(Entity *a1);
 void minimap_free();
 int sub_44BC80(int a1, int a2, int a3, int a4);
@@ -935,7 +934,7 @@ bool show_message(const char *text);
 int _44CB60_advance_mobd_frame(int *src_lookup_id, int dst, int step); // idb
 void script_show_message_ex(Script *a1); // idb
 bool _44CDC0_sidebar_is_units_limit();
-bool sub_44CE00(enum PLAYER_SIDE player_side, Entity *a2);
+bool is_enemy(enum PLAYER_SIDE player_side, Entity *a2);
 bool sub_44CE40(enum PLAYER_SIDE player_side, Entity *a2);
 void script_show_message(Script *a1);
 int entity_44D000_boxd(Entity *a1);

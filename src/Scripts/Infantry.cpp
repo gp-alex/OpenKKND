@@ -557,7 +557,7 @@ bool entity_4135E0(Entity *a1)
                         if (v15 == v1->_E4_entity_id
                             && !v1->_134_param__unitstats_after_mobile_outpost_plant
                             && entity_413120(v1, v14, v1->_E4_entity_id)
-                            && sub_44CE00(v1->player_side, v1->_E4_entity))
+                            && is_enemy(v1->player_side, v1->_E4_entity))
                         {
                             v16 = v1->_E4_entity_id;
                             v1->entity_8 = v1->_E4_entity;
@@ -1375,7 +1375,7 @@ bool entity_414520_boxd(Entity *a1)
                         v9 = v7->_4_entities;
                         do
                         {
-                            if (*v9 && sub_44CE00(a1a->player_side, *v9))
+                            if (*v9 && is_enemy(a1a->player_side, *v9))
                             {
                                 a1a->field_DC = 8;
                                 v11 = v13->_4_entities[v8];
@@ -1483,7 +1483,7 @@ void entity_414670(Entity *a1)
                         {
                             if (*v15)
                             {
-                                if (sub_44CE00(a1a->player_side, *v15))
+                                if (is_enemy(a1a->player_side, *v15))
                                 {
                                     v16 = (*v15)->stats;
                                     if (v16->field_54 || v16->speed)
@@ -1519,7 +1519,7 @@ void entity_414670(Entity *a1)
                 v18 = v17->param__entity__int;
                 if (v18)
                 {
-                    if (sub_44CE00(v1->player_side, v18)
+                    if (is_enemy(v1->player_side, v18)
                         && entity_413120(v1, v17->param__entity__int, v17->param__entity__int->entity_id))
                     {
                         break;

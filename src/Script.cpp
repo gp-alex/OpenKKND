@@ -5,6 +5,7 @@
 
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Cursor.h"
 
 
 
@@ -88,7 +89,7 @@ Script4 stru_46ED48 = { MOBD_20, script_443D40_mobd20, SCRIPT_COROUTINE, 0, 0, U
 Script4 stru_46ED60 = { MOBD_INGAME_MENU_CONTROLS, script_433060_ingame_menu_DA000000, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 Script4 stru_46ED78 = { MOBD_SIDEBAR_BUTTONS, script_446ED0_sidebar_buttons, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 Script4 stru_46ED90 = { MOBD_MISSION_OUTCOME_MODAL, script_424CE0_mission_outcome_modal, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-Script4 stru_46EDA8 = { MOBD_CURSORS, script_428940_cursors_handler, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+Script4 stru_46EDA8 = { MOBD_CURSORS, script_game_cursor_handler, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 Script4 stru_46EDC0 = { MOBD_FONT_27, script_42D030_sidebar_tooltips, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 Script4 stru_46EDD8 = { MOBD_CURSORS, script_43C040_cursors_handler, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 Script4 stru_46EDF0 = { MOBD_FONT_26, 0, SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
