@@ -750,7 +750,6 @@ extern stru13construct *stru13construct_list_47A638;
 extern stru13construct *stru13construct_list_47A63C;
 extern stru13construct *stru13construct_list;
 extern stru13construct *stru13construct_list_free_pool;
-extern _428940_local *ptr_47A6EC;
 extern int dword_47A6F0; // weak
 extern int dword_47A6FC; // weak
 extern KeyboardInput _47A700_input; // idb

@@ -54,7 +54,7 @@ void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum
                 if (player_side == *((_DWORD *)v5 + 5) && !*((_DWORD *)v5 + 75))
                 {
                     *((_DWORD *)v5 + 75) = 2000;
-                    if (get_player_faction())
+                    if (is_player_faction_evolved())
                         sound_play(SOUND_129, 0, _4690A8_unit_sounds_volume, 16, 0);
                     else
                         sound_play(SOUND_20, 0, _4690A8_unit_sounds_volume, 16, 0);
@@ -78,7 +78,7 @@ void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum
                 {
                     if (spawn_unit((enum UNIT_ID)(int)param, v9, v10, v13))
                     {
-                        if (get_player_faction())
+                        if (is_player_faction_evolved())
                         {
                             v12 = _4690A8_unit_sounds_volume;
                             v11 = SOUND_MUTE_UNIT_READY;
@@ -111,7 +111,7 @@ void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum
             case EVT_MSG_1511_sidebar_click_category:
                 entity_410CB0_event1511((Entity *)receiver->param);
                 break;
-            case EVT_MSG_TEXT_STRING:
+            case EVT_SHOW_UI_CONTROL:
                 entity_410CD0_eventTextString((Entity *)receiver->param);
                 break;
             case EVT_MSG_SHOW_UNIT_HINT:
@@ -357,7 +357,7 @@ void entity_mode_403720_on_prison_death__or__prolly_any_generic_building(Entity 
     v1 = a1;
     if (a1->player_side == player_side)
     {
-        if (get_player_faction())
+        if (is_player_faction_evolved())
         {
             v2 = SOUND_101;
             v3 = _4690A8_unit_sounds_volume;
@@ -414,8 +414,8 @@ void entity_mode_building_default_on_death(Entity *a1)
         script_deinit(v1->turret->sprite_task);
         script_free_local_object(v1->script, v1->turret);
     }
-    script_trigger_event(v1->script, EVT_MSG_TEXT_STRING, 0u, task_mobd17_cursor);
-    script_trigger_event_group(v1->script, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+    script_trigger_event(v1->script, EVT_SHOW_UI_CONTROL, 0u, task_mobd17_cursor);
+    script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
     v6 = v1->script;
     if (v6->script_type == SCRIPT_POWER_STATION_HANDLER)
         script_trigger_event_group(v6, EVT_MSG_1539, v1, SCRIPT_TANKER_CONVOY_HANDLER);

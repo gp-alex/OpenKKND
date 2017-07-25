@@ -6811,7 +6811,6 @@ stru13construct *stru13construct_list_47A638;
 stru13construct *stru13construct_list_47A63C;
 stru13construct *stru13construct_list;
 stru13construct *stru13construct_list_free_pool;
-_428940_local *ptr_47A6EC;
 int dword_47A6F0; // weak
 int dword_47A6FC; // weak
 KeyboardInput _47A700_input; // idb

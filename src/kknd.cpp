@@ -21,6 +21,75 @@
 void __stdcall nullsub_2(int, int) {}
 void nullsub_1(void) {}
 
+
+
+SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced)
+{
+    if (is_21st_century(unit_id))
+    {
+        return _4689B0_sound_ids[kknd_rand() % 3];
+    }
+    else if (unit_id == UNIT_STATS_MUTE_MISSILE_CRAB)
+    {
+        return SOUND_MUTE_UNIT_MISSILE_CRAB_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_GIANT_BEETLE)
+    {
+        return SOUND_MUTE_UNIT_GIANT_BEETLE_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_WAR_MASTADONT)
+    {
+        return SOUND_MUTE_UNIT_WAR_MASTADONT_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_GIANT_SCORPION)
+    {
+        return SOUND_MUTE_UNIT_GIANT_SCORPION_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_DIRE_WOLF)
+    {
+        return SOUND_MUTE_UNIT_DIRE_WOLF_2;
+    }
+    else if (unit_id == UNIT_STATS_SURV_SCOUT)
+    {
+        return SOUND_SURV_UNIT_SCOUT_192;
+    }
+    else
+    {
+        if (experienced)
+        {
+            if (is_player_faction_evolved())
+                return SOUND_153;
+            else
+                return SOUND_73;
+        }
+        else
+        {
+            if (!is_player_faction_evolved())
+            {
+                if ((char)kknd_rand() % -2)
+                {
+                    return SOUND_59;
+                }
+                else
+                {
+                    return SOUND_48;
+                }
+            }
+            else
+            {
+                if ((char)kknd_rand() % -2)
+                {
+                    return SOUND_92;
+                }
+                else
+                {
+                    return SOUND_119;
+                }
+            }
+        }
+    }
+}
+
 //----- (00401000) --------------------------------------------------------
 int stru31_list_alloc()
 {
@@ -248,7 +317,7 @@ void EventHandler_401B80(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 	case EVT_MSG_1511_sidebar_click_category:
 		++v4->field_4;
 		break;
-	case EVT_MSG_TEXT_STRING:
+	case EVT_SHOW_UI_CONTROL:
 		v6 = v4->field_4;
 		if (v6 > 0)
 			v4->field_4 = v6 - 1;
@@ -282,7 +351,7 @@ void script_401C30_sidebar(Script *a1)
 			v1->task = a1;
 			v1->handler = Task_context_0_401A40;
 			a1->event_handler = EventHandler_401B80;
-			get_player_faction();
+			is_player_faction_evolved();
 			v3->x = 0x26000;
 			v3->field_88_unused = 1;
 			v3->y = 0x12000;
@@ -2378,7 +2447,7 @@ bool sub_404C60(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 
 	v5 = a1->script;
 	if (v5 && v5->field_28 & 0x40000000)
-		script_trigger_event(0, EVT_MSG_neg2, a2, a1->script);
+		script_trigger_event(0, EVT_MOUSE_HOVER, a2, a1->script);
 	return 0;
 }
 
@@ -2903,7 +2972,7 @@ void EventHandler_TankerConvoy(Script *receiver, Script *sender, enum SCRIPT_EVE
 		case EVT_MSG_1511_sidebar_click_category:
 			entity_410CB0_event1511(v4);
 			break;
-		case EVT_MSG_TEXT_STRING:
+		case EVT_SHOW_UI_CONTROL:
 			entity_410CD0_eventTextString(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
@@ -4408,7 +4477,7 @@ void EventHandler_MobileDerrick(Script *receiver, Script *sender, enum SCRIPT_EV
 		case EVT_MSG_1511_sidebar_click_category:
 			entity_410CB0_event1511(v4);
 			break;
-		case EVT_MSG_TEXT_STRING:
+		case EVT_SHOW_UI_CONTROL:
 			entity_410CD0_eventTextString(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
@@ -4521,8 +4590,8 @@ void entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant(Entity *a1)
 	v2 = a1->script;
 	a1->destroyed = 1;
 	v2->field_24 &= 0xEFFFFFFF;
-	script_trigger_event(a1->script, EVT_MSG_TEXT_STRING, 0, task_mobd17_cursor);
-	script_trigger_event_group(v1->script, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+	script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
+	script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
 	entity_40DEC0_boxd(v1, v1->sprite_width_shr13, v1->sprite_height_shr13, v1->field_A4);
 	v1->script->script_type = SCRIPT_TYPE_INVALID;
 	v3 = v1->sprite;
@@ -4745,7 +4814,7 @@ void EventHandler_DrillRig(Script *receiver, Script *sender, enum SCRIPT_EVENT e
 			if (player_side == v4->player_side && !v4->_12C_prison_bunker_spawn_type)
 			{
 				v4->_12C_prison_bunker_spawn_type = 1500;
-				if (get_player_faction())
+				if (is_player_faction_evolved())
 					sound_play(SOUND_MUTE_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
 				else
 					sound_play(SOUND_SURV_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
@@ -7956,7 +8025,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 						{
 							v9 = 1;
 						}
-						else if (v11 == EVT_MSG_TEXT_STRING)
+						else if (v11 == EVT_SHOW_UI_CONTROL)
 						{
 							v25 = 1;
 						}
@@ -7996,7 +8065,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 				{
 					v14 = 1;
 				}
-				else if (v16 == EVT_MSG_TEXT_STRING)
+				else if (v16 == EVT_SHOW_UI_CONTROL)
 				{
 					v26 = 1;
 				}
@@ -8040,11 +8109,11 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 						v21 = m->event;
 						if (v21 == EVT_MSG_1548_sidebar)
 							v18 = 1;
-						if (v21 == EVT_MSG_neg2)
+						if (v21 == EVT_MOUSE_HOVER)
 						{
 							v19 = 1;
 						}
-						else if (v21 == EVT_MSG_TEXT_STRING)
+						else if (v21 == EVT_SHOW_UI_CONTROL)
 						{
 							v26 = 1;
 						}
@@ -8153,11 +8222,11 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 						v13 = j->event;
 						if (v13 == EVT_MSG_1548_sidebar)
 							v10 = 1;
-						if (v13 == EVT_MSG_neg2)
+						if (v13 == EVT_MOUSE_HOVER)
 						{
 							v11 = 1;
 						}
-						else if (v13 == EVT_MSG_TEXT_STRING || v13 == EVT_MSG_1513)
+						else if (v13 == EVT_SHOW_UI_CONTROL || v13 == EVT_MSG_1513)
 						{
 							v9 = 1;
 						}
@@ -8199,7 +8268,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 					{
 						v16 = 1;
 					}
-					else if (v18 == EVT_MSG_TEXT_STRING || v18 == EVT_MSG_1513)
+					else if (v18 == EVT_SHOW_UI_CONTROL || v18 == EVT_MSG_1513)
 					{
 						v26 = 1;
 					}
@@ -8221,11 +8290,11 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 							v22 = l->event;
 							if (v22 == EVT_MSG_1548_sidebar)
 								v19 = 1;
-							if (v22 == EVT_MSG_neg2)
+							if (v22 == EVT_MOUSE_HOVER)
 							{
 								v20 = 1;
 							}
-							else if (v22 == EVT_MSG_TEXT_STRING || v22 == EVT_MSG_1513)
+							else if (v22 == EVT_SHOW_UI_CONTROL || v22 == EVT_MSG_1513)
 							{
 								v26 = 1;
 							}
@@ -10024,7 +10093,7 @@ void EventHandler_419DF0(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 		case EVT_MSG_1511_sidebar_click_category:
 			entity_410CB0_event1511(v4);
 			break;
-		case EVT_MSG_TEXT_STRING:
+		case EVT_SHOW_UI_CONTROL:
 			entity_410CD0_eventTextString(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
@@ -10055,7 +10124,7 @@ void EventHandler_419E80(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 		case EVT_MSG_1511_sidebar_click_category:
 			entity_410CB0_event1511(v4);
 			break;
-		case EVT_MSG_TEXT_STRING:
+		case EVT_SHOW_UI_CONTROL:
 			entity_410CD0_eventTextString(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
@@ -10799,7 +10868,7 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 bool _41B000_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 {
 	if (a1->script)
-		script_trigger_event(0, EVT_MSG_neg2, a2->script, a1->script);
+		script_trigger_event(0, EVT_MOUSE_HOVER, a2->script, a1->script);
 	return 0;
 }
 
@@ -10815,10 +10884,10 @@ bool _41B020_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	v6 = a2;
 	v7 = a1->script;
 	if (v7 && v7->field_28 & 0x40000000)
-		script_trigger_event(0, EVT_MSG_neg2, a2->script, a1->script);
+		script_trigger_event(0, EVT_MOUSE_HOVER, a2->script, a1->script);
 	v8 = v6->script;
 	if (v8 && v8->field_28 & 0x40000000)
-		script_trigger_event(0, EVT_MSG_neg2, v5, v6->script);
+		script_trigger_event(0, EVT_MOUSE_HOVER, v5, v6->script);
 	return 0;
 }
 
@@ -17796,7 +17865,7 @@ void entity_mode_4223A0_machineshop(Entity *a1)
 	v1 = a1;
 	a1->mode_arrive = 0;
 	entity_mode_machineshop_set_default_production(a1);
-	if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20 && !get_player_faction())
+	if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20 && !is_player_faction_evolved())
 		sound_play(SOUND_SURV_BUILDING_COMPLETED, 0, _4690A8_unit_sounds_volume, 16, 0);
 	v2 = v1->turret;
 	if (v2)
@@ -18370,7 +18439,7 @@ void GAME_PrepareLevel()
 			exit(0);
 		}
 	}
-	v5 = get_player_faction();
+	v5 = is_player_faction_evolved();
 	sprintf(filename, (const char *)aSLevelsS, game_data_installation_dir, slvs[v5]);
 	LVL_LoadSlv(filename);
 	if (!LVL_RunLevel(current_level_lvl))
@@ -19816,13 +19885,13 @@ void task_4269B0_mobd_20_handler(Script *a1)
 	{
 		if (sub_44CA50(v7->unit_stats_idx[0]))
 		{
-			if (!get_player_faction())
+			if (!is_player_faction_evolved())
 			{
 				v2->_24_iftrue__call_UNIT_Spawn__else__create_manually = 1;
 				goto LABEL_18;
 			}
 		}
-		else if (get_player_faction())
+		else if (is_player_faction_evolved())
 		{
 			v2->_24_iftrue__call_UNIT_Spawn__else__create_manually = 1;
 			goto LABEL_18;
@@ -20551,7 +20620,7 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
 					{
 						if (v15->field_28 & 0x40000)
 						{
-							script_trigger_event(0, (SCRIPT_EVENT)((int)EVT_MSG_neg2 | 0x1), v14, v1->script);
+							script_trigger_event(0, (SCRIPT_EVENT)((int)EVT_MOUSE_HOVER | 0x1), v14, v1->script);
 							v1->script->flags_20 |= 0x40000u;
 							v1->script->field_24 |= v1->script->flags_20;
 						}
@@ -20760,7 +20829,7 @@ void MessageHandler_MobileOutpost(Script *receiver, Script *sender, enum SCRIPT_
 		case EVT_MSG_1511_sidebar_click_category:
 			entity_410CB0_event1511(v4);
 			break;
-		case EVT_MSG_TEXT_STRING:
+		case EVT_SHOW_UI_CONTROL:
 			entity_410CD0_eventTextString(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
@@ -20828,7 +20897,7 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 	sprite_408800_play_sound(v1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_unit_sounds_volume, 0);
 	if (entity_40DD00_boxd(v1))
 	{
-		script_trigger_event(v1->script, EVT_MSG_TEXT_STRING, 0, task_mobd17_cursor);
+		script_trigger_event(v1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
 		entity_410CD0_eventTextString(v1);
 		v1->script->event_handler = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))nullsub_2;
 		if (v1->unit_id == UNIT_STATS_SURV_OUTPOST)
@@ -21525,7 +21594,7 @@ bool is_building_or_tower_available(enum UNIT_ID unit_id)
 	if ((int)unit_id < (int)UNIT_STATS_SURV_GUARD_TOWER
 		|| (int)unit_id >(int)UNIT_STATS_MUTE_ROTARY_CANNON)
 	{
-		if (get_player_faction())
+		if (is_player_faction_evolved())
 		{
 			if (is_building_available(v1))
 				return 1;
@@ -21535,7 +21604,7 @@ bool is_building_or_tower_available(enum UNIT_ID unit_id)
 			return 1;
 		}
 	}
-	else if (get_player_faction())
+	else if (is_player_faction_evolved())
 	{
 		if (is_tower_available(v1))
 			return 1;
@@ -21777,7 +21846,7 @@ void script_42D030_sidebar_tooltips(Script *a1)
 				script_445370_yield_to_main_thread(a1, 0x40000000, 0);
 				for (j = script_get_next_event(a1); j; j = script_get_next_event(a1))
 				{
-					if (j->event == EVT_MSG_TEXT_STRING)
+					if (j->event == EVT_SHOW_UI_CONTROL)
 						v12 = 1;
 					script_discard_event(j);
 				}
@@ -22104,7 +22173,7 @@ void EventHandler_42D6B0_evolved_mission8_ai(Script *receiver, Script *sender, e
 	int v37; // [sp+18h] [bp+8h]@42
 			 // context -> stru24
 	v4 = (stru24 *)receiver->param;
-	if (event == EVT_MSG_TEXT_STRING)
+	if (event == EVT_SHOW_UI_CONTROL)
 	{
 		v18 = *((_DWORD *)param + 5);
 		if (v18 && (v19 = v4->_2A0_player_side, v18 != v19))
@@ -22505,7 +22574,7 @@ void EventHandler_42DC90_evolved_mission5_ai(Script *a1, Script *a2, enum SCRIPT
 	stru24_stru40 *v14; // eax@32
 						// 40B720: context -> stru24
 	v4 = (stru24 *)a1->param;
-	if (event == EVT_MSG_TEXT_STRING)
+	if (event == EVT_SHOW_UI_CONTROL)
 	{
 		v10 = param->player_side;
 		if (v10 == 0)
@@ -23232,7 +23301,7 @@ void entity_mode_431680_outpost_arrive(Entity *a1)
 	v1 = a1;
 	a1->mode_arrive = 0;
 	entity_mode_outpost_set_default_production(a1);
-	if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20 && !get_player_faction())
+	if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20 && !is_player_faction_evolved())
 		sound_play(SOUND_SURV_BUILDING_COMPLETED, 0, _4690A8_unit_sounds_volume, 16, 0);
 	v2 = v1->turret;
 	if (v2)
@@ -23743,7 +23812,7 @@ void script_431F10_ingame_menu(Script *a1)
 				v8 = i->event;
 				if (v8 > (int)EVT_MSG_1511_sidebar_click_category)
 				{
-					v9 = v8 - EVT_MSG_TEXT_STRING;
+					v9 = v8 - EVT_SHOW_UI_CONTROL;
 					if (v9)
 					{
 						if (v9 == 16)
@@ -24102,7 +24171,7 @@ void script_432730_ingame_menu(Script *a1)
 				while (1)
 				{
 					v6 = v5->event;
-					if (v6 != EVT_MSG_neg2)
+					if (v6 != EVT_MOUSE_HOVER)
 					{
 						if (v6 == EVT_MSG_1511_sidebar_click_category)
 							goto LABEL_8;
@@ -24388,7 +24457,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 							--v23;
 						}
 						break;
-					case EVT_MSG_TEXT_STRING:
+					case EVT_SHOW_UI_CONTROL:
 						if (v23 >= 4)
 						{
 							if (v24 < 15)
@@ -25207,7 +25276,7 @@ void script_433F40_ingame_menu(Script *a1)
 	do
 	{
 		v1 = script_434500(a1, 732, 2, 0);
-		script_trigger_event(a1, EVT_MSG_TEXT_STRING, 0, receiver);
+		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
 	} while (v1);
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -25283,7 +25352,7 @@ void script_434120_ingame_menu(Script *a1)
 	do
 	{
 		v1 = script_434500(a1, 732, 2, 0);
-		script_trigger_event(a1, EVT_MSG_TEXT_STRING, 0, receiver);
+		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
 	} while (v1);
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -25362,7 +25431,7 @@ void script_434310_ingame_menu(Script *a1)
 	do
 	{
 		v1 = script_434500(a1, 1728, 2, 1);
-		script_trigger_event(a1, EVT_MSG_TEXT_STRING, 0, receiver);
+		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
 	} while (v1);
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -25464,7 +25533,7 @@ bool script_434500(Script *a1, int a2, int a3, int a4)
 			v8 = i->event;
 			if (v8 > (int)EVT_MSG_1511_sidebar_click_category)
 			{
-				v9 = v8 - EVT_MSG_TEXT_STRING;
+				v9 = v8 - EVT_SHOW_UI_CONTROL;
 				if (v9)
 				{
 					if (v9 == 16)
@@ -25479,7 +25548,7 @@ bool script_434500(Script *a1, int a2, int a3, int a4)
 			{
 				v6 |= 4u;
 			}
-			else if (v8 == EVT_MSG_neg2)
+			else if (v8 == EVT_MOUSE_HOVER)
 			{
 				if (a4)
 					stru29_list_443AE0_find_by_sprite(v5);
@@ -25678,7 +25747,7 @@ void entity_mode_powerstation_completed(Entity *a1)
 	if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20)
 	{
 		show_message_ex(0, aBuildingCompleted);
-		if (get_player_faction())
+		if (is_player_faction_evolved())
 		{
 			v4 = _4690A8_unit_sounds_volume;
 			v3 = SOUND_MUTE_BUILDING_COMPLETED;
@@ -25858,7 +25927,7 @@ void entity_mode_437F30_repairstation(Entity *a1)
 	if (player_side == a1->player_side && !a1->sprite->cplc_ptr1_pstru20)
 	{
 		show_message_ex(0, aBuildingCompleted);
-		if (get_player_faction())
+		if (is_player_faction_evolved())
 		{
 			v5 = _4690A8_unit_sounds_volume;
 			v4 = SOUND_MUTE_BUILDING_COMPLETED;
@@ -26087,7 +26156,7 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
 				if (v5->player_side == player_side)
 				{
 					show_message_ex(0, aCommencingUpgrade);
-					if (get_player_faction())
+					if (is_player_faction_evolved())
 						sound_play(SOUND_MUTE_COMMENCING_UPGRADE, 0, _4690A8_unit_sounds_volume, 16, 0);
 					else
 						sound_play(SOUND_SURV_COMMENCING_UPGRADE, 0, _4690A8_unit_sounds_volume, 16, 0);
@@ -26099,7 +26168,7 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
 			if (v5->player_side == player_side)
 			{
 				show_message_ex(0, aUpgradeComplete);
-				if (get_player_faction())
+				if (is_player_faction_evolved())
 				{
 					if ((char)kknd_rand() % -2)
 						sound_play(SOUND_MUTE_UPGRADE_COMPLETE_2, 0, _4690A8_unit_sounds_volume, 16, 0);
@@ -26177,7 +26246,7 @@ void entity_mode_researchlab_completed(Entity *a1)
 	if (player_side == a1->player_side && !a1->sprite->cplc_ptr1_pstru20)
 	{
 		show_message_ex(0, aBuildingCompleted);
-		if (get_player_faction())
+		if (is_player_faction_evolved())
 		{
 			v4 = _4690A8_unit_sounds_volume;
 			v3 = SOUND_MUTE_BUILDING_COMPLETED;
@@ -27827,7 +27896,7 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 			v5 = i->event;
 			switch (v5)
 			{
-			case EVT_MSG_neg2:
+			case EVT_MOUSE_HOVER:
                 stru29_list_443AE0_find_by_sprite(a1->sprite);
 				break;
 			case EVT_MSG_1511_sidebar_click_category:
@@ -27880,7 +27949,7 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 			v5 = i->event;
 			switch (v5)
 			{
-			case EVT_MSG_neg2:
+			case EVT_MOUSE_HOVER:
                 stru29_list_443AE0_find_by_sprite(a1->sprite);
 			case EVT_MSG_1511_sidebar_click_category:
 				v3 = 1;
@@ -28301,7 +28370,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 				v8 = i->event;
 				switch (v8)
 				{
-				case EVT_MSG_neg2:
+				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
@@ -28448,7 +28517,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 				v9 = i->event;
 				switch (v9)
 				{
-				case EVT_MSG_neg2:
+				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
@@ -28914,7 +28983,7 @@ void script_43E890_mobd45_modems(Script *a1)
 				if (v3 > 0)
 					--v3;
 				break;
-			case EVT_MSG_TEXT_STRING:
+			case EVT_SHOW_UI_CONTROL:
 				if (v3 < netz_modem_list_used - 10)
 					++v3;
 				break;
@@ -28971,7 +29040,7 @@ void script_43EA90_mobd45(Script *a1)
 				v5 = i->event;
 				switch (v5)
 				{
-				case EVT_MSG_neg2:
+				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
@@ -29016,7 +29085,7 @@ void script_43EB80_mobd45(Script *a1)
 				v5 = i->event;
 				switch (v5)
 				{
-				case EVT_MSG_neg2:
+				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
@@ -29029,7 +29098,7 @@ void script_43EB80_mobd45(Script *a1)
 				script_discard_event(i);
 			}
 		} while (!v3);
-		script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47C664_ingame_menu_sprite->script);
+		script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47C664_ingame_menu_sprite->script);
 	}
 }
 
@@ -29063,7 +29132,7 @@ void script_43EC70_mobd45(Script *a1)
 				v6 = i->event;
 				switch (v6)
 				{
-				case EVT_MSG_neg2:
+				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
@@ -30087,7 +30156,7 @@ void script_440810_mobd45(Script *a1)
 				v10 = i->event;
 				switch (v10)
 				{
-				case EVT_MSG_neg2:
+				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
 				case EVT_MSG_1511_sidebar_click_category:
@@ -31413,7 +31482,7 @@ void script_442BB0_mobd46(Script *a1)
 							v15 = v14->event;
 							switch (v15)
 							{
-							case EVT_MSG_neg2:
+							case EVT_MOUSE_HOVER:
                                 stru29_list_443AE0_find_by_sprite(a1->sprite);
                                 break;
 							case EVT_MSG_1511_sidebar_click_category:
@@ -31523,7 +31592,7 @@ void script_442BB0_mobd46(Script *a1)
 					v28 = v27->event;
 					switch (v28)
 					{
-					case EVT_MSG_neg2:
+					case EVT_MOUSE_HOVER:
                         stru29_list_443AE0_find_by_sprite(v1->sprite);
 						break;
 					case EVT_MSG_1511_sidebar_click_category:
@@ -31741,7 +31810,7 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 			v10 = i->event;
 			if (v10 > (int)EVT_MSG_1511_sidebar_click_category)
 			{
-				v12 = v10 - EVT_MSG_TEXT_STRING;
+				v12 = v10 - EVT_SHOW_UI_CONTROL;
 				if (v12)
 				{
 					v13 = v12 - 14;
@@ -31765,7 +31834,7 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 				if (!a3)
 					v4 |= 2u;
 			}
-			else if (v10 == EVT_MSG_neg2)
+			else if (v10 == EVT_MOUSE_HOVER)
 			{
                 stru29_list_443AE0_find_by_sprite(v5);
 				v4 |= 8u;
@@ -31842,7 +31911,7 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 			v11 = i->event;
 			if ((int)v11 > (int)EVT_MSG_1511_sidebar_click_category)
 			{
-				v13 = v11 - EVT_MSG_TEXT_STRING;
+				v13 = v11 - EVT_SHOW_UI_CONTROL;
 				if (v13)
 				{
 					v14 = v13 - 14;
@@ -31865,7 +31934,7 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 			{
 				v9 |= 2u;
 			}
-			else if (v11 == EVT_MSG_neg2)
+			else if (v11 == EVT_MOUSE_HOVER)
 			{
                 stru29_list_443AE0_find_by_sprite(v5);
 				v9 |= 8u;
@@ -31950,7 +32019,7 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 			v11 = i->event;
 			if (v11 > (int)EVT_MSG_1511_sidebar_click_category)
 			{
-				v13 = v11 - EVT_MSG_TEXT_STRING;
+				v13 = v11 - EVT_SHOW_UI_CONTROL;
 				if (v13)
 				{
 					if (v13 == 14)
@@ -31965,7 +32034,7 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 			{
 				v9 |= 2u;
 			}
-			else if (v11 == EVT_MSG_neg2)
+			else if (v11 == EVT_MOUSE_HOVER)
 			{
                 stru29_list_443AE0_find_by_sprite(v5);
 				v9 |= 8u;
@@ -32394,8 +32463,8 @@ void entity_oil_tanker_initialize(Entity *a1)
 	}
 	else
 	{
-		script_trigger_event(v1->script, EVT_MSG_TEXT_STRING, 0, task_mobd17_cursor);
-		script_trigger_event_group(0, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+		script_trigger_event(v1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
+		script_trigger_event_group(0, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
 		v1->script->script_type = SCRIPT_TYPE_INVALID;
 		v18 = v1->sprite;
 		v1->entity_id = 0;
@@ -32572,7 +32641,7 @@ void entity_mode_4446B0_oiltanker_load_oil(Entity *a1)
 				v6 = v4->oil_left;
 				if ((v6 == 5000 || v6 <= 2500 && !(v6 % 500)) && v1->player_side == player_side)
 				{
-					if (!get_player_faction())
+					if (!is_player_faction_evolved())
 					{
 						sound_play(SOUND_SURV_LOW_OIL_WARNING, 0, _4690A8_unit_sounds_volume, 16, 0);
 						v1->mode = entity_mode_4446B0_oiltanker_load_oil;
@@ -33002,7 +33071,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
 		case EVT_MSG_1511_sidebar_click_category:
 			entity_410CB0_event1511(v5);
 			break;
-		case EVT_MSG_TEXT_STRING:
+		case EVT_SHOW_UI_CONTROL:
 			entity_410CD0_eventTextString(v5);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
@@ -33045,7 +33114,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
 			if (player_side == v5->player_side && !v5->_12C_prison_bunker_spawn_type)
 			{
 				v5->_12C_prison_bunker_spawn_type = 1000;
-				if (get_player_faction())
+				if (is_player_faction_evolved())
 					sound_play(SOUND_132, 0, _4690A8_unit_sounds_volume, 16, 0);
 				else
 					sound_play(SOUND_60, 0, _4690A8_unit_sounds_volume, 16, 0);
@@ -33724,7 +33793,7 @@ void sidebar_button_handler_infantry_open(SidebarButton *a1)
 		if (_47C990_production.sidebar_open_mask[v2])
 		{
 			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47CA18_sidebar_production_buttons[v2]->task);
+			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
 		}
 		++v2;
 	} while (v2 < 5);
@@ -33824,7 +33893,7 @@ void sidebar_button_handler_vehicles_open(SidebarButton *a1)
 		if (_47C990_production.sidebar_open_mask[v2])
 		{
 			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47CA18_sidebar_production_buttons[v2]->task);
+			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
 		}
 		++v2;
 	} while (v2 < 5);
@@ -33904,7 +33973,7 @@ void sidebar_button_handler_airstrike_open(SidebarButton *a1)
 		if (_47C990_production.sidebar_open_mask[v2])
 		{
 			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47CA18_sidebar_production_buttons[v2]->task);
+			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
 		}
 		++v2;
 	} while (v2 < 5);
@@ -33943,7 +34012,7 @@ void sidebar_button_handler_446190_open(SidebarButton *a1)
 	do
 	{
 		if (v1 != &_47CA08_sidebar_buttons[1])
-			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, (*v1)->task);
+			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, (*v1)->task);
 		++v1;
 	} while ((int)v1 < (int) & _47CA10_sidebar_button_minimap);
 }
@@ -33969,7 +34038,7 @@ void sidebar_button_handler_buildings_open(SidebarButton *a1)
 		if (_47C990_production.sidebar_open_mask[v2])
 		{
 			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47CA18_sidebar_production_buttons[v2]->task);
+			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
 		}
 		++v2;
 	} while (v2 < 5);
@@ -34056,7 +34125,7 @@ void sidebar_button_handler_towers_open(SidebarButton *a1)
 		if (_47C990_production.sidebar_open_mask[v2])
 		{
 			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47CA18_sidebar_production_buttons[v2]->task);
+			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
 		}
 		++v2;
 	} while (v2 < 5);
@@ -34713,7 +34782,7 @@ void sidebar_button_handler_help_open(SidebarButton *a1)
 	do
 	{
 		if (v1 != _47CA08_sidebar_buttons)
-			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, (*v1)->task);
+			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, (*v1)->task);
 		++v1;
 	} while ((int)v1 < (int) & _47CA10_sidebar_button_minimap);
 	script_trigger_event(0, EVT_MSG_SHOW_UNIT_HINT, 0, task_mobd17_cursor);
@@ -34764,23 +34833,21 @@ void script_446ED0_sidebar_buttons(Script *a1)
 // 47CA2C: using guessed type int _47CA2C_should_airstrike_mess_with_sidebar;
 
 //----- (00446FB0) --------------------------------------------------------
-int get_player_faction()
+bool is_player_faction_evolved()
 {
 	if (_47C6D8_use__466098_cost_multipliers)
 		return _47C658_faction_index;
 	if (single_player_game)
 	{
 		if (player_side == EVOLVED)
-			return 1;                                 // mute
+			return true;                                 // mute
 	}
 	else if (netz_47A740[player_side + 1].field_A)
 	{
-		return 1;                                   // mute
+		return true;                                   // mute
 	}
-	return 0;                                     // surv
+	return false;                                     // surv
 }
-// 468B5C: using guessed type int single_player_game;
-// 47C658: using guessed type char _47C658_faction_index;
 
 //----- (00447000) --------------------------------------------------------
 void sub_447000()
@@ -34901,11 +34968,11 @@ void _4471E0_send_sidebar_buttons_message()
 	do
 	{
 		if (v0 != -1)
-			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47CA08_sidebar_buttons[v0]->task);
+			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA08_sidebar_buttons[v0]->task);
 		++v0;
 	} while (v0 < 2);
-	script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47C970_sidebar_task);
-	script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47CA08_sidebar_buttons[1]->task);
+	script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47C970_sidebar_task);
+	script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA08_sidebar_buttons[1]->task);
 	if (UNIT_num_player_units > 0)
 		--UNIT_num_player_units;
 }
@@ -34970,7 +35037,7 @@ void _447340_send_sidebar_buttons_message(int exception_id)
 	do
 	{
 		if (v2 != v1)
-			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, (*v3)->task);
+			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, (*v3)->task);
 		++v3;
 		++v2;
 	} while ((int)v3 < (int) & _47CA10_sidebar_button_minimap);
@@ -35071,8 +35138,8 @@ void entity_mode_tower_on_death(Entity *a1)
 	v4 = v1->script;
 	v1->destroyed = 1;
 	v1->entity_id = 0;
-	script_trigger_event(v4, EVT_MSG_TEXT_STRING, 0, task_mobd17_cursor);
-	script_trigger_event_group(v1->script, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+	script_trigger_event(v4, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
+	script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
 	v1->script->script_type = SCRIPT_TYPE_INVALID;
 	v5 = v1->script;
 	v1->mode = entity_mode_tower_dead;
@@ -35161,7 +35228,7 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 		case EVT_MSG_1511_sidebar_click_category:
 			entity_410CB0_event1511(v4);
 			break;
-		case EVT_MSG_TEXT_STRING:
+		case EVT_SHOW_UI_CONTROL:
 			entity_410CD0_eventTextString(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
@@ -36459,7 +36526,7 @@ void MessageHandler_task4_evt39030(Script *receiver, Script *sender, enum SCRIPT
 	_47CAF0_task_attachment1 *v5; // eax@2
 
 	v4 = (_47CAF0_task_attachment1 *)receiver->param;
-	if (event == EVT_MSG_TEXT_STRING)
+	if (event == EVT_SHOW_UI_CONTROL)
 	{
 		v5 = v4->next;
 		if (v4->next != v4)
@@ -37059,10 +37126,10 @@ void script_44A700_minimap(Script *a1)
 		if (_47CB58_minimap_sprite)
 		{
 			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v2->script);
-			script_trigger_event(0, EVT_MSG_neg2, 0, v2->script);
+			script_trigger_event(0, EVT_MOUSE_HOVER, 0, v2->script);
 			script_445370_yield_to_main_thread(v1, 0x80000000, 1);
-			script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, v2->script);
-			script_trigger_event(0, EVT_MSG_neg2, 0, v2->script);
+			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, v2->script);
+			script_trigger_event(0, EVT_MOUSE_HOVER, 0, v2->script);
 		}
 	}
 }
@@ -37452,7 +37519,7 @@ void mapd_44AE30_fog_of_war()
 			}
 			++v2;
 		}
-		if (get_player_faction())
+		if (is_player_faction_evolved())
 			v6 = get_max_clanhall_level();
 		else
 			v6 = get_max_outpost_level();
@@ -39178,7 +39245,7 @@ bool show_message_ex(Entity *a1, const char *text)
 {
     return script_trigger_event(
         a1 ? a1->script : nullptr,
-        EVT_MSG_TEXT_STRING,
+        EVT_SHOW_UI_CONTROL,
         (void *)text,
         pscript_show_message_ex
     );
@@ -39187,7 +39254,7 @@ bool show_message_ex(Entity *a1, const char *text)
 //----- (0044CB40) --------------------------------------------------------
 bool show_message(const char *text)
 {
-	return script_trigger_event(0, EVT_MSG_TEXT_STRING, (void *)text, pscript_show_message);
+	return script_trigger_event(0, EVT_SHOW_UI_CONTROL, (void *)text, pscript_show_message);
 }
 
 //----- (0044CB60) --------------------------------------------------------
@@ -39289,7 +39356,7 @@ void script_show_message_ex(Script *a1)
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
 		{
 			v5 = i->event;
-			if (v5 != EVT_MSG_1511_sidebar_click_category && v5 == EVT_MSG_TEXT_STRING)
+			if (v5 != EVT_MSG_1511_sidebar_click_category && v5 == EVT_SHOW_UI_CONTROL)
 			{
 				sender = i->sender;
 				text = (const char *)i->param;
@@ -39429,7 +39496,7 @@ void script_show_message(Script *a1)
 		v1 = 0;
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
 		{
-			if (i->event == EVT_MSG_TEXT_STRING)
+			if (i->event == EVT_SHOW_UI_CONTROL)
 			{
 				v5 = i->sender;
 				v2 = (const char *)i->param;

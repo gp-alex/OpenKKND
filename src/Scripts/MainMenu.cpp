@@ -438,7 +438,7 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
                     if (v9 & 0x80 && v10 != stru29_list_end())
                     {
                         script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47C6D4_stru29->sprite->script);
-                        script_trigger_event(0, EVT_MSG_TEXT_STRING, 0, _47C6D4_stru29->sprite->script);
+                        script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47C6D4_stru29->sprite->script);
                         v10 = stru29_list_first();
                     }
                     if (v9 & 0x10F)
@@ -451,12 +451,12 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
         {
             for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
             {
-                if (i->event == EVT_MSG_neg2)
+                if (i->event == EVT_MOUSE_HOVER)
                 {
                     if (v16.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
                         script_trigger_event(v1, EVT_MSG_1511_sidebar_click_category, 0, (Script *)i->param);
                     if (v16.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
-                        script_trigger_event(v1, EVT_MSG_TEXT_STRING, 0, (Script *)i->param);
+                        script_trigger_event(v1, EVT_SHOW_UI_CONTROL, 0, (Script *)i->param);
                 }
                 script_discard_event(i);
             }

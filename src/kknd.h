@@ -2389,41 +2389,6 @@ struct task_426710_attachment_x_mark
 	Sprite *sprite;
 };
 
-/* 435 */
-struct _428940_local
-{
-	_428940_local *next;
-	_428940_local *prev;
-	Script *_8_task;
-	task_428940_attach__cursors_2 *pstru2;
-	task_428940_attach__cursors_2 *ptr_10;
-	Script *_14_task;
-	Script *_18_script;
-	Script *_1C_script;
-	int _20_load_mobd_item_offset;
-	int field_24;
-	int field_28;
-	int field_2C;
-	int field_30;
-	int _34_is_cursor_over_impassible_terrain;
-	int _38_are_owned_units_selected;
-	int field_3C;
-	int _40_is_infantry_or_vehicle_selected;
-	int _44_is_combat_unit_selected;
-	enum UNIT_ID _48_highest_ranking_selected_unit;
-	int field_4C;
-	int cursor_x;
-	int cursor_y;
-	int field_58;
-	int field_5C;
-	int field_60;
-	int field_64;
-	Entity *_68_selected_moveable_entity;
-	int _68_entity_type___0convoy__2lab__9scout__3saboteur_vandal__4technicial_mekanik__and_more_see429D40;
-	Sprite *_70_sprite;
-	Sprite *_74_sprite;
-	void *_78_msg1522_param;
-};
 
 /* 436 */
 struct _428940_global

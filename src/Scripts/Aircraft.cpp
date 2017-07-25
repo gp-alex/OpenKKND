@@ -67,7 +67,7 @@ void EventHandler_Aircraft(Script *receiver, Script *sender, enum SCRIPT_EVENT e
         case EVT_MSG_1511_sidebar_click_category:
             entity_410CB0_event1511(v4);
             break;
-        case EVT_MSG_TEXT_STRING:
+        case EVT_SHOW_UI_CONTROL:
             entity_410CD0_eventTextString(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
@@ -223,7 +223,7 @@ void entity_401530_aircraft(Entity *a1, int a2)
     v4 = a1->script;
     a1->destroyed = 1;
     v4->field_24 &= 0xEFFFFFFF;
-    script_trigger_event(a1->script, EVT_MSG_TEXT_STRING, 0, task_mobd17_cursor);
+    script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
     v5 = v2->turret;
     if (v5)
     {
@@ -231,7 +231,7 @@ void entity_401530_aircraft(Entity *a1, int a2)
         script_deinit(v2->turret->sprite_task);
         script_free_local_object(v2->script, v2->turret);
     }
-    script_trigger_event_group(v2->script, EVT_MSG_TEXT_STRING, v2, SCRIPT_TYPE_39030);
+    script_trigger_event_group(v2->script, EVT_SHOW_UI_CONTROL, v2, SCRIPT_TYPE_39030);
     v2->script->script_type = SCRIPT_TYPE_INVALID;
     v2->sprite->z_speed = 0;
     v2->sprite->z_speed_limit = 512;

@@ -18,7 +18,7 @@ enum SCRIPT_EVENT : __int32
     EVT_MSG_1509_stru11 = 1509,
     EVT_MSG_1510 = 1510,
     EVT_MSG_1511_sidebar_click_category = 1511,
-    EVT_MSG_TEXT_STRING = 1512,
+    EVT_SHOW_UI_CONTROL = 1512,
     EVT_MSG_1513 = 1513,
     EVT_MSG_1514 = 1514,
     EVT_MSG_SHOW_UNIT_HINT = 1515,
@@ -58,7 +58,7 @@ enum SCRIPT_EVENT : __int32
     EVT_MSG_sound_neg5 = -5,
     EVT_MSG_sound_neg4 = -4,
     EVT_MSG_sound_neg3 = -3,
-    EVT_MSG_neg2 = -2,
+    EVT_MOUSE_HOVER = -2,
 };
 
 /* 67 */

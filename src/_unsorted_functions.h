@@ -839,7 +839,7 @@ void sidebar_button_handler_minimap_open(SidebarButton *a1);
 void sidebar_button_handler_minimap_close(SidebarButton *a1);
 void sidebar_deinit();
 void script_446ED0_sidebar_buttons(Script *a1);
-int get_player_faction();
+bool is_player_faction_evolved();
 void sub_447000();
 void disable_minimap();
 void attempt_unlock_aircraft();
@@ -950,3 +950,6 @@ __int16 video_45A110(VideoFile *a1, VideoFileFrame *frame); // idb
 FILE *j_fopen_weirdmode_3(const char *a1);
 _BYTE *sub_45A48E(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8);
 _BYTE *sub_45D3B8(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8, int a9);
+
+
+SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced);

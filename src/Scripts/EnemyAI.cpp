@@ -80,7 +80,7 @@ void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIP
     stru24 *a3a; // [sp+14h] [bp+4h]@24
 
     v4 = (stru24 *)receiver->param;
-    if (event == EVT_MSG_TEXT_STRING)
+    if (event == EVT_SHOW_UI_CONTROL)
     {
         v48 = is_enemy(v4->_2A0_player_side, (Entity *)param) == 0;
         v49 = v4->_2A0_player_side;

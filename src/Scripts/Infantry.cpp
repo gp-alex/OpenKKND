@@ -140,7 +140,7 @@ void entity_init_infantry(Entity *a1)
             v13 = v1->script;
             v1->mode = entity_mode_4197E0_infantry;
             v1->destroyed = 1;
-            script_trigger_event_group(v13, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+            script_trigger_event_group(v13, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
             entity_40DEC0_boxd(v1, v1->sprite_width_shr13, v1->sprite_height_shr13, v1->field_A4);
             v1->script->event_handler = EventHandler_Infantry;
         }
@@ -211,7 +211,7 @@ void entity_init_infantry(Entity *a1)
         v14 = v1->script;
         v1->mode = entity_mode_4197E0_infantry;
         v1->destroyed = 1;
-        script_trigger_event_group(v14, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+        script_trigger_event_group(v14, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
         entity_40DEC0_boxd(v1, v1->sprite_width_shr13, v1->sprite_height_shr13, v1->field_A4);
         v1->script->event_handler = EventHandler_Infantry;
     }
@@ -493,7 +493,7 @@ void entity_4133D0(Entity *a1)
             v17 = v1->script;
             v1->mode = entity_mode_4197E0_infantry;
             v1->destroyed = 1;
-            script_trigger_event_group(v17, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+            script_trigger_event_group(v17, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
             entity_40DEC0_boxd(v1, v1->sprite_width_shr13, v1->sprite_height_shr13, v1->field_A4);
             v1->script->event_handler = EventHandler_Infantry;
             break;
@@ -4677,7 +4677,7 @@ void entity_4187F0(Entity *a1)
     v1 = a1;
     a1->script->event_handler = EventHandler_419CA0;
     entity_40DEC0_boxd(a1, a1->sprite_width_shr13, a1->sprite_height_shr13, a1->field_A4);
-    script_trigger_event(v1->script, EVT_MSG_TEXT_STRING, 0, task_mobd17_cursor);
+    script_trigger_event(v1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
     v2 = v1->entity_E0_outpost_clanhall;
     v1->sprite_width = v2->sprite->x + v2->stru60.pstru4->x_offset;
     v3 = v2->stru60.pstru4->y_offset + v2->sprite->y;
@@ -4910,7 +4910,7 @@ void entity_mode_418B30(Entity *a1)
             * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
         return;
     }
-    script_trigger_event_group(v1->script, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+    script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
     v10 = v1->entity_E0_outpost_clanhall;
     if (v10)
     {
@@ -5001,7 +5001,7 @@ void entity_mode_418D20(Entity *a1)
         script_trigger_event(v1->script, EVT_MSG_SABOTAGE, v1, v1->entity_E0_outpost_clanhall->script);
         v10 = v1->script;
         v1->destroyed = 1;
-        script_trigger_event_group(v10, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+        script_trigger_event_group(v10, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
         v1->script->script_type = SCRIPT_TYPE_INVALID;
         v1->entity_id = 0;
     }
@@ -5433,7 +5433,7 @@ void entity_419560_on_death(Entity *a1)
     v2 = a1->script;
     a1->destroyed = 1;
     v2->field_24 &= 0xEFFFFFFF;
-    script_trigger_event(a1->script, EVT_MSG_TEXT_STRING, 0, task_mobd17_cursor);
+    script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
     v3 = v1->turret;
     if (v3)
     {
@@ -5442,7 +5442,7 @@ void entity_419560_on_death(Entity *a1)
         script_free_local_object(v1->script, v1->turret);
         v1->turret = 0;
     }
-    script_trigger_event_group(v1->script, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+    script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v1->sprite->x_speed = 0;
     v1->sprite->y_speed = 0;
@@ -5525,7 +5525,7 @@ void entity_mode_419760_infantry_destroyed(Entity *a1)
     v2 = v1->script;
     v1->mode = entity_mode_4197E0_infantry;
     v1->destroyed = 1;
-    script_trigger_event_group(v2, EVT_MSG_TEXT_STRING, v1, SCRIPT_TYPE_39030);
+    script_trigger_event_group(v2, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
     entity_40DEC0_boxd(v1, v1->sprite_width_shr13, v1->sprite_height_shr13, v1->field_A4);
     v1->script->event_handler = EventHandler_Infantry;
 }
@@ -5571,7 +5571,7 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
         case EVT_MSG_1511_sidebar_click_category:
             entity_410CB0_event1511(v4);
             break;
-        case EVT_MSG_TEXT_STRING:
+        case EVT_SHOW_UI_CONTROL:
             entity_410CD0_eventTextString(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
@@ -5723,7 +5723,7 @@ void EventHandler_419CA0(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
         case EVT_MSG_1511_sidebar_click_category:
             entity_410CB0_event1511(v4);
             break;
-        case EVT_MSG_TEXT_STRING:
+        case EVT_SHOW_UI_CONTROL:
             entity_410CD0_eventTextString(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
@@ -5762,7 +5762,7 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
     case EVT_MSG_1511_sidebar_click_category:
         entity_410CB0_event1511(v4);
         break;
-    case EVT_MSG_TEXT_STRING:
+    case EVT_SHOW_UI_CONTROL:
         entity_410CD0_eventTextString(v4);
         break;
     case EVT_MSG_SHOW_UNIT_HINT:

@@ -1,6 +1,57 @@
 #pragma once
 
 #pragma pack(push, 1)
+
+
+enum SELECTED_ENTITY_TYPE : __int32
+{
+    SELECTED_ENTITY_0 = 0,
+    SELECTED_ENTITY_TANKER_CONVOY_HANDLER = 1,
+    SELECTED_ENTITY_LABORATORY = 2,
+    SELECTED_ENTITY_SABOTEUR = 3,
+    SELECTED_ENTITY_TECHNICIAN = 4,
+    SELECTED_ENTITY_COMBAT_VEHICLE = 6,
+    SELECTED_ENTITY_MOBILE_BASE = 7,
+    SELECTED_ENTITY_MOBILE_DERRICK = 8,
+    SELECTED_ENTITY_COMBAT_INFANTRY = 9,
+};
+
+/* 435 */
+struct _428940_local
+{
+    _428940_local *next;
+    _428940_local *prev;
+    Script *_8_task;
+    task_428940_attach__cursors_2 *pstru2;
+    task_428940_attach__cursors_2 *ptr_10;
+    Script *_14_task;
+    Script *_18_script;
+    Script *_1C_cursor_target_ai;
+    int _20_load_mobd_item_offset;
+    int field_24;
+    int field_28;
+    int field_2C;
+    int field_30;
+    int _34_is_cursor_over_impassible_terrain;
+    int _38_are_owned_units_selected;
+    int field_3C;
+    int _40_is_infantry_or_vehicle_selected;
+    int _44_is_combat_unit_selected;
+    enum UNIT_ID _48_highest_ranking_selected_unit;
+    int field_4C;
+    int cursor_x;
+    int cursor_y;
+    int field_58;
+    int field_5C;
+    int field_60;
+    int field_64;
+    Entity *_68_selected_moveable_entity;
+    SELECTED_ENTITY_TYPE _68_selected_moveable_entity_type;
+    Sprite *_70_sprite;
+    Sprite *_74_sprite;
+    void *_78_msg1522_param;
+};
+
 struct stru209
 {
     char type;
@@ -36,7 +87,7 @@ struct task_428940_attach__cursors_2
 #define CURSOR_MOBD_OFFSET_REPAIR                   144 //
 #define CURSOR_MOBD_OFFSET_DEPLOY_MOBILE_OUTPOST    188 //
 #define CURSOR_MOBD_OFFSET_RESEARCH                 216 //
-#define CURSOR_MOBD_OFFSET_244                      244 //
+#define CURSOR_MOBD_OFFSET_INFILTRATE               244 // sabotage
 #define CURSOR_MOBD_OFFSET_CANT_RESEARCH            280 //
 #define CURSOR_MOBD_OFFSET_CANT_REPAIR              292 //
 #define CURSOR_MOBD_OFFSET_ATTACK                   304 //
@@ -45,8 +96,8 @@ struct task_428940_attach__cursors_2
 #define CURSOR_MOBD_OFFSET_DRILL                    572 //
 
 void cursor_drag_selection(_428940_local *a1, int x, int y); // idb
-void cursor_unit_selection_response_sound(_428940_local *a1, Entity *a2);
-void cursor_unit_group_selection_response_sound(_428940_local *a1);
+void cursor_on_unit_selection(_428940_local *a1, Entity *a2);
+void cursor_on_unit_group_selection(_428940_local *a1);
 void cursor_classify_selected_unit(_428940_local *a1, Entity *entity);
 
 
@@ -63,9 +114,9 @@ void sub_4297D0(_428940_local *a1, int edx0);
 void cursor_load_mobd(_428940_local *a1, int offset); // idb
 bool cursor_check_click(_428940_local *a1);
 void cursor_group_orders(_428940_local *a1); // cursor handler for unit group
-void _42AFD0_repair(_428940_local *a1, Entity *a2); // idb
+void _42AFD0_vehicle_repair_station_handler(_428940_local *a1, Entity *a2); // idb
 void cursor_unit_move_confirmation(_428940_local *a1);
-void sub_42B600(_428940_local *a1);
+void cursor_sidebar_handler(_428940_local *a1);
 void cursor_process_user_actions(_428940_local *a1, int a2);
 
 
