@@ -415,7 +415,7 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
             {
                 if (out.just_pressed_keys_mask)
                 {
-                    if (BYTE1(out.just_pressed_keys_mask) & 2)
+                    if (out.just_pressed_keys_mask & INPUT_KEYBOARD_ESCAPE_MASK)
                     {
                         if (netz_47C6C0_mapd_idx)
                         {
@@ -435,13 +435,13 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
                         }
                     }
                     v10 = stru29_list_first();
-                    if (v9 & 0x80 && v10 != stru29_list_end())
+                    if (v9 & INPUT_KEYBOARD_RETURN_MASK && v10 != stru29_list_end())
                     {
                         script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47C6D4_stru29->sprite->script);
                         script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47C6D4_stru29->sprite->script);
                         v10 = stru29_list_first();
                     }
-                    if (v9 & 0x10F)
+                    if (v9 & (INPUT_KEYBOARD_TAB_MASK | INPUT_KEYBOARD_ARROW_KEYS_MASK))
                         break;
                 }
             }
@@ -463,7 +463,7 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
             v2 = v17;
         }
     }
-    if (HIBYTE_HEXRAYS(v9) & 1)
+    if (v9 & INPUT_KEYBOARD_TAB_MASK)
     {
         if (BYTE1(out.pressed_keys_mask) & 0xC)
         {

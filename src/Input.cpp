@@ -5,7 +5,6 @@
 
 #include "src/Input.h"
 
-
 /* 379 */
 struct VKeyMap
 {
@@ -15,20 +14,20 @@ struct VKeyMap
 
 VKeyMap vkey_map[25] =
 {
-    { 72, 1 },
-    { 80, 2 },
-    { 75, 4 },
-    { 77, 8 },
-    { 29, 16 },
-    { 56, 32 },
+    { 72, INPUT_KEYBOARD_UP_MASK },
+    { 80, INPUT_KEYBOARD_DOWN_MASK },
+    { 75, INPUT_KEYBOARD_LEFT_MASK },
+    { 77, INPUT_KEYBOARD_RIGHT_MASK },
+    { 29, INPUT_KEYBOARD_CONTROL_MASK },
+    { 56, INPUT_KEYBOARD_MENU_MASK },
     { 71, 5 },
     { 79, 6 },
     { 73, 9 },
     { 81, 10 },
-    { 42, 64 },
-    { 28, 128 },
-    { 15, 256 },
-    { 1, 512 },
+    { 42, 64 }, // shift
+    { 28, INPUT_KEYBOARD_RETURN_MASK },
+    { 15, INPUT_KEYBOARD_TAB_MASK },
+    {  1, INPUT_KEYBOARD_ESCAPE_MASK },
     { 30, 32768 },
     { 19, 16384 },
     { 33, 4096 },
@@ -40,6 +39,59 @@ VKeyMap vkey_map[25] =
     { 60, 8388608 },
     { 61, 16777216 },
     { 0, 0 }
+};
+
+int virtual_keys[90] =
+{
+    -1,
+    /*  [1] */ VK_ESCAPE,
+    /*  [2] */ '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+    /* [12] */ VK_SUBTRACT,
+    VK_ADD,
+    VK_BACK,
+    /* [15] */ VK_TAB,
+    /* [16] */ 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
+    /* [26] */ VK_OEM_4, // {[
+    VK_OEM_6, // }]
+    /* [28] */ VK_RETURN,
+    /* [29] */ VK_CONTROL,
+    /* [30] */ 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L',
+    /* [39] */ VK_OEM_1, // ;:
+    -1,
+    -1,
+    /* [42] */ VK_SHIFT,
+    /* [43] */ VK_OEM_2, // /?
+    /* [44] */ 'Z', 'X', 'C', 'V', 'B', 'N', 'M',
+    /* [51] */ VK_OEM_COMMA,
+    /* [52] */ VK_OEM_PERIOD,
+    /* [53] */ VK_OEM_5, // \|
+    VK_SHIFT,
+    106,
+    /* [56] */ VK_MENU,
+    /* [57] */ VK_SPACE,
+    VK_CAPITAL,
+    /* [59] */ VK_F1, VK_F2, VK_F3, VK_F4, VK_F5, VK_F6, VK_F7, VK_F8, VK_F9, VK_F10,
+    /* [69] */ 144,
+    145,
+    36,
+    /* [72] */ VK_UP,
+    33,
+    109,
+    /* [75] */ VK_LEFT,
+    101,
+    /* [77] */ VK_RIGHT,
+    107,
+    35,
+    /* [80] */ VK_DOWN,
+    34,
+    45,
+    46,
+    -1,
+    -1,
+    -1,
+    122,
+    123,
+    0
 };
 
 
@@ -55,9 +107,6 @@ MouseInput input_mouse; // weak
 int num_mouse_buttons; // weak
 int input_47A58C; // weak
 __int16 word_47A590; // weak
-
-
-
 
 
 void input_reset_keyboard()
@@ -91,9 +140,9 @@ void input_update_keyboard()
         {
             do
             {
-                LOWORD_HEXRAYS(input_static_async_key_state) = GetAsyncKeyState(virtual_keys[vkey_map[nExt_pressed_key].virtual_key]);
+                short key_state = GetAsyncKeyState(virtual_keys[vkey_map[nExt_pressed_key].virtual_key]);
                 v1 = vkey_map[next_pressed_key].mask;
-                if (input_static_async_key_state & 0x8000)
+                if (key_state & 0x8000)
                 {
                     input_now_pressed_keys.pressed_keys_mask |= v1;
                     if (!(input_previous_state.pressed_keys_mask & v1))

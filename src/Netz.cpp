@@ -3052,7 +3052,7 @@ void script_449820_netz(Script *a1)
                     }
                     else
                     {
-                        stru_47CAE0.type = 0;
+                        stru_47CAE0.type = stru209_TYPE_0;
                     }
                 }
                 if (stru_47CAE0.type)

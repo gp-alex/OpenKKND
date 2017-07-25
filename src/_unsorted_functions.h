@@ -228,7 +228,7 @@ int entity_40D6F0(Entity *a1, int sprite_width, int sprite_height, int a4);
 bool _40D860_prolly_sprite_distance(Sprite *a1, Sprite *a2, int a3); // idb
 int sprite_40D8B0_dmg(Sprite *a1, int a2); // idb
 int entity_40DA90_boxd(Entity *a1);
-bool entity_40DBF0_boxd(Entity *a1);
+bool entity_40DBF0_boxd_does_unit_fit(Entity *a1);
 bool entity_40DD00_boxd(Entity *a1);
 int entity_40DDD0_boxd(Entity *a1);
 int entity_40DE80_boxd(Entity *a1, int x, int y, int a3); // idb
@@ -754,7 +754,7 @@ void script_441340_mobd45_evt8(Script *a1); // idb
 int get_current_level_starting_cash();
 void script_441470_mobd45_evt8(Script *a1); // idb
 void script_441550_mobd45_evt8(Script *a1); // idb
-int _441630_get_current_level_field14(int a1);
+int _441630_get_current_level_field14__get_max_upgrade_level(int a1);
 void script_441680_mobd45_evt8(Script *a1); // idb
 void script_441780_mobd45_evt8(Script *a1); // idb
 void script_441940_mobd45_evt17(Script *a1);
@@ -952,4 +952,7 @@ _BYTE *sub_45A48E(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, in
 _BYTE *sub_45D3B8(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8, int a9);
 
 
+SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced);
 SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced);
+SOUND_ID get_unit_ready_sound(UNIT_ID unit_id);
+bool mobile_base_can_deploy(Entity *entity);

@@ -23,6 +23,66 @@ void nullsub_1(void) {}
 
 
 
+SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced)
+{
+    if (is_21st_century(unit_id))
+    {
+        return _4689C0_sound_ids[kknd_rand() % 22];
+    }
+    else if (unit_id == UNIT_STATS_SURV_SCOUT)
+    {
+        return SOUND_SURV_UNIT_SCOUT_192;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_MISSILE_CRAB)
+    {
+        return SOUND_MUTE_UNIT_MISSILE_CRAB_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_GIANT_BEETLE)
+    {
+        return SOUND_MUTE_UNIT_GIANT_BEETLE_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_WAR_MASTADONT)
+    {
+        return SOUND_MUTE_UNIT_WAR_MASTADONT_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_GIANT_SCORPION)
+    {
+        return SOUND_MUTE_UNIT_GIANT_SCORPION_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_DIRE_WOLF)
+    {
+        return SOUND_MUTE_UNIT_DIRE_WOLF_2;
+    }
+    else
+    {
+        if (!is_player_faction_evolved())
+        {
+            if (experienced)
+            {
+                int v13 = kknd_rand();
+                return _468A48_sound_ids[(((unsigned __int64)v13 >> 32) ^ abs(v13) & 1) - ((unsigned __int64)v13 >> 32)];
+            }
+            else
+            {
+                return _468A28_sound_ids[kknd_rand() % 3];
+            }
+        }
+        else
+        {
+            if (experienced)
+            {
+                int v14 = kknd_rand();
+                return _468A50_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 1) - ((unsigned __int64)v14 >> 32)];
+            }
+            else
+            {
+                return _468A38_sound_ids[kknd_rand() % 3];
+            }
+        }
+    }
+}
+
+
 SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced)
 {
     if (is_21st_century(unit_id))
@@ -88,6 +148,55 @@ SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced)
             }
         }
     }
+}
+
+
+SOUND_ID get_unit_ready_sound(UNIT_ID unit_id)
+{
+    switch (unit_id)
+    {
+        case UNIT_STATS_MUTE_DIRE_WOLF:
+            return SOUND_MUTE_UNIT_DIRE_WOLF_READY;
+
+        case UNIT_STATS_MUTE_GIANT_BEETLE:
+            return SOUND_MUTE_UNIT_GIANT_BEETLE_READY;
+
+        case UNIT_STATS_MUTE_GIANT_SCORPION:
+            return SOUND_MUTE_UNIT_GIANT_SCORPION_READY;
+
+        case UNIT_STATS_MUTE_MISSILE_CRAB:
+            return SOUND_MUTE_UNIT_MISSILE_CRAB_READY;
+
+        case UNIT_STATS_MUTE_WAR_MASTADONT:
+            return SOUND_MUTE_UNIT_WAR_MASTADONT_READY;
+
+        default:
+        {
+            int v14 = kknd_rand();
+            if (is_player_faction_evolved())
+            {
+                return _468998_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 3) - ((unsigned __int64)v14 >> 32)];
+            }
+            else
+            {
+                return _468988_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 3) - ((unsigned __int64)v14 >> 32)];
+            }
+        }
+    }
+}
+
+
+
+bool mobile_base_can_deploy(Entity *entity)
+{
+    UNIT_ID unit_id = entity->unit_id;
+
+    entity->unit_id = unit_id == UNIT_STATS_SURV_MOBILE_OUTPOST ? UNIT_STATS_SURV_OUTPOST : UNIT_STATS_MUTE_CLANHALL;
+
+    bool result = entity_40DBF0_boxd_does_unit_fit(entity);
+    entity->unit_id = unit_id;
+
+    return result;
 }
 
 //----- (00401000) --------------------------------------------------------
@@ -6273,7 +6382,7 @@ int entity_40DA90_boxd(Entity *a1)
 // 4793F8: using guessed type int _4793F8_map_width;
 
 //----- (0040DBF0) --------------------------------------------------------
-bool entity_40DBF0_boxd(Entity *a1)
+bool entity_40DBF0_boxd_does_unit_fit(Entity *a1)
 {
 	enum UNIT_ID v1; // eax@1
 	stru196 *v2; // edx@1
@@ -18804,7 +18913,7 @@ void script_custom_mission_briefing_loop(Script *a1)
 		{
 			script_445370_yield_to_main_thread(a1, 0x80000000, 1);
 			input_get_keyboard_state(&keys_state);
-			if (keys_state.just_pressed_keys_mask & 0x200)
+			if (keys_state.just_pressed_keys_mask & INPUT_KEYBOARD_ESCAPE_MASK)
 			{
 				sound_stop(_47A198_custom_mission_briefing_sound_id);
 				_47A198_custom_mission_briefing_sound_id = 0;
@@ -23740,12 +23849,12 @@ void script_431E60_mobd_20_input(Script *a1)
 			--v1;
 		if (out.just_pressed_keys_mask && !dword_47C6C4)
 		{
-			if (!v1 && BYTE1(out.just_pressed_keys_mask) & 2)
+			if (!v1 && out.just_pressed_keys_mask & INPUT_KEYBOARD_ESCAPE_MASK)
 			{
 				v1 = 4;
 				script_trigger_event(a1, EVT_MSG_1530_OPEN_GAME_MENU, 0, task_47C028);
 			}
-			if ((v2 & 0x100) == 256)
+			if (v2 & INPUT_KEYBOARD_TAB_MASK)
 				script_44A700_minimap(a1);
 		}
 	}
@@ -26741,8 +26850,6 @@ bool LVL_LoadSlv(const char *slv_filename)
 	}
 	return 1;
 }
-// 47C4E8: using guessed type int _47C4E8_num_sounds;
-// 47C5C0: using guessed type int _47C5C0_can_sound;
 
 //----- (004396C0) --------------------------------------------------------
 int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset, Script *script)
@@ -30653,7 +30760,7 @@ void script_441550_mobd45_evt8(Script *a1)
 // 47C5FC: using guessed type int _46E420_starting_cash_idx;
 
 //----- (00441630) --------------------------------------------------------
-int _441630_get_current_level_field14(int a1)
+int _441630_get_current_level_field14__get_max_upgrade_level(int a1)
 {
 	int v1; // ecx@1
 	int v2; // ecx@3

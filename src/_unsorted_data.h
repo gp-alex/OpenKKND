@@ -74,7 +74,6 @@ extern unsigned __int8 palette_465848_sprt[256];
 extern int _465948_per_mobd_lookup_idx[16];
 extern enum SOUND_ID _465988_sounds[5];
 extern int input_465A80_wndprockey_map[256];
-extern int virtual_keys[90];
 extern int input_465FE8[16];
 extern stru7 array_466028[7];
 extern int _466098_cost_multiplier[4];
@@ -647,7 +646,6 @@ extern char palette_4798F8_sprt_aligned[512];
 extern stru1_draw_params *current_drawing_params;
 extern char byte_479B00[88]; // idb
 extern int input_479B6C_just_pressed_keys_mask; // weak
-extern int input_static_async_key_state; // weak
 extern int wnd_proc_pressed_key_id; // weak
 extern int next_pressed_key; // weak
 extern int input_wnd_proc_pressed_key_id; // weak

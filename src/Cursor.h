@@ -6,7 +6,7 @@
 enum SELECTED_ENTITY_TYPE : __int32
 {
     SELECTED_ENTITY_0 = 0,
-    SELECTED_ENTITY_TANKER_CONVOY_HANDLER = 1,
+    SELECTED_ENTITY_TANKER = 1,
     SELECTED_ENTITY_LABORATORY = 2,
     SELECTED_ENTITY_SABOTEUR = 3,
     SELECTED_ENTITY_TECHNICIAN = 4,
@@ -52,9 +52,38 @@ struct _428940_local
     void *_78_msg1522_param;
 };
 
+
+enum stru209_TYPE : __int8
+{
+    stru209_TYPE_0 = 0,
+    stru209_TYPE_1 = 1,
+    stru209_TYPE_SELECT_UNIT = 2,
+    stru209_TYPE_3 = 3,
+    stru209_TYPE_4 = 4,
+    stru209_TYPE_5 = 5,
+    stru209_TYPE_MOVE = 6,
+    stru209_TYPE_ATTACK = 7,
+    stru209_TYPE_8_production_ready = 8,
+    stru209_TYPE_9 = 9,
+    stru209_TYPE_DEPLOY_MOBILE_OUTPOST = 10,
+    stru209_TYPE_11 = 11,
+    stru209_TYPE_12_upgrade_complete = 12,
+    stru209_TYPE_13 = 13,
+    stru209_TYPE_15 = 15,
+    stru209_TYPE_16 = 16,
+    stru209_TYPE_18 = 18,
+    stru209_TYPE_TANKER_SET_DRILLRIG = 19,
+    stru209_TYPE_TANKER_SET_BASE = 20,
+    stru209_TYPE_REPAIR_AT_STATION = 21,
+    stru209_TYPE_TECHNICIAN_REPAIR = 22,
+    stru209_TYPE_INFILTRATE = 24,
+    stru209_TYPE_25_attack = 25,
+    stru209_TYPE_26_attack = 26,
+    stru209_TYPE_27 = 27,
+};
 struct stru209
 {
-    char type;
+    stru209_TYPE type;
     int param;
     int param2;
     int param3;
@@ -93,6 +122,7 @@ struct task_428940_attach__cursors_2
 #define CURSOR_MOBD_OFFSET_ATTACK                   304 //
 #define CURSOR_MOBD_OFFSET_MOVE                     384 //
 #define CURSOR_MOBD_OFFSET_DENIED                   448 // impassible terrain cursor
+#define CURSOR_MOBD_OFFSET_MOVE_CLICK               508 // issue move order
 #define CURSOR_MOBD_OFFSET_DRILL                    572 //
 
 void cursor_drag_selection(_428940_local *a1, int x, int y); // idb
