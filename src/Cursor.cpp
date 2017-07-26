@@ -200,7 +200,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
 
     // drag ended
 
-    _47A714._stru209.type = stru209_TYPE_3;
+    _47A714._stru209.type = stru209_TYPE_DESELECT;
     _428940_list_do_stuff(&_47A714._stru209);
 
     a1->_38_are_owned_units_selected = false;
@@ -605,7 +605,7 @@ LABEL_82:
         && v2->field_58 < 4096
         && v2->field_5C < 4096)
     {
-        _47A714._stru209.type = stru209_TYPE_3;
+        _47A714._stru209.type = stru209_TYPE_DESELECT;
         _428940_list_do_stuff(&_47A714._stru209);
 
         v2->_38_are_owned_units_selected = false;
@@ -795,7 +795,7 @@ LABEL_82:
                 break;
 
             case EVT_MSG_1532:
-                _47A714._stru209.type = stru209_TYPE_15;
+                _47A714._stru209.type = stru209_TYPE_15_multiplayer;
                 _428940_list_do_stuff(&_47A714._stru209);
                 break;
 
@@ -806,7 +806,7 @@ LABEL_82:
                 break;
 
             case EVT_MSG_1533:
-                _47A714._stru209.type = stru209_TYPE_16;
+                _47A714._stru209.type = stru209_TYPE_16_multiplayer;
                 _428940_list_do_stuff(&_47A714._stru209);
                 break;
 
@@ -2139,16 +2139,16 @@ void script_game_cursor_handler(Script *a1)
                                                 v60 = 0;
                                             if (v60)
                                             {
-                                                v60->_8_task = (Script *)*((_DWORD *)v54 + 3);
+                                                v60->_8_task = v54->script;
                                                 v60->next = v62.next;
                                                 v60->prev = &v62;
                                                 v62.next->prev = v60;
                                                 v62.next = v60;
-                                                script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, *((Script **)v54 + 3));
-                                                v61 = *((_DWORD *)v54 + 5);
+                                                script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v54->script);
+                                                v61 = v54->player_side;
                                                 v62._38_are_owned_units_selected = v61 == player_side;
                                                 if (v61 == player_side)
-                                                    cursor_on_unit_selection(&v62, (Entity *)v54);
+                                                    cursor_on_unit_selection(&v62, v54);
                                             }
                                             dword_468984 = -1;
                                         }
@@ -2180,7 +2180,7 @@ void script_game_cursor_handler(Script *a1)
                                     {
                                         if (!single_player_game)
                                         {
-                                            _47A714._stru209.type = stru209_TYPE_27;
+                                            _47A714._stru209.type = stru209_TYPE_SWEAR_ALLEGIANCE;
                                             _47A714._stru209.param = v48->player_side;
                                             _428940_list_do_stuff(&_47A714._stru209);
                                         }
@@ -2270,7 +2270,7 @@ void script_game_cursor_handler(Script *a1)
                     cursor_load_mobd(&v62, CURSOR_MOBD_OFFSET_ATTACK);
                     if (cursor_check_click(&v62))
                     {
-                        _47A714._stru209.type = stru209_TYPE_26_attack;
+                        _47A714._stru209.type = stru209_TYPE_26_destroy;
                         _47A714._stru209.param = v32->entity_id;
                         _428940_list_do_stuff(&_47A714._stru209);
 
@@ -2284,7 +2284,7 @@ void script_game_cursor_handler(Script *a1)
                 cursor_load_mobd(&v62, CURSOR_MOBD_OFFSET_ATTACK);
                 if (cursor_check_click(&v62))
                 {
-                    _47A714._stru209.type = stru209_TYPE_25_attack;
+                    _47A714._stru209.type = stru209_TYPE_25_spawn_unit;
                     _47A714._stru209.param = player_side;
                     _47A714._stru209.param2 = v62._70_sprite->x;
                     _47A714._stru209.param3 = v62._70_sprite->y;
@@ -2417,7 +2417,7 @@ void script_game_cursor_handler(Script *a1)
                 {
                     sound_play(SOUND_193, 0, _4690A8_unit_sounds_volume, 16, 0);
 
-                    _47A714._stru209.type = stru209_TYPE_9;
+                    _47A714._stru209.type = stru209_TYPE_9_spawn_unit;
                     ((short *)&_47A714._stru209.param)[0] = *(_WORD *)v62._78_msg1522_param;
                     *(int *)((char *)&_47A714._stru209.param + 2) = v10->x;
                     *(int *)((char *)&_47A714._stru209.param + 6) = v10->y;

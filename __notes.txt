@@ -1,7 +1,9 @@
-bool cursor_check_click(_428940_local *a1) - order selected units to move
-
-
-
 terrain passability
     v42 = _478AA8_boxd_stru0_array[x + _4793F8_map_width * y].flags;
     is_cursor_over_impassible_terrain = v42 & 0x60;
+
+
+script_evt39030_handler
+	unit tasks handler (from user cursor)
+
+entity_mode_move_attack

@@ -254,8 +254,8 @@ bool boxd_40EDF0(DataBoxd_stru0_per_map_unit *a1, Entity *a2, Entity *a3);
 Entity *boxd_40EE10_prolly_get_building(int map_x, int map_y); // idb
 int boxd_40EE70(int map_x, int map_y); // idb
 int boxd_40EEB0(Entity *a1, int map_x, int map_y, int a4);
-int entity_40F0A0(Entity *a1, int a2); // idb
-int entity_40F100(Entity *a1, int a2); // idb
+int entity_40F0A0_get_dx(Entity *a1, int a2); // idb
+int entity_40F100_get_dy(Entity *a1, int a2); // idb
 int boxd_40F160(Entity *a1, int map_x, int map_y, int a4);
 int boxd_40F230(Entity *a1, int map_x, int map_y, int a4, int a5);
 void sub_40F380_incdec(int inc_dec);
@@ -324,7 +324,7 @@ void entity_4158B0(Entity *a1);
 void entity_mode_415980(Entity *a1);
 void entity_415A20(Entity *a1);
 void entity_mode_415A60(Entity *a1);
-void entity_mode_415AB0(Entity *a1);
+void entity_mode_move_attack(Entity *a1);
 void entity_415D30(Entity *a1);
 void entity_mode_416060(Entity *a1);
 void entity_mode_4165C0(Entity *a1);
@@ -368,15 +368,13 @@ void entity_419560_on_death(Entity *a1);
 void entity_419720(Entity *a1);
 void entity_mode_419760_infantry_destroyed(Entity *a1);
 void entity_mode_4197E0_infantry(Entity *a1);
-void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void EventHandler_419CA0(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
+void EventHandler_419CA0(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
+void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void EventHandler_419DF0(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void EventHandler_419E80(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void entity_419F00_evt1523(Entity *a1, EVT_MSG_1523_param *param);
 void entity_41A060_evt1525(Entity *a1, void *a2); // idb
 void entity_41A170_evt1524(Entity *a1, int a2);
-void entity_41A270_evt_mission_accomplished(Entity *a1, int a2);
 void entity_41A400_evt1547(Entity *a1, Entity *a2);
 void entity_41A470(Entity *a1, Entity *a2);
 void entity_41A510_evt1503(Entity *a1, int a2);

@@ -219,27 +219,19 @@ bool input_initialize()
 bool input_4283A0_set_cursor_pos(__int16 x, __int16 y)
 {
     BOOL result; // eax@2
-    int v3; // esi@3
-    int v4; // edi@3
     int v5; // eax@5
     int v6; // [sp-8h] [bp-14h]@5
-    int v7; // [sp+0h] [bp-Ch]@1
     struct tagPOINT Point; // [sp+4h] [bp-8h]@1
 
-    LOWORD_HEXRAYS(v7) = y;
-    LOWORD_HEXRAYS(Point.y) = x;
     if (input_mouse_window_losing_focus_reset_to_defaults)
     {
-        v3 = LOWORD_HEXRAYS(Point.y);
-        v4 = (unsigned __int16)v7;
-        Point.x = LOWORD_HEXRAYS(Point.y);
-        Point.y = (unsigned __int16)v7;
-
+        Point.x = x;
+        Point.y = y;
         ClientToScreen(global_hwnd, &Point);
         SetCursorPos(Point.x, Point.y);
 
-        input_mouse.cursor_x_x256 = v3 << 8;
-        input_mouse.cursor_y_x256 = v4 << 8;
+        input_mouse.cursor_x_x256 = x << 8;
+        input_mouse.cursor_y_x256 = y << 8;
         result = 1;
     }
     else

@@ -1035,7 +1035,7 @@ void script_409770_ai(Script *a1)
         v4 = (stru24 *)v1->tanker_list_DC;
         if ((stru24_OilTankerNode **)v4 != &v1->tanker_list_DC)
         {
-            while (*((void(**)(Script *, Script *, enum SCRIPT_EVENT, void *))v4->struC->_C_param + 13) == EventHandler_Infantry)
+            while (*((void(**)(Script *, Script *, enum SCRIPT_EVENT, void *))v4->struC->_C_param + 13) == EventHandler_General_Scout)
             {
                 v4 = v4->next;
                 if ((stru24_OilTankerNode **)v4 == &v1->tanker_list_DC)
@@ -1049,8 +1049,8 @@ void script_409770_ai(Script *a1)
             v1->_2E8_drillrig_node->_8_next = (stru24_OilTankerNode *)v4;
             v4->_8_entity = (Entity *)v1->_2E8_drillrig_node;
             ++v1->_2E8_drillrig_node->field_30;
-            script_trigger_event(0, EVT_MSG_1542, v1->_2E8_drillrig_node->entity, (Script *)v4->struC->_C_param);
-            script_trigger_event(0, EVT_MSG_1541, v1->_2E8_drillrig_node->ptr_28->entity, (Script *)v4->struC->_C_param);
+            script_trigger_event(0, EVT_MSG_1542_tanker_set_drillrig, v1->_2E8_drillrig_node->entity, (Script *)v4->struC->_C_param);
+            script_trigger_event(0, EVT_MSG_1541_tanker_set_base, v1->_2E8_drillrig_node->ptr_28->entity, (Script *)v4->struC->_C_param);
         }
     LABEL_8:
         v1->_2E8_drillrig_node = 0;
@@ -1379,14 +1379,14 @@ LABEL_97:
                 v70 = v69->field_8;
                 if (v70)
                 {
-                    if (*(void(**)(Script *, Script *, enum SCRIPT_EVENT, void *))(*(_DWORD *)(v70 + 12) + 52) != EventHandler_Infantry)
+                    if (*(void(**)(Script *, Script *, enum SCRIPT_EVENT, void *))(*(_DWORD *)(v70 + 12) + 52) != EventHandler_General_Scout)
                     {
                         v71 = v69->x;
                         v172 = v1->_2A0_player_side;
                         v72 = v69->y;
                         v170 = v71;
                         i1 = v72;
-                        script_trigger_event(0, EVT_MSG_MISSION_ACCOMPLISHED, &v172, *(Script **)(v70 + 12));
+                        script_trigger_event(0, EVT_ENTITY_MOVE, &v172, *(Script **)(v70 + 12));
                         v69->next->prev = v69->prev;
                         v69->prev->next = v69->next;
                         v69->next = v1->list_310_head;
@@ -1606,7 +1606,7 @@ LABEL_97:
                         kk->field_40 = v146;
                         v174 = v146;
                         for (kk->field_24 = 0; (void **)v145 != &kk->_C_next; v145 = v145->next)
-                            script_trigger_event(0, EVT_MSG_MISSION_ACCOMPLISHED, param, *((Script **)v145->_C_next + 3));
+                            script_trigger_event(0, EVT_ENTITY_MOVE, param, *((Script **)v145->_C_next + 3));
                     }
                     else
                     {
@@ -1708,7 +1708,7 @@ LABEL_97:
                         nn->field_40 = v162;
                         v174 = v162;
                         for (nn->field_24 = 0; (void **)v161 != &nn->_C_next; v161 = v161->next)
-                            script_trigger_event(0, EVT_MSG_MISSION_ACCOMPLISHED, param, *((Script **)v161->_C_next + 3));
+                            script_trigger_event(0, EVT_ENTITY_MOVE, param, *((Script **)v161->_C_next + 3));
                     }
                     else
                     {
@@ -1738,7 +1738,7 @@ LABEL_97:
         v172 = v114;
         for (i1 = v115; (stru24_AttackerNode **)v112 != &v1->attacker_list_48; v112 = v112->next)
         {
-            if (v112->entity->script->event_handler != EventHandler_Infantry)
+            if (v112->entity->script->event_handler != EventHandler_General_Scout)
             {
                 v116 = v112->prev;
                 v112->next->prev = v116;
@@ -1747,7 +1747,7 @@ LABEL_97:
                 v112->prev = (stru24_AttackerNode *)&v1->marshalling_nodes_list__evmission8_only_60;
                 v1->marshalling_nodes_list__evmission8_only_60->prev = v112;
                 v1->marshalling_nodes_list__evmission8_only_60 = v112;
-                script_trigger_event(0, EVT_MSG_MISSION_ACCOMPLISHED, &v172, v112->entity->script);
+                script_trigger_event(0, EVT_ENTITY_MOVE, &v172, v112->entity->script);
                 v112 = v116;
             }
         }
@@ -1813,7 +1813,7 @@ LABEL_97:
                     v128->field_40 = v126;
                     v174 = v126;
                     for (v128->field_24 = 0; v129 != (_DWORD *)v130; v129 = (_DWORD *)*v129)
-                        script_trigger_event(0, EVT_MSG_MISSION_ACCOMPLISHED, param, *(Script **)(v129[3] + 12));
+                        script_trigger_event(0, EVT_ENTITY_MOVE, param, *(Script **)(v129[3] + 12));
                     v131 = v1->field_24C;
                     v132 = (char *)&v1->field_168;
                     goto LABEL_219;
@@ -2186,7 +2186,7 @@ int sub_40AFC0(stru24 *a1, stru24_stru160 *a2, int a3, int a4)
     {
         do
         {
-            result = script_trigger_event(0, EVT_MSG_MISSION_ACCOMPLISHED, &v7, *(Script **)(*(_DWORD *)(v4 + 12) + 12));
+            result = script_trigger_event(0, EVT_ENTITY_MOVE, &v7, *(Script **)(*(_DWORD *)(v4 + 12) + 12));
             v4 = *(_DWORD *)v4;
         } while ((char *)v4 != v5);
     }
@@ -2287,7 +2287,7 @@ stru24_EnemyNode **stru24_40B020(stru24 *a1, stru24_stru160 *a2)
         for (i = v14; v15 != v16; v15 = *(_DWORD *)v15)
             result = (stru24_EnemyNode **)script_trigger_event(
                 0,
-                EVT_MSG_1523,
+                EVT_ENTITY_ATTACK,
                 &v21,
                 *(Script **)(*(_DWORD *)(v15 + 12) + 12));
     }

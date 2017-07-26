@@ -83,7 +83,7 @@ void script_mobd79_evt19__main_menu_load(Script *a1)
     {
         while (!script_443380(a1, 448, 0))
             ;
-        script_trigger_event_group(a1, EVT_MSG_1546, 0, SCRIPT_TYPE_1);
+        script_trigger_event_group(a1, EVT_MSG_1546_repair_at_station, 0, SCRIPT_TYPE_1);
         script_432510_ingame_menu_create_sprites(a1);
         v3 = a1->sprite;
         v4 = v3->parent;
@@ -419,7 +419,7 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
                     {
                         if (netz_47C6C0_mapd_idx)
                         {
-                            script_trigger_event_group(v1, EVT_MSG_1526, 0, SCRIPT_TYPE_17);
+                            script_trigger_event_group(v1, EVT_MSG_1526_infiltrate, 0, SCRIPT_TYPE_17);
                         }
                         else if (_47C65C_render_string)
                         {

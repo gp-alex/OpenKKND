@@ -63,7 +63,7 @@ struct stru24_struC;
 struct Sprite_stru58;
 struct Sprite_stru58_stru0;
 struct Entity_stru_dmg_related;
-struct EVT_MSG_1523_param;
+struct _47CAF0_task_attachment1_attack_task;
 struct task_428940_attach__cursors;
 struct task_428940_attach__cursors_2;
 
@@ -788,10 +788,10 @@ struct Entity
 	int field_D4;
 	int field_D8;
 	int field_DC;
-	Entity *entity_E0_outpost_clanhall;
+	Entity *_E0_current_attack_target;
 	Entity *_E4_entity;
 	Entity *_E8_entity;
-	int entity_E0_outpost_clanhall_entity_id;
+	int _E0_current_attack_target_entity_id;
 	int _E4_entity_id;
 	int entity_118_entity_id;
 	int _E8_entity_id;
@@ -1137,13 +1137,6 @@ struct DataMobdItem
 	DataMobdItem_stru0 *ptr_0;
 	DataMobdItem_stru0 *ptr_4;
 	int field_8;
-};
-
-
-struct EVT_MSG_1523_param
-{
-    PLAYER_SIDE side;
-    Entity *entity;
 };
 
 /* 336 */
@@ -1594,6 +1587,20 @@ enum SOUND_ID : __int32
 	SOUND_193 = 193,
 };
 
+
+struct _47CAF0_task_attachment1_attack_task
+{
+    int player_side;
+    Entity *target;
+};
+
+struct _47CAF0_task_attachment1_move_task
+{
+    int player_side;
+    int dst_x;
+    int dst_y;
+};
+
 /* 364 */
 struct _47CAF0_task_attachment1
 {
@@ -1603,21 +1610,18 @@ struct _47CAF0_task_attachment1
 	_47CAF0_task_attachment2 *attach2_list;
 	_47CAF0_task_attachment2 *attach2_list_free_pool;
 	Script *owning_task;
-	int owning_task_idx_1;
-	int field_1C;
-	int owning_task_idx_2;
-	int field_24;
-	int owning_task_idx_3;
-	int field_2C;
-	int field_30;
+	PLAYER_SIDE selected_unit_player_side;
+	int _1C_does_selected_unit_belong_to_player;
+    _47CAF0_task_attachment1_attack_task attack_task;
+    _47CAF0_task_attachment1_move_task move_task;
 };
 
 /* 366 */
 struct _47CAF0_task_attachment2
 {
 	_47CAF0_task_attachment2 *next;
-	int field_4;
-	int field_8;
+    _47CAF0_task_attachment1 *_4_unit_task;
+	Script *_8_selected_unit_script;
 };
 
 /* 368 */
@@ -2118,7 +2122,7 @@ struct EntitySerialized
 	int field_DC;
 	int entity_EC_outpost_clanhall_entity_id;
 	int entity_E4_entity_id;
-	int entity_E0_outpost_clanhall_entity_id;
+	int _E0_current_attack_target_entity_id;
 	int _E4_entity_id;
 	int entity_F4_entity_118_entity_id;
 	int entity_sprite_width_2;

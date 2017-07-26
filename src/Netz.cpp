@@ -777,13 +777,13 @@ int netz_42E820(netz_stru_3 *a1)
             netz_42E450(v34, 0, 57);
             return 0;
         case 72:
-            v35 = (void *)script_trigger_event_group(0, EVT_MSG_1526, 0, SCRIPT_TYPE_17);
+            v35 = (void *)script_trigger_event_group(0, EVT_MSG_1526_infiltrate, 0, SCRIPT_TYPE_17);
             netz_42F650(v35);
             return 0;
         case 67:
             if (dword_468B54 < 0)
                 goto LABEL_183;
-            script_trigger_event_group(0, EVT_MSG_1526, 0, SCRIPT_TYPE_17);
+            script_trigger_event_group(0, EVT_MSG_1526_infiltrate, 0, SCRIPT_TYPE_17);
             return 0;
         case 71:
             kknd_srand_debug(*(_DWORD *)a1->str_34);

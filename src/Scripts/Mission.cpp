@@ -67,7 +67,7 @@ void _424CA0_script_47A3CC_evttrigger()
 void _424CC0_script_47A3CC_evttrigger()
 {
     if (script_47A3CC)
-        script_trigger_event(0, EVT_MSG_MISSION_ACCOMPLISHED, 0, script_47A3CC);
+        script_trigger_event(0, EVT_ENTITY_MOVE, 0, script_47A3CC);
 }
 
 //----- (00424CE0) --------------------------------------------------------
@@ -637,7 +637,7 @@ void script_425400(Script *a1)
                     {
                         v3 = (void *)((unsigned int)v3 | 2);
                     }
-                    else if (i->event == EVT_MSG_MISSION_ACCOMPLISHED)
+                    else if (i->event == EVT_ENTITY_MOVE)
                     {
                         v3 = (void *)((unsigned int)v3 | 1);
                     }
@@ -797,7 +797,7 @@ void entity_check_special_mission_death_conditions(Entity *victim)
     if (mission_accomplished)
     {
         if (script_47A3CC)
-            script_trigger_event(0, EVT_MSG_MISSION_ACCOMPLISHED, 0, script_47A3CC);
+            script_trigger_event(0, EVT_ENTITY_MOVE, 0, script_47A3CC);
     }
     else if (mission_failed && script_47A3CC)
     {
@@ -961,7 +961,7 @@ void UNIT_Handler_General(Script *a1)
         v1->player_side = player_side;
         v1->sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
         script_trigger_event_group(v1->script, EVT_MSG_1521_entity_created, v1, SCRIPT_TYPE_39030);
-        v1->script->event_handler = EventHandler_General_Scout;
+        v1->script->event_handler = EventHandler_Infantry;
         entity_mode_415540_infantry(v1);
     }
     (v1->mode)(v1);
@@ -994,7 +994,7 @@ void UNIT_Handler_Scout(Script *a1)
         v1->_12C_prison_bunker_spawn_type = 60;
         v1->_128_spawn_param = (void *)76800;
         entity_40DF50_boxd(v1, 0);
-        v1->script->event_handler = EventHandler_General_Scout;
+        v1->script->event_handler = EventHandler_Infantry;
     }
     (v1->mode)(v1);
     v3 = v1->_134_param__unitstats_after_mobile_outpost_plant;
