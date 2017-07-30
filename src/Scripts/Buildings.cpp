@@ -6,6 +6,8 @@
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Entity.h"
+
 
 
 //----- (00402F30) --------------------------------------------------------
@@ -323,20 +325,14 @@ void entity_mode_403650_building(Entity *a1)
     if (v1->player_side)
     {
         v2 = v1->stats;
-        if (v1->hitpoints >= v2->hitpoints / 3 || (v3 = v2->mobd_lookup_table_offset_2, v3 == -1))
-            sprite_4272E0_load_mobd_item(
-                v1->sprite,
-                v2->mobd_lookup_offset,
-                _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
+        if (v1->hitpoints >= v2->hitpoints / 3 || (v3 = v2->mobd_lookup_offset_4, v3 == -1))
+            entity_load_mobd_3(v1);
         else
-            sprite_4272E0_load_mobd_item(v1->sprite, v3, _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
+            entity_load_mobd_4(v1);
     }
     else
     {
-        sprite_4272E0_load_mobd_item(
-            v1->sprite,
-            v1->stats->mobd_lookup_offset,
-            _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
+        entity_load_mobd_3(v1);
         v1->mode = entity_mode_4035C0_building;
     }
     v4 = v1->_12C_prison_bunker_spawn_type;

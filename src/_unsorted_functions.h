@@ -233,7 +233,7 @@ bool entity_40DD00_boxd(Entity *a1);
 int entity_40DDD0_boxd(Entity *a1);
 int entity_40DE80_boxd(Entity *a1, int x, int y, int a3); // idb
 char *entity_40DEC0_boxd(Entity *a1, int a2, int a3, int a4);
-char *entity_40DF50_boxd(Entity *a1, int a2);
+void entity_40DF50_boxd_update_map_tile(Entity *a1, int a2);
 int entity_40E000_boxd(Entity *a1, int a2, int a3);
 int entity_40E1B0_boxd(Entity *a1, int x, int y, int a4); // idb
 int REND_SetRoutines();
@@ -257,7 +257,7 @@ int boxd_40EEB0(Entity *a1, int map_x, int map_y, int a4);
 int entity_40F0A0_get_dx(Entity *a1, int a2); // idb
 int entity_40F100_get_dy(Entity *a1, int a2); // idb
 int boxd_40F160(Entity *a1, int map_x, int map_y, int a4);
-int boxd_40F230(Entity *a1, int map_x, int map_y, int a4, int a5);
+void boxd_40F230_update_map_tile(Entity *a1, int map_x, int map_y, int a4, int a5);
 void sub_40F380_incdec(int inc_dec);
 bool sidebar_button_list_alloc();
 void script_sidebar(Script *a1); // idb
@@ -307,7 +307,7 @@ bool entity_4135E0(Entity *a1);
 bool entity_413860_boxd(Entity *a1);
 bool entity_413A90_boxd(Entity *a1);
 int entity_413C10(Entity *a1);
-bool entity_413D10_boxd(Entity *a1);
+bool entity_initialize_order(Entity *a1);
 void entity_414440_boxd(Entity *a1, int *a2, int *a3);
 bool entity_414520_boxd(Entity *a1);
 void entity_414670(Entity *a1);
@@ -316,7 +316,7 @@ void entity_4149A0(Entity *a1);
 bool entity_414AD0(Entity *a1);
 void entity_414C30_boxd(Entity *a1);
 void entity_414E80(Entity *a1);
-bool entity_415400(Entity *a1);
+bool entity_415400_tanker(Entity *a1);
 void entity_mode_415540_infantry(Entity *a1);
 void entity_mode_415690(Entity *a1);
 void entity_mode_4157F0(Entity *a1);
@@ -399,7 +399,7 @@ DataMapd *LVL_FindMapd();
 bool LVL_SubstHunk(DataHunk *dst, DataHunk *src, const char *hunk);
 bool entity_41B510(Entity *a1, Entity *a2);
 int entity_41B970_boxd(Entity *a1, int a2, int a3); // idb
-int boxd_41BA30(int x, int y, int a3, int a4, int a5, int a6, Entity *a1);
+int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1);
 int boxd_41BC60(int x, int y, int a3, int a4, int a5, int a6, Entity *a7);
 int boxd_41BE90(_DWORD *a1, int a2, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6, int *a7, int *a8, int map_x, int map_y, _DWORD *a11, _DWORD *a12);
 int boxd_41C060(int a1, Entity *a2, int a3, int a4, int *a5, int *a6, int *a7, int a8);
@@ -475,7 +475,7 @@ void entity_check_special_mission_death_conditions(Entity *victim);
 Entity *entity_425820_find(Entity *a1, int a2); // idb
 void entity_4258C0_init_palettes_inc_unit_counter(Entity *a1, enum PLAYER_SIDE side);
 void entity_mode_425920_scout(Entity *a1);
-char *entity_425A50_setup_spawn(Entity *a1, void *spawn_param, int spawn_type); // idb
+void entity_425A50_setup_spawn(Entity *a1, void *spawn_param, int spawn_type); // idb
 void UNIT_Handler_General(Script *a1);
 void UNIT_Handler_Scout(Script *a1);
 void script_425BE0_check_special_victory_conditions(Script *a1); // idb
@@ -954,3 +954,8 @@ SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced);
 SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced);
 SOUND_ID get_unit_ready_sound(UNIT_ID unit_id);
 bool mobile_base_can_deploy(Entity *entity);
+
+int global2map(int coordinate);
+int map2global(int coordinate);
+bool map_is_same_tile(int coord1, int coord2);
+bool map_is_different_tile(int coord1, int coord2);

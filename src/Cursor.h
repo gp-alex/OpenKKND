@@ -56,7 +56,7 @@ struct _428940_local
 enum stru209_TYPE : __int8
 {
     stru209_TYPE_0 = 0,
-    stru209_TYPE_1 = 1,
+    stru209_TYPE_SELECT_UNIT_GROUP = 1,
     stru209_TYPE_SELECT_UNIT = 2,
     stru209_TYPE_DESELECT = 3,
     stru209_TYPE_4 = 4,

@@ -6,6 +6,7 @@
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Entity.h"
 
 
 //----- (004072A0) --------------------------------------------------------
@@ -52,17 +53,9 @@ void entity_mode_407300_prison(Entity *a1)
 //----- (00407390) --------------------------------------------------------
 void entity_mode_407390_prison(Entity *a1)
 {
-    Entity *v1; // esi@1
-    Script *v2; // eax@1
-
-    v1 = a1;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->mobd_lookup_offset,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-    v2 = v1->script;
-    v1->mode = entity_mode_407300_prison;
-    script_445370_yield_to_main_thread(v2, 0x80000000, 1);
+    entity_load_mobd_3(a1);
+    a1->mode = entity_mode_407300_prison;
+    script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 }
 
 //----- (004073D0) --------------------------------------------------------
@@ -190,10 +183,7 @@ void entity_4075F0_techbunker(Entity *a1)
     Entity *v1; // esi@1
 
     v1 = a1;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->_38_mobd_lookup_table_offset,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
+    entity_load_mobd_2(a1);
     script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
 }
 
@@ -227,10 +217,7 @@ void entity_407690_techbunker_spawn(Entity *a1)
     v2 = (enum PLAYER_SIDE)(int)a1->_128_spawn_param;
     if (!single_player_game || _47C6D8_use__466098_cost_multipliers)
         a1->_12C_prison_bunker_spawn_type = 9;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->_38_mobd_lookup_table_offset,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
+    entity_load_mobd_2(a1);
     if (v1->_12C_prison_bunker_spawn_type == 9)
     {
         v3 = kknd_rand_debug(__FILE__, __LINE__) % 6;
@@ -314,15 +301,9 @@ LABEL_23:
 //----- (00407870) --------------------------------------------------------
 void entity_mode_407870_techbubker(Entity *a1)
 {
-    Entity *v1; // esi@1
-
-    v1 = a1;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->mobd_lookup_table_offset,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-    script_445370_yield_to_main_thread(v1->script, 0x10000000, 0);
-    v1->mode = entity_407690_techbunker_spawn;
+    entity_load_mobd_1(a1);
+    script_445370_yield_to_main_thread(a1->script, 0x10000000, 0);
+    a1->mode = entity_407690_techbunker_spawn;
 }
 
 //----- (004078B0) --------------------------------------------------------
@@ -392,10 +373,7 @@ void entity_mode_407950_techbunker_spawn_generic(Entity *a1)
     EntityTurret *v5; // eax@5
 
     v1 = a1;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->mobd_lookup_offset,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
+    entity_load_mobd_3(a1);
     v2 = v1->_134_param__unitstats_after_mobile_outpost_plant;
     if (v2 > 0)
     {
@@ -431,10 +409,7 @@ void entity_mode_4079F0_techbunker_spawn10_surv18_lvl(Entity *a1)
     EntityTurret *v5; // eax@5
 
     v1 = a1;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->mobd_lookup_offset,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
+    entity_load_mobd_3(a1);
     v2 = v1->_134_param__unitstats_after_mobile_outpost_plant;
     if (v2 > 0)
     {
@@ -487,17 +462,9 @@ void entity_mode_407A90_techbunker(Entity *a1)
 //----- (00407B70) --------------------------------------------------------
 void entity_mode_407B70_techbunker(Entity *a1)
 {
-    Entity *v1; // esi@1
-    Script *v2; // eax@1
-
-    v1 = a1;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->mobd_lookup_offset,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-    v2 = v1->script;
-    v1->mode = entity_mode_407A90_techbunker;
-    script_445370_yield_to_main_thread(v2, 0x80000000, 1);
+    entity_load_mobd_3(a1);
+    a1->mode = entity_mode_407A90_techbunker;
+    script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 }
 
 //----- (00407BB0) --------------------------------------------------------
@@ -586,34 +553,21 @@ void entity_mode_407D10(Entity *a1)
 //----- (00407D30) --------------------------------------------------------
 void entity_mode_hut_on_death(Entity *a1)
 {
-    Entity *v1; // esi@1
-    Script *v2; // ecx@1
+    entity_load_mobd_4(a1);
+    a1->mode = entity_mode_407D10;
+    script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
 
-    v1 = a1;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->mobd_lookup_table_offset_2,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-    v2 = v1->script;
-    v1->mode = entity_mode_407D10;
-    script_trigger_event(v2, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-    v1->destroyed = 1;
-    entity_439120_add_explosion(v1);
-    entity_438D90_on_death_explosion(v1);
-    script_445370_yield_to_main_thread(v1->script, 0xC0000000, 1);
+    a1->destroyed = 1;
+    entity_439120_add_explosion(a1);
+    entity_438D90_on_death_explosion(a1);
+    script_445370_yield_to_main_thread(a1->script, 0xC0000000, 1);
 }
 
 //----- (00407DA0) --------------------------------------------------------
 void entity_mode_407DA0(Entity *a1)
 {
-    Entity *v1; // esi@1
-
-    v1 = a1;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->mobd_lookup_offset,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-    script_445370_yield_to_main_thread(v1->script, 0xC0000000, 1);
+    entity_load_mobd_3(a1);
+    script_445370_yield_to_main_thread(a1->script, 0xC0000000, 1);
 }
 
 //----- (00407DE0) --------------------------------------------------------
@@ -666,17 +620,9 @@ void entity_mode_407E70_hut(Entity *a1)
 //----- (00407F00) --------------------------------------------------------
 void entity_mode_407F00_hut(Entity *a1)
 {
-    Entity *v1; // esi@1
-    Script *v2; // eax@1
-
-    v1 = a1;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->mobd_lookup_offset,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-    v2 = v1->script;
-    v1->mode = entity_mode_407E70_hut;
-    script_445370_yield_to_main_thread(v2, 0x80000000, 1);
+    entity_load_mobd_3(a1);
+    a1->mode = entity_mode_407E70_hut;
+    script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 }
 
 //----- (00407F40) --------------------------------------------------------
@@ -695,19 +641,19 @@ void UNIT_Handler_Hut(Script *a1)
         switch (v2)
         {
         case 1:
-            v1->mobd_lookup_idx = 16;
+            v1->current_mobd_lookup_idx = 16;
             break;
         case 2:
-            v1->mobd_lookup_idx = 32;
+            v1->current_mobd_lookup_idx = 32;
             break;
         case 3:
-            v1->mobd_lookup_idx = 48;
+            v1->current_mobd_lookup_idx = 48;
             break;
         case 4:
-            v1->mobd_lookup_idx = 64;
+            v1->current_mobd_lookup_idx = 64;
             break;
         default:
-            v1->mobd_lookup_idx = 0;
+            v1->current_mobd_lookup_idx = 0;
             break;
         }
         v1->script->event_handler = EventHandler_Hut;

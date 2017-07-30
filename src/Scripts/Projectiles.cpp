@@ -6,6 +6,7 @@
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Entity.h"
 
 //----- (00435A40) --------------------------------------------------------
 void UNIT_DmgHandler_Sapper(Script *a1)
@@ -1125,7 +1126,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
             v11 = 2248;
             if (!v3->stats->field_30_hp_regen_condition)
                 v11 = 2184;
-            sprite_4272E0_load_mobd_item(v8, v11, _47D3C4_entity_mobd_lookup_ids[v3->mobd_lookup_idx + 1]);
+            sprite_4272E0_load_mobd_item(v8, v11, _47D3C4_entity_mobd_lookup_ids[v3->current_mobd_lookup_idx + 1]);
         }
     }
     if (v18)

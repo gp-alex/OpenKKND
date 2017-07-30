@@ -7,6 +7,8 @@
 #include "src/Render.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Entity.h"
+
 
 
 //----- (00424B90) --------------------------------------------------------
@@ -925,7 +927,7 @@ void entity_mode_425920_scout(Entity *a1)
 }
 
 //----- (00425A50) --------------------------------------------------------
-char *entity_425A50_setup_spawn(Entity *a1, void *spawn_param, int spawn_type)
+void entity_425A50_setup_spawn(Entity *a1, void *spawn_param, int spawn_type)
 {
     Entity *v3; // esi@1
     void *v4; // edi@1
@@ -933,17 +935,14 @@ char *entity_425A50_setup_spawn(Entity *a1, void *spawn_param, int spawn_type)
 
     v3 = a1;
     v4 = spawn_param;
-    sprite_4272E0_load_mobd_item(
-        a1->sprite,
-        a1->stats->mobd_lookup_offset,
-        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
+    entity_load_mobd_3(a1);
     v5 = v3->sprite;
     v3->mode = entity_mode_425920_scout;
     v5->x_speed = 0;
     v3->sprite->y_speed = 0;
     v3->_128_spawn_param = v4;
     v3->_12C_prison_bunker_spawn_type = 60 * spawn_type;
-    return entity_40DF50_boxd(v3, 0);
+    entity_40DF50_boxd_update_map_tile(v3, 0);
 }
 
 //----- (00425AB0) --------------------------------------------------------
@@ -983,17 +982,14 @@ void UNIT_Handler_Scout(Script *a1)
         v1 = entity_list_create(a1);
         entity_init_infantry(v1);
         entity_set_draw_handlers(v1);
-        sprite_4272E0_load_mobd_item(
-            v1->sprite,
-            v1->stats->mobd_lookup_offset,
-            _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
+        entity_load_mobd_3(v1);
         v2 = v1->sprite;
         v1->mode = entity_mode_425920_scout;
         v2->x_speed = 0;
         v1->sprite->y_speed = 0;
         v1->_12C_prison_bunker_spawn_type = 60;
         v1->_128_spawn_param = (void *)76800;
-        entity_40DF50_boxd(v1, 0);
+        entity_40DF50_boxd_update_map_tile(v1, 0);
         v1->script->event_handler = EventHandler_Infantry;
     }
     (v1->mode)(v1);

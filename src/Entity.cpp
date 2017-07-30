@@ -7,6 +7,12 @@
 #include "src/Script.h"
 
 
+// XL vehicles: mobile outpost, autocannon tank & missile crab
+bool entity_is_xl_vehicle(Entity *entity)
+{
+    return entity->stats->field_4C == 4096;
+}
+
 
 Entity *entity_list_get()
 {
@@ -89,43 +95,107 @@ int entity_transform_y(Entity *entity, int y)
 }
 
 
+
+void entity_load_mobd_4(Entity *entity)
+{
+    if (entity->stats->mobd_lookup_offset_4 != -1)
+    {
+        sprite_4272E0_load_mobd_item(
+            entity->sprite,
+            entity->stats->mobd_lookup_offset_4,
+            _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
+    }
+}
+
+void entity_load_mobd_3(Entity *entity, int idx)
+{
+    entity->current_mobd_lookup_idx = idx;
+    entity_load_mobd_3(entity);
+}
+
+void entity_load_mobd_3(Entity *entity)
+{
+    if (entity->stats->mobd_lookup_offset_3 != -1)
+    {
+        sprite_4272E0_load_mobd_item(
+            entity->sprite,
+            entity->stats->mobd_lookup_offset_3,
+            _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
+    }
+}
+
+void entity_load_mobd_2(Entity *entity, int idx)
+{
+    entity->current_mobd_lookup_idx = idx;
+    entity_load_mobd_2(entity);
+}
+
+void entity_load_mobd_2(Entity *entity)
+{
+    if (entity->stats->mobd_lookup_offset_2 != -1)
+    {
+        sprite_4272E0_load_mobd_item(
+            entity->sprite,
+            entity->stats->mobd_lookup_offset_2,
+            _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
+    }
+}
+
+void entity_load_mobd_1(Entity *entity)
+{
+    if (entity->stats->mobd_lookup_offset_1 != -1)
+    {
+        sprite_4272E0_load_mobd_item(
+            entity->sprite,
+            entity->stats->mobd_lookup_offset_1,
+            _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
+    }
+}
+
+
+void entity_load_mobd_1(Entity *entity, int idx)
+{
+    entity->current_mobd_lookup_idx = idx;
+    entity_load_mobd_1(entity);
+}
+
 //----- (0041A270) --------------------------------------------------------
 void entity_move(Entity *a1, _47CAF0_task_attachment1_move_task *a2)
 {
     int v4; // eax@5
     int v5; // eax@9
     int v6; // eax@11
-    Entity *v8; // ecx@13
-    int v9; // edx@13
 
     if (a1->player_side == a2->player_side)
     {
-        v4 = a1->field_DC == 1
-            && !((a2->dst_x ^ a1->sprite_width_2) & 0xFFFFE000)
-            && !((a2->dst_y ^ a1->sprite_height_2) & 0xFFFFE000);
+        v4 = a1->_DC_order == ENTITY_ORDER_MOVE
+            && map_is_same_tile(a2->dst_x, a1->sprite_x_2)
+            && map_is_same_tile(a2->dst_y, a1->sprite_y_2);
         if (!v4 || a1->entity_8)
         {
             v5 = a2->dst_x;
-            if (v5 >= 0 && v5 < _4793F8_map_width << 13)
+            if (v5 >= 0 && v5 < map2global(_4793F8_map_width))
             {
                 v6 = a2->dst_y;
-                if (v6 >= 0 && v6 < _478AAC_map_height << 13)
+                if (v6 >= 0 && v6 < map2global(_478AAC_map_height))
                 {
                     a1->stru224.field_54 = 0;
                     a1->stru224.field_50 = 0;
                     script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
-                    v8 = a1->_E0_current_attack_target;
-                    v9 = a1->_E0_current_attack_target_entity_id;
-                    a1->field_DC = 1;
-                    a1->_E4_entity = v8;
-                    a1->_E4_entity_id = v9;
-                    a1->_E0_current_attack_target = 0;
+
+                    a1->_DC_order = ENTITY_ORDER_MOVE;
+                    a1->_E4_prev_attack_target = a1->_E0_current_attack_target;
+                    a1->_E4_prev_attack_target_entity_id = a1->_E0_current_attack_target_entity_id;
+                    a1->_E0_current_attack_target = nullptr;
                     a1->_134_param__unitstats_after_mobile_outpost_plant = 600;
-                    a1->sprite_width_2 = entity_transform_x(a1, a2->dst_x);
-                    a1->sprite_height_2 = entity_transform_y(a1, a2->dst_y);
-                    entity_414440_boxd(a1, &a1->sprite_width_2, &a1->sprite_height_2);
+
+                    a1->sprite_x_2 = entity_transform_x(a1, a2->dst_x);
+                    a1->sprite_y_2 = entity_transform_y(a1, a2->dst_y);
+                    entity_414440_boxd(a1, &a1->sprite_x_2, &a1->sprite_y_2);
+
                     a1->entity_8 = 0;
-                    entity_40DF50_boxd(a1, 1);
+                    entity_40DF50_boxd_update_map_tile(a1, 1);
+
                     a1->mode = entity_mode_move_attack;
                 }
             }
@@ -150,7 +220,7 @@ void entity_attack(Entity *a1, _47CAF0_task_attachment1_attack_task *param)
         v5 = param->target;
         if (v5 == v3->_E0_current_attack_target)
         {
-            v3->_E4_entity = 0;
+            v3->_E4_prev_attack_target = 0;
             v3->_134_param__unitstats_after_mobile_outpost_plant = 600;
             if (v3->entity_8 != v3->_E0_current_attack_target)
                 v3->entity_8 = 0;
@@ -179,10 +249,10 @@ void entity_attack(Entity *a1, _47CAF0_task_attachment1_attack_task *param)
             v3->stru224.field_54 = 0;
             v3->stru224.field_50 = 0;
             script_445370_yield_to_main_thread(v3->script, 0x80000000, 1);
-            v3->field_DC = 2;
+            v3->_DC_order = ENTITY_ORDER_ATTACK;
             v3->_E0_current_attack_target = param->target;
             v3->_E0_current_attack_target_entity_id = param->target->entity_id;
-            v3->_E4_entity = 0;
+            v3->_E4_prev_attack_target = 0;
             v3->_134_param__unitstats_after_mobile_outpost_plant = 600;
             v3->entity_8 = 0;
             v3->mode = entity_mode_move_attack;

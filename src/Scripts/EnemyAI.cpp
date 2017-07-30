@@ -6,6 +6,7 @@
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Entity.h"
 
 
 //----- (004089B0) --------------------------------------------------------

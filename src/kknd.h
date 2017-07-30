@@ -66,6 +66,7 @@ struct Entity_stru_dmg_related;
 struct _47CAF0_task_attachment1_attack_task;
 struct task_428940_attach__cursors;
 struct task_428940_attach__cursors_2;
+struct Entity;
 
 /* 63 */
 struct UnitNameId
@@ -271,10 +272,10 @@ struct UnitStat
 	int accuracy;
 	int field_2C;
 	int field_30_hp_regen_condition;
-	int mobd_lookup_table_offset;
-	int _38_mobd_lookup_table_offset;
-	int mobd_lookup_offset;
-	int mobd_lookup_table_offset_2;
+	int mobd_lookup_offset_1;
+	int mobd_lookup_offset_2;
+	int mobd_lookup_offset_3;
+	int mobd_lookup_offset_4; // damaged_buildings?
 	UnitAttachmentPoint *attach;
 	UnitDamageSource *dmg_source;
 	int field_4C;
@@ -698,147 +699,6 @@ struct stru10
 	int field_4;
 	int field_8;
 	int field_C;
-};
-
-/* 430 */
-struct Entity_stru24_ai
-{
-	int _0_ai_node_per_player_side[2];
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-};
-
-/* 396 */
-struct Entity_stru60
-{
-	Entity_stru_dmg_related *ptr_0;
-	Entity_stru60_stru4 *pstru4;
-	int ptr_8;
-	DataMobdItem_stru1 *ptr_C;
-	int ptr_10;
-	int ptr_14;
-};
-
-/* 427 */
-struct Entity_stru224
-{
-	int array_0[10];
-	int _28_indexer;
-	int _2C_map_x;
-	int _30_map_y;
-	int _34_x;
-	int _38_y;
-	int field_3C;
-	int _40_xy_idx;
-	int field_44;
-	int field_48;
-	int field_4C;
-	int field_50;
-	int field_54;
-};
-
-/* 307 */
-struct Entity
-{
-	Entity *next;
-	Entity *prev;
-	Entity *entity_8;
-	Script *script;
-	enum UNIT_ID unit_id;
-	enum PLAYER_SIDE player_side;
-	UnitStat *stats;
-	EntityTurret *turret;
-	void *state;
-	Entity_stru24_ai _24_ai_node_per_player_side;
-	void(*mode)(Entity *);
-	int(*mode_idle)(int);
-	void(*mode_arrive)(Entity *);
-	int(*mode_attacked)(int);
-	void(*mode_return)(Entity *);
-	void(*mode_turn_return)(Entity *);
-	void(*event_handler)(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-	Sprite *sprite;
-	Entity_stru60 stru60;
-	int field_78;
-	int mobd_lookup_idx;
-	int field_80;
-	int field_84;
-	int field_88;
-	int destroyed;
-	int hitpoints;
-	int field_94;
-	int _98_465610_accuracy_dmg_bonus_idx;
-	int _9C_hp_regen_condition;
-	int _A0_hp_regen_condition;
-	int field_A4;
-	int sprite_width_shr13;
-	int sprite_height_shr13;
-	int sprite_width;
-	int sprite_height;
-	int field_B8;
-	int field_BC;
-	int field_C0;
-	int field_C4;
-	int field_C8;
-	int field_CC;
-	int field_D0;
-	int field_D4;
-	int field_D8;
-	int field_DC;
-	Entity *_E0_current_attack_target;
-	Entity *_E4_entity;
-	Entity *_E8_entity;
-	int _E0_current_attack_target_entity_id;
-	int _E4_entity_id;
-	int entity_118_entity_id;
-	int _E8_entity_id;
-	int sprite_width_2;
-	int sprite_height_2;
-	stru11unit *stru11_list_104;
-	stru11unit *stru11_list_108;
-	int field_10C;
-	int field_110;
-	int field_114;
-	Entity *entity_118;
-	int _11C__infantry_sprite_y___drillrig_oil_spot;
-	int _120__infantry_sprite_x;
-	int field_124;
-	void *_128_spawn_param;
-	int _12C_prison_bunker_spawn_type;
-	int entity_id;
-	int _134_param__unitstats_after_mobile_outpost_plant;
-	int field_138;
-	int field_13C;
-	int field_140;
-	int field_144;
-	int field_148;
-	int field_14C;
-	int field_150;
-	int field_154;
-	int field_158;
-	int array_15C[10];
-	int array_184[10];
-	int array_1AC[10];
-	int array_1D4[10];
-	int array_1FC[10];
-	Entity_stru224 stru224;
-	Entity *entity_27C;
-	int entity_27C_entity_id;
-	int(*pfn_render_DrawUnitsAndUi)(DrawJobDetails *data, int mode);
-	int field_288;
-	void *_28C_stru26_stru0__or__stru27_stru0__or__EntityBuildingAttachment_stru14__or__EntityOilTankerAttachment_stru70;
-	DrawJob *drawjob;
-	char array_294[8];
-	int field_29C;
-	int field_2A0;
-	int field_2A4;
-	Entity *_2A8_entity;
-	int _2A8_entity_id;
-	int sprite_width_3;
-	int sprite_height_3;
 };
 
 /* 308 */
@@ -1867,6 +1727,7 @@ struct DataMobdItem_stru0
 
 
 #define DataBoxd_stru0_per_map_unit__flags__impassible_terrain 0x60
+#define DataBoxd_stru0_per_map_unit__flags__80                 0x80
 /* 389 */
 struct DataBoxd_stru0_per_map_unit
 {
@@ -2123,7 +1984,7 @@ struct EntitySerialized
 	int entity_EC_outpost_clanhall_entity_id;
 	int entity_E4_entity_id;
 	int _E0_current_attack_target_entity_id;
-	int _E4_entity_id;
+	int _E4_prev_attack_target_entity_id;
 	int entity_F4_entity_118_entity_id;
 	int entity_sprite_width_2;
 	int entity_sprite_height_2;

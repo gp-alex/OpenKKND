@@ -294,7 +294,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
         cursor_on_unit_group_selection(a1);
     }
 
-    _47A714._stru209.type = stru209_TYPE_1;
+    _47A714._stru209.type = stru209_TYPE_SELECT_UNIT_GROUP;
     ((short *)&_47A714._stru209.param)[0] = drag_frame_x->x >> 8;
     ((short *)&_47A714._stru209.param)[1] = drag_frame_x->y >> 8;
     ((short *)&_47A714._stru209.param)[2] = drag_frame_w->x >> 8;
@@ -2309,15 +2309,15 @@ void script_game_cursor_handler(Script *a1)
                 if (v13)
                 {
                     v13->z_index = 1;
-                    (*v11)->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4484A0_explosions;
+                    (*v11)->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_4484A0_explosions;
                 }
                 ++v11;
                 --v12;
             } while (v12);
             v10->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
             v10->drawjob->flags |= 0x10000000u;
-            sprite_4272E0_load_mobd_item(v10, v9->_38_mobd_lookup_table_offset, 8);
-            v10->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4484A0_explosions;
+            sprite_4272E0_load_mobd_item(v10, v9->mobd_lookup_offset_2, 8);
+            v10->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_4484A0_explosions;
             v10->z_index = 2;
             while (1)
             {

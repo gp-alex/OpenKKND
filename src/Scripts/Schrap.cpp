@@ -4,6 +4,7 @@
 #include "src/_unsorted_data.h"
 
 #include "src/Random.h"
+#include "src/Entity.h"
 
 
 //----- (00438B40) --------------------------------------------------------

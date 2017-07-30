@@ -22,6 +22,26 @@ void __stdcall nullsub_2(int, int) {}
 void nullsub_1(void) {}
 
 
+bool map_is_same_tile(int coord1, int coord2)
+{
+    return !map_is_different_tile(coord1, coord2);
+}
+
+bool map_is_different_tile(int coord1, int coord2)
+{
+    // original code, equivalent to global2map(coord1) != global2map(coord2)
+    return (coord1 ^ coord2) & 0xFFFFE000;
+}
+
+int global2map(int coordinate)
+{
+    return coordinate >> 13;
+}
+
+int map2global(int coordinate)
+{
+    return coordinate << 13;
+}
 
 SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced)
 {
@@ -267,7 +287,7 @@ void EntityTowerAttachment_handler_4010C0(EntityTurret *a1)
 {
 	int v1; // eax@1
 
-	v1 = a1->entity->mobd_lookup_idx;
+	v1 = a1->entity->current_mobd_lookup_idx;
 	a1->mobd_lookup_id = v1;
 	sprite_4272E0_load_mobd_item(
 		a1->turret_sprite,
@@ -1308,7 +1328,6 @@ void entity_attach_docking_point(Entity *a1)
 	EntityTurret *v2; // esi@1
 	Sprite *v3; // eax@2
 	Script *v4; // eax@2
-	int v5; // eax@2
 
 	v1 = a1;
 	v2 = (EntityTurret *)script_create_local_object(a1->script, 56);
@@ -1334,9 +1353,8 @@ void entity_attach_docking_point(Entity *a1)
 		v2->entity = v1;
 		v2->_C_entity = 0;
 		v2->handler = EntityTurret_44BF00_handler;
-		v5 = v1->mobd_lookup_idx;
 		v2->field_18 = 0;
-		v2->mobd_lookup_id = v5;
+		v2->mobd_lookup_id = v1->current_mobd_lookup_idx;
 		v2->stats_attachment_point = v1->stats->attach;
 	}
 	v1->turret = v2;
@@ -1354,7 +1372,7 @@ DrawJob *entity_402BB0_set_arrive_handler(Entity *a1, void(*mode_arrive)(Entity 
 
 	v2 = a1;
 	mOde_arrive = mode_arrive;
-	sprite_4272E0_load_mobd_item(a1->sprite, a1->stats->mobd_lookup_table_offset, 0);
+	sprite_4272E0_load_mobd_item(a1->sprite, a1->stats->mobd_lookup_offset_1, 0);
 	if (v2->player_side == player_side)
 		script_trigger_event(v2->script, EVT_MSG_1529_ai, v2, task_mobd17_cursor);
 	v4 = v2->sprite;
@@ -3036,9 +3054,9 @@ void entity_4054D0_tanker_convoy(Entity *a1)
 	if (entity_405750_tanker_convoy(a1))
 	{
 		v2 = v1->stats;
-		v1->field_DC = 6;
+		v1->_DC_order = ENTITY_ORDER_6_tanker;
 		v1->_E0_current_attack_target = 0;
-		v1->_E4_entity = 0;
+		v1->_E4_prev_attack_target = 0;
 		v1->_134_param__unitstats_after_mobile_outpost_plant = 5;
 		v3 = (int)v1->state;
 		if (v2->field_30_hp_regen_condition)
@@ -3047,7 +3065,7 @@ void entity_4054D0_tanker_convoy(Entity *a1)
 			v4 = v2->field_4C != 128 ? 7424 : 4096;
 		v5 = v4 + (*(_DWORD *)v3 & 0xFFFFE000);
 		v6 = v1->stats;
-		v1->sprite_width_2 = v5;
+		v1->sprite_x_2 = v5;
 		if (v6->field_30_hp_regen_condition)
 			v7 = entity_40F100_get_dy(v1, v1->field_A4);
 		else
@@ -3055,12 +3073,12 @@ void entity_4054D0_tanker_convoy(Entity *a1)
 		v8 = *(_DWORD *)(v3 + 4) & 0xFFFFE000;
 		v1->entity_8 = 0;
 		v1->mode_return = entity_mode_move_attack;
-		v1->sprite_height_2 = v7 + v8;
+		v1->sprite_y_2 = v7 + v8;
 		entity_mode_move_attack(v1);
 	}
 	else
 	{
-		v1->field_DC = 0;
+		v1->_DC_order = ENTITY_ORDER_0;
 	}
 }
 
@@ -3117,7 +3135,7 @@ void entity_mode_405690(Entity *a1)
 	v1 = a1;
 	if (!a1->_134_param__unitstats_after_mobile_outpost_plant)
 	{
-		entity_40DEC0_boxd(a1, a1->sprite_width_shr13, a1->sprite_height_shr13, a1->field_A4);
+		entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->field_A4);
 		v1->sprite->x_speed = 0;
 		v1->sprite->y_speed = 0;
 		v1->mode = entity_mode_405680_tanker_convoy;
@@ -3186,14 +3204,10 @@ bool entity_405750_tanker_convoy(Entity *a1)
 	v5 = v1->sprite;
 	v1->mode = entity_mode_405690;
 	v1->mode_return = entity_mode_405690;
-	v1->mobd_lookup_idx = 192;
+    entity_load_mobd_3(v1, 192);
 	v1->_134_param__unitstats_after_mobile_outpost_plant = 600;
 	v5->x_speed = -64;
 	v1->sprite->y_speed = 0;
-	sprite_4272E0_load_mobd_item(
-		v1->sprite,
-		v1->stats->mobd_lookup_offset,
-		_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
 	v1->mode_arrive = entity_mode_405680_tanker_convoy;
 	++_47A3D8_num_convoy_tankers_still_to_arrive;
 	if (current_level_idx == LEVEL_SURV_07_PROTECT_THE_CONVOY)
@@ -3211,8 +3225,6 @@ bool entity_405750_tanker_convoy(Entity *a1)
 	}
 	return 0;
 }
-// 47A3D4: using guessed type int _47A3D4_tanker_convoy_units_left;
-// 47A3D8: using guessed type int _47A3D8_num_convoy_tankers_still_to_arrive;
 
 //----- (00405850) --------------------------------------------------------
 void UNIT_Handler_OilTankerConvoy(Script *a1)
@@ -3221,15 +3233,6 @@ void UNIT_Handler_OilTankerConvoy(Script *a1)
 	DataCplcItem_ptr1_stru20 *v2; // ebx@2
 	Script *v3; // edx@2
 	EntityTankerConvoyAttachment *v4; // eax@2
-	EntityTankerConvoyAttachment *v5; // edi@2
-	UnitStat *v6; // eax@6
-	int v7; // eax@7
-	int v8; // ecx@9
-	UnitStat *v9; // eax@9
-	int v10; // eax@10
-	int v11; // edx@12
-	int v12; // edx@12
-	int v13; // eax@12
 	int v14; // eax@13
 
 	v1 = (Entity *)a1->param;
@@ -3241,10 +3244,8 @@ void UNIT_Handler_OilTankerConvoy(Script *a1)
 		entity_set_draw_handlers(v1);
 		v1->script->event_handler = EventHandler_TankerConvoy;
 		v3 = v1->script;
-		v1->mobd_lookup_idx = 192;
 		v3->script_type = SCRIPT_TANKER_CONVOY_HANDLER;
 		v4 = (EntityTankerConvoyAttachment *)script_create_local_object(v1->script, 12);
-		v5 = v4;
 		if (v4)
 		{
 			v1->state = v4;
@@ -3253,29 +3254,16 @@ void UNIT_Handler_OilTankerConvoy(Script *a1)
 			else
 				v4->checkpoint = LOWORD_HEXRAYS(v2->_1C_oilspot_oil_units__or__param);
 			entity_4056E0_tanker_convoy_update_checkpoint(v1->sprite->x, v4);
-			v6 = v1->stats;
-			v1->field_DC = 6;
+
+			v1->_DC_order = ENTITY_ORDER_6_tanker;
 			v1->_E0_current_attack_target = 0;
-			v1->_E4_entity = 0;
+			v1->_E4_prev_attack_target = 0;
 			v1->_134_param__unitstats_after_mobile_outpost_plant = 600;
-			if (v6->field_30_hp_regen_condition)
-				v7 = entity_40F0A0_get_dx(v1, v1->field_A4);
-			else
-				v7 = v6->field_4C != 128 ? 7424 : 4096;
-			v8 = v7 + (v5->x & 0xFFFFE000);
-			v9 = v1->stats;
-			v1->sprite_width_2 = v8;
-			if (v9->field_30_hp_regen_condition)
-				v10 = entity_40F100_get_dy(v1, v1->field_A4);
-			else
-				v10 = v9->field_4C != 128 ? 7424 : 4096;
-			v11 = v5->y;
+			v1->sprite_x_2 = entity_transform_x(v1, v4->x);
+            v1->sprite_y_2 = entity_transform_y(v1, v4->y);
 			v1->entity_8 = 0;
 			v1->mode_arrive = 0;
-			v12 = v10 + (v11 & 0xFFFFE000);
-			v13 = v1->mobd_lookup_idx;
-			v1->sprite_height_2 = v12;
-			sprite_4272E0_load_mobd_item(v1->sprite, v1->stats->mobd_lookup_offset, _47D3C4_entity_mobd_lookup_ids[v13 + 1]);
+            entity_load_mobd_3(v1, 192);
 			entity_mode_move_attack(v1);
 		}
 	}
@@ -4518,16 +4506,16 @@ void entity_initialize_mobile_derrick(Entity *a1)
 		if (v11 != 5)
 		{
 			v12 = v1->sprite;
-			v1->sprite_width = v12->x;
-			v1->sprite_height = v12->y;
-			v1->sprite_width_2 = v1->sprite_width;
-			v13 = v1->sprite_height;
-			v1->field_DC = 1;
-			v1->sprite_height_2 = v13;
+			v1->sprite_x = v12->x;
+			v1->sprite_y = v12->y;
+			v1->sprite_x_2 = v1->sprite_x;
+			v13 = v1->sprite_y;
+			v1->_DC_order = ENTITY_ORDER_MOVE;
+			v1->sprite_y_2 = v13;
 			v1->field_A4 = v11;
 			v14 = v1->script;
-			v1->sprite_width_shr13 = v12->x >> 13;
-			v1->sprite_height_shr13 = v12->y >> 13;
+			v1->sprite_map_x = v12->x >> 13;
+			v1->sprite_map_y = v12->y >> 13;
 			v14->event_handler = EventHandler_MobileDerrick;
 			entity_mode_415540_infantry(v1);
 			return;
@@ -4545,20 +4533,20 @@ void entity_initialize_mobile_derrick(Entity *a1)
 		v16 = entity_40F0A0_get_dx(v1, v1->field_A4);
 	else
 		v16 = v15->field_4C != 128 ? 7424 : 4096;
-	v17 = v16 + (v1->sprite_width_shr13 << 13);
+	v17 = v16 + (v1->sprite_map_x << 13);
 	v18 = v1->stats;
-	v1->sprite_width = v17;
+	v1->sprite_x = v17;
 	if (v18->field_30_hp_regen_condition)
 		v19 = entity_40F100_get_dy(v1, v1->field_A4);
 	else
 		v19 = v18->field_4C != 128 ? 7424 : 4096;
-	v20 = v1->sprite_width;
-	v21 = (v1->sprite_height_shr13 << 13) + v19;
+	v20 = v1->sprite_x;
+	v21 = (v1->sprite_map_y << 13) + v19;
 	v22 = v1->script;
-	v1->sprite_height = v21;
-	v1->field_DC = 1;
-	v1->sprite_width_2 = v20;
-	v1->sprite_height_2 = v21;
+	v1->sprite_y = v21;
+	v1->_DC_order = ENTITY_ORDER_MOVE;
+	v1->sprite_x_2 = v20;
+	v1->sprite_y_2 = v21;
 	v1->_134_param__unitstats_after_mobile_outpost_plant = 0;
 	v1->_98_465610_accuracy_dmg_bonus_idx = 0;
 	v22->event_handler = EventHandler_General_Scout;
@@ -4649,11 +4637,8 @@ void entity_mode_406DC0_mobilederrick(Entity *a1)
 	{
 		v1->sprite->x_speed = 0;
 		v1->sprite->y_speed = 0;
-		sprite_4272E0_load_mobd_item(
-			v1->sprite,
-			v1->stats->mobd_lookup_offset,
-			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
-		if (!_44CB60_advance_mobd_frame(&v1->mobd_lookup_idx, 160, v1->stats->turning_speed))
+        entity_load_mobd_3(v1);
+		if (!_44CB60_advance_mobd_frame(&v1->current_mobd_lookup_idx, 160, v1->stats->turning_speed))
 			v1->mode = entity_mode_plant_mobile_derrick;
 		script_445370_yield_to_main_thread(v1->script, 0xC0000000, 1);
 	}
@@ -4675,7 +4660,7 @@ void entity_mode_plant_mobile_derrick(Entity *a1)
 
 	v1 = a1;
 	a1->script->event_handler = EventHandler_General_Scout;
-	entity_40DEC0_boxd(a1, a1->sprite_width_shr13, a1->sprite_height_shr13, a1->field_A4);
+	entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->field_A4);
 	v2 = v1->sprite;
 	v5 = v1->player_side;
 	if (v1->unit_id == UNIT_STATS_SURV_MOBILE_DERRICK)
@@ -4702,7 +4687,7 @@ void entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant(Entity *a1)
 	v2->field_24 &= 0xEFFFFFFF;
 	script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
 	script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
-	entity_40DEC0_boxd(v1, v1->sprite_width_shr13, v1->sprite_height_shr13, v1->field_A4);
+	entity_40DEC0_boxd(v1, v1->sprite_map_x, v1->sprite_map_y, v1->field_A4);
 	v1->script->script_type = SCRIPT_TYPE_INVALID;
 	v3 = v1->sprite;
 	v1->entity_id = 0;
@@ -5009,10 +4994,7 @@ void entity_mode_4081C0_drillrig(Entity *a1)
 	if (v2)
 	{
 		v2->turret_sprite->drawjob->flags |= 0x40000000u;
-		sprite_4272E0_load_mobd_item(
-			a1->sprite,
-			a1->stats->mobd_lookup_table_offset,
-			_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
+        entity_load_mobd_1(a1);
 		v3 = v1->script;
 		v1->mode = entity_mode_408260_drillrig;
 		script_445370_yield_to_main_thread(v3, 0x10000000, 0);
@@ -6335,15 +6317,15 @@ int entity_40DA90_boxd(Entity *a1)
 	{
 		v13 = (v2->x_speed + v2->x) >> 13;
 		v14 = (v2->y + v2->y_speed) >> 13;
-		if (v13 != a1->sprite_width_shr13 || v14 != a1->sprite_height_shr13)
+		if (v13 != a1->sprite_map_x || v14 != a1->sprite_map_y)
 		{
 			v15 = boxd_40EEB0(a1, v13, v14, 1);
 			if (v15 == 5)
 				return boxd_40EA50(v1, v13, v14, &_478AA8_boxd_stru0_array[v13 + _4793F8_map_width * v14]);
-			boxd_40F160(v1, v1->sprite_width_shr13, v1->sprite_height_shr13, v1->field_A4);
+			boxd_40F160(v1, v1->sprite_map_x, v1->sprite_map_y, v1->field_A4);
 			v1->field_A4 = v15;
-			v1->sprite_width_shr13 = v13;
-			v1->sprite_height_shr13 = v14;
+			v1->sprite_map_x = v13;
+			v1->sprite_map_y = v14;
 		}
 		return 4;
 	}
@@ -6606,7 +6588,7 @@ int entity_40DE80_boxd(Entity *a1, int x, int y, int a3)
 {
 	int result; // eax@2
 
-	if (a1->stats->field_4C == 4096)
+	if (entity_is_xl_vehicle(a1))
 		result = entity_40E1B0_boxd(a1, x, y, a3) != 4 ? 5 : 0;
 	else
 		result = boxd_40EEB0(a1, x >> 13, y >> 13, a3);
@@ -6630,7 +6612,7 @@ char *entity_40DEC0_boxd(Entity *a1, int a2, int a3, int a4)
 	int v15; // [sp+18h] [bp+8h]@3
 
 	v4 = a1;
-	if (a1->stats->field_4C == 4096)
+	if (entity_is_xl_vehicle(a1))
 	{
 		v6 = a1->sprite;
 		v7 = v6->y;
@@ -6662,49 +6644,34 @@ char *entity_40DEC0_boxd(Entity *a1, int a2, int a3, int a4)
 }
 
 //----- (0040DF50) --------------------------------------------------------
-char *entity_40DF50_boxd(Entity *a1, int a2)
+void entity_40DF50_boxd_update_map_tile(Entity *a1, int a2)
 {
 	Entity *v2; // ebp@1
-	char *result; // eax@2
-	Sprite *v4; // eax@3
-	int v5; // edi@3
-	int v6; // eax@3
+    int v3;
 	int v7; // ebx@3
 	int v8; // esi@3
 	int v9; // edi@3
-	int v10; // [sp+10h] [bp-Ch]@1
 	int v11; // [sp+14h] [bp-8h]@3
-	char *i; // [sp+18h] [bp-4h]@3
 
 	v2 = a1;
-	v10 = a2;
-	if (a1->stats->field_4C == 4096)
+	if (entity_is_xl_vehicle(a1))
 	{
-		v4 = a1->sprite;
-		v5 = v4->x;
-		v6 = v4->y;
-		v7 = (v6 - 4096) >> 13;
-		result = (char *)((v6 + 4096) >> 13);
-		v8 = (v5 - 4096) >> 13;
-		v9 = (v5 + 4096) >> 13;
-		v11 = v8;
-		for (i = result; v7 <= (int)result; ++v7)
+		v7 = global2map(a1->sprite->y - 16 * 256);
+		v3 = global2map(a1->sprite->y + 16 * 256);
+		v8 = global2map(a1->sprite->x - 16 * 256);
+		v9 = global2map(a1->sprite->x + 16 * 256);
+		for (v7; v7 <= v3; ++v7)
 		{
-			if (v8 <= v9)
+            for (v11 = v8; v11 <= v9; ++v11)
 			{
-				do
-					boxd_40F230(v2, v8++, v7, 0, v10);
-				while (v8 <= v9);
-				v8 = v11;
-				result = i;
+                boxd_40F230_update_map_tile(v2, v11++, v7, 0, a2);
 			}
 		}
 	}
 	else
 	{
-		result = (char *)boxd_40F230(a1, a1->sprite_width_shr13, a1->sprite_height_shr13, a1->field_A4, a2);
+		boxd_40F230_update_map_tile(a1, a1->sprite_map_x, a1->sprite_map_y, a1->field_A4, a2);
 	}
-	return result;
 }
 
 //----- (0040E000) --------------------------------------------------------
@@ -7383,7 +7350,7 @@ int boxd_40EA50(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a
 	{
 		if (v6 != 512)
 		{
-			if (v6 == 4096)
+			if (entity_is_xl_vehicle(a1))
 			{
 				v7 = 0;
 				v8 = 0;
@@ -7893,38 +7860,32 @@ int boxd_40F160(Entity *a1, int map_x, int map_y, int a4)
 	}
 	return result;
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
 
 //----- (0040F230) --------------------------------------------------------
-int boxd_40F230(Entity *a1, int map_x, int map_y, int a4, int a5)
+void boxd_40F230_update_map_tile(Entity *a1, int map_x, int map_y, int a4, int a5)
 {
-	int result; // eax@1
-	char v6; // cl@8
+    DataBoxd_stru0_per_map_unit *tile = &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
 
-	result = (int) & _478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y].flags;
 	if (map_x >= 0 && map_x < _4793F8_map_width && map_y >= 0 && map_y < _478AAC_map_height)
 	{
-		if (*(_BYTE *)result & 0x80)
+		if (tile->flags & DataBoxd_stru0_per_map_unit__flags__80)
 		{
-			if (!a4 && *(Entity **)(result + 4) == a1)
+			if (!a4 && tile->_4_entities[0] == a1)
 			{
-				v6 = *(_BYTE *)(result + 1);
 				if (a5)
-					*(_BYTE *)(result + 1) = v6 | 0x1F;
+					tile->flags2 |= 0x1F;
 				else
-					*(_BYTE *)(result + 1) = v6 & 0xE0;
+					tile->flags2 &= 0xE0;
 			}
 		}
-		else if (a1->stats->field_30_hp_regen_condition && (1 << a4) & *(_BYTE *)result)
+		else if (a1->stats->field_30_hp_regen_condition && (1 << a4) & tile->flags)
 		{
 			if (a5)
-				*(_BYTE *)(result + 1) |= 1 << a4;
+                tile->flags2 |= 1 << a4;
 			else
-				*(_BYTE *)(result + 1) &= ~(1 << a4);
+                tile->flags2 &= ~(1 << a4);
 		}
 	}
-	return result;
 }
 
 //----- (0040F380) --------------------------------------------------------
@@ -10264,30 +10225,30 @@ void entity_41A060_evt1525(Entity *a1, void *a2)
 	v2 = (int *)a2;
 	v3 = a1;
 	if (a1->player_side == *(_DWORD *)a2
-		&& (a1->field_DC != 9
-			|| (*((_DWORD *)a2 + 1) ^ a1->sprite_width_2) & 0xFFFFE000
-			|| (*((_DWORD *)a2 + 2) ^ a1->sprite_height_2) & 0xFFFFE000))
+		&& (a1->_DC_order != 9
+			|| (*((_DWORD *)a2 + 1) ^ a1->sprite_x_2) & 0xFFFFE000
+			|| (*((_DWORD *)a2 + 2) ^ a1->sprite_y_2) & 0xFFFFE000))
 	{
 		script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 		v4 = v3->stats;
-		v3->field_DC = 9;
+		v3->_DC_order = ENTITY_ORDER_9;
 		v3->_134_param__unitstats_after_mobile_outpost_plant = 600;
 		v3->_E0_current_attack_target = 0;
-		v3->_E4_entity = 0;
+		v3->_E4_prev_attack_target = 0;
 		if (v4->field_30_hp_regen_condition)
 			v5 = entity_40F0A0_get_dx(v3, v3->field_A4);
 		else
 			v5 = v4->field_4C != 128 ? 7424 : 4096;
 		v6 = v5 + (v2[1] & 0xFFFFE000);
 		v7 = v3->stats;
-		v3->sprite_width_2 = v6;
+		v3->sprite_x_2 = v6;
 		if (v7->field_30_hp_regen_condition)
 			v8 = entity_40F100_get_dy(v3, v3->field_A4);
 		else
 			v8 = v7->field_4C != 128 ? 7424 : 4096;
 		v9 = v2[2] & 0xFFFFE000;
 		v3->entity_8 = 0;
-		v3->sprite_height_2 = v8 + v9;
+		v3->sprite_y_2 = v8 + v9;
 		entity_mode_move_attack(v3);
 	}
 }
@@ -10307,20 +10268,20 @@ void entity_41A170_evt1524(Entity *a1, int a2)
 	v2 = a2;
 	v3 = a1;
 	if (a1->player_side == *(_DWORD *)a2
-		&& (a1->field_DC != 1
-			|| (*(_DWORD *)(a2 + 4) ^ a1->sprite_width_2) & 0xFFFFE000
-			|| (*(_DWORD *)(a2 + 8) ^ a1->sprite_height_2) & 0xFFFFE000))
+		&& (a1->_DC_order != 1
+			|| (*(_DWORD *)(a2 + 4) ^ a1->sprite_x_2) & 0xFFFFE000
+			|| (*(_DWORD *)(a2 + 8) ^ a1->sprite_y_2) & 0xFFFFE000))
 	{
 		script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 		v4 = v3->stats;
-		v3->field_DC = 1;
+		v3->_DC_order = ENTITY_ORDER_MOVE;
 		if (v4->field_30_hp_regen_condition)
 			v5 = entity_40F0A0_get_dx(v3, v3->field_A4);
 		else
 			v5 = v4->field_4C != 128 ? 7424 : 4096;
 		v6 = v5 + (*(_DWORD *)(v2 + 4) & 0xFFFFE000);
 		v7 = v3->stats;
-		v3->sprite_width_2 = v6;
+		v3->sprite_x_2 = v6;
 		if (v7->field_30_hp_regen_condition)
 			v8 = entity_40F100_get_dy(v3, v3->field_A4);
 		else
@@ -10328,7 +10289,7 @@ void entity_41A170_evt1524(Entity *a1, int a2)
 		v9 = *(_DWORD *)(v2 + 8);
 		v3->entity_8 = 0;
 		v3->mode = entity_mode_418F60;
-		v3->sprite_height_2 = v8 + (v9 & 0xFFFFE000);
+		v3->sprite_y_2 = v8 + (v9 & 0xFFFFE000);
 	}
 }
 
@@ -10343,10 +10304,10 @@ void entity_41A400_evt1547(Entity *a1, Entity *a2)
 	if (a2 != a1->_E0_current_attack_target)
 	{
 		script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
-		v2->field_DC = 3;
+		v2->_DC_order = ENTITY_ORDER_3;
 		v2->_E0_current_attack_target = v3;
 		v2->_E0_current_attack_target_entity_id = v3->entity_id;
-		v2->_E4_entity = 0;
+		v2->_E4_prev_attack_target = 0;
 		v2->_134_param__unitstats_after_mobile_outpost_plant = 600;
 		v2->mode_arrive = entity_mode_418B30;
 		v2->entity_8 = 0;
@@ -10365,19 +10326,19 @@ void entity_41A470(Entity *a1, Entity *a2)
 	v2 = a1;
 	v3 = a2;
 	script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
-	v2->field_DC = 10;
+	v2->_DC_order = ENTITY_ORDER_10;
 	v2->_E0_current_attack_target = v3;
 	v2->_E0_current_attack_target_entity_id = v3->entity_id;
-	v2->_E4_entity = 0;
+	v2->_E4_prev_attack_target = 0;
 	v2->_134_param__unitstats_after_mobile_outpost_plant = 600;
 	v2->mode_arrive = entity_mode_419230;
 	v3->sprite->field_88_unused = 1;
-	v2->sprite_width_2 = v3->sprite->x + *(_DWORD *)(v3->stru60.ptr_14 + 4);
+	v2->sprite_x_2 = v3->sprite->x + *(_DWORD *)(v3->stru60.ptr_14 + 4);
 	v4 = *(_DWORD *)(v3->stru60.ptr_14 + 8);
 	v5 = v3->sprite->y;
 	v2->entity_8 = 0;
-	v2->sprite_height_2 = v5 + v4;
-	entity_40DF50_boxd(v2, 1);
+	v2->sprite_y_2 = v5 + v4;
+	entity_40DF50_boxd_update_map_tile(v2, 1);
 	v2->mode = entity_mode_move_attack;
 }
 
@@ -10503,16 +10464,16 @@ void entity_41A6D0_evt1497(Entity *a1, Entity *a2)
 		|| v3 == UNIT_STATS_MUTE_CLANHALL_WAGON
 		|| v3 == UNIT_STATS_SURV_MOBILE_DERRICK
 		|| v3 == UNIT_STATS_MUTE_MOBILE_DERRICK
-		|| v3 == UNIT_STATS_SURV_SABOTEUR && a1->field_DC == 3
-		|| v3 == UNIT_STATS_MUTE_VANDAL && a1->field_DC == 3
-		|| v3 == UNIT_STATS_SURV_TECHNICIAN && a1->field_DC == 3
-		|| v3 == UNIT_STATS_MUTE_MEKANIK && a1->field_DC == 3
-		|| (v4 = a1->field_DC, v4 != 1) && v4
-		|| (v5 = a1->sprite, (v5->x ^ a1->sprite_width_2) & 0xFFFFE000)
-		|| (v5->y ^ a1->sprite_height_2) & 0xFFFFE000)
+		|| v3 == UNIT_STATS_SURV_SABOTEUR && a1->_DC_order == 3
+		|| v3 == UNIT_STATS_MUTE_VANDAL && a1->_DC_order == 3
+		|| v3 == UNIT_STATS_SURV_TECHNICIAN && a1->_DC_order == 3
+		|| v3 == UNIT_STATS_MUTE_MEKANIK && a1->_DC_order == 3
+		|| (v4 = a1->_DC_order, v4 != 1) && v4
+		|| (v5 = a1->sprite, (v5->x ^ a1->sprite_x_2) & 0xFFFFE000)
+		|| (v5->y ^ a1->sprite_y_2) & 0xFFFFE000)
 	{
-		a1->_E4_entity = a2;
-		a1->_E4_entity_id = a2->entity_id;
+		a1->_E4_prev_attack_target = a2;
+		a1->_E4_prev_attack_target_entity_id = a2->entity_id;
 		v6 = (stru11unit *)&a1->stru11_list_104;
 		do
 		{
@@ -10547,8 +10508,8 @@ void entity_41A6D0_evt1497(Entity *a1, Entity *a2)
 	{
 		a1->_E0_current_attack_target = a2;
 		a1->_E0_current_attack_target_entity_id = a2->entity_id;
-		a1->_E4_entity = 0;
-		a1->field_DC = 8;
+		a1->_E4_prev_attack_target = 0;
+		a1->_DC_order = ENTITY_ORDER_8;
 		a1->entity_8 = 0;
 		entity_mode_move_attack(a1);
 		script_445370_yield_to_main_thread(v2->script, 2147483648, 1);
@@ -10595,7 +10556,7 @@ void entity_41A890_evt1528(Entity *a1)
 		v2 = entity_44CA70_find(v1, UNIT_STATS_MUTE_CLANHALL, v1->player_side);
 	if (v2)
 	{
-		v1->field_DC = 4;
+		v1->_DC_order = ENTITY_ORDER_4;
 		v1->_E0_current_attack_target = v2;
 		v1->_E0_current_attack_target_entity_id = v2->entity_id;
 		entity_mode_move_attack(v1);
@@ -10609,14 +10570,14 @@ void entity_41A890_evt1528(Entity *a1)
 			v4 = v3->field_4C != 128 ? 7424 : 4096;
 		v5 = v4 + (v1->sprite->x & 0xFFFFE000);
 		v6 = v1->stats;
-		v1->sprite_width = v5;
+		v1->sprite_x = v5;
 		if (v6->field_30_hp_regen_condition)
 			v7 = entity_40F100_get_dy(v1, v1->field_A4);
 		else
 			v7 = v6->field_4C != 128 ? 7424 : 4096;
 		v8 = v1->sprite->y & 0xFFFFE000;
-		v1->field_DC = 1;
-		v1->sprite_height = v7 + v8;
+		v1->_DC_order = ENTITY_ORDER_MOVE;
+		v1->sprite_y = v7 + v8;
 		entity_mode_move_attack(v1);
 	}
 }
@@ -11573,15 +11534,11 @@ bool entity_41B510(Entity *a1, Entity *a2)
 	}
 	return 0;
 }
-// 478AB4: using guessed type int _478AB4_map_width_shl_13;
-// 478FF0: using guessed type int _478FF0_map_height_shl_13;
-// 4793F8: using guessed type int _4793F8_map_width;
 
 //----- (0041B970) --------------------------------------------------------
-int entity_41B970_boxd(Entity *a1, int a2, int a3)
+int entity_41B970_boxd(Entity *a1, int x, int y)
 {
 	Entity *v3; // edi@1
-	int v4; // eax@1
 	Sprite *v5; // edx@1
 	int v6; // ecx@1
 	int v7; // edx@1
@@ -11596,21 +11553,20 @@ int entity_41B970_boxd(Entity *a1, int a2, int a3)
 	Entity *v17; // [sp-4h] [bp-10h]@3
 
 	v3 = a1;
-	v4 = a2;
 	v5 = a1->sprite;
 	v6 = v5->x;
 	v7 = v5->y;
 	v3->stru224._28_indexer = 0;
-	if (v7 > a3)
+	if (v7 > y)
 	{
-		v11 = (v4 - v6) >> 8;
-		v12 = (v7 - a3) >> 8;
+		v11 = (x - v6) / 256;
+		v12 = (v7 - y) / 256;
 		if (v11 <= 0)
 		{
 			v17 = v3;
 			v16 = -256;
 			v15 = -256;
-			v14 = (v7 - a3) >> 8;
+			v14 = (v7 - y) / 256;
 			v13 = -v11;
 			if (-v11 > v12)
 				return boxd_41BA30(v6, v7, v13, v14, -256, -256, v3);
@@ -11620,7 +11576,7 @@ int entity_41B970_boxd(Entity *a1, int a2, int a3)
 			v17 = v3;
 			v16 = -256;
 			v15 = 256;
-			v14 = (v7 - a3) >> 8;
+			v14 = (v7 - y) / 256;
 			v13 = v11;
 			if (v11 > v12)
 				return boxd_41BA30(v6, v7, v11, v14, 256, -256, v3);
@@ -11628,14 +11584,14 @@ int entity_41B970_boxd(Entity *a1, int a2, int a3)
 	}
 	else
 	{
-		v8 = (v4 - v6) >> 8;
-		v9 = (a3 - v7) >> 8;
+		v8 = (x - v6) / 256;
+		v9 = (y - v7) / 256;
 		if (v8 <= 0)
 		{
 			v17 = v3;
 			v16 = 256;
 			v15 = -256;
-			v14 = (a3 - v7) >> 8;
+			v14 = (y - v7) / 256;
 			v13 = -v8;
 			if (-v8 > v9)
 				return boxd_41BA30(v6, v7, v13, v9, -256, 256, v3);
@@ -11645,7 +11601,7 @@ int entity_41B970_boxd(Entity *a1, int a2, int a3)
 			v17 = v3;
 			v16 = 256;
 			v15 = 256;
-			v14 = (a3 - v7) >> 8;
+			v14 = (y - v7) / 256;
 			v13 = v8;
 			if (v8 > v9)
 				return boxd_41BA30(v6, v7, v8, v9, 256, 256, v3);
@@ -11655,66 +11611,50 @@ int entity_41B970_boxd(Entity *a1, int a2, int a3)
 }
 
 //----- (0041BA30) --------------------------------------------------------
-int boxd_41BA30(int x, int y, int a3, int a4, int a5, int a6, Entity *a1)
+int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1)
 {
-	int v7; // ebx@1
 	int v8; // esi@1
-	int v9; // eax@1
 	int v10; // eax@7
-	int map_x; // esi@9
-	int map_y; // edi@9
-	bool v13; // zf@9
-	bool v14; // sf@9
-	unsigned __int8 v15; // of@9
 	int v16; // eax@20
-	DataBoxd_stru0_per_map_unit *a4a; // [sp+10h] [bp-A8h]@1
-	int v19; // [sp+14h] [bp-A4h]@1
-	int v20; // [sp+18h] [bp-A0h]@1
 	int a3a; // [sp+1Ch] [bp-9Ch]@3
 	int a8; // [sp+20h] [bp-98h]@3
 	int v23; // [sp+24h] [bp-94h]@3
-	int v24; // [sp+28h] [bp-90h]@1
-	int v25; // [sp+2Ch] [bp-8Ch]@5
 	int v26; // [sp+30h] [bp-88h]@1
-	int v27; // [sp+34h] [bp-84h]@9
 	int a11; // [sp+38h] [bp-80h]@3
 	int v29; // [sp+3Ch] [bp-7Ch]@1
 	int v30[10]; // [sp+40h] [bp-78h]@2
 	int a6a[10]; // [sp+68h] [bp-50h]@20
 	int a5a[10]; // [sp+90h] [bp-28h]@20
-	int v33; // [sp+BCh] [bp+4h]@3
 
-	a1->stru224.field_48 = 0;
-	a1->stru224.field_44 = 0;
-	v20 = y >> 13;
-	v7 = x >> 13;
-	v24 = y;
-	a4a = &_478AA8_boxd_stru0_array[(x >> 13) + _4793F8_map_width * (y >> 13)];
+	a1->stru224._48_map_y = 0;
+	a1->stru224._44_map_x = 0;
+
+	int map_x = global2map(x);
+    int map_y = global2map(y);
+    int next_x = x;
+    int next_y = y;
+    DataBoxd_stru0_per_map_unit *tile = &_478AA8_boxd_stru0_array[map_x + map_y * _4793F8_map_width];
 	v26 = 2 * a4;
 	v29 = 2 * a4 - 2 * a3;
 	v8 = 2 * a4 - a3;
-	v9 = 0;
-	v19 = 0;
-	do
+    int v19 = 0;
+	for (int i = 0; i < 10; ++i)
 	{
-		v30[v9] = 0;
-		a1->array_15C[v9] = -1;
-		a1->array_184[v19] = -1;
-		v9 = v19 + 1;
-		v15 = __OFSUB__(v19 + 1, 10);
-		v14 = v19++ - 9 < 0;
-	} while (v14 ^ v15);
-	v19 = 0;
+        v19 = i + 1;
+		v30[i] = 0;
+		a1->array_15C[i] = -1;
+		a1->array_184[i] = -1;
+	}
 	a3a = 0;
 	v23 = 0;
 	a11 = 0;
 	a8 = 0;
-	v13 = a3 == 0;
-	v33 = a3 - 1;
-	if (v13)
-		return boxd_41C060(v19, a1, a3a, v23, a5a, a6a, v30, a8);
-	while (1)
+
+	for (int i = a3 - 1; i > 0; --i)
 	{
+        map_x = global2map(next_x);
+        map_y = global2map(next_y);
+
 		if (v8 < 0)
 		{
 			v10 = v26;
@@ -11722,53 +11662,44 @@ int boxd_41BA30(int x, int y, int a3, int a4, int a5, int a6, Entity *a1)
 		else
 		{
 			v10 = v29;
-			y += a6;
-			v24 = y;
+			next_y += y_step;
 		}
-		x += a5;
-		v25 = v10 + v8;
-		map_x = x >> 13;
-		map_y = y >> 13;
-		v15 = __OFSUB__(x >> 13, v7);
-		v13 = x >> 13 == v7;
-		v14 = (x >> 13) - v7 < 0;
-		v27 = x;
-		if (x >> 13 == v7)
+        next_x += x_step;
+		v8 += v10;
+
+		int next_map_x = global2map(next_x);
+		int next_map_y = global2map(next_y);
+        unsigned __int8 v15 = __OFSUB__(next_map_x, map_x);
+		bool v13 = next_x == map_x;
+        bool v14 = next_x - map_x < 0;
+		if (next_map_x == map_x)
 		{
-			if (map_y == v20)
-				goto LABEL_22;
-			v15 = __OFSUB__(map_x, v7);
-			v13 = map_x == v7;
-			v14 = map_x - v7 < 0;
+			if (next_map_y == map_y)
+				continue;
+			v15 = __OFSUB__(next_map_x, map_x);
+			v13 = next_map_x == map_x;
+			v14 = next_map_x - map_x < 0;
 		}
 		if (!((unsigned __int8)(v14 ^ v15) | v13))
 		{
-			v15 = __OFSUB__(map_x, v7);
-			v14 = map_x - v7 < 0;
-			++a4a;
+			v15 = __OFSUB__(next_map_x, map_x);
+			v14 = next_map_x - map_x < 0;
+			++tile;
 		}
 		if (v14 ^ v15)
-			--a4a;
-		if (map_y > v20)
-			a4a += _4793F8_map_width;
-		if (map_y < v20)
-			a4a -= _4793F8_map_width;
-		v7 = x >> 13;
-		v20 = y >> 13;
-		v16 = boxd_40EA50(a1, map_x, map_y, a4a);
-		if (boxd_41BE90(&v19, v16, &a3a, &v23, a1, v30, a5a, a6a, map_x, map_y, &a11, &a8) != 6)
+			--tile;
+		if (next_map_y > map_y)
+            tile += _4793F8_map_width;
+		if (next_map_y < map_y)
+            tile -= _4793F8_map_width;
+
+		v16 = boxd_40EA50(a1, next_map_x, next_map_y, tile);
+		if (boxd_41BE90(&v19, v16, &a3a, &v23, a1, v30, a5a, a6a, next_map_x, next_map_y, &a11, &a8) != 6)
 			return 1;
-		y = v24;
-		x = v27;
-	LABEL_22:
-		v13 = v33-- == 0;
-		if (v13)
-			return boxd_41C060(v19, a1, a3a, v23, a5a, a6a, v30, a8);
-		v8 = v25;
 	}
+
+    return boxd_41C060(v19, a1, a3a, v23, a5a, a6a, v30, a8);
 }
-// 4793F8: using guessed type int _4793F8_map_width;
-// 41BA30: using guessed type int var_78[10];
 
 //----- (0041BC60) --------------------------------------------------------
 int boxd_41BC60(int x, int y, int a3, int a4, int a5, int a6, Entity *a7)
@@ -11800,8 +11731,8 @@ int boxd_41BC60(int x, int y, int a3, int a4, int a5, int a6, Entity *a7)
 	int v32[10]; // [sp+90h] [bp-28h]@20
 	int v33; // [sp+C0h] [bp+8h]@3
 
-	a7->stru224.field_48 = 0;
-	a7->stru224.field_44 = 0;
+	a7->stru224._44_map_x = 0;
+	a7->stru224._48_map_y = 0;
 	v20 = y >> 13;
 	v7 = x >> 13;
 	v24 = x;
@@ -11943,8 +11874,8 @@ int boxd_41BE90(_DWORD *a1, int a2, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6,
 	}
 	if (a2 == 2 && !*a3 && !*a11)
 	{
-		a5->stru224.field_48 = v12;
-		a5->stru224.field_44 = map_x;
+		a5->stru224._48_map_y = v12;
+		a5->stru224._44_map_x = map_x;
 	}
 	if (*a1)
 	{
@@ -12008,7 +11939,7 @@ int boxd_41C060(int a1, Entity *a2, int a3, int a4, int *a5, int *a6, int *a7, i
 		if (a7[v8])
 		{
 			a2->array_15C[v8] = a5[v8];
-			a2->array_184[a2->stru224._28_indexer] = a6[a2->stru224._28_indexer];
+			a2->array_184[v8] = a6[v8];
 			++a2->stru224._28_indexer;
 			return 3;
 		}
@@ -12036,7 +11967,7 @@ bool boxd_41C130(int x, int y, int z, int w, Entity *entity)
 	{
 		result = boxd_41C190(x, y, z, w, entity);
 	}
-	else if (v5 == 4096)
+	else if (entity_is_xl_vehicle(entity))
 	{
 		result = boxd_41C250(x, y, z, w, entity);
 	}
@@ -13141,20 +13072,20 @@ LABEL_9:
 	if (!result)
 		return result;
 	v4->entity_field_78 = v3->field_78;
-	v4->entity_mobd_idx = (MOBD_ID)v3->mobd_lookup_idx;
+	v4->entity_mobd_idx = (MOBD_ID)v3->current_mobd_lookup_idx;
 	v4->entity_field_80 = v3->field_80;
 	v4->entity_field_84 = v3->field_84;
-	v4->entity_field_88 = v3->field_88;
+	v4->entity_field_88 = v3->_88_dst_orientation;
 	v4->entity_hitpoints = v3->hitpoints;
 	v4->entity_field_94 = v3->field_94;
 	v4->entity_98__465610_damage_multipliers_idx = v3->_98_465610_accuracy_dmg_bonus_idx;
 	v4->entity_9C_hp_regen_condition = v3->_9C_hp_regen_condition;
 	v4->entity_A0_hp_regen_condition = v3->_A0_hp_regen_condition;
 	v4->field_A4 = v3->field_A4;
-	v4->entity_sprite_width_shr13 = v3->sprite_width_shr13;
-	v4->entity_sprite_height_shr13 = v3->sprite_height_shr13;
-	v4->entity_sprite_width = v3->sprite_width;
-	v4->entity_sprite_height = v3->sprite_height;
+	v4->entity_sprite_width_shr13 = v3->sprite_map_x;
+	v4->entity_sprite_height_shr13 = v3->sprite_map_y;
+	v4->entity_sprite_width = v3->sprite_x;
+	v4->entity_sprite_height = v3->sprite_y;
 	v4->field_B8 = v3->field_B8;
 	v4->field_BC = v3->field_BC;
 	v4->field_C0 = v3->field_C0;
@@ -13164,7 +13095,7 @@ LABEL_9:
 	v4->field_D0 = v3->field_D0;
 	v4->field_D4 = v3->field_D4;
 	v4->field_D8 = v3->field_D8;
-	v4->field_DC = v3->field_DC;
+	v4->field_DC = v3->_DC_order;
 	v64 = v3->_E0_current_attack_target;
 	v65 = v3->_E0_current_attack_target_entity_id;
 	if (!v64)
@@ -13182,8 +13113,8 @@ LABEL_9:
 	v66 = -1;
 LABEL_132:
 	v4->entity_EC_outpost_clanhall_entity_id = v66;
-	v68 = v3->_E4_entity;
-	v69 = v3->_E4_entity_id;
+	v68 = v3->_E4_prev_attack_target;
+	v69 = v3->_E4_prev_attack_target_entity_id;
 	if (!v68)
 		goto LABEL_139;
 	if (v69 != -1)
@@ -13202,10 +13133,10 @@ LABEL_132:
 LABEL_140:
 	v4->entity_E4_entity_id = v70;
 	v4->_E0_current_attack_target_entity_id = v3->_E0_current_attack_target_entity_id;
-	v4->_E4_entity_id = v3->_E4_entity_id;
+	v4->_E4_prev_attack_target_entity_id = v3->_E4_prev_attack_target_entity_id;
 	v4->entity_F4_entity_118_entity_id = v3->entity_118_entity_id;
-	v4->entity_sprite_width_2 = v3->sprite_width_2;
-	v4->entity_sprite_height_2 = v3->sprite_height_2;
+	v4->entity_sprite_width_2 = v3->sprite_x_2;
+	v4->entity_sprite_height_2 = v3->sprite_y_2;
 	v72 = v3->entity_118;
 	v73 = v3->entity_118_entity_id;
 	if (!v72)
@@ -13842,10 +13773,10 @@ bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data)
 			memset(&v3->_24_ai_node_per_player_side, 0, sizeof(v3->_24_ai_node_per_player_side));
 			memset32(&v3->stru60, (int)&entity_default_stru60_ptr, 6u);
 			v3->field_78 = v2->entity_field_78;
-			v3->mobd_lookup_idx = v2->entity_mobd_idx;
+			v3->current_mobd_lookup_idx = v2->entity_mobd_idx;
 			v3->field_80 = v2->entity_field_80;
 			v3->field_84 = v2->entity_field_84;
-			v3->field_88 = v2->entity_field_88;
+			v3->_88_dst_orientation = v2->entity_field_88;
 			v3->destroyed = 0;
 			v3->hitpoints = v2->entity_hitpoints;
 			v3->field_94 = v2->entity_field_94;
@@ -13853,10 +13784,10 @@ bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data)
 			v3->_9C_hp_regen_condition = v2->entity_9C_hp_regen_condition;
 			v3->_A0_hp_regen_condition = v2->entity_A0_hp_regen_condition;
 			v3->field_A4 = v2->field_A4;
-			v3->sprite_width_shr13 = v2->entity_sprite_width_shr13;
-			v3->sprite_height_shr13 = v2->entity_sprite_height_shr13;
-			v3->sprite_width = v2->entity_sprite_width;
-			v3->sprite_height = v2->entity_sprite_height;
+			v3->sprite_map_x = v2->entity_sprite_width_shr13;
+			v3->sprite_map_y = v2->entity_sprite_height_shr13;
+			v3->sprite_x = v2->entity_sprite_width;
+			v3->sprite_y = v2->entity_sprite_height;
 			v3->field_B8 = v2->field_B8;
 			v3->field_BC = v2->field_BC;
 			v3->field_C0 = v2->field_C0;
@@ -13866,7 +13797,7 @@ bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data)
 			v3->field_D0 = v2->field_D0;
 			v3->field_D4 = v2->field_D4;
 			v3->field_D8 = v2->field_D8;
-			v3->field_DC = v2->field_DC;
+			v3->_DC_order = (ENTITY_ORDER)v2->field_DC;
 			v32 = v2->entity_EC_outpost_clanhall_entity_id;
 			if (v32 == -1 || (v33 = entity_list_head, (Entity **)entity_list_head == &entity_list_head))
 			{
@@ -13898,14 +13829,14 @@ bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data)
 						goto LABEL_89;
 				}
 			}
-			v3->_E4_entity = v35;
+			v3->_E4_prev_attack_target = v35;
 			v3->_E8_entity = 0;
 			v3->_E0_current_attack_target_entity_id = v2->_E0_current_attack_target_entity_id;
-			v3->_E4_entity_id = v2->_E4_entity_id;
+			v3->_E4_prev_attack_target_entity_id = v2->_E4_prev_attack_target_entity_id;
 			v3->entity_118_entity_id = v2->entity_F4_entity_118_entity_id;
 			v3->_E8_entity_id = 0;
-			v3->sprite_width_2 = v2->entity_sprite_width_2;
-			v3->sprite_height_2 = v2->entity_sprite_height_2;
+			v3->sprite_x_2 = v2->entity_sprite_width_2;
+			v3->sprite_y_2 = v2->entity_sprite_height_2;
 			v3->stru11_list_104 = (stru11unit *)&v3->stru11_list_104;
 			v3->stru11_list_108 = (stru11unit *)&v3->stru11_list_104;
 			v3->field_110 = 0;
@@ -20736,16 +20667,16 @@ void entity_mobile_outpost_init(Entity *a1)
 		if (v10 != 5)
 		{
 			v11 = v1->sprite;
-			v1->sprite_width = v11->x;
-			v1->sprite_height = v11->y;
-			v1->sprite_width_2 = v1->sprite_width;
-			v12 = v1->sprite_height;
-			v1->field_DC = 1;
-			v1->sprite_height_2 = v12;
+			v1->sprite_x = v11->x;
+			v1->sprite_y = v11->y;
+			v1->sprite_x_2 = v1->sprite_x;
+			v12 = v1->sprite_y;
+			v1->_DC_order = ENTITY_ORDER_MOVE;
+			v1->sprite_y_2 = v12;
 			v1->field_A4 = v10;
 			v13 = v1->script;
-			v1->sprite_width_shr13 = v11->x >> 13;
-			v1->sprite_height_shr13 = v11->y >> 13;
+			v1->sprite_map_x = v11->x >> 13;
+			v1->sprite_map_y = v11->y >> 13;
 			v13->event_handler = MessageHandler_MobileOutpost;
 			entity_mode_415540_infantry(v1);
 			return;
@@ -20763,20 +20694,20 @@ void entity_mobile_outpost_init(Entity *a1)
 		v15 = entity_40F0A0_get_dx(v1, v1->field_A4);
 	else
 		v15 = v14->field_4C != 128 ? 7424 : 4096;
-	v16 = v15 + (v1->sprite_width_shr13 << 13);
+	v16 = v15 + (v1->sprite_map_x << 13);
 	v17 = v1->stats;
-	v1->sprite_width = v16;
+	v1->sprite_x = v16;
 	if (v17->field_30_hp_regen_condition)
 		v18 = entity_40F100_get_dy(v1, v1->field_A4);
 	else
 		v18 = v17->field_4C != 128 ? 7424 : 4096;
-	v19 = v1->sprite_width;
-	v20 = (v1->sprite_height_shr13 << 13) + v18;
+	v19 = v1->sprite_x;
+	v20 = (v1->sprite_map_y << 13) + v18;
 	v21 = v1->script;
-	v1->sprite_height = v20;
-	v1->field_DC = 1;
-	v1->sprite_width_2 = v19;
-	v1->sprite_height_2 = v20;
+	v1->sprite_y = v20;
+	v1->_DC_order = ENTITY_ORDER_MOVE;
+	v1->sprite_x_2 = v19;
+	v1->sprite_y_2 = v20;
 	v1->_134_param__unitstats_after_mobile_outpost_plant = 0;
 	v1->_98_465610_accuracy_dmg_bonus_idx = 0;
 	v21->event_handler = EventHandler_General_Scout;
@@ -20862,7 +20793,7 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 	v4 = v2->y_speed;
 	v2->x_speed = 0;
 	a1->sprite->y_speed = 0;
-	entity_40DEC0_boxd(a1, a1->sprite_width_shr13, a1->sprite_height_shr13, a1->field_A4);
+	entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->field_A4);
 	v5 = v1->unit_id;
 	v6 = (int)&v1->stru60.ptr_C->field_0;
 	v1->_134_param__unitstats_after_mobile_outpost_plant = v5;
@@ -21997,10 +21928,26 @@ int _42D560_get_mobd_lookup_id_rotation(int x, int y)
 	int v4; // ecx@19
 	int v5; // edx@23
 
+    // 0 north
+    // 64 east
+    // 128 south
+    // 192 west
+
 	if (x)
 	{
-		if (y)
-		{
+        if (!y)
+        {
+            if (x < 0)
+            {
+                return 192; // x < 0, y = 0 - west
+            }
+            else
+            {
+                return 64; // x > 0, y = 0 - east
+            }
+        }
+        else
+        {
 			if (x < 0)
 			{
 				v4 = -x;
@@ -22008,56 +21955,47 @@ int _42D560_get_mobd_lookup_id_rotation(int x, int y)
 				{
 					v5 = -y;
 					if (v4 < -y)
-						LOWORD_HEXRAYS(result) = -_42D639_mobd_lookup(v4, v5) & 0xFF;
+						return -_42D639_mobd_lookup(v4, v5) & 0xFF;
 					else
-						LOWORD_HEXRAYS(result) = _42D63B_mobd_do_lookup(v4, v5) + 192;
+						return _42D63B_mobd_do_lookup(v4, v5) + 192;
 				}
 				else if (v4 > y)
 				{
-					LOWORD_HEXRAYS(result) = 192 - _42D63B_mobd_do_lookup(v4, y);
+					return 192 - _42D63B_mobd_do_lookup(v4, y);
 				}
 				else
 				{
-					LOWORD_HEXRAYS(result) = _42D639_mobd_lookup(v4, y) + 128;
+					return _42D639_mobd_lookup(v4, y) + 128;
 				}
 			}
 			else if (y > 0)
 			{
 				if (x < y)
-					LOWORD_HEXRAYS(result) = 128 - _42D639_mobd_lookup(x, y);
+					return 128 - _42D639_mobd_lookup(x, y);
 				else
-					LOWORD_HEXRAYS(result) = _42D63B_mobd_do_lookup(x, y) + 64;
+					return _42D63B_mobd_do_lookup(x, y) + 64;
 			}
 			else
 			{
 				v3 = -y;
 				if (x > -y)
-					LOWORD_HEXRAYS(result) = 64 - _42D63B_mobd_do_lookup(x, v3);
+					return 64 - _42D63B_mobd_do_lookup(x, v3);
 				else
-					LOWORD_HEXRAYS(result) = _42D639_mobd_lookup(x, v3);
+					return _42D639_mobd_lookup(x, v3);
 			}
-		}
-		else if (x < 0)
-		{
-			LOWORD_HEXRAYS(result) = 192;
-		}
-		else
-		{
-			LOWORD_HEXRAYS(result) = 64;
 		}
 	}
 	else if (y)
 	{
 		if (y < 0)
-			LOWORD_HEXRAYS(result) = 0;
+			return 0; // x = 0, y < 0 - north
 		else
-			LOWORD_HEXRAYS(result) = 128;
+			return 128; // x = 0, y > 0 - south
 	}
 	else
 	{
-		LOWORD_HEXRAYS(result) = 0;
+        return 0;
 	}
-	return result;
 }
 
 //----- (0042D639) --------------------------------------------------------
@@ -32384,23 +32322,23 @@ void entity_oil_tanker_initialize(Entity *a1)
 				v9 = v8->field_4C != 128 ? 7424 : 4096;
 			v10 = v9 + (v1->sprite->x & 0xFFFFE000);
 			v11 = v1->stats;
-			v1->sprite_width = v10;
+			v1->sprite_x = v10;
 			if (v11->field_30_hp_regen_condition)
 				v12 = entity_40F100_get_dy(v1, v1->field_A4);
 			else
 				v12 = v11->field_4C != 128 ? 7424 : 4096;
 			v13 = v1->sprite;
 			v14 = v13->y;
-			v1->field_DC = 1;
+			v1->_DC_order = ENTITY_ORDER_MOVE;
 			v1->field_A4 = v7;
 			v15 = v12 + (v14 & 0xFFFFE000);
-			v16 = v1->sprite_width;
-			v1->sprite_height = v15;
-			v1->sprite_width_2 = v16;
-			v1->sprite_height_2 = v15;
+			v16 = v1->sprite_x;
+			v1->sprite_y = v15;
+			v1->sprite_x_2 = v16;
+			v1->sprite_y_2 = v15;
 			v17 = v1->script;
-			v1->sprite_width_shr13 = v13->x >> 13;
-			v1->sprite_height_shr13 = v13->y >> 13;
+			v1->sprite_map_x = v13->x >> 13;
+			v1->sprite_map_y = v13->y >> 13;
 			v17->event_handler = EventHandler_OilTanker;
 			v1->mode = entity_mode_4444D0_oiltanker;
 		}
@@ -32412,20 +32350,20 @@ void entity_oil_tanker_initialize(Entity *a1)
 			v20 = entity_40F0A0_get_dx(v1, v1->field_A4);
 		else
 			v20 = v19->field_4C != 128 ? 7424 : 4096;
-		v21 = v20 + (v1->sprite_width_shr13 << 13);
+		v21 = v20 + (v1->sprite_map_x << 13);
 		v22 = v1->stats;
-		v1->sprite_width = v21;
+		v1->sprite_x = v21;
 		if (v22->field_30_hp_regen_condition)
 			v23 = entity_40F100_get_dy(v1, v1->field_A4);
 		else
 			v23 = v22->field_4C != 128 ? 7424 : 4096;
-		v24 = v1->sprite_width;
-		v25 = (v1->sprite_height_shr13 << 13) + v23;
+		v24 = v1->sprite_x;
+		v25 = (v1->sprite_map_y << 13) + v23;
 		v26 = v1->script;
-		v1->sprite_height = v25;
-		v1->field_DC = 1;
-		v1->sprite_width_2 = v24;
-		v1->sprite_height_2 = v25;
+		v1->sprite_y = v25;
+		v1->_DC_order = ENTITY_ORDER_MOVE;
+		v1->sprite_x_2 = v24;
+		v1->sprite_y_2 = v25;
 		v1->_134_param__unitstats_after_mobile_outpost_plant = 0;
 		v1->_98_465610_accuracy_dmg_bonus_idx = 0;
 		v1->_12C_prison_bunker_spawn_type = 0;
@@ -32496,10 +32434,7 @@ void entity_mode_4444F0_oiltanker(Entity *a1)
 	}
 	else
 	{
-		sprite_4272E0_load_mobd_item(
-			v1->sprite,
-			v1->stats->mobd_lookup_offset,
-			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
+        entity_load_mobd_3(v1);
 		script_445370_yield_to_main_thread(v1->script, 0x80000000, 20);
 	}
 }
@@ -32542,10 +32477,7 @@ void entity_mode_444590_oiltanker(Entity *a1)
 	}
 	else
 	{
-		sprite_4272E0_load_mobd_item(
-			v1->sprite,
-			v1->stats->mobd_lookup_offset,
-			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
+        entity_load_mobd_3(v1);
 		script_445370_yield_to_main_thread(v1->script, 0x80000000, 20);
 	}
 }
@@ -32557,13 +32489,10 @@ void entity_mode_444630_oiltanker(Entity *a1)
 	int *v2; // edi@1
 
 	v1 = a1;
-	v2 = &a1->mobd_lookup_idx;
+	v2 = &a1->current_mobd_lookup_idx;
 	a1->sprite->x_speed = 0;
 	a1->sprite->y_speed = 0;
-	sprite_4272E0_load_mobd_item(
-		a1->sprite,
-		a1->stats->mobd_lookup_offset,
-		_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
+    entity_load_mobd_3(a1);
 	if (!_44CB60_advance_mobd_frame(v2, 160, v1->stats->turning_speed))
 		v1->mode = entity_mode_4446B0_oiltanker_load_oil;
 	script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
@@ -32587,7 +32516,7 @@ void entity_mode_4446B0_oiltanker_load_oil(Entity *a1)
 	int v6; // eax@11
 
 	v1 = a1;
-	entity_40DF50_boxd(a1, 0);
+	entity_40DF50_boxd_update_map_tile(a1, 0);
 	v2 = (EntityOilTankerState *)v1->state;
 	if (v2->_0_oil_loaded < 500)
 	{
@@ -32697,11 +32626,11 @@ void entity_mode_4447C0_oiltanker(Entity *a1)
 			v11 = 0x2000;
 		}
 		v7->sprite->field_88_unused = 1;
-		v1->sprite_width_2 = v10 + v2->_4_entity->sprite->x;
+		v1->sprite_x_2 = v10 + v2->_4_entity->sprite->x;
 		v12 = v2->_4_entity->sprite->y;
-		v1->field_DC = 7;
+		v1->_DC_order = ENTITY_ORDER_7;
 		v1->mode_arrive = entity_mode_4449D0_oiltanker;
-		v1->sprite_height_2 = v11 + v12;
+		v1->sprite_y_2 = v11 + v12;
 		entity_mode_move_attack(v1);
 	}
 	else
@@ -32776,11 +32705,11 @@ void entity_mode_4448C0_oiltanker(Entity *a1)
 			v11 = -7168;
 			v12 = 11520;
 		}
-		v1->sprite_width_2 = v11 + v8->sprite->x;
+		v1->sprite_x_2 = v11 + v8->sprite->x;
 		v13 = v2->_4_entity->sprite->y;
-		v1->field_DC = 7;
+		v1->_DC_order = ENTITY_ORDER_7;
 		v1->mode_arrive = entity_mode_444630_oiltanker;
-		v1->sprite_height_2 = v12 + v13;
+		v1->sprite_y_2 = v12 + v13;
 		entity_mode_move_attack(v1);
 	}
 	else
@@ -32792,20 +32721,13 @@ void entity_mode_4448C0_oiltanker(Entity *a1)
 //----- (004449D0) --------------------------------------------------------
 void entity_mode_4449D0_oiltanker(Entity *a1)
 {
-	Entity *v1; // esi@1
-	int *v2; // edi@1
-
-	v1 = a1;
-	v2 = &a1->mobd_lookup_idx;
 	a1->sprite->x_speed = 0;
 	a1->sprite->y_speed = 0;
-	sprite_4272E0_load_mobd_item(
-		a1->sprite,
-		a1->stats->mobd_lookup_offset,
-		_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_idx + 1]);
-	if (!_44CB60_advance_mobd_frame(v2, 160, v1->stats->turning_speed))
-		v1->mode = entity_mode_444A40_oiltanker;
-	script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+    entity_load_mobd_3(a1);
+
+	if (!_44CB60_advance_mobd_frame(&a1->current_mobd_lookup_idx, 160, a1->stats->turning_speed))
+		a1->mode = entity_mode_444A40_oiltanker;
+	script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
 }
 
 //----- (00444A40) --------------------------------------------------------
@@ -32813,9 +32735,9 @@ void entity_mode_444A40_oiltanker(Entity *a1)
 {
 	Script *v1; // ST00_4@1
 
-	a1->sprite->x_speed = -(a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]] >> 6);
+	a1->sprite->x_speed = -(a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->current_mobd_lookup_idx + 1]] >> 6);
 	a1->sprite->y_speed = -(-(a1->stats->speed
-		* _4731C8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]]) >> 6);
+		* _4731C8_speeds[__47CFC4_mobd_lookup_speeds[a1->current_mobd_lookup_idx + 1]]) >> 6);
 	v1 = a1->script;
 	a1->mode = entity_mode_444B40_oiltanker_unload_oil;
 	script_445370_yield_to_main_thread(v1, 0x80000000, 80);
@@ -32840,8 +32762,8 @@ void entity_mode_444AB0_oiltanker(Entity *a1)
 				*(_DWORD *)(v3 + 24) = 0;
 		}
 	}
-	a1->sprite->x_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]] >> 6;
-	a1->sprite->y_speed = -(a1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[a1->mobd_lookup_idx + 1]]) >> 6;
+	a1->sprite->x_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->current_mobd_lookup_idx + 1]] >> 6;
+	a1->sprite->y_speed = -(a1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[a1->current_mobd_lookup_idx + 1]]) >> 6;
 	v4 = a1->script;
 	a1->mode = entity_mode_4448C0_oiltanker;
 	script_445370_yield_to_main_thread(v4, 0x80000000, 80);
@@ -32857,7 +32779,7 @@ void entity_mode_444B40_oiltanker_unload_oil(Entity *a1)
 	v2 = (EntityOilTankerState *)a1->state;
 	a1->sprite->x_speed = 0;
 	a1->sprite->y_speed = 0;
-	entity_40DF50_boxd(a1, 0);
+	entity_40DF50_boxd_update_map_tile(a1, 0);
 	if (v2->_0_oil_loaded > 0)
 	{
 		v1->mode = entity_mode_444B40_oiltanker_unload_oil;
@@ -35043,10 +34965,7 @@ void UNIT_Handler_Towers(Script *a1)
 	v2 = entity_list_create(a1);
 	v1 = v2;
 	v2->script->event_handler = EventHandler_Towers;
-	sprite_4272E0_load_mobd_item(
-		v2->sprite,
-		v2->stats->mobd_lookup_offset,
-		_47D3C4_entity_mobd_lookup_ids[v2->mobd_lookup_idx + 1]);
+    entity_load_mobd_3(v2);
 	v3 = v1->sprite->_54_inside_mobd_ptr4->field_18;
 	if (v3)
 	{
@@ -35072,12 +34991,10 @@ void UNIT_Handler_Towers(Script *a1)
 	}
 	if (v1->player_side == player_side)
 		script_trigger_event(v1->script, EVT_MSG_1529_ai, v1, task_mobd17_cursor);
-	sprite_4272E0_load_mobd_item(v1->sprite, v1->stats->mobd_lookup_table_offset, 0);
+	sprite_4272E0_load_mobd_item(v1->sprite, v1->stats->mobd_lookup_offset_1, 0);
 	v1->mode = entity_mode_4474E0_towers;
 	(v1->mode)(v1);
 }
-// 47C6DC: using guessed type int _47C6DC_dont_execute_unit_handlers;
-// 47DCD0: using guessed type int num_players_towers;
 
 //----- (004474D0) --------------------------------------------------------
 void entity_mode_4474D0_towers(Entity *a1)
@@ -35165,18 +35082,15 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 			{
 				if (param == (void *)1)
 				{
-					sprite_4272E0_load_mobd_item(v4->sprite, v4->stats->mobd_lookup_table_offset, 1);
+					sprite_4272E0_load_mobd_item(v4->sprite, v4->stats->mobd_lookup_offset_1, 1);
 				}
 				else if (param == (void *)2)
 				{
-					sprite_4272E0_load_mobd_item(v4->sprite, v4->stats->mobd_lookup_table_offset, 2);
+					sprite_4272E0_load_mobd_item(v4->sprite, v4->stats->mobd_lookup_offset_1, 2);
 				}
-				else if ((char *)param - 2 == (_BYTE *)1)
+				else if (param == (void *)3)
 				{
-					sprite_4272E0_load_mobd_item(
-						v4->sprite,
-						v4->stats->mobd_lookup_offset,
-						_47D3C4_entity_mobd_lookup_ids[v4->mobd_lookup_idx + 1]);
+                    entity_load_mobd_3(v4);
 					entity_mode_4478E0_towers(v4);
 					script_trigger_event_group(v4->script, EVT_MSG_1551, 0, SCRIPT_TYPE_CA000012);
 					v4->mode = entity_mode_4474D0_towers;
@@ -35313,7 +35227,7 @@ void entity_mode_4478E0_towers(Entity *a1)
 				v5->param = v2;
 				v2->turret_sprite->param = v2;
 				v2->entity = v1;
-				v2->mobd_lookup_id = v1->mobd_lookup_idx;
+				v2->mobd_lookup_id = v1->current_mobd_lookup_idx;
 				v6 = v1->stats->attach;
 				v2->handler = EntityTowerAttachment_handler_447C40;
 				v2->stats_attachment_point = v6;
@@ -36245,7 +36159,6 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 {
 	EntityTurret *v1; // esi@1
 	Entity *v2; // ecx@1
-	int v3; // eax@1
 	Entity *v4; // eax@5
 	int v5; // edx@5
 	Entity *v6; // eax@8
@@ -36259,8 +36172,7 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 
 	v1 = a1;
 	v2 = a1->entity;
-	v3 = v2->field_DC;
-	if ((v3 == 2 || v3 == 8)
+	if ((v2->_DC_order == 2 || v2->_DC_order == 8)
 		&& entity_4488F0_is_in_firing_range(v2, v2->_E0_current_attack_target, v2->_E0_current_attack_target_entity_id)
 		&& sub_44CE40(v1->entity->player_side, v1->entity->_E0_current_attack_target))
 	{
@@ -36269,12 +36181,12 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 		v5 = v4->_E0_current_attack_target_entity_id;
 		goto LABEL_9;
 	}
-	if (entity_4488F0_is_in_firing_range(v1->entity, v1->entity->_E4_entity, v1->entity->_E4_entity_id)
-		&& is_enemy(v1->entity->player_side, v1->entity->_E4_entity))
+	if (entity_4488F0_is_in_firing_range(v1->entity, v1->entity->_E4_prev_attack_target, v1->entity->_E4_prev_attack_target_entity_id)
+		&& is_enemy(v1->entity->player_side, v1->entity->_E4_prev_attack_target))
 	{
 		v6 = v1->entity;
-		v1->_C_entity = v6->_E4_entity;
-		v5 = v6->_E4_entity_id;
+		v1->_C_entity = v6->_E4_prev_attack_target;
+		v5 = v6->_E4_prev_attack_target_entity_id;
 	LABEL_9:
 		v7 = v1->_C_entity;
 		v8 = v1->turret_sprite;
@@ -36301,7 +36213,7 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 	}
 	v10 = v1->stats_attachment_point;
 	src = v1->mobd_lookup_id;
-	_44CB60_advance_mobd_frame(&src, v1->entity->mobd_lookup_idx, v10->mobd_frame_step);
+	_44CB60_advance_mobd_frame(&src, v1->entity->current_mobd_lookup_idx, v10->mobd_frame_step);
 	v11 = src;
 	if (src != v1->mobd_lookup_id)
 	{
@@ -36432,7 +36344,7 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 				}
 			}
 			v12 = v1->entity;
-			v13 = v12->field_DC;
+			v13 = v12->_DC_order;
 			if (v13 == 2 || v13 == 8)
 			{
 				v14 = v12->_E0_current_attack_target;
@@ -36575,7 +36487,7 @@ void script_evt39030_handler(Script *a1)
 		v2 = (stru209 *)&netz_47CA30[13 * v1->selected_unit_player_side + 67];
 	switch (v2->type)
 	{
-	    case stru209_TYPE_1:
+	    case stru209_TYPE_SELECT_UNIT_GROUP:
 		    entity_drag_selection_init(
                 HIWORD(v2->param) << 8,
                 LOWORD(v2->param) << 8,
@@ -36603,7 +36515,7 @@ void script_evt39030_handler(Script *a1)
 				v4->_4_unit_task = v1;
 				v1->next->prev = (_47CAF0_task_attachment1 *)v4;
 				v1->next = (_47CAF0_task_attachment1 *)v4;
-                v1->_1C_does_selected_unit_belong_to_player = *((_DWORD *)v3->param + 5) == v1->selected_unit_player_side;
+                v1->_1C_does_selected_unit_belong_to_player = ((Entity *)v3->param)->player_side == v1->selected_unit_player_side;
 			}
 			v3 = entity_drag_selection_get_next_entity();
 		} while (v3);
@@ -38536,7 +38448,7 @@ void EntityTurret_44BF00_handler(EntityTurret *a1)
 	v3 = v1->stats_attachment_point;
 	v4 = v1->entity;
 	v1->handler = EntityTurret_44BF70;
-	_44CB60_advance_mobd_frame(v2, v4->mobd_lookup_idx, v3->mobd_frame_step);
+	_44CB60_advance_mobd_frame(v2, v4->current_mobd_lookup_idx, v3->mobd_frame_step);
 	sprite_4273B0_load_mobd_item_sound(
 		v1->turret_sprite,
 		v1->stats_attachment_point->mobd_lookup_table_offset,
@@ -38554,7 +38466,7 @@ void EntityTurret_44BF70(EntityTurret *a1)
 	v2 = (char *)&a1->mobd_lookup_id;
 	_44CB60_advance_mobd_frame(
 		&a1->mobd_lookup_id,
-		a1->entity->mobd_lookup_idx,
+		a1->entity->current_mobd_lookup_idx,
 		a1->stats_attachment_point->mobd_frame_step);
 	sprite_4273B0_load_mobd_item_sound(
 		v1->turret_sprite,
@@ -39064,7 +38976,7 @@ Entity *entity_list_create(Script *a1)
 	a1->event_handler = MessageHandler_EntityScript;
 	v2->param = v1;
 	v1->stats = &unit_stats[v1->unit_id];
-	v1->mobd_lookup_idx = 128;
+	v1->current_mobd_lookup_idx = 128;
 	v1->hitpoints = v1->stats->hitpoints;
 	v1->field_78 = 0;
 
@@ -39672,14 +39584,14 @@ LABEL_30:
 			v20 = v19->field_4C != 128 ? 7424 : 4096;
 		v21 = v20 + (v1->field_C4 << 13);
 		v22 = v1->stats;
-		v1->sprite_width = v21;
+		v1->sprite_x = v21;
 		if (v22->field_30_hp_regen_condition)
 			v23 = entity_40F100_get_dy(v1, v1->field_A4);
 		else
 			v23 = v22->field_4C != 128 ? 7424 : 4096;
 		v24 = v23 + (v1->field_C8 << 13);
 		result = 1;
-		v1->sprite_height = v24;
+		v1->sprite_y = v24;
 	}
 	else
 	{

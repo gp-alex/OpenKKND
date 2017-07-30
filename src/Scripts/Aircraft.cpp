@@ -7,6 +7,7 @@
 #include "src/Render.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Entity.h"
 
 
 //----- (00401110) --------------------------------------------------------
@@ -41,7 +42,7 @@ void entity_401110_aircraft(Entity *a1)
             v2->turret_sprite->param = v2;
             v2->turret_sprite->z_index = 0;
             v2->entity = v1;
-            v2->mobd_lookup_id = v1->mobd_lookup_idx;
+            v2->mobd_lookup_id = v1->current_mobd_lookup_idx;
             v5 = v1->stats->attach;
             v2->handler = EntityTowerAttachment_handler_4010E0;
             v2->stats_attachment_point = v5;
@@ -135,8 +136,8 @@ void UNIT_Handler_Aircraft(Script *a1)
         }
         v2->sprite->field_88_unused = 1;
         v5 = v2->sprite;
-        v2->sprite_width = v5->x;
-        v2->sprite_height = v5->y;
+        v2->sprite_x = v5->x;
+        v2->sprite_y = v5->y;
         if (a1a > 1)
         {
             v9 = kknd_rand_debug(__FILE__, __LINE__);
@@ -294,7 +295,7 @@ void entity_401670_aircraft(Entity *a1)
 //----- (00401680) --------------------------------------------------------
 void entity_401680(Entity *a1)
 {
-    a1->sprite_width = (render_call_draw_handler_mode1(&_47A010_mapd_item_being_drawn[0]->draw_job->job_details) + 32) << 8;
+    a1->sprite_x = (render_call_draw_handler_mode1(&_47A010_mapd_item_being_drawn[0]->draw_job->job_details) + 32) << 8;
 }
 
 //----- (004016B0) --------------------------------------------------------
@@ -377,17 +378,17 @@ void entity_mode_401800_aircraft(Entity *a1)
     int v10; // eax@5
 
     v1 = a1;
-    v2 = _42D560_get_mobd_lookup_id_rotation(a1->sprite_width - a1->sprite->x, a1->sprite_height - a1->sprite->y);
-    _44CB60_advance_mobd_frame(&v1->mobd_lookup_idx, v2 & 0xF0, 5);
+    v2 = _42D560_get_mobd_lookup_id_rotation(a1->sprite_x - a1->sprite->x, a1->sprite_y - a1->sprite->y);
+    _44CB60_advance_mobd_frame(&v1->current_mobd_lookup_idx, v2 & 0xF0, 5);
     sprite_4273B0_load_mobd_item_sound(
         v1->sprite,
-        v1->stats->_38_mobd_lookup_table_offset,
-        _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_idx + 1]);
-    v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]] >> 6;
-    v1->sprite->y_speed = -(v1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->mobd_lookup_idx + 1]]) >> 6;
-    v3 = v1->sprite_width;
+        v1->stats->mobd_lookup_offset_2,
+        _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
+    v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->current_mobd_lookup_idx + 1]] >> 6;
+    v1->sprite->y_speed = -(v1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->current_mobd_lookup_idx + 1]]) >> 6;
+    v3 = v1->sprite_x;
     v4 = v1->sprite;
-    v5 = v1->sprite_height;
+    v5 = v1->sprite_y;
     v6 = v4->x >> 13;
     v7 = v4->y >> 13;
     v8 = (v5 - 2048) >> 13;
@@ -414,7 +415,7 @@ void entity_mode_401800_aircraft(Entity *a1)
             if (v10 == -2)
                 script_445370_yield_to_main_thread(v1->script, 0x80000000, 40);
             if (v1->_128_spawn_param == (void *)-1)
-                v1->sprite_width = (render_call_draw_handler_mode1(&_47A010_mapd_item_being_drawn[0]->draw_job->job_details) + 32) << 8;
+                v1->sprite_x = (render_call_draw_handler_mode1(&_47A010_mapd_item_being_drawn[0]->draw_job->job_details) + 32) << 8;
             else
                 entity_401530_aircraft(v1, 0);
         }
