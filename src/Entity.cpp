@@ -7,6 +7,24 @@
 #include "src/Script.h"
 
 
+int entity_get_mobd_speed_x(Entity *entity)
+{
+    if (entity->current_mobd_lookup_idx != -1)
+    {
+        return entity->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[entity->current_mobd_lookup_idx + 1]] / 64;
+    }
+    return 0;
+}
+
+int entity_get_mobd_speed_y(Entity *entity)
+{
+    if (entity->current_mobd_lookup_idx != -1)
+    {
+        return entity->stats->speed * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[entity->current_mobd_lookup_idx + 1]] / 64;
+    }
+    return 0;
+}
+
 // XL vehicles: mobile outpost, autocannon tank & missile crab
 bool entity_is_xl_vehicle(Entity *entity)
 {
@@ -69,7 +87,7 @@ bool entity_is_21st_century(Entity *entity)
 
 int entity_get_dx(Entity *entity)
 {
-    if (entity->stats->field_30_hp_regen_condition)
+    if (entity->stats->is_infantry)
         return entity_40F0A0_get_dx(entity, entity->field_A4);
     else
         return entity->stats->field_4C != 128 ? 7424 : 4096;
@@ -77,7 +95,7 @@ int entity_get_dx(Entity *entity)
 
 int entity_get_dy(Entity *entity)
 {
-    if (entity->stats->field_30_hp_regen_condition)
+    if (entity->stats->is_infantry)
         return entity_40F100_get_dy(entity, entity->field_A4);
     else
         return entity->stats->field_4C != 128 ? 7424 : 4096;

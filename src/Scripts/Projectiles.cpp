@@ -84,7 +84,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
     v22 = kknd_rand_debug(__FILE__, __LINE__);
     v1->x_speed = v19 + *(_DWORD *)(v10 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v29 + 1]];
     v1->y_speed = 16 * (v22 % (100 - v27) - (100 - v21) / 2)
-        - *(_DWORD *)(v10 + 16) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v29 + 1]];
+        - *(_DWORD *)(v10 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v29 + 1]];
     v1->z_speed_limit = 512;
     v1->z_speed = 512;
     if (a3 > 2)
@@ -258,7 +258,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
     v24 = 16 * (v23 % (100 - v21) - (100 - v22) / 2);
     sprite_408800_play_sound(v2, SOUND_14_dmg, _4690A8_unit_sounds_volume, 0);
     v2->x_speed = (v19 + *((_DWORD *)v34 + 4) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v37 + 1]]) >> 1;
-    v2->y_speed = (v24 - *((_DWORD *)v34 + 4) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v37 + 1]]) >> 1;
+    v2->y_speed = (v24 - *((_DWORD *)v34 + 4) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v37 + 1]]) >> 1;
     if (v38 > 0)
     {
         v25 = v38;
@@ -351,7 +351,7 @@ void script_436140_flamethrower_dmg_handler(Script *a1)
         + *(_DWORD *)(v3 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v8 + 1]]
         - 8;
     v1->y_speed = (kknd_rand_debug(__FILE__, __LINE__) & 0xF)
-        - *(_DWORD *)(v3 + 16) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v8 + 1]]
+        - *(_DWORD *)(v3 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v8 + 1]]
         - 8;
     v9 = math_42D64D_prolly_vec_length(v7, v6);
     script_445370_yield_to_main_thread(a1, 0x80000002, v9 / *(_DWORD *)(v3 + 16));
@@ -569,7 +569,7 @@ void UNIT_DmgHandler_Beetle(Script *a1)
         v14 = kknd_rand_debug(__FILE__, __LINE__);
         v7->x_speed = v26 + *(_DWORD *)(v2 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v23 + 1]];
         v7->y_speed = 4 * (v14 % (100 - v22) - (100 - v20) / 2)
-            - *(_DWORD *)(v2 + 16) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v23 + 1]];
+            - *(_DWORD *)(v2 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v23 + 1]];
         script_445370_yield_to_main_thread(a1, 0x80000000, 2);
         do
         {
@@ -771,7 +771,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         v16 = 8 * (v15 % (100 - v14) - (100 - v52) / 2);
         sprite_408800_play_sound(v4->sprite, SOUND_LASER_DMG, _4690A8_unit_sounds_volume, 0);
         v1->x_speed = v57 + *(_DWORD *)(v55 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v53 + 1]];
-        v1->y_speed = v16 - *(_DWORD *)(v55 + 16) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v53 + 1]];
+        v1->y_speed = v16 - *(_DWORD *)(v55 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v53 + 1]];
         v17 = math_42D64D_prolly_vec_length(v8, v59);
         script_445370_yield_to_main_thread(a1, 0x80000000, v17 / *(_DWORD *)(v55 + 16));
         v1->x_speed = 0;
@@ -840,7 +840,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         v41 = 16 * (v40 % (100 - v38) - (100 - v39) / 2);
         sprite_408800_play_sound(v1, SOUND_14_dmg, _4690A8_unit_sounds_volume, 0);
         v1->x_speed = (v36 + *(_DWORD *)(v55 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v54 + 1]]) >> 1;
-        v1->y_speed = (v41 - *(_DWORD *)(v55 + 16) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v54 + 1]]) >> 1;
+        v1->y_speed = (v41 - *(_DWORD *)(v55 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v54 + 1]]) >> 1;
         if (v60 > 0)
         {
             v42 = v60;
@@ -1124,7 +1124,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
             v8->z_index = v10 + 5120;
             v8->y = v3->sprite->y + v3->stru60.ptr_0->y_offset + 2560;
             v11 = 2248;
-            if (!v3->stats->field_30_hp_regen_condition)
+            if (!v3->stats->is_infantry)
                 v11 = 2184;
             sprite_4272E0_load_mobd_item(v8, v11, _47D3C4_entity_mobd_lookup_ids[v3->current_mobd_lookup_idx + 1]);
         }
@@ -1226,7 +1226,7 @@ int sub_437690(Script *a1)
     {
         sprite_408800_play_sound(*((Sprite **)v3 + 23), SOUND_LASER_DMG, _4690A8_unit_sounds_volume, 0);
         v1->x_speed = v13 + v19[4] * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v20 + 1]];
-        v1->y_speed = v16 - v19[4] * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v20 + 1]];
+        v1->y_speed = v16 - v19[4] * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v20 + 1]];
     }
     v1->_60_mobd_field_0_int *= 2;
     script_445370_yield_to_main_thread(a1, 2147483648, 30);
@@ -1302,7 +1302,7 @@ void UNIT_DmgHandler_Bow(Script *a1)
     if (v14)
     {
         v1->x_speed = v25 + v14 * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v24 + 1]];
-        v1->y_speed = v15 - *(_DWORD *)(v19 + 16) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v24 + 1]];
+        v1->y_speed = v15 - *(_DWORD *)(v19 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v24 + 1]];
         v16 = math_42D64D_prolly_vec_length(v7, v6);
         v17 = a1;
         script_445370_yield_to_main_thread(a1, 0x80000000, v16 / *(_DWORD *)(v19 + 16));
@@ -1415,7 +1415,7 @@ void UNIT_DmgHandler_Projectile(Script *a1)
         }
         sprite_408800_play_sound(v30->sprite, v19, v24, 0);
         v1->x_speed = v27 + *(_DWORD *)(v25 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v31 + 1]];
-        v1->y_speed = v17 - *(_DWORD *)(v25 + 16) * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v31 + 1]];
+        v1->y_speed = v17 - *(_DWORD *)(v25 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v31 + 1]];
         v20 = math_42D64D_prolly_vec_length(v7, v6);
         script_445370_yield_to_main_thread(a1, 0x80000000, v20 / *(_DWORD *)(v25 + 16));
         v16 = v30;

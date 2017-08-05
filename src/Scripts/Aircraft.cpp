@@ -379,13 +379,13 @@ void entity_mode_401800_aircraft(Entity *a1)
 
     v1 = a1;
     v2 = _42D560_get_mobd_lookup_id_rotation(a1->sprite_x - a1->sprite->x, a1->sprite_y - a1->sprite->y);
-    _44CB60_advance_mobd_frame(&v1->current_mobd_lookup_idx, v2 & 0xF0, 5);
+    entity_advance_mobd_rotation(&v1->current_mobd_lookup_idx, v2 & 0xF0, 5);
     sprite_4273B0_load_mobd_item_sound(
         v1->sprite,
         v1->stats->mobd_lookup_offset_2,
         _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
     v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->current_mobd_lookup_idx + 1]] >> 6;
-    v1->sprite->y_speed = -(v1->stats->speed * _4731C8_speeds[__47CFC4_mobd_lookup_speeds[v1->current_mobd_lookup_idx + 1]]) >> 6;
+    v1->sprite->y_speed = -(v1->stats->speed * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v1->current_mobd_lookup_idx + 1]]) >> 6;
     v3 = v1->sprite_x;
     v4 = v1->sprite;
     v5 = v1->sprite_y;

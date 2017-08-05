@@ -586,12 +586,12 @@ void *script_handlers[353] =
 	&entity_4158B0,
 	&entity_mode_415980,
 	&entity_415A20,
-	&entity_mode_415A60,
+	&entity_mode_415A60_vehicle_rotate,
 	&entity_mode_move_attack,
 	&entity_415D30,
 	&entity_mode_416060,
 	&entity_mode_4165C0,
-	&entity_mode_416790,
+	&entity_mode_416790_vehicle_move,
 	&entity_mode_416A70_oiltanker,
 	&entity_mode_416CD0,
 	&entity_mode_416EB0,
@@ -5915,17 +5915,7 @@ UnitStat unit_stats[89] =
 		0
 	}
 };
-int _4731A8_speeds[] = { 0, 50, 98, 142, 181, 213, 237, 251 }; // idb
-int _4731C8_speeds[] =
-{
-	256,
-	251,
-	237,
-	213,
-	181,
-	142,
-	98,
-	50,
+int _4731A8_speeds[] = { 0, 50, 98, 142, 181, 213, 237, 251, 256, 251, 237, 213, 181, 142, 98, 50,
 	0,
 	-50,
 	-98,

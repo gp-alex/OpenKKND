@@ -223,11 +223,11 @@ void VIDEO_40D430(RenderString *a1);
 void VIDEO_40D450(char *a1, int a2);
 int timer_init(unsigned int fps);
 void TimedMessagePump();
-int entity_40D600(Entity *a1, int sprite_width, int sprite_height, int a4);
-int entity_40D6F0(Entity *a1, int sprite_width, int sprite_height, int a4);
+int entity_40D600_infantry_get_new_movement_orientation(Entity *a1, int sprite_width, int sprite_height, int a4);
+int entity_40D6F0_vehicle_get_new_movement_orientation(Entity *a1, int sprite_width, int sprite_height, int a4);
 bool _40D860_prolly_sprite_distance(Sprite *a1, Sprite *a2, int a3); // idb
 int sprite_40D8B0_dmg(Sprite *a1, int a2); // idb
-int entity_40DA90_boxd(Entity *a1);
+int entity_40DA90_update_tile_info(Entity *a1);
 bool entity_40DBF0_boxd_does_unit_fit(Entity *a1);
 bool entity_40DD00_boxd(Entity *a1);
 int entity_40DDD0_boxd(Entity *a1);
@@ -313,7 +313,7 @@ bool entity_414520_boxd(Entity *a1);
 void entity_414670(Entity *a1);
 bool entity_414870_boxd(Entity *a1);
 void entity_4149A0(Entity *a1);
-bool entity_414AD0(Entity *a1);
+bool entity_414AD0_vehicle_collide_vehicle(Entity *a1);
 void entity_414C30_boxd(Entity *a1);
 void entity_414E80(Entity *a1);
 bool entity_415400_tanker(Entity *a1);
@@ -323,12 +323,12 @@ void entity_mode_4157F0(Entity *a1);
 void entity_4158B0(Entity *a1);
 void entity_mode_415980(Entity *a1);
 void entity_415A20(Entity *a1);
-void entity_mode_415A60(Entity *a1);
+void entity_mode_415A60_vehicle_rotate(Entity *a1);
 void entity_mode_move_attack(Entity *a1);
 void entity_415D30(Entity *a1);
 void entity_mode_416060(Entity *a1);
 void entity_mode_4165C0(Entity *a1);
-void entity_mode_416790(Entity *a1);
+void entity_mode_416790_vehicle_move(Entity *a1);
 void entity_mode_416A70_oiltanker(Entity *a1);
 void entity_mode_416CD0(Entity *a1);
 void entity_mode_416EB0(Entity *a1);
@@ -496,7 +496,7 @@ Sprite *sprite_create_scripted(enum MOBD_ID mobd_item_idx, Sprite *parent, void(
 void sprite_list_remove(Sprite *a1);
 void sprite_list_remove_scripted(Sprite *a1);
 Sprite *sprite_list_find_by_mobd_id(enum MOBD_ID mobd_id);
-void sprite_list_427020();
+void sprite_list_update_positions();
 void sprite_4272A0_load_mobd_item(Sprite *a1, int offset); // idb
 void sprite_4272E0_load_mobd_item(Sprite *a1, int lookup_table_offset, int lookup_idx); // idb
 void sprite_427320_load_mobd_item_sound(Sprite *a1, int offset); // idb
@@ -929,7 +929,7 @@ bool sub_44CA50(enum UNIT_ID id); // idb
 Entity *entity_44CA70_find(Entity *a1, enum UNIT_ID a2, int player_side); // idb
 bool show_message_ex(Entity *a1, const char *text);
 bool show_message(const char *text);
-int _44CB60_advance_mobd_frame(int *src_lookup_id, int dst, int step); // idb
+int entity_advance_mobd_rotation(int *src_lookup_id, int dst, int step); // idb
 void script_show_message_ex(Script *a1); // idb
 bool _44CDC0_sidebar_is_units_limit();
 bool is_enemy(enum PLAYER_SIDE player_side, Entity *a2);

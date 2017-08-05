@@ -434,7 +434,6 @@ extern UnitAttachmentPoint attach_clanhall;
 extern UnitStat unit_stats[89];
 
 extern int _4731A8_speeds[]; // idb
-extern int _4731C8_speeds[]; // idb
 extern char *errmsg_win95_or_later;
 extern char *errmsg_dx3_or_later;
 extern char *errmsg_dx5_or_later;

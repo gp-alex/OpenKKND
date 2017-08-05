@@ -271,7 +271,7 @@ struct UnitStat
 	int firing_range;
 	int accuracy;
 	int field_2C;
-	int field_30_hp_regen_condition;
+	int is_infantry;
 	int mobd_lookup_offset_1;
 	int mobd_lookup_offset_2;
 	int mobd_lookup_offset_3;

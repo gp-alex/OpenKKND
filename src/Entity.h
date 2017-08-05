@@ -200,6 +200,9 @@ void entity_load_mobd_3(Entity *entity);
 void entity_load_mobd_3(Entity *entity, int idx);
 void entity_load_mobd_4(Entity *entity);
 
+int entity_get_mobd_speed_x(Entity *entity);
+int entity_get_mobd_speed_y(Entity *entity);
+
 
 
 void entity_attack(Entity *a1, _47CAF0_task_attachment1_attack_task *param);
