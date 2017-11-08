@@ -115,7 +115,6 @@ extern char a_[2]; // weak
 extern char *aS;
 extern char *aWaitLvl_runlev;
 extern char *aLvl_loadlevelW;
-extern char *aSLevelsSWait_l;
 extern char *aNetz_initFaile;
 extern char *aLvl_sysinitFai;
 extern char *aLvl_runlevelFa;
@@ -123,13 +122,11 @@ extern char *aLvl_substhunkF;
 extern char *MOBD;
 extern char *aLvl_loadlevelS;
 extern char *aSLevelsSS;
-extern char super_lvl[10]; // weak
 extern char *aSuperSpriteLoa;
 extern char *aSLevelsSSupspr;
 extern char intro_vbc[10]; // weak
 extern char *aSFmvMh_fmv_vbc;
 extern char *fmv_lvl;
-extern char *aSLevelsSSprite;
 extern char *aSFmvS;
 extern char *aEvolvout_vbc;
 extern char *aSurvout_vbc;

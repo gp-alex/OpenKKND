@@ -1,3 +1,6 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <direct.h>
+
 #include "src/kknd.h"
 
 #include "src/_unsorted_functions.h"
@@ -10873,12 +10876,37 @@ bool LVL_SysInit()
 }
 
 //----- (0041B140) --------------------------------------------------------
-DataHunk *LVL_LoadLevel(const char *filename)
+DataHunk *LVL_LoadLevel(const char *filename_)
 {
 	DataHunk *result; // eax@1
 	File *level_file; // esi@1
 	void *level_data; // ebx@2
 	RllcHunk *level_rllc; // edi@3
+
+
+	char cwd[1024];
+	char filename[1024];
+
+	const char *ext = strrchr(filename_, '.');
+	if (!_stricmp(ext, ".slv"))
+	{
+		sprintf(
+			filename,
+			(const char *)aSLevelsS,
+			_getcwd(cwd, sizeof(cwd)),//game_data_installation_dir,
+			filename_);
+	}
+	else if (!_stricmp(ext, ".lvl"))
+	{
+		sprintf(
+			filename,
+			(const char *)aSLevelsSS,
+			_getcwd(cwd, sizeof(cwd)),//game_data_root_dir
+			get_resource_res_subfolder(),
+			filename_
+		);
+	}
+	else throw 42;
 
 	result = (DataHunk *)file_list_fopen(filename);
 	level_file = (File *)result;
@@ -17874,7 +17902,7 @@ bool GAME_ShowWait()
 	int v0; // eax@12
 	int v1; // esi@12
 	char *v2; // eax@13
-	char *v3; // eax@16
+	//char *v3; // eax@16
 	DataMapd *v4; // eax@24
 	int v5; // esi@24
 	int v7; // [sp+0h] [bp-80h]@13
@@ -17915,9 +17943,7 @@ bool GAME_ShowWait()
 		exit(0);
 	}
 
-	v3 = get_resource_res_subfolder();
-	sprintf(v8, (const char *)aSLevelsSWait_l, game_data_installation_dir, v3);
-	wait_lvl = LVL_LoadLevel(v8);
+	wait_lvl = LVL_LoadLevel("wait.lvl");
 	if (!wait_lvl)
 	{
 		netz_deinit();
@@ -17958,7 +17984,7 @@ bool GAME_ShowWait()
 void GAME_PrepareSuperLvl(int mapd_idx)
 {
 	int mApd_idx; // ebp@1
-	char *v2; // eax@1
+	//char *v2; // eax@1
 	enum LEVEL_ID v3; // ebx@5
 	int v4; // ecx@5
 	char *v5; // edi@5
@@ -17972,15 +17998,13 @@ void GAME_PrepareSuperLvl(int mapd_idx)
 	unsigned int v13; // ecx@11
 	char v14; // al@11
 	char *v15; // esi@11
-	char *v16; // eax@12
+	//char *v16; // eax@12
 	DataHunk *v17; // eax@12
 	DataMapd *v18; // eax@24
-	char v19[120]; // [sp+10h] [bp-78h]@1
+	//char v19[120]; // [sp+10h] [bp-78h]@1
 
 	mApd_idx = mapd_idx;
-	v2 = get_resource_res_subfolder();
-	sprintf(v19, (const char *)aSLevelsSSupspr, game_data_installation_dir, v2);
-	sprites_lvl = LVL_LoadLevel(v19);
+	sprites_lvl = LVL_LoadLevel("supspr.lvl");
 	if (!sprites_lvl)
 	{
 		LVL_Deinit();
@@ -18031,10 +18055,9 @@ void GAME_PrepareSuperLvl(int mapd_idx)
 		v12 = v14;
 	}
 	memcpy(v10, v11, v12 & 3);
-	v16 = get_resource_res_subfolder();
-	sprintf(v19, (const char *)aSLevelsSS, game_data_root_dir, v16, super_lvl);
+
 	current_level_idx = v3;
-	v17 = LVL_LoadLevel(v19);
+	v17 = LVL_LoadLevel("super.lvl");
 	current_level_lvl = v17;
 	if (!v17)
 	{
@@ -18086,9 +18109,9 @@ int VIDEO_Play(int id)
 {
 	int v1; // esi@1
 	char **v2; // edi@5
-	char *v3; // eax@16
+	//char *v3; // eax@16
 	int result; // eax@17
-	char *v5; // eax@18
+	//char *v5; // eax@18
 	DataHunk *v6; // eax@18
 	DataHunk *v7; // ebp@18
 	DataMapdItem *v8; // ecx@23
@@ -18098,7 +18121,7 @@ int VIDEO_Play(int id)
 	KeyboardInput keyboard_input; // [sp+10h] [bp-1B8h]@9
 	char a1[80]; // [sp+24h] [bp-1A4h]@7
 	char v14[80]; // [sp+74h] [bp-154h]@7
-	char v15[260]; // [sp+C4h] [bp-104h]@16
+	//char v15[260]; // [sp+C4h] [bp-104h]@16
 return 1;
 	v1 = id;
 	VIDEO_IsAllocated();
@@ -18183,15 +18206,12 @@ return 1;
 		goto LABEL_44;
 	if (!sprites_lvl)
 	{
-		v3 = get_resource_res_subfolder();
-		sprintf(v15, (const char *)aSLevelsSSprite, game_data_installation_dir, v3);
-		sprites_lvl = LVL_LoadLevel(v15);
+		sprites_lvl = LVL_LoadLevel("sprites.lvl");
 		if (!sprites_lvl)
 			return 0;
 	}
-	v5 = get_resource_res_subfolder();
-	sprintf(v15, (const char *)aSLevelsSS, game_data_installation_dir, v5, fmv_lvl);
-	v6 = LVL_LoadLevel(v15);
+
+	v6 = LVL_LoadLevel(fmv_lvl);
 	v7 = v6;
 	if (!v6)
 		return 0;
@@ -18265,13 +18285,13 @@ int nullsub_3(void)
 void GAME_PrepareLevel()
 {
 	enum LEVEL_ID v0; // edx@1
-	char *v1; // eax@3
-	const char *v2; // ST10_4@16
-	char *v3; // eax@16
+	//char *v1; // eax@3
+	//const char *v2; // ST10_4@16
+	//char *v3; // eax@16
 	DataHunk *level_lvl; // eax@16
-	int v5; // eax@24
+	//int v5; // eax@24
 	DataMapd *v6; // eax@28
-	char filename[120]; // [sp+8h] [bp-78h]@3
+	//char filename[120]; // [sp+8h] [bp-78h]@3
 
 	v0 = current_level_idx;
 	if (current_level_idx != prev_level_idx)
@@ -18279,11 +18299,7 @@ void GAME_PrepareLevel()
 		prev_level_idx = current_level_idx;
 		if (!sprites_lvl)
 		{
-			v1 = get_resource_res_subfolder();
-			sprintf(filename, (const char *)aSLevelsSSprite, game_data_installation_dir, v1);
-			sprites_lvl = LVL_LoadLevel(filename);    // 
-													  // /320/sprites.lvl
-													  // /640/sprites.lvl
+			sprites_lvl = LVL_LoadLevel("sprites.lvl");
 			if (!sprites_lvl)
 			{
 				LVL_Deinit();
@@ -18306,10 +18322,8 @@ void GAME_PrepareLevel()
 			sprintf(game_data_root_dir, aC, game_installation_drive_letter);
 			v0 = current_level_idx;
 		}
-		v2 = levels[v0].lvl_filename;
-		v3 = get_resource_res_subfolder();
-		sprintf(filename, (const char *)aSLevelsSS, game_data_root_dir, v3, v2);
-		level_lvl = LVL_LoadLevel(filename);
+
+		level_lvl = LVL_LoadLevel(levels[v0].lvl_filename);
 		current_level_lvl = level_lvl;
 		if (!level_lvl)
 		{
@@ -18330,9 +18344,8 @@ void GAME_PrepareLevel()
 			exit(0);
 		}
 	}
-	v5 = is_player_faction_evolved();
-	sprintf(filename, (const char *)aSLevelsS, game_data_installation_dir, slvs[v5]);
-	LVL_LoadSlv(filename);
+
+	LVL_LoadSlv(slvs[is_player_faction_evolved()]);
 	if (!LVL_RunLevel(current_level_lvl))
 	{
 		netz_deinit();
@@ -18361,8 +18374,7 @@ void GAME_PrepareLevel()
 	nullsub_3();
 	if (_4690AC_level_wav_sound_offset)
 	{
-		sprintf(filename, (const char *)aSLevelsS, app_root_dir, levels[current_level_idx].wav_filename);
-		_47A01C_sound_id = sound_play_threaded(filename, 1, _4690AC_level_wav_sound_offset, 16, 0);
+		_47A01C_sound_id = sound_play_threaded(levels[current_level_idx].wav_filename, 1, _4690AC_level_wav_sound_offset, 16, 0);
 	}
 	render_default_stru1->field_8 &= 0xBFFFFFFF;
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
@@ -18655,7 +18667,7 @@ void script_custom_mission_briefing_loop(Script *a1)
 {
 	int v2; // edi@4
 	KeyboardInput keys_state; // [sp+10h] [bp-118h]@5
-	char name[260]; // [sp+24h] [bp-104h]@4
+	//char name[260]; // [sp+24h] [bp-104h]@4
 
 	if (current_level_idx > LEVEL_SURV_25)
 	{
@@ -18683,12 +18695,7 @@ void script_custom_mission_briefing_loop(Script *a1)
 	_423C60_custom_mission_make_briefing_lines(0);
 	dword_47A19C = 0;
 	v2 = 0;
-	sprintf(
-		name,
-		(const char *)aSLevelsS,
-		app_root_dir,
-		custom_missions[_47A1A8_custom_mission_idx + 10 * _47A1AC_is_custom_surv_mission].wav_filename);
-	_47A198_custom_mission_briefing_sound_id = sound_play_threaded(name, 0, 16, 16, 0);
+	_47A198_custom_mission_briefing_sound_id = sound_play_threaded(custom_missions[_47A1A8_custom_mission_idx + 10 * _47A1AC_is_custom_surv_mission].wav_filename, 0, 16, 16, 0);
 	while (1)
 	{
 		do
@@ -23671,7 +23678,7 @@ void script_431F10_ingame_menu(Script *a1)
 	int v16; // eax@28
 	int v17; // [sp+10h] [bp-10Ch]@1
 	int v18; // [sp+14h] [bp-108h]@1
-	char name[260]; // [sp+18h] [bp-104h]@36
+	//char name[260]; // [sp+18h] [bp-104h]@36
 
 	v1 = a1->sprite;
 	a1->script_type = SCRIPT_TYPE_DA000001;
@@ -23772,8 +23779,7 @@ void script_431F10_ingame_menu(Script *a1)
 					LABEL_44:
 						if (!dword_4690B0)
 						{
-							sprintf(name, (const char *)aSLevelsS, app_root_dir, levels[current_level_idx].wav_filename);
-							sound_play_threaded(name, 1, _4690AC_level_wav_sound_offset, 16, 0);
+							sound_play_threaded(levels[current_level_idx].wav_filename, 1, _4690AC_level_wav_sound_offset, 16, 0);
 							v16 = _4690AC_level_wav_sound_offset;
 						}
 						if (v16)
@@ -26795,7 +26801,7 @@ return 0;
 }
 
 //----- (00439AA0) --------------------------------------------------------
-int sound_play_threaded(const char *name, int a2, int sound_volume_offset, int sound_pan_offset, Script *task)
+int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int sound_pan_offset, Script *task)
 {
 	int result; // eax@2
 	Sound *v6; // ebx@3
@@ -26809,6 +26815,16 @@ int sound_play_threaded(const char *name, int a2, int sound_volume_offset, int s
 	void *v14; // eax@13
 	int v15; // [sp+0h] [bp-10h]@10
 	const char *v16; // [sp+Ch] [bp-4h]@1
+
+
+	char cwd[1024];
+	char name[1024];
+	sprintf(
+		name,
+		(const char *)aSLevelsS,
+		_getcwd(cwd, sizeof(cwd)),
+		name_
+	);
 
 	v16 = name;
 	if (sound_initialized)
