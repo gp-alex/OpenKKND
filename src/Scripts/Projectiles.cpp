@@ -105,7 +105,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
         v24 = kknd_rand_debug(__FILE__, __LINE__);
         sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v24 % -2)], v23, 0);
         v1->mobd_id = MOBD_EXPLOSIONS;
-        sprite_4272A0_load_mobd_item(v1, *(_DWORD *)(v10 + 12));
+        sprite_load_mobd(v1, *(_DWORD *)(v10 + 12));
         v1->_60_mobd_field_0_int = 0x20000000;
         if (v28->entity_id == v31)
         {
@@ -128,7 +128,7 @@ void script_435CF0_rocket_dmg_handler(Script *a1)
 
     v1 = a1->sprite;
     ++_47C04C_num_explosions_max20;
-    sprite_4272A0_load_mobd_item(v1, 412);
+    sprite_load_mobd(v1, 412);
     script_445370_yield_to_main_thread(a1, 0x10000000, 0);
     sprite_list_remove(v1);
     --_47C04C_num_explosions_max20;
@@ -287,7 +287,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
         v27 = kknd_rand_debug(__FILE__, __LINE__);
         sprite_408800_play_sound(v2, _46BB80_dmg_handler_sounds[(unsigned __int8)(v27 % -2)], v26, 0);
         v2->mobd_id = MOBD_EXPLOSIONS;
-        sprite_4272A0_load_mobd_item(v2, *((_DWORD *)v34 + 3));
+        sprite_load_mobd(v2, *((_DWORD *)v34 + 3));
         v2->_60_mobd_field_0_int = 0x20000000;
         if (v35)
         {
@@ -346,7 +346,7 @@ void script_436140_flamethrower_dmg_handler(Script *a1)
     v7 = (v5->x - v4) >> 8;
     v8 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v7, v6);
     sprite_408800_play_sound(v1, (SOUND_ID)((int)SOUND_70 | 0x10), _4690A8_unit_sounds_volume, 0);
-    sprite_4272A0_load_mobd_item(v1, 496);
+    sprite_load_mobd(v1, 496);
     v1->x_speed = (kknd_rand_debug(__FILE__, __LINE__) & 0xF)
         + *(_DWORD *)(v3 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v8 + 1]]
         - 8;
@@ -454,7 +454,7 @@ void script_4363C0_giant_bettle_dmg(Script *a1)
     v6 = math_42D64D_prolly_vec_length((v2->sprite->x - v3->x) >> 8, (v2->sprite->y - v5) >> 8);
     v12 = v2->entity_id;
     v7 = v6 / *(_DWORD *)(v4 + 16);
-    sprite_4272A0_load_mobd_item(v3, 1784);
+    sprite_load_mobd(v3, 1784);
     v3->pstru7 = &_479D48_stru7;
     v3->z_speed_limit = 512;
     v3->z_speed = 512;
@@ -478,7 +478,7 @@ void script_4363C0_giant_bettle_dmg(Script *a1)
     v3->z_index = 255;
     sprite_408800_play_sound(v3, SOUND_ACID_SPIT_DMG, _4690A8_unit_sounds_volume, 0);
     v3->mobd_id = MOBD_EXPLOSIONS;
-    sprite_4272A0_load_mobd_item(v3, 704);
+    sprite_load_mobd(v3, SPRITE_EXPLOSION_MOBD_OFFSET_MUTE_GIAN_BEETLE_ACID_SPLASH);
     v3->_60_mobd_field_0_int = 0x20000000;
     if (v2->entity_id == v12)
     {
@@ -640,7 +640,7 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     v6 = v2->entity_id;
     v7 = (v5->x - v4) >> 8;
     v8 = (v5->y - v3) >> 8;
-    sprite_4272A0_load_mobd_item(v1, 1152);
+    sprite_load_mobd(v1, 1152);
     v1->pstru7 = &_479D48_stru7;
     v9 = math_42D64D_prolly_vec_length(v7, v8);
     script_445370_yield_to_main_thread(a1, 0x80000000, v9 / *(_DWORD *)(v12 + 16));
@@ -653,7 +653,7 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     v11 = kknd_rand_debug(__FILE__, __LINE__);
     sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v11 % -2)], v10, 0);
     v1->mobd_id = MOBD_PLASMA_TANK;
-    sprite_4272A0_load_mobd_item(v1, 2084);
+    sprite_load_mobd(v1, 2084);
     v1->_60_mobd_field_0_int = 0x20000000;
     if (v6 == v2->entity_id)
         v1->z_index = v2->sprite->z_index + 256;
@@ -747,7 +747,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         v59 = (v7->y - v5) >> 8;
         v53 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v8, v59);
         v1->mobd_id = MOBD_MECH;
-        sprite_4272A0_load_mobd_item(v1, 1152);
+        sprite_load_mobd(v1, 1152);
         v1->pstru7 = &_479D48_stru7;
         v9 = v4->stats->accuracy;
         v10 = v9 + _465640_accuracy_bonus[v4->_98_465610_accuracy_dmg_bonus_idx];
@@ -782,7 +782,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
             v19 = kknd_rand_debug(__FILE__, __LINE__);
             sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v19 % -2)], v18, 0);
             v1->mobd_id = MOBD_EXPLOSIONS;
-            sprite_4272A0_load_mobd_item(v1, 2084);
+            sprite_load_mobd(v1, 2084);
             v20 = v1->drawjob;
             v1->_60_mobd_field_0_int = 0x20000000;
             v1->z_index = 0;
@@ -869,7 +869,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
             v44 = kknd_rand_debug(__FILE__, __LINE__);
             sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v44 % -2)], v43, 0);
             v1->mobd_id = MOBD_EXPLOSIONS;
-            sprite_4272A0_load_mobd_item(v1, *(_DWORD *)(v55 + 12));
+            sprite_load_mobd(v1, *(_DWORD *)(v55 + 12));
             v1->_60_mobd_field_0_int = 0x20000000;
             if (v56)
             {
@@ -1009,7 +1009,7 @@ void UNIT_DmgHandler_GORT(Script *a1)
     v4->field_88_unused = 1;
     v4->x = v6;
     v4->y = v2->sprite->y + 2560;
-    sprite_4272A0_load_mobd_item(v4, 2112);
+    sprite_load_mobd(v4, 2112);
     sprite_408800_play_sound(v3->sprite, SOUND_188, _4690A8_unit_sounds_volume, 0);
     v1->z_index = v3->sprite->z_index + 5120;
     while (!v3->destroyed)
@@ -1142,7 +1142,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
     v2->y_speed = 0;
     v2->mobd_id = MOBD_EXPLOSIONS;
     v12 = kknd_rand_debug(__FILE__, __LINE__);
-    sprite_4272A0_load_mobd_item(v2, _46BB60_dmg_handler_mobd_offsets[v12 % 3]);
+    sprite_load_mobd(v2, _46BB60_dmg_handler_mobd_offsets[v12 % 3]);
     if (!(kknd_rand_debug(__FILE__, __LINE__) % 3))
     {
         v13 = _4690A8_unit_sounds_volume;
@@ -1435,7 +1435,7 @@ void UNIT_DmgHandler_Projectile(Script *a1)
             sprite_408800_play_sound(v1, v22, v21, 0);
         }
         v1->mobd_id = MOBD_EXPLOSIONS;
-        sprite_4272A0_load_mobd_item(v1, *(_DWORD *)(v25 + 12));
+        sprite_load_mobd(v1, *(_DWORD *)(v25 + 12));
         v23 = v1->drawjob;
         v1->_60_mobd_field_0_int = 0x20000000;
         v1->z_index = 0;

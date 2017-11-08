@@ -189,7 +189,7 @@ void entity_mode_401480_aircraft(Entity *a1)
         v2->z_index = 255;
         sprite_408800_play_sound(v2, SOUND_GENERIC_PROJECTILE_DMG, _4690A8_unit_sounds_volume, 0);
         v2->mobd_id = MOBD_EXPLOSIONS;
-        sprite_4272A0_load_mobd_item(v2, 0);
+        sprite_load_mobd(v2, SPRITE_EXPLOSION_MOBD_OFFSET_NUKE);
         v2->_60_mobd_field_0_int = 0x20000000;
         v2->z_index = 768;
         sprite_40D8B0_dmg(v2, 64);
@@ -324,10 +324,10 @@ void entity_mode_4016B0_aircraft(Entity *a1)
         {
             ++_47C048_unit_bomberdmg;
             v4 = sprite_create_scripted(v3->mobd_id, a1->sprite, v3->dmg_handler, SCRIPT_FUNCTION, a1->stru60.ptr_0);
-            v5 = v3->field_8;
+            v5 = v3->mobd_offset;
             v6 = v4;
             if (v5 != -1)
-                sprite_4272A0_load_mobd_item(v4, v5);
+                sprite_load_mobd(v4, v5);
             v7 = v6->drawjob;
             v6->z_index = v1->sprite->z_index;
             v7->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448580_entity_aircraft_turret;

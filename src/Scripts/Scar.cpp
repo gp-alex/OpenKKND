@@ -111,7 +111,7 @@ void _4389A0_prolly_create_map_damage_decal(int map_x, int map_y)
                     v13->y = v7;
                     v10->sprite = v13;
                     v10->mobd_offset_idx = v15;
-                    sprite_4272A0_load_mobd_item(v13, _46BBE8_mobd_offset_table_by_stru22[v15]);
+                    sprite_load_mobd(v13, _46BBE8_mobd_offset_table_by_stru22[v15]);
                 }
                 else
                 {
@@ -128,7 +128,7 @@ void _4389A0_prolly_create_map_damage_decal(int map_x, int map_y)
                     v8->mobd_offset_idx = v16;
                     if (v16 >= 8)
                         v8->mobd_offset_idx = 0;
-                    sprite_4272A0_load_mobd_item(v9, _46BBE8_mobd_offset_table_by_stru22[v8->mobd_offset_idx]);
+                    sprite_load_mobd(v9, _46BBE8_mobd_offset_table_by_stru22[v8->mobd_offset_idx]);
                 }
             }
         }

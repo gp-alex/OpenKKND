@@ -185,6 +185,7 @@
     <ClInclude Include="..\..\src\_unsorted_functions.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\.gitignore" />
     <None Include="..\..\lib\src\legacy_dx\d3dvec.inl" />
   </ItemGroup>
   <ItemGroup>

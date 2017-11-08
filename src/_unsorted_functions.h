@@ -497,7 +497,7 @@ void sprite_list_remove(Sprite *a1);
 void sprite_list_remove_scripted(Sprite *a1);
 Sprite *sprite_list_find_by_mobd_id(enum MOBD_ID mobd_id);
 void sprite_list_update_positions();
-void sprite_4272A0_load_mobd_item(Sprite *a1, int offset); // idb
+void sprite_load_mobd(Sprite *a1, int offset); // idb
 void sprite_4272E0_load_mobd_item(Sprite *a1, int lookup_table_offset, int lookup_idx); // idb
 void sprite_427320_load_mobd_item_sound(Sprite *a1, int offset); // idb
 void sprite_4273B0_load_mobd_item_sound(Sprite *a1, int mobd_lookup_offset, int mobd_lookup_id); // idb

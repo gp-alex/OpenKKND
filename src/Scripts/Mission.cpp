@@ -8,6 +8,7 @@
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Entity.h"
+#include "src/Cursor.h"
 
 
 
@@ -118,7 +119,7 @@ void script_424CE0_mission_outcome_modal(Script *a1)
                 --v7;
             } while (v7);
             script_445370_yield_to_main_thread(v1, 0x80000000, 30);
-            sprite_4272A0_load_mobd_item(v3, v6);
+            sprite_load_mobd(v3, v6);
             v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
             v3->x = (int)a1;
             v3->y = v8;
@@ -531,7 +532,7 @@ void script_4252C0(Script *a1, void *param)
     if (v3)
     {
         v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-        sprite_4272A0_load_mobd_item(v3, 0);
+        sprite_load_mobd(v3, SPRITE_OUTCOME_MODAL_MOBD_OFFSET_LEFT);
         v4->x = 81920;
         v4->y = 61440;
         v4->z_index = 997;
@@ -540,7 +541,7 @@ void script_4252C0(Script *a1, void *param)
     v6 = v5;
     if (v5)
     {
-        sprite_4272A0_load_mobd_item(v5, 12);
+        sprite_load_mobd(v5, SPRITE_OUTCOME_MODAL_MOBD_OFFSET_RIGHT);
         v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
         v6->x = 81920;
         v6->y = 61440;
@@ -550,8 +551,7 @@ void script_4252C0(Script *a1, void *param)
     v8 = v7;
     if (v7)
     {
-        sprite_4272A0_load_mobd_item(v7, 24);
-        sprite_4272A0_load_mobd_item(v8, 24);
+        sprite_load_mobd(v7, SPRITE_OUTCOME_MODAL_MOBD_OFFSET_MISSION);
         v8->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
         v8->x = 81920;
         v8->y = 61440;
@@ -1715,7 +1715,7 @@ void script_426680_cursor_mobd(Script *a1)
     v1->x = v2 << 7;
     v1->y = render_height << 7;
     v1->pstru7 = &_479D48_stru7;
-    sprite_4272A0_load_mobd_item(v1, current_level_idx != LEVEL_MUTE_04_RAID_THE_FORT ? 852 : 868);
+    sprite_load_mobd(v1, current_level_idx != LEVEL_MUTE_04_RAID_THE_FORT ? CURSOR_MOBD_OFFSET_MISSION_ARROW_S_BLINK : CURSOR_MOBD_OFFSET_MISSION_ARROW_SW_BLINK);
     script_445370_yield_to_main_thread(a1, 0x80000000, 600);
     sprite_list_remove(v1);
     script_yield(a1);
@@ -1740,7 +1740,7 @@ void script_426710_mission_objectives_draw_x_mark(Script *a1)
             v2->sprite = v3;
             v2->task = a1;
             v2->handler = (void(*)(task_426710_attachment_x_mark *))nullsub_1;
-            sprite_4272A0_load_mobd_item(v3, 820);
+            sprite_load_mobd(v3, 820);
             v3->z_index = 0;
             v3->pstru7 = &_479D48_stru7;
             sprite_create_scripted(MOBD_CURSORS, 0, script_426680_cursor_mobd, SCRIPT_COROUTINE, 0);

@@ -147,19 +147,24 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
     a1->_44_is_combat_unit_selected = 0;
 
     Sprite *drag_frame_x = sprite_create(MOBD_CURSORS, 0, 0);
-    sprite_4272A0_load_mobd_item(drag_frame_x, 460);
+	sprite_load_mobd(drag_frame_x, CURSOR_MOBD_OFFSET_DRAG_FRAME_X);
+
+	drag_frame_x = sprite_create(MOBD_CURSORS, 0, 0);
+	//sprite_load_mobd(drag_frame_x, 744);
     drag_frame_x->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
     Sprite *drag_frame_y = sprite_create(MOBD_CURSORS, 0, 0);
-    sprite_4272A0_load_mobd_item(drag_frame_y, 472);
+    sprite_load_mobd(drag_frame_y, CURSOR_MOBD_OFFSET_DRAG_FRAME_Y);
+	drag_frame_y = sprite_create(MOBD_CURSORS, 0, 0);
+	sprite_load_mobd(drag_frame_y, 732);
     drag_frame_y->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
     Sprite *drag_frame_z = sprite_create(MOBD_CURSORS, 0, 0);
-    sprite_4272A0_load_mobd_item(drag_frame_z, 484);
+    sprite_load_mobd(drag_frame_z, CURSOR_MOBD_OFFSET_DRAG_FRAME_Z);
     drag_frame_z->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
     Sprite *drag_frame_w = sprite_create(MOBD_CURSORS, 0, 0);
-    sprite_4272A0_load_mobd_item(drag_frame_w, 496);
+    sprite_load_mobd(drag_frame_w, CURSOR_MOBD_OFFSET_DRAG_FRAME_W);
     drag_frame_w->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
     // while dragging
@@ -1787,7 +1792,7 @@ void cursor_load_mobd(_428940_local *a1, int offset)
     if (offset != a1->_20_load_mobd_item_offset)
     {
         a1->_20_load_mobd_item_offset = offset;
-        sprite_4272A0_load_mobd_item(a1->_70_sprite, offset);
+        sprite_load_mobd(a1->_70_sprite, offset);
     }
 }
 
@@ -1877,7 +1882,7 @@ void cursor_unit_move_confirmation(_428940_local *a1)
 
             v16 = sprite_create(MOBD_CURSORS, 0, 0);
             v16->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
-            sprite_4272A0_load_mobd_item(v16, CURSOR_MOBD_OFFSET_MOVE_CLICK);
+            sprite_load_mobd(v16, CURSOR_MOBD_OFFSET_MOVE_CLICK);
             v17 = 10;
             v16->x = a1->_70_sprite->x;
             v16->y = a1->_70_sprite->y;
@@ -2040,14 +2045,14 @@ void script_game_cursor_handler(Script *a1)
     v62._70_sprite = sprite_create(MOBD_CURSORS, 0, 0);
     v62._70_sprite->script = a1;
     v62._70_sprite->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
-    sprite_4272A0_load_mobd_item(v62._70_sprite, 12);
+    sprite_load_mobd(v62._70_sprite, 12);
     v62._70_sprite->z_index = 1;
     v62._74_sprite = sprite_create(MOBD_CURSORS, 0, 0);
     v62._74_sprite->script = a1;
     v5 = v62._74_sprite;
     a1->sprite = v62._74_sprite;
     v5->z_index = 1001;
-    sprite_4272A0_load_mobd_item(v62._74_sprite, 0);
+    sprite_load_mobd(v62._74_sprite, 0);
     v62._74_sprite->drawjob->flags |= 0x40000000u;
     while (1)
     {

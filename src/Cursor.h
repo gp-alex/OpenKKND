@@ -123,8 +123,20 @@ struct task_428940_attach__cursors_2
 #define CURSOR_MOBD_OFFSET_ATTACK                   304 //
 #define CURSOR_MOBD_OFFSET_MOVE                     384 //
 #define CURSOR_MOBD_OFFSET_DENIED                   448 // impassible terrain cursor
+#define CURSOR_MOBD_OFFSET_DRAG_FRAME_X             460 // units selection top left
+#define CURSOR_MOBD_OFFSET_DRAG_FRAME_Y             472 //
+#define CURSOR_MOBD_OFFSET_DRAG_FRAME_Z             484 //
+#define CURSOR_MOBD_OFFSET_DRAG_FRAME_W             496 //
 #define CURSOR_MOBD_OFFSET_MOVE_CLICK               508 // issue move order
 #define CURSOR_MOBD_OFFSET_DRILL                    572 //
+#define CURSOR_MOBD_OFFSET_UPGRADE_3_STILL          732
+#define CURSOR_MOBD_OFFSET_UPGRADE_4_RUNNING        756
+#define CURSOR_MOBD_OFFSET_UPGRADE_4_STILL          768
+#define CURSOR_MOBD_OFFSET_UPGRADE_5_RUNNING        792
+#define CURSOR_MOBD_OFFSET_BORDERLESS_CURSOR        840 // borderless default arrow
+#define CURSOR_MOBD_OFFSET_MISSION_ARROW_S_BLINK    852
+#define CURSOR_MOBD_OFFSET_MISSION_ARROW_SW         864
+#define CURSOR_MOBD_OFFSET_MISSION_ARROW_SW_BLINK   868
 
 void cursor_drag_selection(_428940_local *a1, int x, int y); // idb
 void cursor_on_unit_selection(_428940_local *a1, Entity *a2);

@@ -352,7 +352,7 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
     v2 = a1->sprite;
     v14 = 18000;
     v17 = v2;
-    sprite_4272A0_load_mobd_item(v2, 312);
+    sprite_load_mobd(v2, 312);
     v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
     v2->z_index = 2560;
     dword_47C6F0 = 0;

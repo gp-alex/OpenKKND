@@ -306,7 +306,7 @@ struct UnitDamageSource
 {
 	enum MOBD_ID mobd_id;
 	void(*dmg_handler)(Script *);
-	int field_8;
+	int mobd_offset;
 	int field_C;
 	int field_10;
 	int damage_infantry;
@@ -543,6 +543,16 @@ struct Bitmap
 	MapdScrlImage *draw_job_scrl;
 	int z_index;
 };
+
+
+#define SPRITE_EXPLOSION_MOBD_OFFSET_NUKE                           0
+#define SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_SURV_RIFLEMAN_DEATH       568
+#define SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_MUTE_BERSERKER_DEATH      636
+#define SPRITE_EXPLOSION_MOBD_OFFSET_MUTE_GIAN_BEETLE_ACID_SPLASH   704
+
+#define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_LEFT       0
+#define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_RIGHT      12
+#define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_MISSION    24
 
 /* 293 */
 struct Sprite

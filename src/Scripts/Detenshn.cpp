@@ -69,7 +69,7 @@ void UNIT_Handler_Prison(Script *a1)
         v1 = entity_list_create(a1);
         v1->script->event_handler = EventHandler_Prison;
         entity_initialize_building(v1, 5, 0, 0);
-        sprite_4272A0_load_mobd_item(a1->sprite, 0);
+        sprite_load_mobd(a1->sprite, 0);
         v1->mode = entity_mode_407390_prison;
     }
     (v1->mode)(v1);

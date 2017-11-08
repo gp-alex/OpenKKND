@@ -211,6 +211,7 @@
     <None Include="..\..\lib\src\legacy_dx\d3dvec.inl">
       <Filter>lib\src\legacy_dx</Filter>
     </None>
+    <None Include="..\..\.gitignore" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\__notes.txt" />

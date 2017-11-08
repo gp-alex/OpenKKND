@@ -7,6 +7,7 @@
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Entity.h"
+#include "src/Cursor.h"
 
 
 //----- (00412B60) --------------------------------------------------------
@@ -4370,7 +4371,7 @@ void entity_mode_418590(Entity *a1)
     {
         ++_47C048_unit_bomberdmg;
         v7 = sprite_create_scripted(v6->mobd_id, v1->sprite, v6->dmg_handler, SCRIPT_COROUTINE, v1->stru60.ptr_0);
-        v8 = v6->field_8;
+        v8 = v6->mobd_offset;
         v9 = v7;
         if (v8 != -1)
             sprite_4272E0_load_mobd_item(v7, v8, _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
@@ -4482,7 +4483,7 @@ void script_4188F0(Script *a1)
         if (v5)
         {
             v5->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448680;
-            sprite_4272A0_load_mobd_item(v5, 144);
+            sprite_load_mobd(v5, CURSOR_MOBD_OFFSET_REPAIR);
             v4->z_index = 0;
             v4->_60_mobd_field_0_int = 0;
             v1->sprite->parent = v4;
@@ -4563,7 +4564,7 @@ void script_418A10(Script *a1)
         if (v5)
         {
             v5->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448680;
-            sprite_4272A0_load_mobd_item(v5, 144);
+            sprite_load_mobd(v5, CURSOR_MOBD_OFFSET_REPAIR);
             v4->z_index = 0;
             v4->_60_mobd_field_0_int = 0;
             *(_DWORD *)(v3 + 32) = (int)v4;
@@ -5193,15 +5194,15 @@ void entity_419560_on_death(Entity *a1)
         }
         sprite_408800_play_sound(v1->sprite, _465988_sounds[(unsigned __int64)(v5 % v6)], v11, 0);
         v1->sprite->mobd_id = MOBD_EXPLOSIONS;
-        v7 = 568;
+        v7 = SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_SURV_RIFLEMAN_DEATH;
         if (v1->stats->player_side != 1)
         {
-            sprite_4272A0_load_mobd_item(v1->sprite, 636);
+            sprite_load_mobd(v1->sprite, SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_MUTE_BERSERKER_DEATH);
             entity_438D90_on_death_explosion(v1);
             goto LABEL_15;
         }
     LABEL_11:
-        sprite_4272A0_load_mobd_item(v1->sprite, v7);
+        sprite_load_mobd(v1->sprite, v7);
         entity_438D90_on_death_explosion(v1);
         goto LABEL_15;
     }

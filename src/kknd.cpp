@@ -535,7 +535,7 @@ void Task_context_1_BomberDmgHandler_401D30(Task_context_1_BomberDmgHandler *a1)
 		v2->z_index = 255;
 		sprite_408800_play_sound(v2, SOUND_GENERIC_PROJECTILE_DMG_2, _4690A8_unit_sounds_volume, 0);
 		v2->mobd_id = MOBD_EXPLOSIONS;
-		sprite_4272A0_load_mobd_item(v2, *((_DWORD *)v3 + 3));
+		sprite_load_mobd(v2, *((_DWORD *)v3 + 3));
 		v2->_60_mobd_field_0_int = 0x20000000;
 		v2->z_index = 768;
 		sprite_439180_add_explosions(v2);
@@ -4853,7 +4853,7 @@ void UNIT_Handler_OilPatch(Script *a1)
 
 	v1 = a1->sprite;
 	v1->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448600_oilspot;
-	sprite_4272A0_load_mobd_item(v1, 0);
+	sprite_load_mobd(v1, 0);
 	v2 = v1->cplc_ptr1;
 	v3 = v1->y & 0xFFFFE000;
 	v1->x = (v1->x & 0xFFFFE000) + 4096;
@@ -8134,7 +8134,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 		if (v6)
 		{
 		LABEL_64:
-			sprite_4272A0_load_mobd_item(v24, 1980);
+			sprite_load_mobd(v24, 1980);
 			while (v6)
 			{
 				script_445370_yield_to_main_thread(v1, 0x40000000, 0);
@@ -8378,7 +8378,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 				goto LABEL_68;
 			}
 		LABEL_70:
-			sprite_4272A0_load_mobd_item(v25, 1980);
+			sprite_load_mobd(v25, 1980);
 			while (v6)
 			{
 				script_445370_yield_to_main_thread(v1, 0x40000000, 0);
@@ -8485,7 +8485,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 						}
 						else if (v13 >= 10)
 						{
-							sprite_4272A0_load_mobd_item(v12, 2160);
+							sprite_load_mobd(v12, 2160);
 						}
 						else
 						{
@@ -8578,7 +8578,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 							else
 							{
 								if (v25 >= 10)
-									sprite_4272A0_load_mobd_item(v35, 2160);
+									sprite_load_mobd(v35, 2160);
 								else
 									sprite_4272E0_load_mobd_item(v35, 2276, v25 - 1);
 								v26 = v35->drawjob;
@@ -14310,7 +14310,7 @@ Sprite *GAME_Load_UnpackSprite(SpriteSerialized *serialized)
 		}
 		goto LABEL_9;
 	}
-	sprite_4272A0_load_mobd_item(v2, v4);
+	sprite_load_mobd(v2, v4);
 	v5 = v1->_54_inside_mobd_ptr4;
 	if (v5 == -1)
 	{
@@ -20298,7 +20298,7 @@ void sprite_list_update_positions()
 }
 
 //----- (004272A0) --------------------------------------------------------
-void sprite_4272A0_load_mobd_item(Sprite *a1, int offset)
+void sprite_load_mobd(Sprite *a1, int offset)
 {
 	DataMobdItem *v2; // eax@2
 	int v3; // eax@2
@@ -20808,7 +20808,7 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 		{
 			v1->sprite->mobd_id = MOBD_MUTE_CLANHALL;
 		}
-		sprite_4272A0_load_mobd_item(v1->sprite, 0);
+		sprite_load_mobd(v1->sprite, 0);
 		v9 = v7 == UNIT_STATS_SURV_OUTPOST;
 		v1->sprite->field_88_unused = 1;
 		v1->sprite->field_88_unused = 1;
@@ -21608,11 +21608,11 @@ bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, i
 						(*v19)->drawjob->flags &= 0xBFFFFFFF;
 						if (boxd_40EE70(v18, v7) && v21)
 						{
-							sprite_4272A0_load_mobd_item(*v19, 560);
+							sprite_load_mobd(*v19, 560);
 						}
 						else
 						{
-							sprite_4272A0_load_mobd_item(*v19, 548);
+							sprite_load_mobd(*v19, 548);
 							v22 = 0;
 						}
 						(*v19)->field_88_unused = 1;
@@ -23686,13 +23686,13 @@ void script_431F10_ingame_menu(Script *a1)
 	v17 = 0;
 	v1->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 	v1->z_index += 768;
-	sprite_4272A0_load_mobd_item(v1, 36);
+	sprite_load_mobd(v1, 36);
 	v2 = sprite_create(MOBD_INGAME_MENU_CONTROLS, 0, 0);
 	v3 = v2;
 	if (v2)
 	{
 		v2->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_4483E0_sidebar;
-		sprite_4272A0_load_mobd_item(v2, 48);
+		sprite_load_mobd(v2, 48);
 		v4 = v1->param;
 		if (v4 == (void *)2)
 		{
@@ -23928,7 +23928,7 @@ void script_4322D0_ingame_menu(Script *a1)
 	v9 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_433D20_ingame_menu, SCRIPT_COROUTINE, 0);
 	if (v9)
 		v9->script->field_1C = 1;
-	sprite_4272A0_load_mobd_item(task_47C028->sprite, 12);
+	sprite_load_mobd(task_47C028->sprite, 12);
 }
 
 //----- (00432400) --------------------------------------------------------
@@ -23968,7 +23968,7 @@ void script_432400_ingame_menu_create_sprites(Script *a1)
 		if (v8)
 			v8->script->field_1C = 1;
 	}
-	sprite_4272A0_load_mobd_item(v1, 0);
+	sprite_load_mobd(v1, 0);
 }
 // 468B5C: using guessed type int single_player_game;
 
@@ -24040,7 +24040,7 @@ void script_432620_ingame_menu(Script *a1)
 		v7->x = v1->sprite->x;
 		v7->y = v1->sprite->y;
 		v7->z_index = v1->sprite->z_index + 1;
-		sprite_4272A0_load_mobd_item(v7, 24);
+		sprite_load_mobd(v7, 24);
 		task_47C028->param = v8;
 	}
 }
@@ -24059,7 +24059,7 @@ void script_432730_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	a1 = (Script *)a1->param;
 	v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-	sprite_4272A0_load_mobd_item(v2, 696);
+	sprite_load_mobd(v2, 696);
 	_47C668_ingame_menu_sprites[(int)a1] = v1->sprite;
 	while (1)
 	{
@@ -24120,7 +24120,7 @@ void script_432800_ingame_menu(Script *a1)
 	a1 = (Script *)a1->param;
 	v7 = v2;
 	v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-	sprite_4272A0_load_mobd_item(v2, 696);
+	sprite_load_mobd(v2, 696);
 	_47C668_ingame_menu_sprites[(int)a1] = v1->sprite;
 	while (1)
 	{
@@ -24290,7 +24290,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 				_47C65C_render_string->num_lines = 0;
 				a1a->x = 59392;
 				a1a->y = (16 * v23 + v30 + 14) << 8;
-				sprite_4272A0_load_mobd_item(a1a, 1064);
+				sprite_load_mobd(a1a, 1064);
 				v9 = v24;
 				v10 = 5;
 				v11 = &_47C050_array[v24];
@@ -24421,7 +24421,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 		LABEL_59:
 			_47C664_ingame_menu_sprite->field_88_unused = 1;
 			_47C664_ingame_menu_sprite->y = 0xC200;
-			sprite_4272A0_load_mobd_item(a1a, 1096);
+			sprite_load_mobd(a1a, 1096);
 			dword_47C6C4 = 1;
 			if (input_get_string(
 				_47C050_array[_47C050_array_idx].str_0,
@@ -24520,7 +24520,7 @@ void script_432F40_ingame_menu(Script *a1)
 		v6->x = a1->sprite->x;
 		v6->y = a1->sprite->y;
 		v6->z_index = a1->sprite->z_index + 256;
-		sprite_4272A0_load_mobd_item(v6, 24);
+		sprite_load_mobd(v6, 24);
 		task_47C028->param = v7;
 	}
 }
@@ -24572,7 +24572,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 			is_coroutine_list_initialization_failed = 0;
 			script_trigger_event(v1, EVT_MSG_1533, 0, task_mobd17_cursor);
 			sub_408460();
-			sprite_4272A0_load_mobd_item(v3, 60);
+			sprite_load_mobd(v3, 60);
 		}
 		else
 		{
@@ -24580,7 +24580,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 			{
 				dword_47C030 = 0;
 				script_trigger_event(v1, EVT_MSG_1533, 0, task_mobd17_cursor);
-				sprite_4272A0_load_mobd_item(v3, 60);
+				sprite_load_mobd(v3, 60);
 			}
 			a1a = 0;
 			sub_408460();
@@ -24863,7 +24863,7 @@ void script_433780_ingame_menu(Script *a1)
 	if (!single_player_game || (v1 = 18, _47C6D8_use__466098_cost_multipliers))
 		v1 = 66;
 	script_433640(a1, SCRIPT_TYPE_DA000002, -92, v1, 1);
-	if (script_434500(a1, 864, 0, 0))
+	if (script_434500(a1, CURSOR_MOBD_OFFSET_MISSION_ARROW_SW, 0, 0))
 	{
 		script_trigger_event(a1, EVT_ENTITY_MOVE, 0, task_47C028);
 		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
@@ -24915,7 +24915,7 @@ void script_4338F0_ingame_menu(Script *a1)
 	Sprite *v1; // edi@3
 
 	script_433640(a1, SCRIPT_TYPE_DA000002, -92, 90, 4);
-	if (script_434500(a1, 852, 0, 0))
+	if (script_434500(a1, CURSOR_MOBD_OFFSET_MISSION_ARROW_S_BLINK, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1526_infiltrate, 0, task_47C028);
 		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
@@ -24935,7 +24935,7 @@ void script_433960_ingame_menu(Script *a1)
 	if (!single_player_game || (v1 = 114, _47C6D8_use__466098_cost_multipliers))
 		v1 = 90;
 	script_433640(a1, SCRIPT_TYPE_DA000002, -92, v1, 5);
-	if (script_434500(a1, 840, 0, 0))
+	if (script_434500(a1, CURSOR_MOBD_OFFSET_BORDERLESS_CURSOR, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1528, 0, task_47C028);
 		script_445370_yield_to_main_thread(a1, 0x80000000, 1);
@@ -25029,7 +25029,7 @@ void script_433BA0_ingame_menu(Script *a1)
 	Sprite *v1; // edi@6
 
 	script_433640(a1, SCRIPT_TYPE_DA000003, 0, 120, 1);
-	if (script_434500(a1, 768, 1, 0))
+	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_STILL, 1, 0))
 	{
 		script_trigger_event_group(0, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000003);
 		if (_47C65C_render_string)
@@ -25067,7 +25067,7 @@ void script_433C90_ingame_menu(Script *a1)
 	Sprite *v1; // edi@6
 
 	script_433640(a1, SCRIPT_TYPE_DA000003, 0, 120, 1);
-	if (script_434500(a1, 768, 1, 0))
+	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_STILL, 1, 0))
 	{
 		script_trigger_event_group(0, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000003);
 		if (_47C65C_render_string)
@@ -25090,7 +25090,7 @@ void script_433D20_ingame_menu(Script *a1)
 	Sprite *v1; // edi@6
 
 	script_433640(a1, SCRIPT_TYPE_DA000001, -55, 185, 3);
-	if (script_434500(a1, 756, 1, 0))
+	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_RUNNING, 1, 0))
 	{
 		script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000001);
 		if (_47C65C_render_string)
@@ -25112,7 +25112,7 @@ void script_433DB0_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000001, -200, 153, 3);
 	script_445370_yield_to_main_thread(a1, 0x80000000, 2);
 	dword_47C6C4 = 0;
-	if (script_434500(a1, 756, 1, 0))
+	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_RUNNING, 1, 0))
 	{
 		if (_47C65C_render_string)
 		{
@@ -25140,7 +25140,7 @@ void script_433E60_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000001, -80, 153, 3);
 	do
 	{
-		v1 = script_434500(a1, 792, 1, 0);
+		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_5_RUNNING, 1, 0);
 		if (!v1)
 			break;
 		script_trigger_event(a1, EVT_ENTITY_MOVE, 0, receiver);
@@ -25178,7 +25178,7 @@ void script_433F40_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000001, -130, 153, 3);
 	do
 	{
-		v1 = script_434500(a1, 732, 2, 0);
+		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_3_STILL, 2, 0);
 		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
 	} while (v1);
 	v2 = a1->sprite;
@@ -25254,7 +25254,7 @@ void script_434120_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000001, -130, 153, 3);
 	do
 	{
-		v1 = script_434500(a1, 732, 2, 0);
+		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_3_STILL, 2, 0);
 		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
 	} while (v1);
 	v2 = a1->sprite;
@@ -25384,7 +25384,7 @@ void script_434460_DA000007(Script *a1)
 	v2->x += 25600;
 	v2->y = v3 - 12800;
 	v2->z_index = v4 + 1;
-	sprite_4272A0_load_mobd_item(v2, 1392);
+	sprite_load_mobd(v2, 1392);
 	do
 	{
 		script_445370_yield_to_main_thread(a1, 0x40000000, 0);
@@ -25400,7 +25400,7 @@ void script_434460_DA000007(Script *a1)
 }
 
 //----- (00434500) --------------------------------------------------------
-bool script_434500(Script *a1, int a2, int a3, int a4)
+bool script_434500(Script *a1, int mobd_offset, int a3, int a4)
 {
 	Script *v4; // ebp@1
 	Sprite *v5; // edi@1
@@ -25418,7 +25418,7 @@ bool script_434500(Script *a1, int a2, int a3, int a4)
 	Sprite *v18; // [sp+14h] [bp-4h]@1
 
 	v4 = a1;
-	v17 = a2;
+	v17 = mobd_offset;
 	v5 = a1->sprite;
 	v18 = (Sprite *)a1->param;
 	while (1)
@@ -25908,7 +25908,7 @@ void EntityUpgradeAttachment_438030(EntityUpgradeAttachment *a1)
 						if (v1->field_8 != 1)
 						{
 							v1->field_8 = 1;
-							sprite_4272A0_load_mobd_item(v2, 604);
+							sprite_load_mobd(v2, 604);
 						}
 					}
 					else if (v1->field_8 != 2)
@@ -27798,7 +27798,7 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 	v2->parent = 0;
 	a1->script_type = SCRIPT_TYPE_15;
 	stru29_list_4439F0(v2, 0, 0, 0, 0);
-	sprite_4272A0_load_mobd_item(v2, 1380);
+	sprite_load_mobd(v2, 1380);
 	v3 = 0;
 	do
 	{
@@ -27851,7 +27851,7 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 	v2->parent = 0;
 	a1->script_type = SCRIPT_TYPE_15;
 	stru29_list_4439F0(v2, 0, 0, 0, 0);
-	sprite_4272A0_load_mobd_item(v2, 1380);
+	sprite_load_mobd(v2, 1380);
 	v3 = 0;
 	do
 	{
@@ -28264,7 +28264,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 	v3->parent = 0;
 	a1->script_type = SCRIPT_TYPE_18;
 	stru29_list_4439F0(v3, v4, 0, 0, 0);
-	sprite_4272A0_load_mobd_item(v3, 1356);
+	sprite_load_mobd(v3, 1356);
 	v5 = v2->name;
 	v1->parent = _47C664_ingame_menu_sprite;
 	while (1)
@@ -28300,7 +28300,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->y = 46080;
 		_47C664_ingame_menu_sprite->z_index = 10;
-		sprite_4272A0_load_mobd_item(_47C664_ingame_menu_sprite, 1096);
+		sprite_load_mobd(_47C664_ingame_menu_sprite, 1096);
 		dword_47C6C4 = 1;
 		input_get_string(v5, 0xBu, input_get_string_43D9E0_handler, 1, a1);
 		v10 = _47C6E0_task->sprite;
@@ -28412,7 +28412,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 	v5->parent = 0;
 	a1->script_type = SCRIPT_TYPE_18;
 	stru29_list_4439F0(v5, v6, 0, 0, 0);
-	sprite_4272A0_load_mobd_item(v5, 1356);
+	sprite_load_mobd(v5, 1356);
 	v7 = v2->phone;
 	a1a = (Script *)v7;
 	while (1)
@@ -28447,7 +28447,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->y = 60416;
 		_47C664_ingame_menu_sprite->z_index = 10;
-		sprite_4272A0_load_mobd_item(_47C664_ingame_menu_sprite, 1096);
+		sprite_load_mobd(_47C664_ingame_menu_sprite, 1096);
 		dword_47C6C4 = 1;
 		input_get_string(v7, 0xBu, input_get_string_43DCF0_handler, 1, v1);
 		v19 = 0;
@@ -28843,7 +28843,7 @@ void script_43E890_mobd45_modems(Script *a1)
 	v12 = 0;
 	v3 = 0;
 	netz_modem_47C6CC_idx = 0;
-	sprite_4272A0_load_mobd_item(_47C664_ingame_menu_sprite, 1080);
+	sprite_load_mobd(_47C664_ingame_menu_sprite, 1080);
 	while (1)
 	{
 		_47C664_ingame_menu_sprite->x = 43008;
@@ -28940,7 +28940,7 @@ void script_43EA90_mobd45(Script *a1)
 	v2->parent = 0;
 	a1->script_type = SCRIPT_TYPE_15;
 	stru29_list_4439F0(v2, 0, 0, 0, 0);
-	sprite_4272A0_load_mobd_item(v2, 1308);
+	sprite_load_mobd(v2, 1308);
 	while (1)
 	{
 		v3 = 0;
@@ -28985,7 +28985,7 @@ void script_43EB80_mobd45(Script *a1)
 	v2->parent = 0;
 	a1->script_type = SCRIPT_TYPE_15;
 	stru29_list_4439F0(v2, 0, 0, 0, 0);
-	sprite_4272A0_load_mobd_item(v2, 1320);
+	sprite_load_mobd(v2, 1320);
 	while (1)
 	{
 		v3 = 0;
@@ -29032,7 +29032,7 @@ void script_43EC70_mobd45(Script *a1)
 	v3->parent = 0;
 	v1->script_type = SCRIPT_TYPE_16;
 	stru29_list_4439F0(v3, 0, 0, 0, 0);
-	sprite_4272A0_load_mobd_item(v3, 1332);
+	sprite_load_mobd(v3, 1332);
 	while (1)
 	{
 		v4 = 0;
@@ -29404,7 +29404,7 @@ void script_43F7C0(Script *a1)
 	}
 	v4 = stru29_list_4439F0(v2, v3, 0, 1, 0);
 	v4->field_C |= 1u;
-	sprite_4272A0_load_mobd_item(v2, 1080);
+	sprite_load_mobd(v2, 1080);
 	v2->x = 21248;
 	v2->field_88_unused = 1;
 	v2->y = 60160;
@@ -29474,7 +29474,7 @@ void script_43F9E0_mobd45(Script *a1)
 	v3->parent = 0;
 	v1->script_type = SCRIPT_TYPE_16;
 	stru29_list_4439F0(v3, 0, 0, 0, 0);
-	sprite_4272A0_load_mobd_item(v3, 1344);
+	sprite_load_mobd(v3, 1344);
 	while (1)
 	{
 		v4 = 0;
@@ -29558,7 +29558,7 @@ void script_43FAD0_mobd45_evt5(Script *a1)
 			}
 			v7 = stru29_list_4439F0(v18, v6, 0, 1, 0);
 			v7->field_C |= 1u;
-			sprite_4272A0_load_mobd_item(v5, 1080);
+			sprite_load_mobd(v5, 1080);
 			v5->x = 50432;
 			v5->field_88_unused = 1;
 			v5->y = 38912;
@@ -30045,7 +30045,7 @@ void script_440810_mobd45(Script *a1)
 	v5->parent = 0;
 	v1->script_type = SCRIPT_TYPE_18;
 	stru29_list_4439F0(v5, v6, 0, 0, 0);
-	sprite_4272A0_load_mobd_item(v5, 1368);
+	sprite_load_mobd(v5, 1368);
 	v2->x = 40960;
 	v2->field_88_unused = 1;
 	v2->y = 22528;
@@ -30086,7 +30086,7 @@ void script_440810_mobd45(Script *a1)
 		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->y = 22528;
 		_47C664_ingame_menu_sprite->z_index = 10;
-		sprite_4272A0_load_mobd_item(_47C664_ingame_menu_sprite, 1096);
+		sprite_load_mobd(_47C664_ingame_menu_sprite, 1096);
 		dword_47C6C4 = 1;
 		input_get_string(netz_default_player_name, 8u, input_get_string_440770_handler, 1, v1);
 		v12 = _47C6E0_task->sprite;
@@ -31346,7 +31346,7 @@ void script_442BB0_mobd46(Script *a1)
 	pstru6 = v2;
 	v1->script_type = SCRIPT_TYPE_14;
 	stru29_list_4439F0(v4, 0, 0, 1, 0);
-	sprite_4272A0_load_mobd_item(v4, 180);
+	sprite_load_mobd(v4, 180);
 	script_445370_yield_to_main_thread(v1, 0x80000000, 1);
 	if (netz_47C6C0_mapd_idx == SCRIPT_TYPE_14)
 	{
@@ -31380,7 +31380,7 @@ void script_442BB0_mobd46(Script *a1)
 					_47C664_ingame_menu_sprite->field_88_unused = 1;
 					_47C664_ingame_menu_sprite->y = v5->y;
 				}
-				sprite_4272A0_load_mobd_item(v5, v6);
+				sprite_load_mobd(v5, v6);
 				v12 = 1;
 				v13 = 0;
 				do
@@ -31490,7 +31490,7 @@ void script_442BB0_mobd46(Script *a1)
 			_47C664_ingame_menu_sprite->field_88_unused = 1;
 			_47C664_ingame_menu_sprite->y = v19->y;
 		}
-		sprite_4272A0_load_mobd_item(v19, v21);
+		sprite_load_mobd(v19, v21);
 		v25 = 1;
 		v26 = 0;
 		do
@@ -31576,7 +31576,7 @@ void script_443140_mobd45(Script *a1)
 	v2 = sprite_create(MOBD_FONT_ITALIC, 0, a1->sprite);
 	_47C664_ingame_menu_sprite = v2;
 	if (v2)
-		sprite_4272A0_load_mobd_item(v2, 1048);
+		sprite_load_mobd(v2, 1048);
 	else
 		game_state = 3;
 	v3 = a1->sprite;
@@ -31708,12 +31708,12 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 				break;
 			if (v4 & 0x20)
 			{
-				sprite_4272A0_load_mobd_item(v6, 0);
+				sprite_load_mobd(v6, 0);
 				sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 3);
 			}
 			else
 			{
-				sprite_4272A0_load_mobd_item(v6, 12);
+				sprite_load_mobd(v6, 12);
 				sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 0);
 			}
 		}
@@ -31767,10 +31767,10 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 		}
 	} while (!(v4 & 2) || v4 & 0x20);
 	v6->pstru7 = &_479D48_stru7;
-	sprite_4272A0_load_mobd_item(v6, 24);
+	sprite_load_mobd(v6, 24);
 	sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 1);
 	script_445370_yield_to_main_thread(v3, 0x10000000, 0);
-	sprite_4272A0_load_mobd_item(v6, 12);
+	sprite_load_mobd(v6, 12);
 	sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 2);
 	script_445370_yield_to_main_thread(v3, 0x10000000, 0);
 	v6->pstru7 = _4640E0_stru7_array;
@@ -31879,7 +31879,7 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 		}
 		else
 		{
-			sprite_4272A0_load_mobd_item(v7, 96);
+			sprite_load_mobd(v7, 96);
 			sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 3);
 		}
 		result = 0;
@@ -31979,7 +31979,7 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 		}
 		else
 		{
-			sprite_4272A0_load_mobd_item(v7, 96);
+			sprite_load_mobd(v7, 96);
 			sprite_4272E0_load_mobd_item(v5, v14, 3);
 		}
 		result = 0;
@@ -33711,7 +33711,7 @@ void sidebar_button_handler_infantry_open(SidebarButton *a1)
 					v4->field_88_unused = 1;
 					v4->y = v5 - 1024;
 					v4->z_index = 3;
-					sprite_4272A0_load_mobd_item(
+					sprite_load_mobd(
 						v4,
 						_4701B8_mobd_lookups_per_ProductionGroup_field44[2 * v1->_44_mobd_lookup_idx + 1]);
 				}
@@ -33811,7 +33811,7 @@ void sidebar_button_handler_vehicles_open(SidebarButton *a1)
 					v4->field_88_unused = 1;
 					v4->y = v5 - 1024;
 					v4->z_index = 3;
-					sprite_4272A0_load_mobd_item(
+					sprite_load_mobd(
 						v4,
 						_4701B8_mobd_lookups_per_ProductionGroup_field44[2 * v1->_44_mobd_lookup_idx + 1]);
 				}
@@ -34626,7 +34626,7 @@ LABEL_17:
 	if (v23)
 	{
 		v23->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-		sprite_4272A0_load_mobd_item(_47C96C_mobd_1F_sidebar_empty_blocks, 72);
+		sprite_load_mobd(_47C96C_mobd_1F_sidebar_empty_blocks, 72);
 		_47C96C_mobd_1F_sidebar_empty_blocks->field_88_unused = 1;
 		_47C96C_mobd_1F_sidebar_empty_blocks->x = (render_width - 32) << 8;
 		_47C96C_mobd_1F_sidebar_empty_blocks->field_88_unused = 1;
@@ -35639,7 +35639,7 @@ void EntityTowerAttachment_handler_447FA0(EntityTurret *a1)
 	{
 		++_47C048_unit_bomberdmg;
 		v3 = sprite_create_scripted(v2->mobd_id, a1->turret_sprite, v2->dmg_handler, SCRIPT_COROUTINE, a1->ptr_24);
-		v4 = v2->field_8;
+		v4 = v2->mobd_offset;
 		v5 = v3;
 		if (v4 != -1)
 			sprite_4272E0_load_mobd_item(v3, v4, _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
@@ -36312,7 +36312,7 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 			{
 				++_47C048_unit_bomberdmg;
 				v5 = sprite_create_scripted(v4->mobd_id, v1->turret_sprite, v4->dmg_handler, SCRIPT_COROUTINE, v1->ptr_24);
-				v6 = v4->field_8;
+				v6 = v4->mobd_offset;
 				v7 = v5;
 				if (v6 != -1)
 					sprite_4272E0_load_mobd_item(v5, v6, _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
@@ -38425,7 +38425,7 @@ void script_44BE60_explosions(Script *a1)
 	v2 = v1->drawjob;
 	v1->z_index = 0;
 	v2->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4484A0_explosions;
-	sprite_4272A0_load_mobd_item(v1, 144);
+	sprite_load_mobd(v1, 144);
 	script_445370_yield_to_main_thread(a1, 0x10000000, 0);
 	decrease_num_explosions();
 	sprite_list_remove(a1->sprite);
