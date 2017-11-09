@@ -25216,7 +25216,7 @@ void script_434040_ingame_menu_load_game_related(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000001, -80, 153, 3);
 	do
 	{
-		v1 = script_434500(a1, 804, 1, 0);
+		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_5_FLASHING, 1, 0);
 		if (!v1)
 			break;
 		script_trigger_event(a1, EVT_MSG_1549, 0, receiver);

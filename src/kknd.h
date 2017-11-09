@@ -272,9 +272,9 @@ struct UnitStat
 	int accuracy;
 	int field_2C;
 	int is_infantry;
-	int mobd_lookup_offset_1;
-	int mobd_lookup_offset_2;
-	int mobd_lookup_offset_3;
+	int mobd_lookup_offset_attack; // -1 for turreted units
+	int mobd_lookup_offset_move;
+	int mobd_lookup_offset_idle;
 	int mobd_lookup_offset_4; // damaged_buildings?
 	UnitAttachmentPoint *attach;
 	UnitDamageSource *dmg_source;
@@ -545,10 +545,13 @@ struct Bitmap
 };
 
 
-#define SPRITE_EXPLOSION_MOBD_OFFSET_NUKE                           0
+#define SPRITE_EXPLOSION_MOBD_OFFSET_BIG                            0   // huge explosion: nuke, building detonation
+#define SPRITE_EXPLOSION_MOBD_OFFSET_SMALL                          220 // small explosion
 #define SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_SURV_RIFLEMAN_DEATH       568
 #define SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_MUTE_BERSERKER_DEATH      636
 #define SPRITE_EXPLOSION_MOBD_OFFSET_MUTE_GIAN_BEETLE_ACID_SPLASH   704
+
+#define SPRITE_DIRE_WOLF_MOBD_OFFSET_DEATH 1216
 
 #define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_LEFT       0
 #define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_RIGHT      12

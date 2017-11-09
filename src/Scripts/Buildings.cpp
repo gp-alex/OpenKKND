@@ -154,7 +154,7 @@ void script_403230_building_mini_explosion(Script *a1)
     v1->field_88_unused = 1;
     v1->x = (v2 & 0x3FFF) - 0x2000 + v3;
     v1->y += (kknd_rand_debug(__FILE__, __LINE__) & 0x3FFF) - 0x2000;
-    sprite_load_mobd(v1, 220);
+    sprite_load_mobd(v1, SPRITE_EXPLOSION_MOBD_OFFSET_SMALL);
     v1->z_index = 0x4000;
     script_445370_yield_to_main_thread(a1, 0x10000000, 0);
     decrease_num_explosions();
@@ -172,7 +172,7 @@ void script_4032F0_building_grand_explosion(Script *a1)
     v1->pstru7 = &_479D48_stru7;
     script_445370_yield_to_main_thread(a1, 0x80000000, 130);
     sprite_408800_play_sound(v1, SOUND_3, _4690A8_unit_sounds_volume, 0);
-    sprite_load_mobd(v1, 0);
+    sprite_load_mobd(v1, SPRITE_EXPLOSION_MOBD_OFFSET_BIG);
     v2 = v1->y + 2048;
     v1->field_88_unused = 1;
     v1->y = v2;

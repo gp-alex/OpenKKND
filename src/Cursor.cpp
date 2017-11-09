@@ -149,22 +149,34 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
     Sprite *drag_frame_x = sprite_create(MOBD_CURSORS, 0, 0);
 	sprite_load_mobd(drag_frame_x, CURSOR_MOBD_OFFSET_DRAG_FRAME_X);
 
-	drag_frame_x = sprite_create(MOBD_CURSORS, 0, 0);
-	//sprite_load_mobd(drag_frame_x, 744);
+
+    UnitStat *stat = &unit_stats[UNIT_STATS_SURV_DIRT_BIKE];
+
+    unsigned int i = GetTickCount() % (256 * 100);
+
+	drag_frame_x = sprite_create(stat->mobd_idx, 0, 0);
+	//sprite_load_mobd(drag_frame_x, 1216);
     drag_frame_x->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
     Sprite *drag_frame_y = sprite_create(MOBD_CURSORS, 0, 0);
     sprite_load_mobd(drag_frame_y, CURSOR_MOBD_OFFSET_DRAG_FRAME_Y);
-	drag_frame_y = sprite_create(MOBD_CURSORS, 0, 0);
-	sprite_load_mobd(drag_frame_y, 732);
+	drag_frame_y = sprite_create(stat->mobd_idx, 0, 0);
+    //sprite_4272E0_load_mobd_item(drag_frame_y, 720, 2);
     drag_frame_y->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
     Sprite *drag_frame_z = sprite_create(MOBD_CURSORS, 0, 0);
     sprite_load_mobd(drag_frame_z, CURSOR_MOBD_OFFSET_DRAG_FRAME_Z);
     drag_frame_z->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
+    drag_frame_z = sprite_create(stat->mobd_idx, 0, 0);
+
     Sprite *drag_frame_w = sprite_create(MOBD_CURSORS, 0, 0);
     sprite_load_mobd(drag_frame_w, CURSOR_MOBD_OFFSET_DRAG_FRAME_W);
+    drag_frame_w->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
+
+    drag_frame_w = sprite_create(MOBD_69, 0, 0);
+    //736, 748, 772, 792, 760
+    sprite_load_mobd(drag_frame_w, 772);
     drag_frame_w->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
     // while dragging
@@ -198,6 +210,41 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
             drag_frame_y->y = y;
             drag_frame_z->y = a1->_70_sprite->y;
             drag_frame_w->y = a1->_70_sprite->y;
+        }
+
+
+        //sprite_load_mobd(drag_frame_x, 1216);
+        unsigned int i = GetTickCount() % (256 * 20);
+        drag_frame_x->y -= 25 * 250;
+        if (stat->mobd_lookup_offset_1 != -1)
+        {
+            sprite_4272E0_load_mobd_item(
+                drag_frame_x,
+                stat->mobd_lookup_offset_1,
+                _47D3C4_entity_mobd_lookup_ids[i / 20]
+            );
+        }
+
+        drag_frame_y->x = drag_frame_x->x + 40 * 250;
+        drag_frame_y->y = drag_frame_x->y;
+        if (stat->mobd_lookup_offset_2 != -1)
+        {
+            sprite_4272E0_load_mobd_item(
+                drag_frame_y,
+                stat->mobd_lookup_offset_2,
+                _47D3C4_entity_mobd_lookup_ids[i / 20]
+            );
+        }
+
+        drag_frame_z->x = drag_frame_x->x + 80 * 250;
+        drag_frame_z->y = drag_frame_x->y;
+        if (stat->mobd_lookup_offset_3 != -1)
+        {
+            sprite_4272E0_load_mobd_item(
+                drag_frame_z,
+                stat->mobd_lookup_offset_3,
+                _47D3C4_entity_mobd_lookup_ids[i / 20]
+            );
         }
 
         cursor_process_user_actions(a1, 0);

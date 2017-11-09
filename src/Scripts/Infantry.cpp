@@ -5197,22 +5197,20 @@ void entity_419560_on_death(Entity *a1)
         v7 = SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_SURV_RIFLEMAN_DEATH;
         if (v1->stats->player_side != 1)
         {
-            sprite_load_mobd(v1->sprite, SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_MUTE_BERSERKER_DEATH);
-            entity_438D90_on_death_explosion(v1);
-            goto LABEL_15;
+            v7 = SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_MUTE_BERSERKER_DEATH;
         }
     LABEL_11:
         sprite_load_mobd(v1->sprite, v7);
         entity_438D90_on_death_explosion(v1);
         goto LABEL_15;
     }
-    if (v1->unit_id == 27)
+    if (v1->unit_id == UNIT_STATS_MUTE_DIRE_WOLF)
     {
         v8 = _4690A8_unit_sounds_volume;
         v9 = kknd_rand_debug(__FILE__, __LINE__);
         sprite_408800_play_sound(v1->sprite, _465988_sounds[v9 % 5], v8, 0);
         v1->sprite->mobd_id = MOBD_MUTE_DIRE_WOLF;
-        v7 = 1216;
+        v7 = SPRITE_DIRE_WOLF_MOBD_OFFSET_DEATH;
         goto LABEL_11;
     }
     v10 = entity_439120_add_explosion(v1);

@@ -962,7 +962,7 @@ extern MapdScrlImageTile *fog_of_war_tile_2;
 extern int _47CBC0_fow[256];
 extern int dword_47CFC0; // weak
 extern int __47CFC4_mobd_lookup_speeds[256];
-extern int _47D3C4_entity_mobd_lookup_ids[];
+extern int _47D3C4_entity_mobd_lookup_ids[257];
 extern unsigned __int8 player_sprite_palette_tmp[256];
 extern stru12_game_globals game_globals_cpu[7];
 extern int entity_drag_selection_x; // weak
