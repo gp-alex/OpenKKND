@@ -97,7 +97,7 @@ void entity_init_infantry(Entity *a1)
         {
             v1->sprite->x_speed = 0;
             v1->sprite->y_speed = 0;
-            entity_load_mobd_2(v1);
+            entity_load_move_mobd(v1);
             v13 = v1->script;
             v1->mode = entity_mode_4197E0_infantry;
             v1->destroyed = 1;
@@ -138,7 +138,7 @@ void entity_init_infantry(Entity *a1)
         v26 = _42D560_get_mobd_lookup_id_rotation(v25 - v23->x, v24 - v23->y);
         v27 = v1->stats;
 
-        entity_load_mobd_2(v1, v26);
+        entity_load_move_mobd(v1, v26);
         v1->sprite->x_speed = v27->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v26 + 1]] >> 6;
         v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
         v1->mode = entity_mode_417360_infantry;
@@ -147,7 +147,7 @@ void entity_init_infantry(Entity *a1)
     {
         v1->sprite->x_speed = 0;
         v1->sprite->y_speed = 0;
-        entity_load_mobd_2(v1);
+        entity_load_move_mobd(v1);
         v14 = v1->script;
         v1->mode = entity_mode_4197E0_infantry;
         v1->destroyed = 1;
@@ -408,7 +408,7 @@ void entity_4133D0(Entity *a1)
 
             v1->sprite->x_speed = 0;
             v1->sprite->y_speed = 0;
-            entity_load_mobd_2(v1);
+            entity_load_move_mobd(v1);
 
             v17 = v1->script;
             v1->mode = entity_mode_4197E0_infantry;
@@ -1666,7 +1666,7 @@ bool entity_414AD0_vehicle_collide_vehicle(Entity *a1)
         ++v9;
         if (v8 >= 5)
         {
-            entity_load_mobd_3(v1);
+            entity_load_idle_mobd(v1);
             v1->sprite->x_speed = 0;
             v1->sprite->y_speed = 0;
             v1->_128_spawn_param = (void *)60;
@@ -1675,7 +1675,7 @@ bool entity_414AD0_vehicle_collide_vehicle(Entity *a1)
         }
     }
 
-    entity_load_mobd_3(v1);
+    entity_load_idle_mobd(v1);
     v1->sprite->x_speed = 0;
     v1->sprite->y_speed = 0;
     v1->_128_spawn_param = (void *)60;
@@ -1791,7 +1791,7 @@ void entity_414C30_boxd(Entity *a1)
             }
         }
     }
-    entity_mode_417E60(v1);
+    entity_mode_attack_move_4_order_3_7_417E60(v1);
 }
 
 //----- (00414E80) --------------------------------------------------------
@@ -1834,7 +1834,7 @@ void entity_414E80(Entity *a1)
         a1->sprite_y - a1->sprite->y);
     if (!(v2 & 0x3F))
     {
-        entity_mode_417E60(v1);
+        entity_mode_attack_move_4_order_3_7_417E60(v1);
         return;
     }
     if (v2 > 32)
@@ -1917,7 +1917,7 @@ LABEL_18:
                 v21 = v20->field_4C != 128 ? 7424 : 4096;
             v22 = v1->sprite->y;
             v1->current_mobd_lookup_idx = v6;
-            v1->mode = entity_mode_4165C0;
+            v1->mode = entity_mode_attack_move_2_5_4165C0;
             v1->sprite_y = v21 + ((v22 - 0x2000) & 0xFFFFE000);
             return;
         case 0x40:
@@ -1946,7 +1946,7 @@ LABEL_18:
                 v28 = v27->field_4C != 128 ? 7424 : 4096;
             v29 = v1->sprite->y;
             v1->current_mobd_lookup_idx = v6;
-            v1->mode = entity_mode_4165C0;
+            v1->mode = entity_mode_attack_move_2_5_4165C0;
             v1->sprite_y = v28 + ((v29 + 0x2000) & 0xFFFFE000);
             return;
         case 0xC0:
@@ -1988,7 +1988,7 @@ LABEL_18:
         if (v16 != 2 && v16 != 3)
         {
             v1->current_mobd_lookup_idx = v6;
-            entity_mode_417E60(v1);
+            entity_mode_attack_move_4_order_3_7_417E60(v1);
             return;
         }
         switch (v1->current_mobd_lookup_idx)
@@ -2002,7 +2002,7 @@ LABEL_18:
                 v18 = v17->field_4C != 128 ? 7424 : 4096;
             v19 = v1->sprite->y;
             v1->current_mobd_lookup_idx = v6;
-            v1->mode = entity_mode_4165C0;
+            v1->mode = entity_mode_attack_move_2_5_4165C0;
             v1->sprite_y = v18 + ((v19 - 0x2000) & 0xFFFFE000);
             return;
         case 0x40:
@@ -2016,7 +2016,7 @@ LABEL_18:
         }
     }
     v1->current_mobd_lookup_idx = v6;
-    v1->mode = entity_mode_4165C0;
+    v1->mode = entity_mode_attack_move_2_5_4165C0;
 }
 // 4793F8: using guessed type int _4793F8_map_width;
 
@@ -2136,7 +2136,7 @@ void entity_mode_415540_infantry(Entity *a1)
     v1->sprite->y_speed = 0;
     v10 = v1->sprite;
     v1->sprite_x_2 = v10->x;
-    entity_load_mobd_3(v1);
+    entity_load_idle_mobd(v1);
     v1->sprite_y_2 = v10->y;
     v1->mode = entity_mode_415690;
     entity_40DF50_boxd_update_map_tile(v1, 0);
@@ -2218,7 +2218,7 @@ void entity_mode_415690(Entity *a1)
     }
     else
     {
-        entity_mode_417E60(v1);
+        entity_mode_attack_move_4_order_3_7_417E60(v1);
     }
 }
 
@@ -2241,18 +2241,18 @@ void entity_mode_4157F0(Entity *a1)
         v7 = a1->current_mobd_lookup_idx;
         if (v5 ^ v6)
         {
-            entity_load_mobd_3(a1, v7 + 32);
+            entity_load_idle_mobd(a1, v7 + 32);
         }
         else
         {
-            entity_load_mobd_3(a1, v7 - 32);
+            entity_load_idle_mobd(a1, v7 - 32);
         }
     }
     else
     {
-        if (a1->stats->mobd_lookup_offset_1 != -1)
+        if (a1->stats->mobd_lookup_offset_attack != -1)
         {
-            entity_load_mobd_1(a1);
+            entity_load_attack_mobd(a1);
             v1->sprite->_60_mobd_field_0_int = 0;
         }
     }
@@ -2272,7 +2272,7 @@ void entity_4158B0(Entity *a1)
     int v6; // eax@5
 
     v1 = a1;
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
     v2 = v1->sprite;
     v1->mode = entity_mode_415980;
     v2->x_speed = 0;
@@ -2342,7 +2342,7 @@ void entity_mode_415980(Entity *a1)
 //----- (00415A20) --------------------------------------------------------
 void entity_415A20(Entity *a1)
 {
-    entity_load_mobd_2(a1);
+    entity_load_move_mobd(a1);
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
     a1->mode = entity_mode_415A60_vehicle_rotate;
@@ -2360,7 +2360,7 @@ void entity_mode_415A60_vehicle_rotate(Entity *a1)
         entity_advance_mobd_rotation(&a1->current_mobd_lookup_idx, a1->_88_dst_orientation, a1->stats->turning_speed);
         sprite_4273B0_load_mobd_item_sound(
             a1->sprite,
-            a1->stats->mobd_lookup_offset_2,
+            a1->stats->mobd_lookup_offset_move,
             _47D3C4_entity_mobd_lookup_ids[a1->current_mobd_lookup_idx + 1]);
     }
 }
@@ -2387,7 +2387,7 @@ void entity_mode_move_attack(Entity *a1)
     {
         if (global2map(v3->x) != a1->sprite_map_x || global2map(v3->y) != a1->sprite_map_y)
         {
-            entity_mode_419420(a1);
+            entity_mode_move_tanker(a1);
             return;
         }
     }
@@ -2398,7 +2398,7 @@ void entity_mode_move_attack(Entity *a1)
 
     if (!entity_initialize_order(v1))
     {
-        entity_load_mobd_3(v1);
+        entity_load_idle_mobd(v1);
         v4 = v1->stru224.field_50;
         if (v4)
             v1->stru224.field_50 = v4 - 1;
@@ -2417,16 +2417,16 @@ void entity_mode_move_attack(Entity *a1)
                     v1->sprite_x = entity_transform_x(v1, map2global(v1->stru224._44_map_x));
                     v1->sprite_y = entity_transform_y(v1, map2global(v1->stru224._48_map_y));
                 }
-                entity_mode_4165C0(v1);
+                entity_mode_attack_move_2_5_4165C0(v1);
             }
             break;
 
         case 4:
             v12 = v1->_DC_order;
-            if (v12 == 7 || v12 == 3)
-                entity_mode_417E60(v1);
+            if (v12 == ENTITY_ORDER_7 || v12 == ENTITY_ORDER_3)
+                entity_mode_attack_move_4_order_3_7_417E60(v1);
             else
-                entity_417550(v1);
+                entity_mode_attack_move_4_417550(v1);
             return;
 
         case 3:
@@ -2445,14 +2445,14 @@ void entity_mode_move_attack(Entity *a1)
             v15 = v1->field_124;
             LOBYTE_HEXRAYS(v15) = v15 | 6;
             v1->field_124 = v15;
-            entity_415D30(v1);
+            entity_mode_attack_move_1_415D30(v1);
             return;
 
         case 1:
             v16 = v1->field_124;
             LOBYTE_HEXRAYS(v16) = v16 & 0xF9;
             v1->field_124 = v16;
-            entity_415D30(v1);
+            entity_mode_attack_move_1_415D30(v1);
             return;
 
         case 5:
@@ -2460,15 +2460,15 @@ void entity_mode_move_attack(Entity *a1)
             {
                 v1->sprite_x = entity_transform_x(v1, map2global(v1->stru224._44_map_x));
                 v1->sprite_y = entity_transform_y(v1, map2global(v1->stru224._48_map_y));
-                entity_mode_4165C0(v1);
+                entity_mode_attack_move_2_5_4165C0(v1);
             }
             else
             {
-                entity_mode_417E60(v1);
+                entity_mode_attack_move_4_order_3_7_417E60(v1);
             }
             break;
         case 0:
-            entity_mode_4165C0(v1);
+            entity_mode_attack_move_2_5_4165C0(v1);
             break;
 
         default:
@@ -2478,7 +2478,7 @@ void entity_mode_move_attack(Entity *a1)
 }
 
 //----- (00415D30) --------------------------------------------------------
-void entity_415D30(Entity *a1)
+void entity_mode_attack_move_1_415D30(Entity *a1)
 {
     Entity *v1; // esi@1
     int v2; // eax@1
@@ -2523,17 +2523,17 @@ void entity_415D30(Entity *a1)
                 else
                     v20 = v19->field_4C != 128 ? 7424 : 4096;
                 v1->sprite_y = v20 + (v1->stru224._48_map_y << 13);
-                entity_mode_4165C0(v1);
+                entity_mode_attack_move_2_5_4165C0(v1);
             }
             else
             {
-                entity_mode_417E60(a1);
+                entity_mode_attack_move_4_order_3_7_417E60(a1);
             }
         }
         else
         {
             a1->stru224.field_54 = 4;
-            entity_mode_417E60(a1);
+            entity_mode_attack_move_4_order_3_7_417E60(a1);
         }
     }
     else
@@ -2579,7 +2579,7 @@ void entity_415D30(Entity *a1)
             else
                 v12 = v11->field_4C != 128 ? 7424 : 4096;
             v1->sprite_y = v12 + (v1->stru224._30_map_y << 13);
-            entity_mode_4165C0(v1);
+            entity_mode_attack_move_2_5_4165C0(v1);
         }
         else
         {
@@ -2671,7 +2671,7 @@ void entity_mode_416060(Entity *a1)
                 LABEL_63:
                     v1->stru224.field_54 = 0;
                     v1->stru224.field_50 = 2;
-                    v1->mode_return = entity_mode_417E60;
+                    v1->mode_return = entity_mode_attack_move_4_order_3_7_417E60;
                     entity_mode_416A70_oiltanker(v1);
                     return;
                 }
@@ -2763,7 +2763,7 @@ void entity_mode_416060(Entity *a1)
                         v37 = v1->stru224._38_y;
                     LABEL_71:
                         v1->sprite_y = v36 + (v37 << 13);
-                        entity_mode_4165C0(v1);
+                        entity_mode_attack_move_2_5_4165C0(v1);
                         return;
                     }
                 }
@@ -2819,12 +2819,12 @@ void entity_mode_416060(Entity *a1)
     v42 = v1->field_124;
     LOBYTE_HEXRAYS(v42) = v42 & 0xF9;
     v1->field_124 = v42;
-    entity_415D30(v1);
+    entity_mode_attack_move_1_415D30(v1);
 }
 // 4793F8: using guessed type int _4793F8_map_width;
 
 //----- (004165C0) --------------------------------------------------------
-void entity_mode_4165C0(Entity *a1)
+void entity_mode_attack_move_2_5_4165C0(Entity *a1)
 {
     Entity *v1; // esi@1
     Sprite *v2; // eax@1
@@ -2847,7 +2847,7 @@ void entity_mode_4165C0(Entity *a1)
             v1->sprite_y - v2->y);
         entity_413C10(v1);
 
-        entity_load_mobd_2(v1);
+        entity_load_move_mobd(v1);
 
         int rnd = kknd_rand_3();
         v1->sprite->_60_mobd_field_0_int -= rnd << 9;
@@ -2855,7 +2855,7 @@ void entity_mode_4165C0(Entity *a1)
     }
     else if (v4->field_4C == 128 || boxd_41C130(v1->sprite_x, v1->sprite_y, v2->x, v2->y, v1))
     {
-        entity_load_mobd_2(v1);
+        entity_load_move_mobd(v1);
 
         int rnd = kknd_rand_3();
         v1->sprite->_60_mobd_field_0_int -= rnd << 9;
@@ -2865,7 +2865,7 @@ void entity_mode_4165C0(Entity *a1)
             v1->sprite_y - v1->sprite->y
         );
         v1->_88_dst_orientation = (v7 + 8) & 0xF0;
-        entity_load_mobd_2(v1);
+        entity_load_move_mobd(v1);
 
         v1->sprite->x_speed = 0;
         v1->sprite->y_speed = 0;
@@ -2874,7 +2874,7 @@ void entity_mode_4165C0(Entity *a1)
     }
     else if (!entity_414870_boxd(v1))
     {
-        entity_mode_417E60(v1);
+        entity_mode_attack_move_4_order_3_7_417E60(v1);
     }
 }
 
@@ -2955,15 +2955,15 @@ void entity_mode_416790_vehicle_move(Entity *a1)
             {
                 if (v23 <= 1)
                 {
-                    entity_mode_417E60(v1);
+                    entity_mode_attack_move_4_order_3_7_417E60(v1);
                     return;
                 }
             LABEL_43:
                 if (v23 == 3)
                 {
                     v25 = v1->stats;
-                    v1->mode_return = entity_mode_4165C0;
-                    entity_load_mobd_3(v1);
+                    v1->mode_return = entity_mode_attack_move_2_5_4165C0;
+                    entity_load_idle_mobd(v1);
                     v26 = v1->sprite;
                     v1->stru224._2C_map_x = v26->x_speed;
                     v1->stru224._30_map_y = v26->y_speed;
@@ -3000,12 +3000,12 @@ void entity_mode_416790_vehicle_move(Entity *a1)
     v22 = v1->stats;
     if (v22->is_infantry)
     {
-        entity_load_mobd_2(v1, v18);
+        entity_load_move_mobd(v1, v18);
         goto LABEL_37;
     }
     v28 = v1->sprite;
     v1->mode_turn_return = entity_mode_416790_vehicle_move;
-    sprite_4272E0_load_mobd_item(v28, v22->mobd_lookup_offset_2, _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
+    sprite_4272E0_load_mobd_item(v28, v22->mobd_lookup_offset_move, _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
     v1->sprite->x_speed = 0;
     v1->sprite->y_speed = 0;
     v1->mode = entity_mode_415A60_vehicle_rotate;
@@ -3108,7 +3108,7 @@ LABEL_24:
         v24 = v1->stats;
         if (v24->is_infantry || v1->current_mobd_lookup_idx == v23)
         {
-            entity_load_mobd_2(v1, v23);
+            entity_load_move_mobd(v1, v23);
             v1->mode = entity_mode_416CD0;
         }
         else
@@ -3117,7 +3117,7 @@ LABEL_24:
             v1->mode = entity_mode_415A60_vehicle_rotate;
             v1->mode_turn_return = entity_mode_416A70_oiltanker;
 
-            entity_load_mobd_2(v1);
+            entity_load_move_mobd(v1);
             v1->sprite->x_speed = 0;
             v1->sprite->y_speed = 0;
         }
@@ -3164,7 +3164,7 @@ void entity_mode_416CD0(Entity *a1)
         v1->current_mobd_lookup_idx = _42D560_get_mobd_lookup_id_rotation(v3 - v4, v1->sprite_y - v2->y);
         sprite_4273B0_load_mobd_item_sound(
             v9,
-            v1->stats->mobd_lookup_offset_2,
+            v1->stats->mobd_lookup_offset_move,
             _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
         v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->current_mobd_lookup_idx + 1]] >> 6;
         v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
@@ -3310,7 +3310,7 @@ LABEL_24:
         v24 = v1->stats;
         if (v24->is_infantry || (v25 = v1->current_mobd_lookup_idx, v25 == v23))
         {
-            entity_load_mobd_2(v1, v23);
+            entity_load_move_mobd(v1, v23);
             v1->mode = entity_mode_417100;
         }
         else
@@ -3318,7 +3318,7 @@ LABEL_24:
             v1->_88_dst_orientation = v23;
             v1->mode_turn_return = entity_mode_416EB0;
 
-            entity_load_mobd_2(v1);
+            entity_load_move_mobd(v1);
             v1->sprite->x_speed = 0;
             v1->sprite->y_speed = 0;
             v1->mode = entity_mode_415A60_vehicle_rotate;
@@ -3361,7 +3361,7 @@ void entity_mode_417100(Entity *a1)
     if (v5 >= 1792 || ((v6 = v1->sprite_y, v2->y - v6 <= 0) ? (v7 = v6 - v2->y) : (v7 = v2->y - v6), v7 >= 1792))
     {
         v9 = v1->sprite;
-        entity_load_mobd_2(v1, _42D560_get_mobd_lookup_id_rotation(v3 - v4, v1->sprite_y - v2->y));
+        entity_load_move_mobd(v1, _42D560_get_mobd_lookup_id_rotation(v3 - v4, v1->sprite_y - v2->y));
         v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->current_mobd_lookup_idx + 1]] >> 6;
         v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
         if (entity_40DA90_update_tile_info(v1) != 4)
@@ -3417,7 +3417,7 @@ void entity_4172D0(Entity *a1)
     v1 = a1;
     v2 = _42D560_get_mobd_lookup_id_rotation(a1->sprite_x - a1->sprite->x, a1->sprite_y - a1->sprite->y);
     v3 = v1->stats;
-    entity_load_mobd_2(v1, v2);
+    entity_load_move_mobd(v1, v2);
     v1->sprite->x_speed = v3->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v2 + 1]] >> 6;
     v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
     v1->mode = entity_mode_417360_infantry;
@@ -3455,7 +3455,7 @@ void entity_mode_417360_infantry(Entity *a1)
     {
         v16 = _42D560_get_mobd_lookup_id_rotation(v3 - v4, v1->sprite_y - v2->y);
         v17 = v1->stats;
-        entity_load_mobd_2(v1, v16);
+        entity_load_move_mobd(v1, v16);
         v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v16 + 1]] >> 6;
         v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
     }
@@ -3513,7 +3513,7 @@ void entity_mode_417360_infantry(Entity *a1)
 }
 
 //----- (00417550) --------------------------------------------------------
-void entity_417550(Entity *a1)
+void entity_mode_attack_move_4_417550(Entity *a1)
 {
     Entity *v1; // esi@1
     Sprite *v2; // edx@1
@@ -3531,7 +3531,7 @@ void entity_417550(Entity *a1)
     int v14; // eax@5
 
     v1 = a1;
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
     v1->sprite->x_speed = 0;
     v1->sprite->y_speed = 0;
 
@@ -3718,7 +3718,7 @@ void entity_417810(Entity *a1)
         v1->mode = entity_mode_417BD0;
         v1->field_124 = v13;
 
-        entity_load_mobd_2(v1);
+        entity_load_move_mobd(v1);
         v1->sprite->x_speed = 0;
         v1->sprite->y_speed = 0;
         if (v1->field_D4)
@@ -3746,7 +3746,7 @@ void entity_417980(Entity *a1)
     int v5; // eax@1
 
     v1 = a1;
-    v4 = a1->sprite->_60_mobd_field_0_int;
+    v4 = (int)a1->sprite->_60_mobd_field_0_int;
     v1->_128_spawn_param = 0;
     v1->stru224._2C_map_x = v4;
     v5 = v1->field_124;
@@ -3754,7 +3754,7 @@ void entity_417980(Entity *a1)
     v1->mode = entity_mode_417BD0;
     v1->field_124 = v5;
 
-    entity_load_mobd_2(v1);
+    entity_load_move_mobd(v1);
     v1->sprite->x_speed = 0;
     v1->sprite->y_speed = 0;
 
@@ -3810,7 +3810,7 @@ void entity_mode_417A20(Entity *a1)
                         v1->current_mobd_lookup_idx = v6;
                         v1->field_D8 = v7;
                         entity_413C10(v1);
-                        entity_load_mobd_2(v1);
+                        entity_load_move_mobd(v1);
                     }
                     else if (v5->field_4C == 128
                         || boxd_41C130(v1->sprite_x, v1->sprite_y, v1->sprite->x, v1->sprite->y, v1))
@@ -3820,20 +3820,20 @@ void entity_mode_417A20(Entity *a1)
                         v9 = v1->stats;
                         v1->_88_dst_orientation = ((_BYTE)v8 + 8) & 0xF0;
                         v1->mode_turn_return = entity_mode_417BD0;
-                        entity_load_mobd_2(v1);
+                        entity_load_move_mobd(v1);
                         v1->sprite->x_speed = 0;
                         v1->sprite->y_speed = 0;
                         v1->mode = entity_mode_415A60_vehicle_rotate;
                     }
                     else if (!entity_414870_boxd(v1))
                     {
-                        entity_mode_417E60(v1);
+                        entity_mode_attack_move_4_order_3_7_417E60(v1);
                     }
                 }
             }
             else
             {
-                entity_mode_417E60(v1);
+                entity_mode_attack_move_4_order_3_7_417E60(v1);
             }
         }
         else
@@ -3920,14 +3920,14 @@ void entity_mode_417BD0(Entity *a1)
                     v17 = v1->stats;
                     if (!v17->is_infantry)
                     {
-                        entity_load_mobd_2(v1);
+                        entity_load_move_mobd(v1);
                         v1->sprite->x_speed = 0;
                         v1->sprite->y_speed = 0;
                         v1->mode = entity_mode_415A60_vehicle_rotate;
                         v1->mode_turn_return = entity_mode_417BD0;
                         return;
                     }
-                    entity_load_mobd_2(v1, v13);
+                    entity_load_move_mobd(v1, v13);
                 }
             }
         }
@@ -3942,15 +3942,15 @@ void entity_mode_417BD0(Entity *a1)
             {
                 if (v18 <= 1)
                 {
-                    entity_mode_417E60(v1);
+                    entity_mode_attack_move_4_order_3_7_417E60(v1);
                     return;
                 }
             LABEL_35:
                 if (v18 == 3)
                 {
-                    entity_load_mobd_3(v1);
+                    entity_load_idle_mobd(v1);
                     v1->mode = entity_mode_417FC0;
-                    v1->mode_return = entity_mode_4165C0;
+                    v1->mode_return = entity_mode_attack_move_2_5_4165C0;
                     v1->stru224._2C_map_x = v1->sprite->x_speed;
                     v1->stru224._30_map_y = v1->sprite->y_speed;
                     v1->sprite->x_speed = 0;
@@ -3983,7 +3983,7 @@ void entity_mode_417F50(Entity *a1)
 }
 
 //----- (00417E60) --------------------------------------------------------
-void entity_mode_417E60(Entity *a1)
+void entity_mode_attack_move_4_order_3_7_417E60(Entity *a1)
 {
     Entity *v1; // esi@1
     Sprite *v2; // ecx@2
@@ -4034,7 +4034,7 @@ void entity_417F60(Entity *a1)
     int v3; // eax@1
 
     v1 = a1;
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
     v2 = v1->sprite;
     v1->stru224._2C_map_x = v2->x_speed;
     v1->stru224._30_map_y = v2->y_speed;
@@ -4079,7 +4079,7 @@ void entity_mode_417FC0(Entity *a1)
     v4 = entity_40E000_boxd(v1, v1->stru224._2C_map_x + v3->x, v1->stru224._30_map_y + v3->y);
     if (v4 == 1 || !v4)
     {
-        entity_mode_417E60(v1);
+        entity_mode_attack_move_4_order_3_7_417E60(v1);
         return;
     }
     v5 = (char *)v1->_128_spawn_param;
@@ -4087,7 +4087,7 @@ void entity_mode_417FC0(Entity *a1)
     if (!v5)
     {
         v1->stru224.field_50 = 2;
-        entity_mode_417E60(v1);
+        entity_mode_attack_move_4_order_3_7_417E60(v1);
         return;
     }
     v6 = v1->entity_27C;
@@ -4129,7 +4129,7 @@ void entity_mode_417FC0(Entity *a1)
 //----- (00418120) --------------------------------------------------------
 void entity_418120(Entity *a1)
 {
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
     a1->_128_spawn_param = (void *)60;
@@ -4140,7 +4140,7 @@ void entity_418120(Entity *a1)
 //----- (00418170) --------------------------------------------------------
 void entity_418170(Entity *a1)
 {
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
     a1->_128_spawn_param = (void *)60;
@@ -4163,7 +4163,7 @@ void entity_mode_4181B0(Entity *a1)
     if (v3 == 2)
     {
         entity_40DF50_boxd_update_map_tile(v1, 1);
-        entity_mode_4165C0(v1);
+        entity_mode_attack_move_2_5_4165C0(v1);
     }
     if (v3 != 1 && v3)
     {
@@ -4189,12 +4189,12 @@ void entity_mode_4181B0(Entity *a1)
         else
         {
             v1->stru224.field_50 = 2;
-            entity_mode_417E60(v1);
+            entity_mode_attack_move_4_order_3_7_417E60(v1);
         }
     }
     else
     {
-        entity_mode_417E60(v1);
+        entity_mode_attack_move_4_order_3_7_417E60(v1);
     }
 }
 // 4793F8: using guessed type int _4793F8_map_width;
@@ -4231,7 +4231,7 @@ void entity_418290(Entity *a1)
         a1->mode = entity_mode_418550;
         return;
     }
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
     entity_40DF50_boxd_update_map_tile(v1, 0);
     v1->sprite->x_speed = 0;
     v1->sprite->y_speed = 0;
@@ -4247,7 +4247,7 @@ void entity_418290(Entity *a1)
             v1->_88_dst_orientation = v2;
             v4 = v1->stats;
             v1->mode_turn_return = entity_mode_418590;
-            entity_load_mobd_2(v1);
+            entity_load_move_mobd(v1);
             v1->sprite->x_speed = 0;
             v1->sprite->y_speed = 0;
             v1->mode = entity_mode_415A60_vehicle_rotate;
@@ -4361,10 +4361,10 @@ void entity_mode_418590(Entity *a1)
         (v1->entity_8->sprite->x - v1->sprite->x) >> 8,
         (v1->entity_8->sprite->y - v1->sprite->y) >> 8);
 
-    if (v1->stats->mobd_lookup_offset_1 == -1)
-        entity_load_mobd_3(v1, v3);
+    if (v1->stats->mobd_lookup_offset_attack == -1)
+        entity_load_idle_mobd(v1, v3);
     else
-        entity_load_mobd_1(v1, v3);
+        entity_load_attack_mobd(v1, v3);
 
     v6 = v1->stats->dmg_source;
     if (v6 && _47C048_unit_bomberdmg < 200)
@@ -4445,7 +4445,7 @@ void entity_4187F0(Entity *a1)
     v5 = _42D560_get_mobd_lookup_id_rotation(v1->sprite_x - v4->x, v3 - v4->y);
     v6 = v1->stats;
 
-    entity_load_mobd_2(v1, v5);
+    entity_load_move_mobd(v1, v5);
     v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v5 + 1]] >> 6;
     v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
 
@@ -4658,7 +4658,7 @@ void entity_mode_418B30(Entity *a1)
     if (v7 >= 512 || ((v8 = v1->sprite_y, v4->y - v8 <= 0) ? (v9 = v8 - v4->y) : (v9 = v4->y - v8), v9 >= 512))
     {
         v18 = _42D560_get_mobd_lookup_id_rotation(v5 - v6, v1->sprite_y - v4->y);
-        entity_load_mobd_2(v1, v18);
+        entity_load_move_mobd(v1, v18);
         v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v18 + 1]] >> 6;
         v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
         return;
@@ -4741,7 +4741,7 @@ void entity_mode_418D20(Entity *a1)
         {
             v11 = _42D560_get_mobd_lookup_id_rotation(v5 - v6, v1->sprite_y - v4->y);
             v12 = v1->stats;
-            entity_load_mobd_2(v1, v11);
+            entity_load_move_mobd(v1, v11);
             v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v11 + 1]] >> 6;
             v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
             return;
@@ -4800,7 +4800,7 @@ void entity_mode_418E90(Entity *a1)
         }
         else
         {
-            entity_load_mobd_3(v1);
+            entity_load_idle_mobd(v1);
             v1->mode_return = entity_mode_415540_infantry;
             entity_mode_416A70_oiltanker(v1);
         }
@@ -4823,7 +4823,7 @@ void entity_mode_418F60(Entity *a1)
     v1->mode = entity_mode_418E90;
     v2->x_speed = -64;
     v1->sprite->y_speed = 64;
-    entity_load_mobd_2(v1);
+    entity_load_move_mobd(v1);
     v3 = v1->_E0_current_attack_target;
     v1->_128_spawn_param = (void *)100;
     if (v3)
@@ -4911,7 +4911,7 @@ LABEL_20:
         v1->mode = entity_mode_418E90;
         v10->x_speed = -64;
         v1->sprite->y_speed = 64;
-        entity_load_mobd_2(v1);
+        entity_load_move_mobd(v1);
         v11 = v1->_E0_current_attack_target;
         v1->_128_spawn_param = (void *)100;
         if (v11)
@@ -4954,7 +4954,7 @@ void entity_mode_419180(Entity *a1)
             a1->sprite->y_speed = 0;
             v6 = a1->stats;
             a1->mode = entity_mode_418FE0;
-            entity_load_mobd_3(a1);
+            entity_load_idle_mobd(a1);
             v1->script->event_handler = EventHandler_419DF0;
         }
     }
@@ -4980,14 +4980,14 @@ void entity_mode_419230(Entity *a1)
     v2 = &a1->current_mobd_lookup_idx;
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
     if (!entity_advance_mobd_rotation(v2, 160, v1->stats->turning_speed))
     {
         v1->sprite->x_speed = 64;
         v1->sprite->y_speed = -64;
         sprite_4272E0_load_mobd_item(
             v1->sprite,
-            v1->stats->mobd_lookup_offset_2,
+            v1->stats->mobd_lookup_offset_move,
             _47D3C4_entity_mobd_lookup_ids[*v2 + 1]);
         v3 = v1->_E0_current_attack_target;
         v1->_128_spawn_param = (void *)100;
@@ -5014,7 +5014,7 @@ char *entity_4192F0(Entity *a1)
     Sprite *v10; // ecx@2
 
     v1 = a1;
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
     result = 0;
     v1->sprite->x_speed = 0;
     v1->sprite->y_speed = 0;
@@ -5075,7 +5075,7 @@ void entity_mode_419390_oiltanker(Entity *a1)
 }
 
 //----- (00419420) --------------------------------------------------------
-void entity_mode_419420(Entity *a1)
+void entity_mode_move_tanker(Entity *a1)
 {
     Entity *v1; // esi@1
     void(*v2)(Entity *); // eax@1
@@ -5099,17 +5099,17 @@ void entity_mode_419420(Entity *a1)
 
     v1 = a1;
     v2 = a1->mode;
-    v3 = a1->stats->mobd_lookup_offset_2;
+    v3 = a1->stats->mobd_lookup_offset_move;
     v19 = _47D3C4_entity_mobd_lookup_ids[a1->current_mobd_lookup_idx + 1];
     v4 = a1->sprite;
-    if (v2 == entity_mode_419420)
+    if (v2 == entity_mode_move_tanker)
     {
         sprite_4273B0_load_mobd_item_sound(v4, v3, v19);
     }
     else
     {
-        entity_load_mobd_2(a1);
-        v1->mode = entity_mode_419420;
+        entity_load_move_mobd(a1);
+        v1->mode = entity_mode_move_tanker;
     }
     v5 = v1->stats;
     if (v5->is_infantry)
@@ -5217,7 +5217,7 @@ void entity_419560_on_death(Entity *a1)
     if (v10)
         v10->z_index = v1->sprite->z_index + 256;
     entity_438D90_on_death_explosion(v1);
-    entity_load_mobd_3(v1);
+    entity_load_idle_mobd(v1);
 
 LABEL_15:
     script_445370_yield_to_main_thread(v1->script, 0x80000000, 60);
@@ -5240,7 +5240,7 @@ void entity_mode_419760_infantry_destroyed(Entity *a1)
 {
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
-    entity_load_mobd_2(a1);
+    entity_load_move_mobd(a1);
 
     a1->mode = entity_mode_4197E0_infantry;
     a1->destroyed = 1;
@@ -5259,7 +5259,7 @@ void entity_mode_4197E0_infantry(Entity *a1)
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
     v3 = a1->sprite;
-    entity_load_mobd_2(a1, a1->current_mobd_lookup_idx + 64);
+    entity_load_move_mobd(a1, a1->current_mobd_lookup_idx + 64);
     script_445370_yield_to_main_thread(v1->script, 0x10000000, 0);
 }
 

@@ -935,7 +935,7 @@ void entity_425A50_setup_spawn(Entity *a1, void *spawn_param, int spawn_type)
 
     v3 = a1;
     v4 = spawn_param;
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
     v5 = v3->sprite;
     v3->mode = entity_mode_425920_scout;
     v5->x_speed = 0;
@@ -982,7 +982,7 @@ void UNIT_Handler_Scout(Script *a1)
         v1 = entity_list_create(a1);
         entity_init_infantry(v1);
         entity_set_draw_handlers(v1);
-        entity_load_mobd_3(v1);
+        entity_load_idle_mobd(v1);
         v2 = v1->sprite;
         v1->mode = entity_mode_425920_scout;
         v2->x_speed = 0;

@@ -125,56 +125,56 @@ void entity_load_mobd_4(Entity *entity)
     }
 }
 
-void entity_load_mobd_3(Entity *entity, int idx)
+void entity_load_idle_mobd(Entity *entity, int idx)
 {
     entity->current_mobd_lookup_idx = idx;
-    entity_load_mobd_3(entity);
+    entity_load_idle_mobd(entity);
 }
 
-void entity_load_mobd_3(Entity *entity)
+void entity_load_idle_mobd(Entity *entity)
 {
-    if (entity->stats->mobd_lookup_offset_3 != -1)
+    if (entity->stats->mobd_lookup_offset_idle != -1)
     {
         sprite_4272E0_load_mobd_item(
             entity->sprite,
-            entity->stats->mobd_lookup_offset_3,
+            entity->stats->mobd_lookup_offset_idle,
             _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
     }
 }
 
-void entity_load_mobd_2(Entity *entity, int idx)
+void entity_load_move_mobd(Entity *entity, int idx)
 {
     entity->current_mobd_lookup_idx = idx;
-    entity_load_mobd_2(entity);
+    entity_load_move_mobd(entity);
 }
 
-void entity_load_mobd_2(Entity *entity)
+void entity_load_move_mobd(Entity *entity)
 {
-    if (entity->stats->mobd_lookup_offset_2 != -1)
+    if (entity->stats->mobd_lookup_offset_move != -1)
     {
         sprite_4272E0_load_mobd_item(
             entity->sprite,
-            entity->stats->mobd_lookup_offset_2,
+            entity->stats->mobd_lookup_offset_move,
             _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
     }
 }
 
-void entity_load_mobd_1(Entity *entity)
+void entity_load_attack_mobd(Entity *entity)
 {
-    if (entity->stats->mobd_lookup_offset_1 != -1)
+    if (entity->stats->mobd_lookup_offset_attack != -1)
     {
         sprite_4272E0_load_mobd_item(
             entity->sprite,
-            entity->stats->mobd_lookup_offset_1,
+            entity->stats->mobd_lookup_offset_attack,
             _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
     }
 }
 
 
-void entity_load_mobd_1(Entity *entity, int idx)
+void entity_load_attack_mobd(Entity *entity, int idx)
 {
     entity->current_mobd_lookup_idx = idx;
-    entity_load_mobd_1(entity);
+    entity_load_attack_mobd(entity);
 }
 
 //----- (0041A270) --------------------------------------------------------

@@ -584,12 +584,12 @@ struct Sprite
 	int y_speed_factor_1;
 	int z_speed_factor_1;
 
-	DataMobdItem *_inside_mobd_item;
-	DataMobdItem *_inside_mobd_item_2;
+    DataMobdItem_stru0 **_inside_mobd_item;
+    DataMobdItem_stru0 **_inside_mobd_item_2;
 	DataMobdItem_stru0 *_54_inside_mobd_ptr4;
 	Sprite_stru58 *pstru58;
 	stru7 *pstru7;
-	int _60_mobd_field_0_int;
+    int _60_mobd_field_0_int;
 	int field_64;
 	DrawJob *drawjob;
 	Script *script;
@@ -1007,9 +1007,10 @@ struct DataMobd
 /* 334 */
 struct DataMobdItem
 {
-	DataMobdItem_stru0 *ptr_0;
-	DataMobdItem_stru0 *ptr_4;
-	int field_8;
+	//DataMobdItem_stru0 *ptr_0;
+	//DataMobdItem_stru0 *ptr_4;
+	//int field_8;
+    DataMobdItem_stru0 *_[1]; // variable size
 };
 
 /* 336 */
@@ -1733,7 +1734,7 @@ struct DataMobdItem_stru0
 	int y_offset;
 	int field_8;
 	MobdSprtImage *sprt;
-	void *ptr_10;
+    Sprite_stru58 *ptr_10;
 	SOUND_ID _14_sound_id;
 	DataMobdItem_stru1 *field_18;
 };
@@ -1796,6 +1797,14 @@ struct DataMobdItem_stru1
 	int y_offset;
 	int field_C;
 	int field_10;
+};
+
+struct DataMobdItem_stru2
+{
+    int flags;
+    DataMobdItem_stru0 *pstru0;
+    int field_8;
+
 };
 
 /* 397 */
@@ -1924,9 +1933,9 @@ struct SpriteSerialized
 	int x_speed;
 	int y_speed;
 	int z_speed;
-	int _inside_mobd_item;
+    int _inside_mobd_item;
 	int _54_inside_mobd_ptr4;
-	int _60_mobd_field_0;
+    int _60_mobd_field_0;
 };
 
 /* 414 */
@@ -1940,7 +1949,7 @@ struct EntitySerialized
 	int entity_task_field_14;
 	int entity_task_field_24;
 	int entity_task_field_28;
-	int entity_task_field_2C;
+    int entity_task_field_2C;
 	enum UNIT_ID unit_stats_idx;
 	int player_side;
 	enum SCRIPT_TYPE turret_sprite_task_event;
@@ -1950,7 +1959,7 @@ struct EntitySerialized
 	int turret_sprite_task_field_14;
 	int turret_sprite_task_field_24;
 	int turret_sprite_task_field_28;
-	int turret_sprite_task_field_2C;
+    int turret_sprite_task_field_2C;
 	SpriteSerialized turret_sprite;
 	int turret_C_entity_id;
 	int turret_mode;

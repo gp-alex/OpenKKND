@@ -192,12 +192,12 @@ bool entity_is_21st_century(Entity *entity);
 
 bool entity_is_xl_vehicle(Entity *entity);
 
-void entity_load_mobd_1(Entity *entity);
-void entity_load_mobd_1(Entity *entity, int idx);
-void entity_load_mobd_2(Entity *entity);
-void entity_load_mobd_2(Entity *entity, int idx);
-void entity_load_mobd_3(Entity *entity);
-void entity_load_mobd_3(Entity *entity, int idx);
+void entity_load_attack_mobd(Entity *entity);
+void entity_load_attack_mobd(Entity *entity, int idx);
+void entity_load_move_mobd(Entity *entity);
+void entity_load_move_mobd(Entity *entity, int idx);
+void entity_load_idle_mobd(Entity *entity);
+void entity_load_idle_mobd(Entity *entity, int idx);
 void entity_load_mobd_4(Entity *entity);
 
 int entity_get_mobd_speed_x(Entity *entity);

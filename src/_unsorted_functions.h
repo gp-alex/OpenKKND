@@ -118,7 +118,7 @@ bool entity_405750_tanker_convoy(Entity *a1);
 void UNIT_Handler_OilTankerConvoy(Script *a1);
 bool render_string_4059C0(RenderString *a1, int a2, int a3);
 void render_string_405A20(RenderString *a1, int a2, int y);
-void render_string_405A60(RenderString *a1, const char *str, void *custom_font, int y);
+void render_string_405A60(RenderString *a1, const char *str, DataMobdItem *custom_font, int y);
 void script_credits_or_custom_mission_briefing_loop(Script *a1);
 bool cplc_init();
 bool cplc_select(int id);
@@ -325,9 +325,9 @@ void entity_mode_415980(Entity *a1);
 void entity_415A20(Entity *a1);
 void entity_mode_415A60_vehicle_rotate(Entity *a1);
 void entity_mode_move_attack(Entity *a1);
-void entity_415D30(Entity *a1);
+void entity_mode_attack_move_1_415D30(Entity *a1);
 void entity_mode_416060(Entity *a1);
-void entity_mode_4165C0(Entity *a1);
+void entity_mode_attack_move_2_5_4165C0(Entity *a1);
 void entity_mode_416790_vehicle_move(Entity *a1);
 void entity_mode_416A70_oiltanker(Entity *a1);
 void entity_mode_416CD0(Entity *a1);
@@ -335,13 +335,13 @@ void entity_mode_416EB0(Entity *a1);
 void entity_mode_417100(Entity *a1);
 void entity_4172D0(Entity *a1);
 void entity_mode_417360_infantry(Entity *a1);
-void entity_417550(Entity *a1);
+void entity_mode_attack_move_4_417550(Entity *a1);
 void entity_mode_417670(Entity *a1);
 void entity_417810(Entity *a1);
 void entity_417980(Entity *a1);
 void entity_mode_417A20(Entity *a1);
 void entity_mode_417BD0(Entity *a1);
-void entity_mode_417E60(Entity *a1);
+void entity_mode_attack_move_4_order_3_7_417E60(Entity *a1);
 void entity_mode_417F50(Entity *a1);
 void entity_417F60(Entity *a1);
 void entity_mode_417FC0(Entity *a1);
@@ -363,7 +363,7 @@ void entity_mode_419180(Entity *a1);
 void entity_mode_419230(Entity *a1);
 char *entity_4192F0(Entity *a1);
 void entity_mode_419390_oiltanker(Entity *a1);
-void entity_mode_419420(Entity *a1);
+void entity_mode_move_tanker(Entity *a1);
 void entity_419560_on_death(Entity *a1);
 void entity_419720(Entity *a1);
 void entity_mode_419760_infantry_destroyed(Entity *a1);
@@ -533,7 +533,7 @@ bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, i
 void sub_42C9C0(Sprite **sprite_list);
 void script_42D030_sidebar_tooltips(Script *a1);
 void _41AC50_read_keyboard_input___42D220_handler(const char *a1, int a2);
-char render_string_42D260(RenderString *a1, const char *a2, int a3); // idb
+char render_string_42D260(RenderString *a1, const char *a2, DataMobdItem *custom_font); // idb
 void script_42D390_cursors(Script *a1); // idb
 int _47A660_list_reset();
 int _42D560_get_mobd_lookup_id_rotation(int x, int y); // idb
@@ -659,7 +659,7 @@ void _4389A0_prolly_create_map_damage_decal(int map_x, int map_y); // idb
 void _438B40_reset_explosions();
 int _438B50_can_create_more_explosions();
 void decrease_num_explosions();
-void script_438B80_on_death_explosion(Script *task); // idb
+void script_438B80_on_death_infantry_gore(Script *task); // idb
 void script_438C20_on_death_explosion(Script *a1); // idb
 void entity_438D90_on_death_explosion(Entity *a1);
 void script_438F50_explosions(Script *a1); // idb
@@ -774,7 +774,7 @@ int script_443780(Script *a1, int a2, int a3, int a4);
 void script_443C40(Script *a1, int cplc_item);
 void script_443D40_mobd20(Script *a1);
 int _443D60_strlen_before_newline(const char *str);
-stru8 *render_string_443D80(RenderString *a1, const char *a2, int a3); // idb
+stru8 *render_string_443D80(RenderString *a1, const char *a2, DataMobdItem *custom_font); // idb
 int render_string_443EE0(RenderString *a1, int a2, int a3); // idb
 void netz_443F10();
 int sub_443F20();
@@ -800,7 +800,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
 void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result);
 void coroutine_main();
 bool render_string_list_alloc();
-void render_string_445770(RenderString *a1, const char *text, int a3); // idb
+void render_string_445770(RenderString *a1, const char *text, DataMobdItem *custom_font); // idb
 RenderString *render_string_create(stru1_draw_params *a1, DataMobdItem *custom_font, int a3, int a4, int a5, int a6, int z_index, int a8, int a9); // idb
 void render_string_list_remove(RenderString *a1);
 int render_string_445AE0(RenderString *a1);

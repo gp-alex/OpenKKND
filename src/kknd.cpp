@@ -1375,7 +1375,7 @@ DrawJob *entity_402BB0_set_arrive_handler(Entity *a1, void(*mode_arrive)(Entity 
 
 	v2 = a1;
 	mOde_arrive = mode_arrive;
-	sprite_4272E0_load_mobd_item(a1->sprite, a1->stats->mobd_lookup_offset_1, 0);
+	sprite_4272E0_load_mobd_item(a1->sprite, a1->stats->mobd_lookup_offset_attack, 0);
 	if (v2->player_side == player_side)
 		script_trigger_event(v2->script, EVT_MSG_1529_ai, v2, task_mobd17_cursor);
 	v4 = v2->sprite;
@@ -3207,7 +3207,7 @@ bool entity_405750_tanker_convoy(Entity *a1)
 	v5 = v1->sprite;
 	v1->mode = entity_mode_405690;
 	v1->mode_return = entity_mode_405690;
-    entity_load_mobd_3(v1, 192);
+    entity_load_idle_mobd(v1, 192);
 	v1->_134_param__unitstats_after_mobile_outpost_plant = 600;
 	v5->x_speed = -64;
 	v1->sprite->y_speed = 0;
@@ -3266,7 +3266,7 @@ void UNIT_Handler_OilTankerConvoy(Script *a1)
             v1->sprite_y_2 = entity_transform_y(v1, v4->y);
 			v1->entity_8 = 0;
 			v1->mode_arrive = 0;
-            entity_load_mobd_3(v1, 192);
+            entity_load_idle_mobd(v1, 192);
 			entity_mode_move_attack(v1);
 		}
 	}
@@ -3343,7 +3343,7 @@ void render_string_405A20(RenderString *a1, int a2, int y)
 }
 
 //----- (00405A60) --------------------------------------------------------
-void render_string_405A60(RenderString *a1, const char *str, void *custom_font, int y)
+void render_string_405A60(RenderString *a1, const char *str, DataMobdItem *custom_font, int y)
 {
 	RenderString *v4; // edi@1
 	const char *v5; // ebp@1
@@ -3354,8 +3354,8 @@ void render_string_405A60(RenderString *a1, const char *str, void *custom_font, 
 	int v10; // eax@6
 	stru8 *v11; // ecx@6
 	int v12; // edx@6
-	int v13; // eax@13
-	int v14; // eax@15
+    DataMobdItem_stru0 *v13; // eax@13
+    DataMobdItem_stru1 *v14; // eax@15
 	bool v15; // zf@18
 	int v16; // [sp+Ch] [bp-8h]@11
 	int v17; // [sp+10h] [bp-4h]@1
@@ -3399,15 +3399,15 @@ void render_string_405A60(RenderString *a1, const char *str, void *custom_font, 
 				do
 				{
 					if (custom_font)
-						v13 = *((_DWORD *)custom_font + *v5 + 1);
+						v13 = custom_font->_[*v5 + 1];
 					else
-						v13 = *((_DWORD *)&v4->mobd_font__see_sub405A60->ptr_4 + *v5);
-					v11->drawjob->job_details.image = *(void **)(v13 + 12);
-					v11->drawjob->job_details.y = y - *(_DWORD *)(v13 + 4);
-					v11->drawjob->job_details.x = x - *(_DWORD *)v13;
-					v14 = *(_DWORD *)(v13 + 24);
+						v13 = v4->mobd_font__see_sub405A60->_[1 + *v5];
+					v11->drawjob->job_details.image = v13->sprt;
+					v11->drawjob->job_details.y = y - v13->y_offset;
+					v11->drawjob->job_details.x = x - v13->x_offset;
+					v14 = v13->field_18;
 					if (v14)
-						x = v11->drawjob->job_details.x + (*(_DWORD *)(v14 + 4) >> 8);
+						x = v11->drawjob->job_details.x + (v14->x_offset >> 8);
 					else
 						x = v11->drawjob->job_details.x + 14;
 					v11 = v11->next;
@@ -4640,7 +4640,7 @@ void entity_mode_406DC0_mobilederrick(Entity *a1)
 	{
 		v1->sprite->x_speed = 0;
 		v1->sprite->y_speed = 0;
-        entity_load_mobd_3(v1);
+        entity_load_idle_mobd(v1);
 		if (!entity_advance_mobd_rotation(&v1->current_mobd_lookup_idx, 160, v1->stats->turning_speed))
 			v1->mode = entity_mode_plant_mobile_derrick;
 		script_445370_yield_to_main_thread(v1->script, 0xC0000000, 1);
@@ -4997,7 +4997,7 @@ void entity_mode_4081C0_drillrig(Entity *a1)
 	if (v2)
 	{
 		v2->turret_sprite->drawjob->flags |= 0x40000000u;
-        entity_load_mobd_1(a1);
+        entity_load_attack_mobd(a1);
 		v3 = v1->script;
 		v1->mode = entity_mode_408260_drillrig;
 		script_445370_yield_to_main_thread(v3, 0x10000000, 0);
@@ -13473,7 +13473,7 @@ LABEL_156:
 //----- (0041DA20) --------------------------------------------------------
 bool GAME_Save_PackSprite(Sprite *a1, SpriteSerialized *out)
 {
-	DataMobdItem *v2; // eax@1
+    DataMobdItem_stru0 **v2; // eax@1
 	DataMobdItem_stru0 *v3; // eax@4
 	BOOL result; // eax@5
 
@@ -13486,7 +13486,7 @@ bool GAME_Save_PackSprite(Sprite *a1, SpriteSerialized *out)
 	out->z_speed = a1->z_speed;
 	v2 = a1->_inside_mobd_item;
 	if (v2)
-		out->_inside_mobd_item = (char *)v2 - (char *)currently_running_lvl_mobd[out->mobd_idx].items;
+		out->_inside_mobd_item = (unsigned int)v2 - (unsigned int)currently_running_lvl_mobd[out->mobd_idx].items;
 	else
 		out->_inside_mobd_item = -1;
 	v3 = a1->_54_inside_mobd_ptr4;
@@ -14280,10 +14280,9 @@ Sprite *GAME_Load_UnpackSprite(SpriteSerialized *serialized)
 	Sprite *v3; // esi@1
 	int v4; // edx@2
 	int v5; // eax@3
-	char *v6; // ecx@4
-	DataMobdItem *v7; // eax@4
+    DataMobdItem_stru0 **v7; // eax@4
 	DataMobdItem_stru0 *v8; // edx@5
-	DataMobdItem *v9; // eax@5
+    DataMobdItem_stru0 **v9; // eax@5
 	int v11; // eax@7
 	char *v12; // eax@8
 
@@ -14318,18 +14317,17 @@ Sprite *GAME_Load_UnpackSprite(SpriteSerialized *serialized)
 		v3->_60_mobd_field_0_int = v1->_60_mobd_field_0;
 		return v3;
 	}
-	v6 = (char *)currently_running_lvl_mobd[v1->mobd_idx].items + v5;
-	v7 = (DataMobdItem *)((char *)v3->_inside_mobd_item + 4);
-	v3->_54_inside_mobd_ptr4 = (DataMobdItem_stru0 *)v6;
+	v7 = v3->_inside_mobd_item + 1;
+	v3->_54_inside_mobd_ptr4 = (DataMobdItem_stru0 *)&currently_running_lvl_mobd[v1->mobd_idx].items->_[v5 / 4];
 	v3->_inside_mobd_item_2 = v7;
-	if ((char *)v7->ptr_0 != v6)
+	if (v7[0] != v3->_54_inside_mobd_ptr4)
 	{
 		do
 		{
 			v8 = v3->_54_inside_mobd_ptr4;
-			v9 = (DataMobdItem *)((char *)v3->_inside_mobd_item_2 + 4);
+			v9 = v3->_inside_mobd_item_2 + 1;
 			v3->_inside_mobd_item_2 = v9;
-		} while (v9->ptr_0 != v8);
+		} while (v9[0] != v8);
 	}
 	v3->pstru58 = (Sprite_stru58 *)v3->_54_inside_mobd_ptr4->ptr_10;
 	v3->_60_mobd_field_0_int = v1->_60_mobd_field_0;
@@ -20300,20 +20298,16 @@ void sprite_list_update_positions()
 //----- (004272A0) --------------------------------------------------------
 void sprite_load_mobd(Sprite *a1, int offset)
 {
-	DataMobdItem *v2; // eax@2
-	int v3; // eax@2
-	DataMobdItem *v4; // edx@4
-
 	if (a1)
 	{
-		v2 = (DataMobdItem *)((char *)currently_running_lvl_mobd[a1->mobd_id].items + offset);
+        DataMobdItem_stru0 **v2 = &currently_running_lvl_mobd[a1->mobd_id].items->_[offset / 4];
 		a1->_inside_mobd_item = v2;
-		v3 = (int)v2->ptr_0;
-		if (v3)
-			a1->_60_mobd_field_0_int = v3;
-		v4 = a1->_inside_mobd_item;
+        a1->_inside_mobd_item_2 = v2;
+
+		if (*v2)
+			a1->_60_mobd_field_0_int = ((DataMobdItem_stru2 *)v2)->flags;
 		a1->field_64 = -1;
-		a1->_inside_mobd_item_2 = v4;
+
 		sprite_427460_init_mobd_item(a1);
 	}
 }
@@ -20321,22 +20315,25 @@ void sprite_load_mobd(Sprite *a1, int offset)
 //----- (004272E0) --------------------------------------------------------
 void sprite_4272E0_load_mobd_item(Sprite *a1, int lookup_table_offset, int lookup_idx)
 {
-	DataMobdItem *v3; // eax@1
-	int v4; // eax@2
-	DataMobdItem *v5; // edx@4
+    auto lookup_table = (DataMobdItem_stru2 **)(
+        (char *)&currently_running_lvl_mobd[a1->mobd_id].items->_ + lookup_table_offset
+    );
+    auto v = lookup_table[lookup_idx];
 
-	v3 = *(DataMobdItem **)((char *)&currently_running_lvl_mobd[a1->mobd_id].items->ptr_0
-		+ 4 * lookup_idx
-		+ lookup_table_offset);
+    DataMobdItem_stru0 **v3; // eax@1
+	v3 = *(DataMobdItem_stru0 ***)(
+        (char *)&currently_running_lvl_mobd[a1->mobd_id].items->_
+            + lookup_table_offset
+            + 4 * lookup_idx
+        );
+
 	a1->_inside_mobd_item = v3;
 	if (v3)
 	{
-		v4 = (int)&v3->ptr_0->x_offset;
-		if (v4)
-			a1->_60_mobd_field_0_int = v4;
-		v5 = a1->_inside_mobd_item;
+		if (v3[0])
+			a1->_60_mobd_field_0_int = (int)v3[0];
 		a1->field_64 = -1;
-		a1->_inside_mobd_item_2 = v5;
+		a1->_inside_mobd_item_2 = a1->_inside_mobd_item;
 		sprite_427460_init_mobd_item(a1);
 	}
 }
@@ -20344,13 +20341,10 @@ void sprite_4272E0_load_mobd_item(Sprite *a1, int lookup_table_offset, int looku
 //----- (00427320) --------------------------------------------------------
 void sprite_427320_load_mobd_item_sound(Sprite *a1, int offset)
 {
-	DataMobdItem *v2; // esi@1
-	DataMobdItem *v3; // eax@3
-	int v4; // eax@3
-	DataMobdItem *v5; // edx@5
-	DataMobdItem *v6; // edx@6
-	DataMobdItem *v7; // eax@6
-	DataMobdItem_stru0 *v8; // eax@6
+    DataMobdItem_stru0 **v2; // esi@1
+    DataMobdItem_stru0 **v3; // eax@3
+    DataMobdItem_stru0 **v6; // edx@6
+    DataMobdItem_stru0 **v7; // eax@6
 	DataMobdItem_stru0 *v9; // edx@6
 	Sprite_stru58 *v10; // eax@6
 	enum SOUND_ID v11; // edx@6
@@ -20358,14 +20352,13 @@ void sprite_427320_load_mobd_item_sound(Sprite *a1, int offset)
 	v2 = a1->_inside_mobd_item;
 	if (v2)
 	{
-		v6 = (DataMobdItem *)((char *)currently_running_lvl_mobd[a1->mobd_id].items + offset);
-		v7 = (DataMobdItem *)((char *)v6 + (unsigned int)((char *)a1->_inside_mobd_item_2 - (char *)v2));
+		v6 = (DataMobdItem_stru0 **)((char *)currently_running_lvl_mobd[a1->mobd_id].items + offset);
+		v7 = (DataMobdItem_stru0 **)((char *)v6 + (unsigned int)((char *)a1->_inside_mobd_item_2 - (char *)v2));
 		a1->_inside_mobd_item = v6;
 		a1->_inside_mobd_item_2 = v7;
-		v8 = v7->ptr_0;
-		a1->_54_inside_mobd_ptr4 = v8;
+		a1->_54_inside_mobd_ptr4 = v7[0];
 		v9 = a1->_54_inside_mobd_ptr4;
-		v10 = (Sprite_stru58 *)v8->ptr_10;
+		v10 = (Sprite_stru58 *)v7[4];
 		a1->field_88_unused = 1;
 		a1->pstru58 = v10;
 		v11 = v9->_14_sound_id;
@@ -20374,14 +20367,12 @@ void sprite_427320_load_mobd_item_sound(Sprite *a1, int offset)
 	}
 	else if (a1)
 	{
-		v3 = (DataMobdItem *)((char *)currently_running_lvl_mobd[a1->mobd_id].items + offset);
+		v3 = (DataMobdItem_stru0 **)((char *)currently_running_lvl_mobd[a1->mobd_id].items + offset);
 		a1->_inside_mobd_item = v3;
-		v4 = (int)&v3->ptr_0->x_offset;
-		if (v4)
-			a1->_60_mobd_field_0_int = v4;
-		v5 = a1->_inside_mobd_item;
+        a1->_inside_mobd_item_2 = a1->_inside_mobd_item;
+		if (v3[0])
+			a1->_60_mobd_field_0_int = (int)v3[0];
 		a1->field_64 = -1;
-		a1->_inside_mobd_item_2 = v5;
 		sprite_427460_init_mobd_item(a1);
 	}
 }
@@ -20389,14 +20380,11 @@ void sprite_427320_load_mobd_item_sound(Sprite *a1, int offset)
 //----- (004273B0) --------------------------------------------------------
 void sprite_4273B0_load_mobd_item_sound(Sprite *a1, int mobd_lookup_offset, int mobd_lookup_id)
 {
-	DataMobdItem *v3; // esi@1
-	DataMobdItem *v4; // eax@2
-	int v5; // eax@3
-	DataMobdItem *v6; // edx@5
-	DataMobdItem *v7; // eax@6
-	DataMobdItem *v8; // edx@6
-	DataMobdItem *v9; // eax@7
-	DataMobdItem_stru0 *v10; // eax@7
+    DataMobdItem_stru0 **v3; // esi@1
+    DataMobdItem_stru0 **v4; // eax@2
+    DataMobdItem_stru0 **v7; // eax@6
+    DataMobdItem_stru0 **v8; // edx@6
+    DataMobdItem_stru0 **v9; // eax@7
 	DataMobdItem_stru0 *v11; // edx@7
 	Sprite_stru58 *v12; // eax@7
 	enum SOUND_ID v13; // edx@7
@@ -20404,19 +20392,19 @@ void sprite_4273B0_load_mobd_item_sound(Sprite *a1, int mobd_lookup_offset, int 
 	v3 = a1->_inside_mobd_item;
 	if (v3)
 	{
-		v7 = (DataMobdItem *)((char *)a1->_inside_mobd_item_2 - (char *)v3);
-		v8 = *(DataMobdItem **)((char *)&currently_running_lvl_mobd[a1->mobd_id].items->ptr_0
+		v7 = (DataMobdItem_stru0 **)((char *)a1->_inside_mobd_item_2 - (char *)v3);
+		v8 = *(DataMobdItem_stru0 ***)((char *)&currently_running_lvl_mobd[a1->mobd_id].items->_
 			+ 4 * mobd_lookup_id
 			+ mobd_lookup_offset);
 		a1->_inside_mobd_item = v8;
 		if (v8)
 		{
-			v9 = (DataMobdItem *)((char *)v7 + (_DWORD)v8);
+			v9 = (DataMobdItem_stru0 **)((char *)v7 + (_DWORD)v8);
 			a1->_inside_mobd_item_2 = v9;
-			v10 = v9->ptr_0;
-			a1->_54_inside_mobd_ptr4 = v10;
+
+			a1->_54_inside_mobd_ptr4 = v9[0];
 			v11 = a1->_54_inside_mobd_ptr4;
-			v12 = (Sprite_stru58 *)v10->ptr_10;
+			v12 = (Sprite_stru58 *)(*v9)->ptr_10;
 			a1->field_88_unused = 1;
 			a1->pstru58 = v12;
 			v13 = v11->_14_sound_id;
@@ -20426,18 +20414,16 @@ void sprite_4273B0_load_mobd_item_sound(Sprite *a1, int mobd_lookup_offset, int 
 	}
 	else
 	{
-		v4 = *(DataMobdItem **)((char *)&currently_running_lvl_mobd[a1->mobd_id].items->ptr_0
+		v4 = *(DataMobdItem_stru0 ***)((char *)&currently_running_lvl_mobd[a1->mobd_id].items->_
 			+ 4 * mobd_lookup_id
 			+ mobd_lookup_offset);
 		a1->_inside_mobd_item = v4;
 		if (v4)
 		{
-			v5 = (int)&v4->ptr_0->x_offset;
-			if (v5)
-				a1->_60_mobd_field_0_int = v5;
-			v6 = a1->_inside_mobd_item;
+			if (v4[0])
+				a1->_60_mobd_field_0_int = (int)v4[0];
 			a1->field_64 = -1;
-			a1->_inside_mobd_item_2 = v6;
+			a1->_inside_mobd_item_2 = a1->_inside_mobd_item;
 			sprite_427460_init_mobd_item(a1);
 		}
 	}
@@ -20456,42 +20442,38 @@ void sprite_release_mobd_item(Sprite *a1)
 void sprite_427460_init_mobd_item(Sprite *pstru6)
 {
 	Sprite *v1; // esi@1
-	DataMobdItem *v2; // ecx@1
 	int v3; // eax@2
-    DataMobdItem_stru0 **v4; // eax@3
+    //DataMobdItem_stru0 **v4; // eax@3
 	DataMobdItem_stru0 *v5; // ecx@3
 	Script *v6; // eax@4
-	DataMobdItem *v7; // eax@7
-	DataMobdItem_stru0 *v8; // eax@7
-	Sprite_stru58 *v9; // edx@7
+    DataMobdItem_stru0 *v7; // eax@7
 	Script *v10; // eax@7
-	DataMobdItem_stru0 *v11; // eax@9
 	DataMobdItem_stru0 *v12; // eax@10
 	enum SOUND_ID v13; // edx@10
 	DataMobdItem_stru1 *v14; // ecx@12
 	Script *v15; // eax@13
 
 	v1 = pstru6;
-	v2 = pstru6->_inside_mobd_item_2;
+    DataMobdItem_stru2 *v2 = (DataMobdItem_stru2 *)pstru6->_inside_mobd_item_2;
 	if (v2)
 	{
 		v3 = v1->field_64;
 		if (v3 < 0)
 		{
 			v1->field_64 = v3 & 0x7FFFFFFF;
-			v4 = &v2->ptr_4;
-			v5 = v2->ptr_4;
+
+            v5 = v2->pstru0;
 			if (v5)
 			{
 				if (v5 == (DataMobdItem_stru0 *)-1)
 				{
-					v7 = (DataMobdItem *)&v1->_inside_mobd_item->ptr_4;
-					v1->_inside_mobd_item_2 = v7;
-					v8 = v7->ptr_0;
-					v1->_54_inside_mobd_ptr4 = v8;
-					v9 = (Sprite_stru58 *)v8->ptr_10;
+                    v1->_inside_mobd_item_2 = v1->_inside_mobd_item + 1;
+
+					v7 = v1->_inside_mobd_item_2[0];
+					v1->_54_inside_mobd_ptr4 = v7;
+
 					v10 = v1->script;
-					v1->pstru58 = v9;
+					v1->pstru58 = (Sprite_stru58 *)v7->ptr_10;
 					if (v10)
 					{
 						v10->flags_20 |= 0x10000000u;
@@ -20500,10 +20482,9 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
 				}
 				else
 				{
-					v1->_inside_mobd_item_2 = (DataMobdItem *)&v1->_inside_mobd_item_2->ptr_4;
-					v11 = *v4;
-					v1->_54_inside_mobd_ptr4 = v11;
-					v1->pstru58 = (Sprite_stru58 *)v11->ptr_10;
+					v1->_inside_mobd_item_2 = v1->_inside_mobd_item_2 + 1;
+					v1->_54_inside_mobd_ptr4 = v5;
+					v1->pstru58 = (Sprite_stru58 *)v5->ptr_10;
 				}
 				v12 = v1->_54_inside_mobd_ptr4;
 				v1->field_88_unused = 1;
@@ -21700,6 +21681,7 @@ void script_42D030_sidebar_tooltips(Script *a1)
 					v7 = 1;
 					if (v6 == 87)
 					{
+                        // _447310_minimap inlined?
 						if (*(DataMobdItem **)(*((_DWORD *)v3 + 9) + 76) == &currently_running_lvl_mobd[*(_DWORD *)(*((_DWORD *)v3 + 9) + 12)].items[165])
 							v7 = 0;
 						v1 = 0;
@@ -21769,7 +21751,7 @@ void _41AC50_read_keyboard_input___42D220_handler(const char *a1, int a2)
 }
 
 //----- (0042D260) --------------------------------------------------------
-char render_string_42D260(RenderString *a1, const char *a2, int a3)
+char render_string_42D260(RenderString *a1, const char *a2, DataMobdItem *a3)
 {
 	RenderString *v3; // edi@1
 	const char *v4; // ebx@1
@@ -21783,8 +21765,8 @@ char render_string_42D260(RenderString *a1, const char *a2, int a3)
 	int v12; // ebp@6
 	int v13; // eax@6
 	int v14; // edx@6
-	int v15; // eax@12
-	int v16; // eax@14
+    DataMobdItem_stru0 *v15; // eax@12
+    DataMobdItem_stru1 *v16; // eax@14
 	bool v17; // zf@17
 	int v19; // [sp+10h] [bp-Ch]@2
 	int v20; // [sp+14h] [bp-8h]@6
@@ -21835,15 +21817,15 @@ char render_string_42D260(RenderString *a1, const char *a2, int a3)
 				do
 				{
 					if (a3)
-						v15 = *(_DWORD *)(a3 + 4 * *v4 + 4);
+						v15 = a3->_[*v4 + 1];
 					else
-						v15 = *((_DWORD *)&v3->mobd_font__see_sub405A60->ptr_4 + *v4);
-					v10->drawjob->job_details.image = *(void **)(v15 + 12);
-					v10->drawjob->job_details.y = v20 - *(_DWORD *)(v15 + 4);
-					v10->drawjob->job_details.x = v8 - *(_DWORD *)v15;
-					v16 = *(_DWORD *)(v15 + 24);
+						v15 = v3->mobd_font__see_sub405A60->_[1 + *v4];
+					v10->drawjob->job_details.image = v15->sprt;
+					v10->drawjob->job_details.y = v20 - v15->y_offset;
+					v10->drawjob->job_details.x = v8 - v15->x_offset;
+					v16 = v15->field_18;
 					if (v16)
-						v8 = v10->drawjob->job_details.x + (*(_DWORD *)(v16 + 4) >> 8);
+						v8 = v10->drawjob->job_details.x + (v16->x_offset >> 8);
 					else
 						v8 = v10->drawjob->job_details.x + 8;
 					v10 = v10->next;
@@ -31760,7 +31742,7 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 			return 2;
 		if (v4 & 8 && !(v4 & 0x20))
 		{
-			if (v6->_inside_mobd_item == currently_running_lvl_mobd[v6->mobd_id].items + 2)
+			if (v6->_inside_mobd_item == &currently_running_lvl_mobd[v6->mobd_id].items->_[2])
 				sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 1);
 			else
 				sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 2);
@@ -31859,7 +31841,7 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 				return 2;
 			if (v9 & 8)
 			{
-				if (v7->_inside_mobd_item == currently_running_lvl_mobd[v7->mobd_id].items + 142)
+				if (v7->_inside_mobd_item == &currently_running_lvl_mobd[v7->mobd_id].items->_[142])
 					sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 1);
 				else
 					sprite_4272E0_load_mobd_item(v5, lookup_table_offset, 2);
@@ -31959,7 +31941,7 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 				return 2;
 			if (v9 & 8)
 			{
-				if (v7->_inside_mobd_item == currently_running_lvl_mobd[v7->mobd_id].items + 142)
+				if (v7->_inside_mobd_item == &currently_running_lvl_mobd[v7->mobd_id].items->_[142])
 					sprite_4272E0_load_mobd_item(v5, v14, 1);
 				else
 					sprite_4272E0_load_mobd_item(v5, v14, 2);
@@ -32037,7 +32019,7 @@ int _443D60_strlen_before_newline(const char *str)
 }
 
 //----- (00443D80) --------------------------------------------------------
-stru8 *render_string_443D80(RenderString *a1, const char *a2, int a3)
+stru8 *render_string_443D80(RenderString *a1, const char *a2, DataMobdItem *a3)
 {
 	stru8 *result; // eax@1
 	const char *v4; // edi@1
@@ -32050,8 +32032,8 @@ stru8 *render_string_443D80(RenderString *a1, const char *a2, int a3)
 	int v11; // ebp@12
 	int v12; // ebx@12
 	int v13; // edi@12
-	int v14; // edi@19
-	int v15; // edi@21
+    DataMobdItem_stru0 *v14; // edi@19
+    DataMobdItem_stru1 *v15; // edi@21
 	bool v16; // zf@24
 	const char *v17; // [sp+Ch] [bp-Ch]@1
 	stru8 *v18; // [sp+10h] [bp-8h]@8
@@ -32115,15 +32097,15 @@ stru8 *render_string_443D80(RenderString *a1, const char *a2, int a3)
 					do
 					{
 						if (a3)
-							v14 = *(_DWORD *)(a3 + 4 * *v4 + 4);
+							v14 = a3->_[*v4 + 1];
 						else
-							v14 = *((_DWORD *)&a1->mobd_font__see_sub405A60->ptr_4 + *v4);
-						result->drawjob->job_details.image = *(void **)(v14 + 12);
-						result->drawjob->job_details.y = v11 - *(_DWORD *)(v14 + 4);
-						result->drawjob->job_details.x = v7 - *(_DWORD *)v14;
-						v15 = *(_DWORD *)(v14 + 24);
+							v14 = a1->mobd_font__see_sub405A60->_[1 + *v4];
+						result->drawjob->job_details.image = v14->sprt;
+						result->drawjob->job_details.y = v11 - v14->y_offset;
+						result->drawjob->job_details.x = v7 - v14->x_offset;
+						v15 = v14->field_18;
 						if (v15)
-							v7 = result->drawjob->job_details.x + (*(_DWORD *)(v15 + 4) >> 8);
+							v7 = result->drawjob->job_details.x + (v15->x_offset >> 8);
 						else
 							v7 = result->drawjob->job_details.x + 14;
 						result = result->next;
@@ -32436,7 +32418,7 @@ void entity_mode_4444F0_oiltanker(Entity *a1)
 	}
 	else
 	{
-        entity_load_mobd_3(v1);
+        entity_load_idle_mobd(v1);
 		script_445370_yield_to_main_thread(v1->script, 0x80000000, 20);
 	}
 }
@@ -32479,7 +32461,7 @@ void entity_mode_444590_oiltanker(Entity *a1)
 	}
 	else
 	{
-        entity_load_mobd_3(v1);
+        entity_load_idle_mobd(v1);
 		script_445370_yield_to_main_thread(v1->script, 0x80000000, 20);
 	}
 }
@@ -32494,7 +32476,7 @@ void entity_mode_444630_oiltanker(Entity *a1)
 	v2 = &a1->current_mobd_lookup_idx;
 	a1->sprite->x_speed = 0;
 	a1->sprite->y_speed = 0;
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
 	if (!entity_advance_mobd_rotation(v2, 160, v1->stats->turning_speed))
 		v1->mode = entity_mode_4446B0_oiltanker_load_oil;
 	script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
@@ -32725,7 +32707,7 @@ void entity_mode_4449D0_oiltanker(Entity *a1)
 {
 	a1->sprite->x_speed = 0;
 	a1->sprite->y_speed = 0;
-    entity_load_mobd_3(a1);
+    entity_load_idle_mobd(a1);
 
 	if (!entity_advance_mobd_rotation(&a1->current_mobd_lookup_idx, 160, a1->stats->turning_speed))
 		a1->mode = entity_mode_444A40_oiltanker;
@@ -33202,7 +33184,7 @@ bool render_string_list_alloc()
 // 47C770: using guessed type int stru8_list_allocated;
 
 //----- (00445770) --------------------------------------------------------
-void render_string_445770(RenderString *a1, const char *text, int a3)
+void render_string_445770(RenderString *a1, const char *text, DataMobdItem *a3)
 {
 	const char *v3; // edi@1
 	char i; // bl@1
@@ -33215,7 +33197,7 @@ void render_string_445770(RenderString *a1, const char *text, int a3)
 	stru8 *v11; // esi@17
 	int j; // eax@17
 	int v13; // eax@20
-	int v14; // edx@22
+    DataMobdItem_stru0 *v14; // edx@22
 
 	v3 = text;
 	for (i = *text; *v3; i = *v3)
@@ -33264,11 +33246,11 @@ void render_string_445770(RenderString *a1, const char *text, int a3)
 				do
 				{
 					if (a3)
-						v14 = *(_DWORD *)(a3 + 4 * *v3 + 4);
+						v14 = a3->_[*v3 + 1];
 					else
-						v14 = *((_DWORD *)&a1->mobd_font__see_sub405A60->ptr_4 + *v3);
+						v14 = a1->mobd_font__see_sub405A60->_[*v3 + 1];
 					++v3;
-					v11->drawjob->job_details.image = *(void **)(v14 + 12);
+					v11->drawjob->job_details.image = v14->sprt;
 					v11 = v11->next;
 					--v13;
 					++a1->field_18;
@@ -33329,15 +33311,15 @@ RenderString *render_string_create(stru1_draw_params *a1, DataMobdItem *custom_f
 				{
 					if (v14 == a3)
 					{
-						v17 = v9->ptr_4;
+						v17 = v9->_[1];
 					}
 					else if (v14 == v15)
 					{
-						v17 = v9[1].ptr_0;
+						v17 = v9->_[3];
 					}
 					else
 					{
-						v17 = (DataMobdItem_stru0 *)v9->field_8;
+						v17 = v9->_[2];
 					}
 					goto LABEL_26;
 				}
@@ -33345,27 +33327,27 @@ RenderString *render_string_create(stru1_draw_params *a1, DataMobdItem *custom_f
 				{
 					if (v14 == a3)
 					{
-						v17 = v9[2].ptr_0;
+						v17 = v9->_[6];
 					}
 					else if (v14 == v15)
 					{
-						v17 = (DataMobdItem_stru0 *)v9[2].field_8;
+						v17 = v9->_[8];
 					}
 					else
 					{
-						v17 = v9[2].ptr_4;
+						v17 = v9->_[7];
 					}
 					goto LABEL_26;
 				}
 				if (v14 == a3)
 				{
-					v17 = v9[1].ptr_4;
+					v17 = v9->_[4];
 				}
 				else
 				{
 					if (v14 != v15)
 						break;
-					v17 = (DataMobdItem_stru0 *)v9[1].field_8;
+					v17 = v9->_[5];
 				}
 			LABEL_26:
 				v16->job_details.image = v17->sprt;
@@ -33387,7 +33369,7 @@ RenderString *render_string_create(stru1_draw_params *a1, DataMobdItem *custom_f
 					goto LABEL_32;
 				}
 			}
-			v17 = v9[11].ptr_0;
+			v17 = v9->_[33];
 			goto LABEL_26;
 		}
 		v18 = (stru8 *)a3;
@@ -33409,8 +33391,6 @@ RenderString *render_string_create(stru1_draw_params *a1, DataMobdItem *custom_f
 	}
 	return result;
 }
-// 47C76C: using guessed type int stru8_list_size;
-// 47C770: using guessed type int stru8_list_allocated;
 
 //----- (00445A60) --------------------------------------------------------
 void render_string_list_remove(RenderString *a1)
@@ -33460,7 +33440,7 @@ int render_string_445AE0(RenderString *a1)
 	for (result = 0; v1; v1 = v1->next)
 	{
 		if (v2 > 0 && v2 < a1->field_10 - 1 && result > 0 && result < a1->field_C - 1)
-			v1->drawjob->job_details.image = a1->mobd_font__see_sub405A60[11].ptr_0->sprt;
+			v1->drawjob->job_details.image = a1->mobd_font__see_sub405A60->_[33]->sprt;
 		if (++result >= a1->field_C)
 		{
 			result = 0;
@@ -34749,9 +34729,7 @@ bool is_player_faction_evolved()
 //----- (00447000) --------------------------------------------------------
 void sub_447000()
 {
-	if (is_game_loading()
-		|| !(_47CA10_sidebar_button_minimap->sprite->_inside_mobd_item != currently_running_lvl_mobd[_47CA10_sidebar_button_minimap->sprite->mobd_id].items
-			+ 165 ? _47CA10_sidebar_button_minimap->sprite : 0))
+	if (is_game_loading() || !_447310_minimap())
 	{
 		script_trigger_event(0, EVT_MSG_1514, 0, _47CA10_sidebar_button_minimap->task);
 	}
@@ -34910,15 +34888,11 @@ void _447250_toggle_aircraft()
 		goto LABEL_10;
 	}
 }
-// 468B5C: using guessed type int single_player_game;
-// 47C658: using guessed type char _47C658_faction_index;
-// 47CA2C: using guessed type int _47CA2C_should_airstrike_mess_with_sidebar;
 
 //----- (00447310) --------------------------------------------------------
 Sprite *_447310_minimap()
 {
-	return _47CA10_sidebar_button_minimap->sprite->_inside_mobd_item != currently_running_lvl_mobd[_47CA10_sidebar_button_minimap->sprite->mobd_id].items
-		+ 165 ? _47CA10_sidebar_button_minimap->sprite : 0;
+	return (_47CA10_sidebar_button_minimap->sprite->_inside_mobd_item != &currently_running_lvl_mobd[_47CA10_sidebar_button_minimap->sprite->mobd_id].items->_[165]) ? _47CA10_sidebar_button_minimap->sprite : 0;
 }
 
 //----- (00447340) --------------------------------------------------------
@@ -34966,7 +34940,7 @@ void UNIT_Handler_Towers(Script *a1)
 	v2 = entity_list_create(a1);
 	v1 = v2;
 	v2->script->event_handler = EventHandler_Towers;
-    entity_load_mobd_3(v2);
+    entity_load_idle_mobd(v2);
 	v3 = v1->sprite->_54_inside_mobd_ptr4->field_18;
 	if (v3)
 	{
@@ -34992,7 +34966,7 @@ void UNIT_Handler_Towers(Script *a1)
 	}
 	if (v1->player_side == player_side)
 		script_trigger_event(v1->script, EVT_MSG_1529_ai, v1, task_mobd17_cursor);
-	sprite_4272E0_load_mobd_item(v1->sprite, v1->stats->mobd_lookup_offset_1, 0);
+	sprite_4272E0_load_mobd_item(v1->sprite, v1->stats->mobd_lookup_offset_attack, 0);
 	v1->mode = entity_mode_4474E0_towers;
 	(v1->mode)(v1);
 }
@@ -35083,15 +35057,15 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 			{
 				if (param == (void *)1)
 				{
-					sprite_4272E0_load_mobd_item(v4->sprite, v4->stats->mobd_lookup_offset_1, 1);
+					sprite_4272E0_load_mobd_item(v4->sprite, v4->stats->mobd_lookup_offset_attack, 1);
 				}
 				else if (param == (void *)2)
 				{
-					sprite_4272E0_load_mobd_item(v4->sprite, v4->stats->mobd_lookup_offset_1, 2);
+					sprite_4272E0_load_mobd_item(v4->sprite, v4->stats->mobd_lookup_offset_attack, 2);
 				}
 				else if (param == (void *)3)
 				{
-                    entity_load_mobd_3(v4);
+                    entity_load_idle_mobd(v4);
 					entity_mode_4478E0_towers(v4);
 					script_trigger_event_group(v4->script, EVT_MSG_1551, 0, SCRIPT_TYPE_CA000012);
 					v4->mode = entity_mode_4474D0_towers;
@@ -37014,18 +36988,14 @@ void script_44A500_fog_of_war(Script *a1)
 		dword_47CB6C = _47C380_mapd.mapd_cplc_render_y >> 12;
 	}
 }
-// 47CB68: using guessed type int dword_47CB68;
-// 47CB6C: using guessed type int dword_47CB6C;
 
 //----- (0044A650) --------------------------------------------------------
 void show_minimap_sprite()
 {
 	_47CB58_minimap_sprite->drawjob->flags &= 0xBFFFFFFF;
-	_4705B0_minimap.ptr_10 = &_4705A8_minimap_smthn;
+	_4705B0_minimap.ptr_10 = (Sprite_stru58 *)&_4705A8_minimap_smthn;
 	_47CB58_minimap_sprite->pstru58 = (Sprite_stru58 *) & _4705A8_minimap_smthn;
 }
-// 4705A8: using guessed type int *_4705A8_minimap_smthn;
-// 4705B0: using guessed type DataMobdItem_stru0 _4705B0_minimap;
 
 //----- (0044A680) --------------------------------------------------------
 void hide_minimap_sprite()
@@ -38503,7 +38473,6 @@ bool _44C010_init_mission_globals()
 {
 	int v0; // eax@1
 	int v1; // ecx@1
-	int v2; // edx@2
 	int player_idx; // ebx@3
 	stru12_game_globals *v4; // eax@3
 	int v5; // ebp@3
@@ -38528,9 +38497,9 @@ bool _44C010_init_mission_globals()
 	do
 	{
 		++v1;
-		_47D3C4_entity_mobd_lookup_ids[v1] = ((v0 + 4) >> 4) & 0xF;
-		v2 = (v0++ >> 3) & 0x1F;
-		__47CFC4_mobd_lookup_speeds[v1] = v2;
+		_47D3C4_entity_mobd_lookup_ids[v1] = ((v0 + 4) / 16) & 0xF;
+		__47CFC4_mobd_lookup_speeds[v1] = (v0 / 8) & 0x1F;
+        v0++;
 	} while (v0 - 4 < 256);
 	player_idx = 0;
 	memset(game_globals_cpu, 0, sizeof(game_globals_cpu));

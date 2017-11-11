@@ -727,7 +727,7 @@ void script_list_update()
                     }
                 }
                 v9 = i->field_28;
-                if (!v9 || (v10 = i->flags_20, v9 & v10) || i->field_2C & ~v10)
+                if (!v9 || (v10 = i->flags_20, v9 & v10) || (int)i->field_2C & ~v10)
                 {
                     switch (i->routine_type)
                     {

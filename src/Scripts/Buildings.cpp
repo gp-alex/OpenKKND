@@ -326,13 +326,13 @@ void entity_mode_403650_building(Entity *a1)
     {
         v2 = v1->stats;
         if (v1->hitpoints >= v2->hitpoints / 3 || (v3 = v2->mobd_lookup_offset_4, v3 == -1))
-            entity_load_mobd_3(v1);
+            entity_load_idle_mobd(v1);
         else
             entity_load_mobd_4(v1);
     }
     else
     {
-        entity_load_mobd_3(v1);
+        entity_load_idle_mobd(v1);
         v1->mode = entity_mode_4035C0_building;
     }
     v4 = v1->_12C_prison_bunker_spawn_type;
