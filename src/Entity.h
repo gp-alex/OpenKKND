@@ -106,7 +106,7 @@ struct Entity
     int sprite_y;
     int field_B8;
     int field_BC;
-    int field_C0;
+    int _C0_mobd_anim_speed_related;
     int field_C4;
     int field_C8;
     int field_CC;

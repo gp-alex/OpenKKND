@@ -151,7 +151,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
 
 
     UnitStat *stat = &unit_stats[UNIT_STATS_MUTE_MISSILE_CRAB];
-    stat = &unit_stats[9];
+    //stat = &unit_stats[9];
 
     unsigned int i = GetTickCount() % (256 * 100);
 
@@ -219,6 +219,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
         drag_frame_x->y -= 25 * 250;
         if (stat->mobd_lookup_offset_attack != -1)
         {
+            drag_frame_x->_60_mobd_anim_speed = 0x10000000;
             sprite_4272E0_load_mobd_item(
                 drag_frame_x,
                 stat->mobd_lookup_offset_attack,
@@ -251,6 +252,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
 
             if (rot_changed)
             {
+                drag_frame_y->_60_mobd_anim_speed = 0x10000000;
                 sprite_4272E0_load_mobd_item(
                     drag_frame_y,
                     stat->mobd_lookup_offset_move,
@@ -264,6 +266,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
         drag_frame_z->y = drag_frame_x->y;
         if (stat->mobd_lookup_offset_idle != -1)
         {
+            drag_frame_z->_60_mobd_anim_speed = 0x10000000;
             sprite_4272E0_load_mobd_item(
                 drag_frame_z,
                 stat->mobd_lookup_offset_idle,

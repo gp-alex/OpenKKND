@@ -190,7 +190,7 @@ void entity_mode_401480_aircraft(Entity *a1)
         sprite_408800_play_sound(v2, SOUND_GENERIC_PROJECTILE_DMG, _4690A8_unit_sounds_volume, 0);
         v2->mobd_id = MOBD_EXPLOSIONS;
         sprite_load_mobd(v2, SPRITE_EXPLOSION_MOBD_OFFSET_BIG);
-        v2->_60_mobd_field_0_int = 0x20000000;
+        v2->_60_mobd_anim_speed = 0x20000000;
         v2->z_index = 768;
         sprite_40D8B0_dmg(v2, 64);
         v4 = v1->script;

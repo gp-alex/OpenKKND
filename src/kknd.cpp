@@ -536,7 +536,7 @@ void Task_context_1_BomberDmgHandler_401D30(Task_context_1_BomberDmgHandler *a1)
 		sprite_408800_play_sound(v2, SOUND_GENERIC_PROJECTILE_DMG_2, _4690A8_unit_sounds_volume, 0);
 		v2->mobd_id = MOBD_EXPLOSIONS;
 		sprite_load_mobd(v2, *((_DWORD *)v3 + 3));
-		v2->_60_mobd_field_0_int = 0x20000000;
+		v2->_60_mobd_anim_speed = 0x20000000;
 		v2->z_index = 768;
 		sprite_439180_add_explosions(v2);
 		sprite_40D8B0_dmg(v2, *((_DWORD *)v3 + 8));
@@ -4832,7 +4832,7 @@ int oilspot_subtract_oil(OilDeposit *a1, int amount)
 				{
 					v7 = v6->turret_sprite;
 					if (v7)
-						v7->_60_mobd_field_0_int = 0;
+						v7->_60_mobd_anim_speed = 0;
 				}
 			}
 		}
@@ -13101,7 +13101,7 @@ LABEL_9:
 	v4->entity_sprite_height = v3->sprite_y;
 	v4->field_B8 = v3->field_B8;
 	v4->field_BC = v3->field_BC;
-	v4->field_C0 = v3->field_C0;
+	v4->field_C0 = v3->_C0_mobd_anim_speed_related;
 	v4->field_C4 = v3->field_C4;
 	v4->field_C8 = v3->field_C8;
 	v4->field_CC = v3->field_CC;
@@ -13458,7 +13458,7 @@ LABEL_156:
 			v4[1].turret_sprite.z_speed = *(_DWORD *)(v118 + 20);
 			v4[1].turret_sprite._inside_mobd_item = *(_DWORD *)(v118 + 36);
 			v4[1].turret_sprite._54_inside_mobd_ptr4 = *(_DWORD *)(v118 + 40);
-			v4[1].turret_sprite._60_mobd_field_0 = *(_DWORD *)(v118 + 44);
+			v4[1].turret_sprite._60_mobd_anim_speed = *(_DWORD *)(v118 + 44);
 			result = 1;
 		}
 		break;
@@ -13493,13 +13493,13 @@ bool GAME_Save_PackSprite(Sprite *a1, SpriteSerialized *out)
 	if (v3)
 	{
 		out->_54_inside_mobd_ptr4 = (char *)v3 - (char *)currently_running_lvl_mobd[out->mobd_idx].items;
-		out->_60_mobd_field_0 = a1->_60_mobd_field_0_int;
+		out->_60_mobd_anim_speed = a1->_60_mobd_anim_speed;
 		result = 1;
 	}
 	else
 	{
 		out->_54_inside_mobd_ptr4 = -1;
-		out->_60_mobd_field_0 = a1->_60_mobd_field_0_int;
+		out->_60_mobd_anim_speed = a1->_60_mobd_anim_speed;
 		result = 1;
 	}
 	return result;
@@ -13803,7 +13803,7 @@ bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data)
 			v3->sprite_y = v2->entity_sprite_height;
 			v3->field_B8 = v2->field_B8;
 			v3->field_BC = v2->field_BC;
-			v3->field_C0 = v2->field_C0;
+			v3->_C0_mobd_anim_speed_related = v2->field_C0;
 			v3->field_C4 = v2->field_C4;
 			v3->field_C8 = v2->field_C8;
 			v3->field_CC = v2->field_CC;
@@ -14180,7 +14180,7 @@ bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data)
 					v71->field_14 = v2[1].turret_sprite.z_speed;
 					v71->field_24 = v2[1].turret_sprite._inside_mobd_item;
 					v71->field_28 = v2[1].turret_sprite._54_inside_mobd_ptr4;
-					v71->field_2C = v2[1].turret_sprite._60_mobd_field_0;
+					v71->field_2C = v2[1].turret_sprite._60_mobd_anim_speed;
 				}
 				v70 = v71;
 			}
@@ -14314,7 +14314,7 @@ Sprite *GAME_Load_UnpackSprite(SpriteSerialized *serialized)
 	if (v5 == -1)
 	{
 	LABEL_9:
-		v3->_60_mobd_field_0_int = v1->_60_mobd_field_0;
+		v3->_60_mobd_anim_speed  = v1->_60_mobd_anim_speed;
 		return v3;
 	}
 	v7 = v3->_inside_mobd_item + 1;
@@ -14330,7 +14330,7 @@ Sprite *GAME_Load_UnpackSprite(SpriteSerialized *serialized)
 		} while (v9[0] != v8);
 	}
 	v3->pstru58 = (Sprite_stru58 *)v3->_54_inside_mobd_ptr4->ptr_10;
-	v3->_60_mobd_field_0_int = v1->_60_mobd_field_0;
+	v3->_60_mobd_anim_speed  = v1->_60_mobd_anim_speed;
 	return v3;
 }
 
@@ -19938,8 +19938,8 @@ void sprite_init_47A400()
 	sprite_47A400.z_speed_factor_1 = 0;
 	sprite_47A400.y_speed_factor_1 = 0;
 	sprite_47A400.x_speed_factor_1 = 0;
-	sprite_47A400.field_64 = 0;
-	sprite_47A400._60_mobd_field_0_int = 0;
+	sprite_47A400._64_mobd_anim_related = 0;
+	sprite_47A400._60_mobd_anim_speed = 0;
 	sprite_47A400._inside_mobd_item = 0;
 	sprite_47A400._inside_mobd_item_2 = 0;
 	sprite_47A400._54_inside_mobd_ptr4 = 0;
@@ -20305,8 +20305,8 @@ void sprite_load_mobd(Sprite *a1, int offset)
         a1->_inside_mobd_item_2 = v2;
 
 		if (*v2)
-			a1->_60_mobd_field_0_int = ((DataMobdItem_stru2 *)v2)->flags;
-		a1->field_64 = -1;
+			a1->_60_mobd_anim_speed = ((DataMobdItem_stru2 *)v2)->flags;
+		a1->_64_mobd_anim_related = -1;
 
 		sprite_427460_init_mobd_item(a1);
 	}
@@ -20327,13 +20327,13 @@ void sprite_4272E0_load_mobd_item(Sprite *a1, int lookup_table_offset, int looku
             + 4 * lookup_idx
         );
 
-	a1->_inside_mobd_item = v3;
-	if (v3)
+	a1->_inside_mobd_item = (DataMobdItem_stru0 **)v;
+	if (v)
 	{
-		if (v3[0])
-			a1->_60_mobd_field_0_int = (int)v3[0];
-		a1->field_64 = -1;
-		a1->_inside_mobd_item_2 = a1->_inside_mobd_item;
+		if (v->flags)
+			a1->_60_mobd_anim_speed = v->flags;
+		a1->_64_mobd_anim_related = -1;
+		a1->_inside_mobd_item_2 = (DataMobdItem_stru0 **)v;
 		sprite_427460_init_mobd_item(a1);
 	}
 }
@@ -20367,13 +20367,14 @@ void sprite_427320_load_mobd_item_sound(Sprite *a1, int offset)
 	}
 	else if (a1)
 	{
-		v3 = (DataMobdItem_stru0 **)((char *)currently_running_lvl_mobd[a1->mobd_id].items + offset);
+        sprite_4272E0_load_mobd_item(a1, offset, 0);
+		/*v3 = (DataMobdItem_stru0 **)((char *)currently_running_lvl_mobd[a1->mobd_id].items + offset);
 		a1->_inside_mobd_item = v3;
         a1->_inside_mobd_item_2 = a1->_inside_mobd_item;
 		if (v3[0])
 			a1->_60_mobd_field_0_int = (int)v3[0];
 		a1->field_64 = -1;
-		sprite_427460_init_mobd_item(a1);
+		sprite_427460_init_mobd_item(a1);*/
 	}
 }
 
@@ -20414,18 +20415,19 @@ void sprite_4273B0_load_mobd_item_sound(Sprite *a1, int mobd_lookup_offset, int 
 	}
 	else
 	{
-		v4 = *(DataMobdItem_stru0 ***)((char *)&currently_running_lvl_mobd[a1->mobd_id].items->_
+        sprite_4272E0_load_mobd_item(a1, mobd_lookup_offset, mobd_lookup_id);
+		/*v4 = *(DataMobdItem_stru0 ***)((char *)&currently_running_lvl_mobd[a1->mobd_id].items->_
 			+ 4 * mobd_lookup_id
 			+ mobd_lookup_offset);
 		a1->_inside_mobd_item = v4;
 		if (v4)
 		{
 			if (v4[0])
-				a1->_60_mobd_field_0_int = (int)v4[0];
+				a1->_60_mobd_anim_speed = (int)v4[0];
 			a1->field_64 = -1;
 			a1->_inside_mobd_item_2 = a1->_inside_mobd_item;
 			sprite_427460_init_mobd_item(a1);
-		}
+		}*/
 	}
 }
 
@@ -20457,10 +20459,10 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
     DataMobdItem_stru2 *v2 = (DataMobdItem_stru2 *)pstru6->_inside_mobd_item_2;
 	if (v2)
 	{
-		v3 = v1->field_64;
+		v3 = v1->_64_mobd_anim_related;
 		if (v3 < 0)
 		{
-			v1->field_64 = v3 & 0x7FFFFFFF;
+			v1->_64_mobd_anim_related = v3 & 0x7FFFFFFF;
 
             v5 = v2->pstru0;
 			if (v5)
@@ -20515,12 +20517,12 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
 				{
 					v6->flags_20 |= 0x10000000u;
 					v1->script->field_24 |= v1->script->flags_20;
-					v1->field_64 -= v1->_60_mobd_field_0_int;
+					v1->_64_mobd_anim_related -= v1->_60_mobd_anim_speed;
 					return;
 				}
 			}
 		}
-		v1->field_64 -= v1->_60_mobd_field_0_int;
+		v1->_64_mobd_anim_related -= v1->_60_mobd_anim_speed;
 	}
 }
 
@@ -25805,7 +25807,7 @@ void entity_mode_437F30_repairstation(Entity *a1)
 	v2 = a1->turret;
 	if (v2)
 	{
-		v2->turret_sprite->_60_mobd_field_0_int = 0;
+		v2->turret_sprite->_60_mobd_anim_speed = 0;
 		v3 = a1->turret->turret_sprite->drawjob;
 		v3->flags &= 0xBFFFFFFF;
 	}
@@ -36701,7 +36703,7 @@ void script_evt39030_handler(Script *a1)
                 v29 = v25->_E0_current_attack_target->turret;
                 if (v29)
                 {
-                    v29->turret_sprite->_60_mobd_field_0_int = 0x8000000;
+                    v29->turret_sprite->_60_mobd_anim_speed = 0x8000000;
                 }
             }
             else
@@ -36709,7 +36711,7 @@ void script_evt39030_handler(Script *a1)
                 v30 = v25->_E0_current_attack_target->turret;
                 if (v30)
                 {
-                    v30->turret_sprite->_60_mobd_field_0_int = 0;
+                    v30->turret_sprite->_60_mobd_anim_speed = 0;
                 }
             }
         }

@@ -88,7 +88,7 @@ void script_438C20_on_death_explosion(Script *a1)
     {
         v1->z_speed_factor_2 = -5;
         v5 = kknd_rand_debug("k/Scripts/Schrap.cpp", 187);
-        *(int *)&v1->_60_mobd_field_0_int *= (((unsigned __int64)v5 >> 32) ^ abs(v5) & 1) - ((unsigned __int64)v5 >> 32) + 1;
+        v1->_60_mobd_anim_speed *= (((unsigned __int64)v5 >> 32) ^ abs(v5) & 1) - ((unsigned __int64)v5 >> 32) + 1;
     }
     while (v1->z_index >= 0)
         script_445370_yield_to_main_thread(a1, 0x80000000, 1);

@@ -176,7 +176,7 @@ void script_4032F0_building_grand_explosion(Script *a1)
     v2 = v1->y + 2048;
     v1->field_88_unused = 1;
     v1->y = v2;
-    v1->_60_mobd_field_0_int = 0x20000000;
+    v1->_60_mobd_anim_speed = 0x20000000;
     script_445370_yield_to_main_thread(a1, 0x10000000, 0);
     decrease_num_explosions();
     sprite_list_remove(v1);

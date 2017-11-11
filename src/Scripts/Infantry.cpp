@@ -2253,7 +2253,7 @@ void entity_mode_4157F0(Entity *a1)
         if (a1->stats->mobd_lookup_offset_attack != -1)
         {
             entity_load_attack_mobd(a1);
-            v1->sprite->_60_mobd_field_0_int = 0;
+            v1->sprite->_60_mobd_anim_speed = 0;
         }
     }
     v11 = v1->script;
@@ -2850,16 +2850,16 @@ void entity_mode_attack_move_2_5_4165C0(Entity *a1)
         entity_load_move_mobd(v1);
 
         int rnd = kknd_rand_3();
-        v1->sprite->_60_mobd_field_0_int -= rnd << 9;
-        v1->field_C0 = v1->sprite->_60_mobd_field_0_int;
+        v1->sprite->_60_mobd_anim_speed -= rnd << 9;
+        v1->_C0_mobd_anim_speed_related = v1->sprite->_60_mobd_anim_speed;
     }
     else if (v4->field_4C == 128 || boxd_41C130(v1->sprite_x, v1->sprite_y, v2->x, v2->y, v1))
     {
         entity_load_move_mobd(v1);
 
         int rnd = kknd_rand_3();
-        v1->sprite->_60_mobd_field_0_int -= rnd << 9;
-        v1->field_C0 = v1->sprite->_60_mobd_field_0_int;
+        v1->sprite->_60_mobd_anim_speed -= rnd << 9;
+        v1->_C0_mobd_anim_speed_related = v1->sprite->_60_mobd_anim_speed;
         v7 = _42D560_get_mobd_lookup_id_rotation(
             v1->sprite_x - v1->sprite->x,
             v1->sprite_y - v1->sprite->y
@@ -2895,7 +2895,7 @@ void entity_mode_416790_vehicle_move(Entity *a1)
     Sprite *v28; // ecx@49
 
     v1 = a1;
-    a1->sprite->_60_mobd_field_0_int = a1->field_C0;
+    a1->sprite->_60_mobd_anim_speed = a1->_C0_mobd_anim_speed_related;
 
     int distance_x = abs(a1->sprite->x - a1->sprite_x);
     int distance_y = abs(a1->sprite->y - a1->sprite_y);
@@ -3697,7 +3697,7 @@ void entity_417810(Entity *a1)
         v1->field_CC = v3;
         v5 = v1->field_154;
         v1->field_D0 = v4;
-        v1->field_C0 = v5 + 1;
+        v1->_C0_mobd_anim_speed_related = v5 + 1;
         v6 = v1->stats;
         if (v6->is_infantry)
             v7 = entity_40F0A0_get_dx(v1, v1->field_A4);
@@ -3711,7 +3711,7 @@ void entity_417810(Entity *a1)
         else
             v10 = v9->field_4C != 128 ? 7424 : 4096;
         v1->sprite_y = v10 + (v1->field_D0 << 13);
-        v1->stru224._2C_map_x = v1->sprite->_60_mobd_field_0_int;
+        v1->stru224._2C_map_x = v1->sprite->_60_mobd_anim_speed;
         v13 = v1->field_124;
         v1->_128_spawn_param = 0;
         LOBYTE_HEXRAYS(v13) = v13 & 0xFE;
@@ -3746,7 +3746,7 @@ void entity_417980(Entity *a1)
     int v5; // eax@1
 
     v1 = a1;
-    v4 = (int)a1->sprite->_60_mobd_field_0_int;
+    v4 = a1->sprite->_60_mobd_anim_speed;
     v1->_128_spawn_param = 0;
     v1->stru224._2C_map_x = v4;
     v5 = v1->field_124;
@@ -3788,7 +3788,7 @@ void entity_mode_417A20(Entity *a1)
     {
         v3 = a1->_128_spawn_param;
         a1->_128_spawn_param = (char *)v3 + 1;
-        if ((int)v3 < a1->field_C0)
+        if ((int)v3 < a1->_C0_mobd_anim_speed_related)
         {
             a1->mode = entity_mode_417BD0;
             v4 = entity_44D000_boxd(a1);
@@ -3870,7 +3870,7 @@ void entity_mode_417BD0(Entity *a1)
     int v22; // eax@36
 
     v1 = a1;
-    a1->sprite->_60_mobd_field_0_int = a1->stru224._2C_map_x;
+    a1->sprite->_60_mobd_anim_speed = a1->stru224._2C_map_x;
     if (!a1->stats->is_infantry)
     {
         v2 = a1->sprite;
@@ -4014,7 +4014,7 @@ void entity_mode_attack_move_4_order_3_7_417E60(Entity *a1)
             v5 = 240;
         v6 = (kknd_rand_3() & 7) + v5;
         entity_40DF50_boxd_update_map_tile(v1, 1);
-        v1->sprite->_60_mobd_field_0_int = 0;
+        v1->sprite->_60_mobd_anim_speed = 0;
         v1->sprite->x_speed = 0;
         v1->sprite->y_speed = 0;
         if (v1->stats->is_infantry)
@@ -4485,7 +4485,7 @@ void script_4188F0(Script *a1)
             v5->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448680;
             sprite_load_mobd(v5, CURSOR_MOBD_OFFSET_REPAIR);
             v4->z_index = 0;
-            v4->_60_mobd_field_0_int = 0;
+            v4->_60_mobd_anim_speed = 0;
             v1->sprite->parent = v4;
             v1->_128_spawn_param = (void *)1;
         }
@@ -4566,7 +4566,7 @@ void script_418A10(Script *a1)
             v5->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448680;
             sprite_load_mobd(v5, CURSOR_MOBD_OFFSET_REPAIR);
             v4->z_index = 0;
-            v4->_60_mobd_field_0_int = 0;
+            v4->_60_mobd_anim_speed = 0;
             *(_DWORD *)(v3 + 32) = (int)v4;
             *(_DWORD *)(v3 + 36) = 1;
         }
@@ -4835,7 +4835,7 @@ void entity_mode_418F60(Entity *a1)
             {
                 v5 = v3->turret;
                 if (v5)
-                    v5->turret_sprite->_60_mobd_field_0_int = 0;
+                    v5->turret_sprite->_60_mobd_anim_speed = 0;
             }
         }
     }
@@ -4923,7 +4923,7 @@ LABEL_20:
                 {
                     v13 = v11->turret;
                     if (v13)
-                        v13->turret_sprite->_60_mobd_field_0_int = 0;
+                        v13->turret_sprite->_60_mobd_anim_speed = 0;
                 }
             }
         }

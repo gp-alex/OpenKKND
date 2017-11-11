@@ -91,7 +91,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
         v1->z_speed_factor_2 = -512 / (a3 / 2);
     else
         v1->z_speed_factor_2 = -512;
-    v1->_60_mobd_field_0_int = (kknd_rand_debug(__FILE__, __LINE__) % 3 + 1) << 28;
+    v1->_60_mobd_anim_speed = (kknd_rand_debug(__FILE__, __LINE__) % 3 + 1) << 28;
     script_445370_yield_to_main_thread(a1, 0x80000000, a3);
     v1->z_index = 1;
     v1->x_speed = 0;
@@ -106,7 +106,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
         sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v24 % -2)], v23, 0);
         v1->mobd_id = MOBD_EXPLOSIONS;
         sprite_load_mobd(v1, *(_DWORD *)(v10 + 12));
-        v1->_60_mobd_field_0_int = 0x20000000;
+        v1->_60_mobd_anim_speed = 0x20000000;
         if (v28->entity_id == v31)
         {
             v25 = v28->sprite;
@@ -288,7 +288,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
         sprite_408800_play_sound(v2, _46BB80_dmg_handler_sounds[(unsigned __int8)(v27 % -2)], v26, 0);
         v2->mobd_id = MOBD_EXPLOSIONS;
         sprite_load_mobd(v2, *((_DWORD *)v34 + 3));
-        v2->_60_mobd_field_0_int = 0x20000000;
+        v2->_60_mobd_anim_speed = 0x20000000;
         if (v35)
         {
             v29 = entity_list_head;
@@ -464,7 +464,7 @@ void script_4363C0_giant_bettle_dmg(Script *a1)
         v3->z_speed_factor_2 = -512;
     v8 = kknd_rand_debug(__FILE__, __LINE__) % 3;
     v9 = v3->z_index;
-    v3->_60_mobd_field_0_int = (v8 + 1) << 28;
+    v3->_60_mobd_anim_speed = (v8 + 1) << 28;
     if (v9 >= 0)
     {
         do
@@ -479,7 +479,7 @@ void script_4363C0_giant_bettle_dmg(Script *a1)
     sprite_408800_play_sound(v3, SOUND_ACID_SPIT_DMG, _4690A8_unit_sounds_volume, 0);
     v3->mobd_id = MOBD_EXPLOSIONS;
     sprite_load_mobd(v3, SPRITE_EXPLOSION_MOBD_OFFSET_MUTE_GIAN_BEETLE_ACID_SPLASH);
-    v3->_60_mobd_field_0_int = 0x20000000;
+    v3->_60_mobd_anim_speed = 0x20000000;
     if (v2->entity_id == v12)
     {
         v10 = v2->sprite;
@@ -654,7 +654,7 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v11 % -2)], v10, 0);
     v1->mobd_id = MOBD_PLASMA_TANK;
     sprite_load_mobd(v1, 2084);
-    v1->_60_mobd_field_0_int = 0x20000000;
+    v1->_60_mobd_anim_speed = 0x20000000;
     if (v6 == v2->entity_id)
         v1->z_index = v2->sprite->z_index + 256;
     sprite_40D8B0_dmg(v1, *(_DWORD *)(v12 + 32));
@@ -784,7 +784,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
             v1->mobd_id = MOBD_EXPLOSIONS;
             sprite_load_mobd(v1, 2084);
             v20 = v1->drawjob;
-            v1->_60_mobd_field_0_int = 0x20000000;
+            v1->_60_mobd_anim_speed = 0x20000000;
             v1->z_index = 0;
             v20->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4484A0_explosions;
             _4389A0_prolly_create_map_damage_decal(v1->x, v1->y);
@@ -870,7 +870,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
             sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v44 % -2)], v43, 0);
             v1->mobd_id = MOBD_EXPLOSIONS;
             sprite_load_mobd(v1, *(_DWORD *)(v55 + 12));
-            v1->_60_mobd_field_0_int = 0x20000000;
+            v1->_60_mobd_anim_speed = 0x20000000;
             if (v56)
             {
                 v46 = entity_list_head;
@@ -1228,7 +1228,7 @@ int sub_437690(Script *a1)
         v1->x_speed = v13 + v19[4] * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v20 + 1]];
         v1->y_speed = v16 - v19[4] * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v20 + 1]];
     }
-    v1->_60_mobd_field_0_int *= 2;
+    v1->_60_mobd_anim_speed *= 2;
     script_445370_yield_to_main_thread(a1, 2147483648, 30);
     sprite_list_remove(v1);
     return _47C048_unit_bomberdmg-- - 1;
@@ -1437,7 +1437,7 @@ void UNIT_DmgHandler_Projectile(Script *a1)
         v1->mobd_id = MOBD_EXPLOSIONS;
         sprite_load_mobd(v1, *(_DWORD *)(v25 + 12));
         v23 = v1->drawjob;
-        v1->_60_mobd_field_0_int = 0x20000000;
+        v1->_60_mobd_anim_speed = 0x20000000;
         v1->z_index = 0;
         v23->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4484A0_explosions;
         _4389A0_prolly_create_map_damage_decal(v1->x, v1->y);

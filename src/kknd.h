@@ -589,8 +589,8 @@ struct Sprite
 	DataMobdItem_stru0 *_54_inside_mobd_ptr4;
 	Sprite_stru58 *pstru58;
 	stru7 *pstru7;
-    int _60_mobd_field_0_int;
-	int field_64;
+    int _60_mobd_anim_speed;//_60_mobd_field_0_int;
+    int _64_mobd_anim_related;//field_64;
 	DrawJob *drawjob;
 	Script *script;
 	DataCplcItem_ptr1_stru20 *cplc_ptr1_pstru20;
@@ -1935,7 +1935,7 @@ struct SpriteSerialized
 	int z_speed;
     int _inside_mobd_item;
 	int _54_inside_mobd_ptr4;
-    int _60_mobd_field_0;
+    int _60_mobd_anim_speed;
 };
 
 /* 414 */
