@@ -47,7 +47,6 @@ extern char aWarningOutOfTa[]; // idb
 extern char aWarningOutOfBu[]; // idb
 extern char aWarningOutOfEnemyNodes[]; // idb
 extern char aEnemyaiCreatur[]; // idb
-extern char aRb[3]; // idb
 extern char aWb__AND__handlers_minus1_indexer[3];
 extern void *script_handlers[353];
 extern int num_script_handlers; // weak
@@ -520,12 +519,6 @@ extern int _4778C8_singleplayer_available_units_denom; // weak
 extern Script *task_ai_players[7];
 extern _UNKNOWN unk_4778EC; // weak
 extern stru24 *cpu_player_scripts_attached_stru24s[7];
-extern File *file_list_last;
-extern File *file_list_first;
-extern File *file_list_47792C;
-extern File *file_list;
-extern File *file_list_free_pool;
-extern int file_list_used; // weak
 extern int dword_477940; // weak
 extern int dword_477944; // weak
 extern DetailedDrawHandler_VideoPlayer _477948_video_draw_details;

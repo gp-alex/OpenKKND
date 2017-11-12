@@ -205,13 +205,6 @@ bool stru24_40B490(stru24 *a1, UNIT_ID a2, int *out_x, int *out_y);
 void script_40B700_ai(Script *a1);
 int UNIT_InitAiPlayers();
 void UNIT_FreeAiPlayers();
-int file_list_alloc();
-File *file_list_fopen(const char *filename);
-int file_read(File *a1, void *out_data, int num_bytes);
-void *file_list_read_hunk(File *a1);
-int file_seek(File *a1, __int32 length, int dir); // idb
-int file_list_close(File *a1);
-void file_list_free();
 int VIDEO_IsAllocated();
 int VIDEO_ReadAndAllocDrawJob(const char *a1, int x, int y, int z_index);
 int VIDEO_DoFrame();

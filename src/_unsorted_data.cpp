@@ -440,7 +440,6 @@ char aWarningOutOfTa[] = "Warning: out of tanker nodes"; // idb
 char aWarningOutOfBu[] = "Warning: out of building nodes"; // idb
 char aWarningOutOfEnemyNodes[] = "Warning: out of enemy nodes"; // idb
 char aEnemyaiCreatur[] = "EnemyAI: Creature ID unknown"; // idb
-char aRb[3] = "rb"; // idb
 char aWb__AND__handlers_minus1_indexer[3] = "wb";
 void *script_handlers[353] =
 {
@@ -6480,12 +6479,6 @@ int _4778C8_singleplayer_available_units_denom; // weak
 Script *task_ai_players[7];
 _UNKNOWN unk_4778EC; // weak
 stru24 *cpu_player_scripts_attached_stru24s[7];
-File *file_list_last;
-File *file_list_first;
-File *file_list_47792C;
-File *file_list;
-File *file_list_free_pool;
-int file_list_used; // weak
 int dword_477940; // weak
 int dword_477944; // weak
 DetailedDrawHandler_VideoPlayer _477948_video_draw_details;
