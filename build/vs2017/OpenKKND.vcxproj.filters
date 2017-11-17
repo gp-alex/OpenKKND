@@ -138,6 +138,9 @@
     <ClInclude Include="..\..\src\Input.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Coroutine.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kknd.cpp">
@@ -204,6 +207,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Input.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Coroutine.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

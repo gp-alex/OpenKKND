@@ -450,9 +450,6 @@ extern stru31 *stru31_list_free_pool;
 extern int __477318_beastenclosure_negindex[]; // weak
 extern stru15unit _477318_beastenclosure;
 extern int max_beastenclosure_level; // weak
-extern int coroutine_current_stack; // weak
-extern Coroutine *coroutine_list_next;
-extern Coroutine *coroutine_list;
 extern int dword_477358; // weak
 extern BuildingLimits *building_limits_list_head;
 extern BuildingLimits *building_limits_list_end;
@@ -868,10 +865,8 @@ extern Script *script_list_free_pool;
 extern void(*task_creation_handler)(Script *);
 extern Script *script_execute_list;
 extern Script *script_list_47C714;
-extern Coroutine *volatile coroutine_current;
 extern size_t coroutine_default_stack_size; // idb
 extern Script *task_creation_handler_arg;
-extern Coroutine *coroutine_list_head;
 extern __int16 is_coroutine_list_initialization_failed; // weak
 extern Script *script_list;
 extern int stru8_list_size; // weak

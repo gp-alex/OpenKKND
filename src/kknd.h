@@ -504,29 +504,6 @@ struct CplcSectionData
 {
 };
 
-/* 290 */
-struct Coroutine
-{
-    inline Coroutine()
-    {
-        static int _id = 0;
-
-        this->id = _id++;
-        this->yield_to = nullptr;
-        this->context = nullptr;
-        this->stack = 0;
-        this->next = nullptr;
-    }
-
-	Coroutine *yield_to;
-	int *context;
-	int stack;
-	Coroutine *next;
-
-    int         id;
-    const char *debug_handler_name;
-};
-
 /* 291 */
 struct DataSectionOffset
 {

@@ -6360,9 +6360,6 @@ stru31 *stru31_list_free_pool = NULL;
 int __477318_beastenclosure_negindex[] = { 0 }; // weak
 stru15unit _477318_beastenclosure = { { 0, 0, 0, 0, 0 }, 0, 0, 0, 0 };
 int max_beastenclosure_level = 0; // weak
-int coroutine_current_stack = 0; // weak
-Coroutine *coroutine_list_next = NULL;
-Coroutine *coroutine_list = NULL;
 int dword_477358 = 0; // weak
 BuildingLimits *building_limits_list_head = NULL;
 BuildingLimits *building_limits_list_end = NULL;
@@ -6828,10 +6825,8 @@ Script *script_list_free_pool;
 void(*task_creation_handler)(Script *);
 Script *script_execute_list;
 Script *script_list_47C714;
-Coroutine *volatile coroutine_current;
 size_t coroutine_default_stack_size; // idb
 Script *task_creation_handler_arg;
-Coroutine *coroutine_list_head;
 __int16 is_coroutine_list_initialization_failed; // weak
 Script *script_list;
 int stru8_list_size; // weak

@@ -49,12 +49,7 @@ void entity_mode_402780_blacksmith(Entity *a1);
 void entity_mode_402840_blacksmith(Entity *); // idb
 void entity_mode_402870_blacksmith(Entity *a1);
 void entity_mode_blacksmith_on_death(Entity *a1);
-bool coroutine_list_alloc();
-Coroutine *couroutine_create(void(*function)(), size_t stack_size, const char *debug_handler_name);
-void coroutine_list_remove(Coroutine *a1);
 int script_execute(Script *self);
-void coroutine_list_free();
-int coroutine_resume(Coroutine *self); // idb
 void entity_mode_402AB0(Entity *);
 bool entity_402AC0_is_mode_402AB0(Entity *a1);
 void entity_attach_docking_point(Entity *a1);

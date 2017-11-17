@@ -15,6 +15,7 @@
 #include "src/Cursor.h"
 #include "src/Entity.h"
 #include "src/Input.h"
+#include "src/Coroutine.h"
 
 #pragma comment(lib, "Winmm.lib") // timeGetTime
 #pragma comment(lib, "ddraw.lib") // DirectDrawCreate
@@ -1165,150 +1166,11 @@ void entity_mode_blacksmith_on_death(Entity *a1)
     entity_mode_building_default_on_death(a1);
 }
 
-//----- (00402910) --------------------------------------------------------
-bool coroutine_list_alloc()
-{
-	coroutine_list = new Coroutine[2000];
-	if (coroutine_list)
-	{
-		for (int i = 0; i < 2000; ++i)
-		{
-			//v2 = &coroutine_list[i];
-			//v2->yield_to = 0;
-			//v2->context = 0;
-			//v2->stack = 0;
-			//v2->next = 0;
-			coroutine_list[i].next = &coroutine_list[i + 1];
-		}
-		coroutine_list[1999].next = 0;
-		coroutine_list_head = coroutine_list;
-		coroutine_list_next = coroutine_list + 1;
-        return true;
-	}
-
-	return false;
-}
-
-//----- (00402980) --------------------------------------------------------
-Coroutine *couroutine_create(void(*function)(), size_t stack_size, const char *debug_handler_name)
-{
-	Coroutine *v2; // edi@1
-	int *result; // eax@2
-	Coroutine **head_next; // ebx@3
-	int v7; // esi@5
-
-	v2 = coroutine_list_next;
-	if (coroutine_list_next)
-	{
-		head_next = &coroutine_list_next->next;
-		coroutine_list_next = coroutine_list_next->next;
-		result = (int *)malloc(stack_size);
-		v2->context = result;
-        v2->debug_handler_name = debug_handler_name;
-		if (result)
-		{
-			v7 = stack_size >> 2;
-            v2->context[v7 - 1] = (int)nullsub_1;
-			v2->context[v7 - 2] = 0;
-			v2->context[v7 - 3] = (int)function;
-			v2->context[v7 - 4] = (int)&v2->context[v7 - 4];
-			v2->stack = (int)&v2->context[v7 - 7];
-			return v2;
-		}
-		else
-		{
-			*head_next = coroutine_list_next;
-			coroutine_list_next = v2;
-            return nullptr;
-		}
-	}
-	else
-	{
-        return nullptr;
-	}
-}
-
-//----- (00402A00) --------------------------------------------------------
-void coroutine_list_remove(Coroutine *a1)
-{
-	Coroutine *v1; // esi@1
-
-	v1 = a1;
-	if (a1)
-	{
-		if (a1->context)
-			free(a1->context);
-		v1->next = coroutine_list_next;
-		coroutine_list_next = v1;
-	}
-}
-
 //----- (00402A30) --------------------------------------------------------
 int script_execute(Script *self)
 {
 	self->handler(self);
 	return 0;
-}
-
-//----- (00402A40) --------------------------------------------------------
-void coroutine_list_free()
-{
-	free(coroutine_list);
-	coroutine_list = 0;
-	coroutine_list_next = 0;
-}
-
-//----- (00402A60) --------------------------------------------------------
-__declspec(naked) int coroutine_yield_asm(Coroutine *self)
-{
-    __asm
-    {
-        push    ebp
-        mov     ebp, esp
-        push    ebx
-        push    esi
-        push    edi
-        mov     coroutine_current_stack, esp
-        mov     eax, coroutine_current
-        mov     ecx, coroutine_current_stack
-        mov     [eax + 8], ecx // coroutine_current->stack = esp
-        mov     eax, [self]
-        mov     edx, coroutine_current
-        mov     [eax], edx // self->yield_to = coroutine_current;
-        mov     coroutine_current, eax
-        mov     eax, [eax + 8]
-        mov     coroutine_current_stack, eax
-        mov     esp, coroutine_current_stack
-        xor     eax, eax
-        pop     edi
-        pop     esi
-        pop     ebx
-        pop     ebp
-        retn
-        ; -------------------------------------------------------------------------- -
-        pop     edi
-        pop     esi
-        xor     eax, eax
-        pop     ebx
-        pop     ebp
-        retn
-    }
-}
-/*int coroutine_resume(Coroutine *self)
-{
-	int current_stack; // [sp+0h] [bp-Ch]@1
-
-	coroutine_current_stack = (int)&current_stack;
-	coroutine_current->stack = (int)&current_stack;
-	self->yield_to = coroutine_current;
-	coroutine_current = self;
-	coroutine_current_stack = self->stack;
-	return 0;                                     // DECOMPILATION ERROR double exit here, view assembly
-}*/
-
-int coroutine_resume(Coroutine *self)
-{
-    return coroutine_yield_asm(self);
 }
 
 //----- (00402AB0) --------------------------------------------------------
@@ -32192,7 +32054,7 @@ void sub_444080(int mapd_idx)
 	{
         stru29_list_alloc();
 		v4 = sprite_create_scripted(MOBD_79, 0, (void(*)(Script *))script_mobd79__main_menu_mouse_handler, SCRIPT_COROUTINE, 0);
-		coroutine_resume((Coroutine *)v4->script->handler);
+		((Coroutine *)v4->script->handler)->resume();
 	}
 }
 
@@ -33102,20 +32964,20 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
 //----- (00445650) --------------------------------------------------------
 void coroutine_main()
 {
-	void(*script_main)(Script *); // ST04_4@1
+    void(*script_main)(Script *); // ST04_4@1
 
-	Script *arg = task_creation_handler_arg;
-	script_main = task_creation_handler;
+    Script *arg = task_creation_handler_arg;
+    script_main = task_creation_handler;
 
     log("Coroutine #%u %s (%08X, %08X), created", coroutine_current->id, coroutine_current->debug_handler_name, script_main, arg);
 
-	coroutine_resume(coroutine_current->yield_to);
+    coroutine_current->yield_to->resume();
 
     log("Coroutine #%u %s (%08X, %08X), start", coroutine_current->id, coroutine_current->debug_handler_name, script_main, arg);
     script_main(arg);
 
     log("Coroutine #%u %s (%08X, %08X), exit", coroutine_current->id, coroutine_current->debug_handler_name, script_main, arg);
-	script_yield(arg);
+    script_yield(arg);
 }
 
 //----- (00445690) --------------------------------------------------------
