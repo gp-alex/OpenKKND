@@ -6,6 +6,7 @@
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
+#include "src/Coroutine.h"
 
 
 
@@ -479,22 +480,17 @@ bool script_list_alloc(int coroutine_stack_size)
 Script *script_create_coroutine_impl(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size, const char *debug_handler_name)
 {
     Script *v3; // esi@1
-    int v6; // edx@3
 
     v3 = script_list_free_pool;
     if (script_list_free_pool)
     {
-        v6 = stack_size;
-        if (!stack_size)
-            v6 = coroutine_default_stack_size;
-
         script_list_free_pool = script_list_free_pool->next;
 
         memset(v3, SCRIPT_COROUTINE, sizeof(Script));
         v3->script_type = type;
         v3->routine_type = SCRIPT_COROUTINE;
 
-        auto coroutine = couroutine_create(coroutine_main, v6, debug_handler_name);
+        auto coroutine = couroutine_create(coroutine_main, debug_handler_name);
         v3->handler = (void(*)(Script *))coroutine;
 
         if (coroutine)
@@ -505,7 +501,7 @@ Script *script_create_coroutine_impl(enum SCRIPT_TYPE type, void(*handler)(Scrip
             script_execute_list_prepend(v3);
 
             // call coroutine_main to queue up execution of  task_creation_handler( task_creation_handler_arg )
-            coroutine_resume(coroutine);
+            coroutine->resume();
 
             return v3;
         }
@@ -605,7 +601,7 @@ int script_445370_yield_to_main_thread(Script *a1, int flags, int a3)
     a1->field_28 = flags;
     if (a1->routine_type == SCRIPT_COROUTINE)
     {
-        coroutine_resume(coroutine_list_head);
+        coroutine_list_head->resume();
         a1->field_28 = 0;
         a1->field_2C = 0;
     }
@@ -662,7 +658,7 @@ void script_yield(Script *a1)
     a1->flags_20 = v2;
     a1->field_24 |= v2;
     if (a1->routine_type == SCRIPT_COROUTINE)
-        coroutine_resume(coroutine_list_head);
+        coroutine_list_head->resume();
 }
 
 //----- (004454A0) --------------------------------------------------------
@@ -732,7 +728,7 @@ void script_list_update()
                     switch (i->routine_type)
                     {
                     case SCRIPT_COROUTINE:
-                        coroutine_resume((Coroutine *)i->handler);
+                        ((Coroutine *)i->handler)->resume();
                         break;
 
                     case SCRIPT_FUNCTION:
