@@ -90,6 +90,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../..</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -119,6 +121,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Coroutine.cpp" />
     <ClCompile Include="..\..\src\Cursor.cpp" />
     <ClCompile Include="..\..\src\Entity.cpp" />
     <ClCompile Include="..\..\src\File.cpp" />
@@ -169,6 +172,7 @@
     <ClInclude Include="..\..\lib\src\legacy_dx\rmxfguid.h" />
     <ClInclude Include="..\..\lib\src\legacy_dx\rmxftmpl.h" />
     <ClInclude Include="..\..\lib\src\legacy_dx\strsafe.h" />
+    <ClInclude Include="..\..\src\Coroutine.h" />
     <ClInclude Include="..\..\src\Cursor.h" />
     <ClInclude Include="..\..\src\Entity.h" />
     <ClInclude Include="..\..\src\File.h" />

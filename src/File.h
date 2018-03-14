@@ -1,14 +1,19 @@
 #pragma once
 
+#include <cstdio>
+
 /* 248 */
-struct File
-{
-    int flags;
-    void *handle_or_FILE;
-    void *handle_8;
-    void *view;
-    void *view_current_ptr;
-    int view_end_ptr;
-    File *next;
-    File *prev;
+class File {
+ public:
+  File() {}
+  virtual ~File() {}
+  static File *open(const char *filename);
+
+  int read(void *out_data, int num_bytes);
+  void *read_hunk();
+  int seek(size_t length, int dir);
+  void close();
+
+ protected:
+  FILE *handle;
 };

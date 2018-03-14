@@ -15,6 +15,7 @@
 #include "src/Cursor.h"
 #include "src/Entity.h"
 #include "src/Input.h"
+#include "src/Coroutine.h"
 
 #pragma comment(lib, "Winmm.lib") // timeGetTime
 #pragma comment(lib, "ddraw.lib") // DirectDrawCreate
@@ -1165,150 +1166,11 @@ void entity_mode_blacksmith_on_death(Entity *a1)
     entity_mode_building_default_on_death(a1);
 }
 
-//----- (00402910) --------------------------------------------------------
-bool coroutine_list_alloc()
-{
-	coroutine_list = new Coroutine[2000];
-	if (coroutine_list)
-	{
-		for (int i = 0; i < 2000; ++i)
-		{
-			//v2 = &coroutine_list[i];
-			//v2->yield_to = 0;
-			//v2->context = 0;
-			//v2->stack = 0;
-			//v2->next = 0;
-			coroutine_list[i].next = &coroutine_list[i + 1];
-		}
-		coroutine_list[1999].next = 0;
-		coroutine_list_head = coroutine_list;
-		coroutine_list_next = coroutine_list + 1;
-        return true;
-	}
-
-	return false;
-}
-
-//----- (00402980) --------------------------------------------------------
-Coroutine *couroutine_create(void(*function)(), size_t stack_size, const char *debug_handler_name)
-{
-	Coroutine *v2; // edi@1
-	int *result; // eax@2
-	Coroutine **head_next; // ebx@3
-	int v7; // esi@5
-
-	v2 = coroutine_list_next;
-	if (coroutine_list_next)
-	{
-		head_next = &coroutine_list_next->next;
-		coroutine_list_next = coroutine_list_next->next;
-		result = (int *)malloc(stack_size);
-		v2->context = result;
-        v2->debug_handler_name = debug_handler_name;
-		if (result)
-		{
-			v7 = stack_size >> 2;
-            v2->context[v7 - 1] = (int)nullsub_1;
-			v2->context[v7 - 2] = 0;
-			v2->context[v7 - 3] = (int)function;
-			v2->context[v7 - 4] = (int)&v2->context[v7 - 4];
-			v2->stack = (int)&v2->context[v7 - 7];
-			return v2;
-		}
-		else
-		{
-			*head_next = coroutine_list_next;
-			coroutine_list_next = v2;
-            return nullptr;
-		}
-	}
-	else
-	{
-        return nullptr;
-	}
-}
-
-//----- (00402A00) --------------------------------------------------------
-void coroutine_list_remove(Coroutine *a1)
-{
-	Coroutine *v1; // esi@1
-
-	v1 = a1;
-	if (a1)
-	{
-		if (a1->context)
-			free(a1->context);
-		v1->next = coroutine_list_next;
-		coroutine_list_next = v1;
-	}
-}
-
 //----- (00402A30) --------------------------------------------------------
 int script_execute(Script *self)
 {
 	self->handler(self);
 	return 0;
-}
-
-//----- (00402A40) --------------------------------------------------------
-void coroutine_list_free()
-{
-	free(coroutine_list);
-	coroutine_list = 0;
-	coroutine_list_next = 0;
-}
-
-//----- (00402A60) --------------------------------------------------------
-__declspec(naked) int coroutine_yield_asm(Coroutine *self)
-{
-    __asm
-    {
-        push    ebp
-        mov     ebp, esp
-        push    ebx
-        push    esi
-        push    edi
-        mov     coroutine_current_stack, esp
-        mov     eax, coroutine_current
-        mov     ecx, coroutine_current_stack
-        mov     [eax + 8], ecx // coroutine_current->stack = esp
-        mov     eax, [self]
-        mov     edx, coroutine_current
-        mov     [eax], edx // self->yield_to = coroutine_current;
-        mov     coroutine_current, eax
-        mov     eax, [eax + 8]
-        mov     coroutine_current_stack, eax
-        mov     esp, coroutine_current_stack
-        xor     eax, eax
-        pop     edi
-        pop     esi
-        pop     ebx
-        pop     ebp
-        retn
-        ; -------------------------------------------------------------------------- -
-        pop     edi
-        pop     esi
-        xor     eax, eax
-        pop     ebx
-        pop     ebp
-        retn
-    }
-}
-/*int coroutine_resume(Coroutine *self)
-{
-	int current_stack; // [sp+0h] [bp-Ch]@1
-
-	coroutine_current_stack = (int)&current_stack;
-	coroutine_current->stack = (int)&current_stack;
-	self->yield_to = coroutine_current;
-	coroutine_current = self;
-	coroutine_current_stack = self->stack;
-	return 0;                                     // DECOMPILATION ERROR double exit here, view assembly
-}*/
-
-int coroutine_resume(Coroutine *self)
-{
-    return coroutine_yield_asm(self);
 }
 
 //----- (00402AB0) --------------------------------------------------------
@@ -10861,15 +10723,11 @@ bool LVL_SysInit()
 	if (result)
 	{
 		stru2_list_initialized = 1;
-		result = file_list_alloc();
+		result = render_create_window(640, 480, 8, 1, false);
 		if (result)
 		{
-			result = render_create_window(640, 480, 8, 1, false);
-			if (result)
-			{
-				game_window_created = 1;
-				result = sound_initialize() != 0;
-			}
+			game_window_created = 1;
+			result = sound_initialize() != 0;
 		}
 	}
 	return result;
@@ -10878,12 +10736,6 @@ bool LVL_SysInit()
 //----- (0041B140) --------------------------------------------------------
 DataHunk *LVL_LoadLevel(const char *filename_)
 {
-	DataHunk *result; // eax@1
-	File *level_file; // esi@1
-	void *level_data; // ebx@2
-	RllcHunk *level_rllc; // edi@3
-
-
 	char cwd[1024];
 	char filename[1024];
 
@@ -10908,22 +10760,17 @@ DataHunk *LVL_LoadLevel(const char *filename_)
 	}
 	else throw 42;
 
-	result = (DataHunk *)file_list_fopen(filename);
-	level_file = (File *)result;
-	if (result)
-	{
-		result = (DataHunk *)file_list_read_hunk((File *)result);
-		level_data = result;
-		if (result)
-		{
-			result = (DataHunk *)file_list_read_hunk(level_file);
-			level_rllc = (RllcHunk *)result;
-			if (result)
-			{
-				file_list_close(level_file);
+	DataHunk *result = nullptr;
+
+	File *level_file = File::open(filename);
+	if (level_file) {
+    void *level_data = (DataHunk*)level_file->read_hunk();
+		if (level_data) {
+			RllcHunk *level_rllc = (RllcHunk*)level_file->read_hunk();
+			if (level_rllc) {
+				level_file->close();
 				result = (DataHunk *)HUNK_FixPointers(level_data, level_rllc);
-				if (result)
-				{
+				if (result) {
 					free(level_rllc);
 					result = (DataHunk *)level_data;
 				}
@@ -11102,7 +10949,6 @@ void GAME_Deinit()
 		render_cleanup();
 	sound_deinit();
 	stru2_list_free();
-	file_list_free();
 	VIDEO_free();
 }
 
@@ -17289,7 +17135,7 @@ int GAME_Load()
 		|| (task_mobd17_cursor = v2,
 			UNIT_num_player_units = 0,
 			UNIT_num_nonplayer_units = 0,
-			v3 = fopen(current_savegame_filename, aRb),
+			v3 = fopen(current_savegame_filename, "rb"),
 			(v4 = v3) == 0))
 	{
 		game_load_in_progress = 0;
@@ -19340,7 +19186,7 @@ bool _424560_parse_unit_stats_table(const char *filename)
 	char line[1024]; // [sp+8h] [bp-400h]@2
 
 	v1 = filename;
-	v2 = fopen(filename, aRb);
+	v2 = fopen(filename, "rb");
 	v3 = v2;
 	if (v2)
 	{
@@ -26938,13 +26784,13 @@ void _439C10_sound_thread(Sound *a1)
 	v57.dwSize = 0;
 	v57.lpwfxFormat = 0;
 	if (a1 != (Sound *)0xFFFFFFBC && *v3)
-		v1->file = file_list_fopen(v3);
+		v1->file = File::open(v3);
 	else
 		a1->file = 0;
 	v4 = v1->file;
 	if (!v4 || !file_read_wav(v4, &out_data, &a3))
 	{
-		file_list_close(v1->file);
+		v1->file->close();
 		v44 = v1->next;
 		v1->flags = v1->flags & 0xFFFFFFF7 | 0x40;
 		if (v44)
@@ -26964,7 +26810,7 @@ void _439C10_sound_thread(Sound *a1)
 	v57.dwFlags = 232;
 	if (pds->CreateSoundBuffer(&v57, &v1->pdsb, 0))
 	{
-		file_list_close(v1->file);
+		v1->file->close();
 		v42 = v1->next;
 		v1->flags = v1->flags & 0xFFFFFFF7 | 0x40;
 		if (v42)
@@ -27008,7 +26854,7 @@ void _439C10_sound_thread(Sound *a1)
 				v10 = v49;
 				if (v49 < (unsigned int)a1)
 					v9 = (Sound *)v49;
-				v11 = file_read(v1->file, v48, (int)v9);
+				v11 = v1->file->read(v48, (int)v9);
 				v9 = a1;
 				v12 = v10 - v11;
 				v49 = v12;
@@ -27029,7 +26875,7 @@ void _439C10_sound_thread(Sound *a1)
 					v14 = num_bytes;
 					if (v12 < num_bytes)
 						v14 = v12;
-					v15 = file_read(v1->file, v47, v14);
+					v15 = v1->file->read(v47, v14);
 					v49 = v12 - v15;
 					v2 = (char *)(v50 + num_bytes);
 					if (v50 + num_bytes >= v56.dwBufferBytes)
@@ -27087,7 +26933,7 @@ void _439C10_sound_thread(Sound *a1)
 						v24 = v49;
 						if (v49 < (unsigned int)a1)
 							v23 = (Sound *)v49;
-						v25 = file_read(v1->file, v48, (int)v23);
+						v25 = v1->file->read(v48, (int)v23);
 						v23 = a1;
 						v26 = v25;
 						v27 = v24 - v25;
@@ -27111,7 +26957,7 @@ void _439C10_sound_thread(Sound *a1)
 							v29 = num_bytes;
 							if (v27 < num_bytes)
 								v29 = v27;
-							v30 = file_read(v1->file, v47, v29);
+							v30 = v1->file->read(v47, v29);
 							v31 = v1->flags & 0x10;
 							v49 = v27 - v30;
 							if (v31)
@@ -27144,7 +26990,7 @@ void _439C10_sound_thread(Sound *a1)
 				v18 = 0;
 				v49 = v1->field_40;
 				v51 = 0;
-				file_seek(v34, 0, 0);
+				v34->seek(0, 0);
 				file_read_wav(v1->file, &v55, &v50);
 			}
 			else
@@ -27198,7 +27044,7 @@ void _439C10_sound_thread(Sound *a1)
 	}
 LABEL_89:
 	v1->pdsb->Stop();
-	file_list_close(v1->file);
+	v1->file->close();
 	v41 = v1->flags;
 	v1->file = 0;
 	LOBYTE_HEXRAYS(v41) = v41 | 0x40;
@@ -27447,44 +27293,44 @@ bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3)
 	out_dataa = out_data;
 	if (file)
 	{
-		file_read(file, v7, 4);
+		file->read(v7, 4);
 		if (!memcmp(RIFF, v7, 4u))
 		{
-			file_read(v3, &v8, 4);
-			file_read(v3, v7, 4);
-			if (!memcmp(WAVE, v7, 4u) && file_read(v3, v7, 4) == 4)
+			v3->read(&v8, 4);
+			v3->read(v7, 4);
+			if (!memcmp(WAVE, v7, 4u) && v3->read(v7, 4) == 4)
 			{
 				while (v4 < 0x20)
 				{
 					if (!memcmp(fmt, v7, 4u))
 					{
-						file_read(v3, &v8, 4);
+						v3->read(&v8, 4);
 						if (v8 < 0xE)
 							return 0;
 						v5 = (__int16 *)out_dataa;
-						file_read(v3, out_dataa, 14);
+						v3->read(out_dataa, 14);
 						if (*v5 == 1)
-							file_read(v3, v5 + 7, 2);
+						v3->read(v5 + 7, 2);
 						v4 = 0;
-						if (file_read(v3, v7, 4) == 4)
+						if (v3->read(v7, 4) == 4)
 						{
 							while (v4 < 0x20)
 							{
 								if (!memcmp(aData, v7, 4u))
 								{
-									file_read(v3, &v8, 4);
+									v3->read(&v8, 4);
 									if (a3)
 										*a3 = v8;
 									return 1;
 								}
 								++v4;
-								if (file_read(v3, v7, 4) != 4)
+								if (v3->read(v7, 4) != 4)
 									break;
 							}
 						}
 					}
 					++v4;
-					if (file_read(v3, v7, 4) != 4)
+					if (v3->read(v7, 4) != 4)
 						return 0;
 				}
 			}
@@ -27606,7 +27452,7 @@ void sound_list_remove(Sound *a1)
 			v3 = v1->file;
 			if (v3)
 			{
-				file_list_close(v3);
+				v3->close();
 				v1->file = 0;
 			}
 		}
@@ -32208,7 +32054,7 @@ void sub_444080(int mapd_idx)
 	{
         stru29_list_alloc();
 		v4 = sprite_create_scripted(MOBD_79, 0, (void(*)(Script *))script_mobd79__main_menu_mouse_handler, SCRIPT_COROUTINE, 0);
-		coroutine_resume((Coroutine *)v4->script->handler);
+		((Coroutine *)v4->script->handler)->resume();
 	}
 }
 
@@ -33118,20 +32964,20 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
 //----- (00445650) --------------------------------------------------------
 void coroutine_main()
 {
-	void(*script_main)(Script *); // ST04_4@1
+    void(*script_main)(Script *); // ST04_4@1
 
-	Script *arg = task_creation_handler_arg;
-	script_main = task_creation_handler;
+    Script *arg = task_creation_handler_arg;
+    script_main = task_creation_handler;
 
     log("Coroutine #%u %s (%08X, %08X), created", coroutine_current->id, coroutine_current->debug_handler_name, script_main, arg);
 
-	coroutine_resume(coroutine_current->yield_to);
+    coroutine_current->yield_to->resume();
 
     log("Coroutine #%u %s (%08X, %08X), start", coroutine_current->id, coroutine_current->debug_handler_name, script_main, arg);
     script_main(arg);
 
     log("Coroutine #%u %s (%08X, %08X), exit", coroutine_current->id, coroutine_current->debug_handler_name, script_main, arg);
-	script_yield(arg);
+    script_yield(arg);
 }
 
 //----- (00445690) --------------------------------------------------------

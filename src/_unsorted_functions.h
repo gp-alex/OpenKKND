@@ -49,12 +49,7 @@ void entity_mode_402780_blacksmith(Entity *a1);
 void entity_mode_402840_blacksmith(Entity *); // idb
 void entity_mode_402870_blacksmith(Entity *a1);
 void entity_mode_blacksmith_on_death(Entity *a1);
-bool coroutine_list_alloc();
-Coroutine *couroutine_create(void(*function)(), size_t stack_size, const char *debug_handler_name);
-void coroutine_list_remove(Coroutine *a1);
 int script_execute(Script *self);
-void coroutine_list_free();
-int coroutine_resume(Coroutine *self); // idb
 void entity_mode_402AB0(Entity *);
 bool entity_402AC0_is_mode_402AB0(Entity *a1);
 void entity_attach_docking_point(Entity *a1);
@@ -205,13 +200,6 @@ bool stru24_40B490(stru24 *a1, UNIT_ID a2, int *out_x, int *out_y);
 void script_40B700_ai(Script *a1);
 int UNIT_InitAiPlayers();
 void UNIT_FreeAiPlayers();
-int file_list_alloc();
-File *file_list_fopen(const char *filename);
-int file_read(File *a1, void *out_data, int num_bytes);
-void *file_list_read_hunk(File *a1);
-int file_seek(File *a1, __int32 length, int dir); // idb
-int file_list_close(File *a1);
-void file_list_free();
 int VIDEO_IsAllocated();
 int VIDEO_ReadAndAllocDrawJob(const char *a1, int x, int y, int z_index);
 int VIDEO_DoFrame();
