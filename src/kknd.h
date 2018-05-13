@@ -1252,15 +1252,6 @@ struct stru24_stru310
 	int field_20;
 };
 
-/* 349 */
-struct BuildingLimits
-{
-	BuildingLimits *next;
-	BuildingLimits *prev;
-	enum UNIT_ID building_unit_stat_idx;
-	int num_buildings_of_this_type;
-};
-
 /* 350 */
 struct stru26
 {

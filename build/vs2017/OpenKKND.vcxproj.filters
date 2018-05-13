@@ -25,6 +25,9 @@
     <Filter Include="src\Application\Scripts">
       <UniqueIdentifier>{927792d4-97e9-4590-88f7-40b73a4af2aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Engine\Infrastructure">
+      <UniqueIdentifier>{793fb185-3502-4dc4-a924-6ba4a1262f6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\lib\src\legacy_dx\d3d.h">
@@ -162,11 +165,14 @@
     <ClInclude Include="..\..\src\Engine\EntityFactory.h">
       <Filter>src\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine\EntityRepository.h">
-      <Filter>src\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine\Entity.h">
       <Filter>src\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\BuildingLimits.h">
+      <Filter>src\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Infrastructure\EntityRepository.h">
+      <Filter>src\Engine\Infrastructure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -251,9 +257,6 @@
     <ClCompile Include="..\..\src\Engine\EntityFactory.cpp">
       <Filter>src\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine\EntityRepository.cpp">
-      <Filter>src\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine\Entity.cpp">
       <Filter>src\Engine</Filter>
     </ClCompile>
@@ -268,6 +271,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine\BuildingLimits.cpp">
       <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Infrastructure\EntityRepository.cpp">
+      <Filter>src\Engine\Infrastructure</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,9 @@
 #include "Engine/EntityFactory.h"
 
+#include "_unsorted_data.h"
+#include "kknd.h"
+#include "ScriptEvent.h"
+
 //----- (0044C6B0) --------------------------------------------------------
 Entity *entity_list_create(Script *a1)
 {

@@ -8,7 +8,9 @@
 #include "src/ScriptEvent.h"
 #include "src/Random.h"
 #include "src/Render.h"
-#include "src/Entity.h"
+
+#include "Engine/Entity.h"
+
 #include "Infrastructure/Input.h"
 
 

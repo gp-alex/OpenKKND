@@ -1,3 +1,10 @@
+#include "_unsorted_data.h"
+#include "kknd.h"
+#include "Script.h"
+#include "ScriptEvent.h"
+
+#include "Engine/Entity.h"
+
 
 //----- (00447380) --------------------------------------------------------
 void UNIT_Handler_GuardTower(Script *a1)

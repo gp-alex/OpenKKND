@@ -6,19 +6,22 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
-#include "Infrastructure/File.h"
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/stru29.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
-#include "src/Entity.h"
-#include "Infrastructure/Input.h"
 #include "src/Coroutine.h"
 
 #include "Application/Game.h"
 #include "Application/GameFactory.h"
+
+#include "Engine/BuildingLimits.h"
+#include "Engine/Entity.h"
+
+#include "Infrastructure/File.h"
+#include "Infrastructure/Input.h"
 
 using Application::Game;
 using Application::GameFactory;
@@ -1522,9 +1525,7 @@ void entity_clanhall_on_upgrade_complete(Script *receiver, Script *sender, enum 
 	if (v5->player_side == player_side)
 	{
 		can_unlock_towers = 0;
-		*(&building_limits_list_free_pool           // DECOMPILATION ERROR __477378_clanhall negindex
-			+ v6->num_upgrades) = (BuildingLimits *)((char *)*(&building_limits_list_free_pool
-				+ v6->num_upgrades) - 1);
+        --_477378_clanhall.num_buildings_by_level[v6->num_upgrades - 1];
 		++_477378_clanhall.num_buildings_by_level[v6->num_upgrades];
 		if (v6->num_upgrades > max_clanhall_level)
 		{
@@ -1855,7 +1856,7 @@ void entity_mode_clanhall_on_death_reset_production_options(Entity *a1)
 			goto LABEL_17;
 		}
 	LABEL_18:
-		v7 = (int)*(&building_limits_list_free_pool + v4--);
+		v7 = (int)building_limits_list_free_pool[v4--].next;
 	} while (!v7 && v4 > 0);
 	v1 = v8;
 LABEL_21:
@@ -36939,8 +36940,6 @@ void log(const char *fmt, ...)
 //----- (0044D5D0) --------------------------------------------------------
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-    static_assert(sizeof(BuildingLimits) == 0x10);
-
     timeBeginPeriod(1u);
 
     log_init();

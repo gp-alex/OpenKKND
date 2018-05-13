@@ -299,8 +299,6 @@ extern char aUnitReady[]; // idb
 extern char aCouldntCreateNewUnit[]; // idb
 extern char aBuildingCompleted[]; // idb
 extern char aBuildingSabotaged[]; // idb
-extern char aYouCanOnlyBuild1OfThese[]; // idb
-extern char aYouCanOnlyBuild4OfThese[]; // idb
 extern char aAirStrikeReady[]; // idb
 extern char a5000ResourceUn[20]; // weak
 extern char a1000ResourceUn[]; // idb
@@ -447,10 +445,6 @@ extern int __477318_beastenclosure_negindex[]; // weak
 extern stru15unit _477318_beastenclosure;
 extern int max_beastenclosure_level; // weak
 extern int dword_477358; // weak
-extern BuildingLimits *building_limits_list_head;
-extern BuildingLimits *building_limits_list_end;
-extern BuildingLimits *building_limits_list;
-extern BuildingLimits *building_limits_list_free_pool;
 extern stru15unit _477378_clanhall;
 extern int max_clanhall_level; // weak
 extern int _4773A0_boxd_item0_num_things; // weak

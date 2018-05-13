@@ -1,3 +1,10 @@
+#include "_unsorted_data.h"
+#include "kknd.h"
+#include "Script.h"
+#include "ScriptEvent.h"
+
+#include "Engine/Entity.h"
+
 
 //----- (00444180) --------------------------------------------------------
 void UNIT_Handler_OilTanker(Script *a1)

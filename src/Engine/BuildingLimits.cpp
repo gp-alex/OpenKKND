@@ -1,7 +1,20 @@
+#include "Engine/BuildingLimits.h"
+
+#include "_unsorted_data.h"
+#include "_unsorted_functions.h"
+
+#include "Engine/Entity.h"
+
+BuildingLimits *building_limits_list_head = nullptr;
+BuildingLimits *building_limits_list_end = nullptr;
+BuildingLimits *building_limits_list = nullptr;
+BuildingLimits *building_limits_list_free_pool = nullptr;
 
 //----- (00403960) --------------------------------------------------------
 int building_limits_list_alloc()
 {
+    static_assert(sizeof(BuildingLimits) == 0x10);
+
     building_limits_list = new BuildingLimits[20];
     if (building_limits_list)
     {
@@ -62,12 +75,12 @@ bool building_limits_can_build(enum UNIT_ID unit_id)
             }
             if (unit_id == UNIT_STATS_SURV_RESEARCH_LAB || unit_id == UNIT_STATS_MUTE_ALCHEMY_HALL)
             {
-                show_message_ex(0, aYouCanOnlyBuild1OfThese);
+                show_message_ex(0, "You can only build 1 of these");
                 return 0;
             }
             if (v1->num_buildings_of_this_type >= 4)
             {
-                show_message_ex(0, aYouCanOnlyBuild4OfThese);
+                show_message_ex(0, "You can only build 4 of these");
                 return 0;
             }
         }

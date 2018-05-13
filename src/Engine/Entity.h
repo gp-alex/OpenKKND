@@ -1,8 +1,12 @@
 #pragma once
 
+#include "kknd.h"
+
+
 struct Script;
 struct DrawJob;
 struct DrawJobDetails;
+struct stru11unit;
 
 
 

@@ -6,8 +6,9 @@
 
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
-#include "src/Entity.h"
 #include "src/Cursor.h"
+
+#include "Engine/Entity.h"
 
 
 //----- (00412B60) --------------------------------------------------------

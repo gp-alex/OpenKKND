@@ -6,7 +6,8 @@
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
-#include "src/Entity.h"
+
+#include "Engine/Entity.h"
 
 
 

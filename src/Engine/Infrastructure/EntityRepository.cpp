@@ -1,4 +1,9 @@
-#include "Engine/EntityRepository.h"
+#include "Engine/Infrastructure/EntityRepository.h"
+
+#include "_unsorted_data.h"
+#include "kknd.h"
+
+using Engine::Infrastructure::EntityRepository;
 
 //----- (0044C890) --------------------------------------------------------
 void entity_list_remove(Entity *a1)

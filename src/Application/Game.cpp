@@ -6,16 +6,18 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
-#include "Infrastructure/File.h"
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/stru29.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
-#include "src/Entity.h"
-#include "Infrastructure/Input.h"
 #include "src/Coroutine.h"
+
+#include "Engine/Entity.h"
+
+#include "Infrastructure/File.h"
+#include "Infrastructure/Input.h"
 
 using Application::Game;
 

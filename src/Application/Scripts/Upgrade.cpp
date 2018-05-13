@@ -1,3 +1,11 @@
+#include "_unsorted_data.h"
+#include "kknd.h"
+#include "Random.h"
+#include "Script.h"
+#include "ScriptEvent.h"
+
+#include "Engine/Entity.h"
+
 
 //----- (00437FE0) --------------------------------------------------------
 void EventHandler_UpgradeProcess(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
