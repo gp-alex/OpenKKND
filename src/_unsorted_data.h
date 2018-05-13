@@ -112,10 +112,6 @@ extern char *reg_DriveLetter;
 extern char *reg_GamePath;
 extern char a_[2]; // weak
 extern char *aS;
-extern char *aWaitLvl_runlev;
-extern char *aLvl_loadlevelW;
-extern char *aNetz_initFaile;
-extern char *aLvl_sysinitFai;
 extern char *aLvl_runlevelFa;
 extern char *aLvl_substhunkF;
 extern char *MOBD;
@@ -557,12 +553,10 @@ extern int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
 extern PALETTEENTRY *_4785DC_syscolors_palette_entries;
 extern void (*j_render_4349D0_draw_tile_32x32)(void *pixels, int x, int y); // idb
 extern int(*j_render_4351A0_draw)(void *pixels, int x, int y, int w, int h); // idb
-extern int _4785E8_game_width_unused; // weak
 extern PALETTEENTRY palette_4785F0[256]; // weak
 extern void(*p_render_set_clip)(int, int, int, int);
 extern void (*j_render_434C60)(unsigned __int8 *pixels, unsigned __int8 *palette, int x, int y, int w, int h); // idb
 extern int(*j_render_435320)(void *pixels, int x, int y, int w, int h);
-extern int _478A00_fullscreen_unused; // weak
 extern void(*j_render_draw_tile)(void *data, int image_off_x, int image_off_y, int image_x_size, int image_y_size);
 extern void(*j_render_draw_cursor_434A00)(void *pixels, int x, int y, int w, int h); // idb
 extern int render_478A0C; // weak
@@ -570,14 +564,11 @@ extern int(*j_render_4349A0_draw_tile_32x32)(void *pixels, int x, int y); // idb
 extern int _478A14_prev_stru1_palette_entries; // weak
 extern COLORREF sys_colors[25];
 extern void(*j_render_434BD0)(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
-extern int _478A80_game_height_unused; // weak
-extern int _478A84_game_height; // weak
 extern int render_height; // idb
 extern int render_width; // idb
 extern void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
 extern int render_478A94; // weak
 extern int j_render_nullsub_1; // weak
-extern int _478AA0_game_width; // weak
 extern DataBoxd_stru0_per_map_unit *_478AA8_boxd_stru0_array;
 extern int _478AAC_map_height; // weak
 extern int dword_478AB0; // weak

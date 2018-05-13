@@ -16,6 +16,15 @@
     <Filter Include="src\Scripts">
       <UniqueIdentifier>{cc1fb11a-e198-4ef9-8b96-ff4a34a7b930}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Infrastructure">
+      <UniqueIdentifier>{e050ecab-636c-46eb-b775-09b9205139f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Application">
+      <UniqueIdentifier>{0f1f5d6f-e6a0-4aa5-9d30-417b46106631}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Engine">
+      <UniqueIdentifier>{19c8cf86-05ac-474c-80d7-65691690fca9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\lib\src\legacy_dx\d3d.h">
@@ -108,16 +117,10 @@
     <ClInclude Include="..\..\src\hexrays-defs.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\File.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Random.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Render.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Netz.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\stru29.h">
@@ -135,11 +138,29 @@
     <ClInclude Include="..\..\src\Entity.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Input.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Coroutine.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Application\Game.h">
+      <Filter>src\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Application\GameConfig.h">
+      <Filter>src\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Application\GameConfigFactory.h">
+      <Filter>src\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Application\GameFactory.h">
+      <Filter>src\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Infrastructure\File.h">
+      <Filter>src\Infrastructure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Infrastructure\Input.h">
+      <Filter>src\Infrastructure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Infrastructure\Netz.h">
+      <Filter>src\Infrastructure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -164,9 +185,6 @@
     <ClCompile Include="..\..\src\Scripts\Infantry.cpp">
       <Filter>src\Scripts</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\File.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Scripts\Mission.cpp">
       <Filter>src\Scripts</Filter>
     </ClCompile>
@@ -188,9 +206,6 @@
     <ClCompile Include="..\..\src\Scripts\MainMenu.cpp">
       <Filter>src\Scripts</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Netz.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\stru29.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -206,11 +221,29 @@
     <ClCompile Include="..\..\src\Entity.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Input.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Coroutine.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Game.cpp">
+      <Filter>src\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\GameConfig.cpp">
+      <Filter>src\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\GameConfigFactory.cpp">
+      <Filter>src\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\GameFactory.cpp">
+      <Filter>src\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Infrastructure\File.cpp">
+      <Filter>src\Infrastructure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Infrastructure\Input.cpp">
+      <Filter>src\Infrastructure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Infrastructure\Netz.cpp">
+      <Filter>src\Infrastructure</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

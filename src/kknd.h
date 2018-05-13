@@ -13,10 +13,10 @@
 
 #include "src/hexrays-defs.h"
 
-#include "src/File.h"
-#include "src/Netz.h"
+#include "Infrastructure/File.h"
+#include "Infrastructure/Netz.h"
 #include "src/Script.h"
-#include "src/Input.h"
+#include "Infrastructure/Input.h"
 
 struct UnitAttachmentPoint;
 struct UnitDamageSource;

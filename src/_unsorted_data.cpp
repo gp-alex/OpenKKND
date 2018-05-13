@@ -2736,10 +2736,6 @@ char *reg_DriveLetter = "DriveLetter";
 char *reg_GamePath = "GamePath";
 char a_[2] = "."; // weak
 char *aS = "%s";
-char *aWaitLvl_runlev = "Wait LVL_RunLevel() failed\n";
-char *aLvl_loadlevelW = "LVL_LoadLevel(wait.lvl) failed\n";
-char *aNetz_initFaile = "NETZ_Init() failed %02x: %s\n";
-char *aLvl_sysinitFai = "LVL_SysInit() failed\n";
 char *aLvl_runlevelFa = "LVL_RunLevel() failed\n";
 char *aLvl_substhunkF = "LVL_SubstHunk( ) failed\n";
 char *MOBD = "MOBD";
@@ -6517,12 +6513,10 @@ int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
 PALETTEENTRY *_4785DC_syscolors_palette_entries;
 void (*j_render_4349D0_draw_tile_32x32)(void *pixels, int x, int y); // idb
 int(*j_render_4351A0_draw)(void *pixels, int x, int y, int w, int h); // idb
-int _4785E8_game_width_unused; // weak
 PALETTEENTRY palette_4785F0[256]; // weak
 void(*p_render_set_clip)(int, int, int, int);
 void(*j_render_434C60)(unsigned __int8 *pixels, unsigned __int8 *palette, int x, int y, int w, int h); // idb
 int(*j_render_435320)(void *pixels, int x, int y, int w, int h);
-int _478A00_fullscreen_unused; // weak
 void(*j_render_draw_tile)(void *data, int image_off_x, int image_off_y, int image_x_size, int image_y_size);
 void(*j_render_draw_cursor_434A00)(void *pixels, int x, int y, int w, int h); // idb
 int render_478A0C; // weak
@@ -6530,14 +6524,11 @@ int(*j_render_4349A0_draw_tile_32x32)(void *pixels, int x, int y); // idb
 int _478A14_prev_stru1_palette_entries; // weak
 COLORREF sys_colors[25];
 void(*j_render_434BD0)(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
-int _478A80_game_height_unused; // weak
-int _478A84_game_height; // weak
 int render_height; // idb
 int render_width; // idb
 void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
 int render_478A94; // weak
 int j_render_nullsub_1; // weak
-int _478AA0_game_width; // weak
 DataBoxd_stru0_per_map_unit *_478AA8_boxd_stru0_array;
 int _478AAC_map_height; // weak
 int dword_478AB0; // weak

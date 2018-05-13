@@ -3,7 +3,7 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
-#include "src/Netz.h"
+#include "Infrastructure/Netz.h"
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"

@@ -9,7 +9,7 @@
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/Entity.h"
-#include "src/Input.h"
+#include "Infrastructure/Input.h"
 
 
 

@@ -6,7 +6,7 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
-#include "src/File.h"
+#include "Infrastructure/File.h"
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/stru29.h"
@@ -14,8 +14,14 @@
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
 #include "src/Entity.h"
-#include "src/Input.h"
+#include "Infrastructure/Input.h"
 #include "src/Coroutine.h"
+
+#include "Application/Game.h"
+#include "Application/GameFactory.h"
+
+using Application::Game;
+using Application::GameFactory;
 
 #pragma comment(lib, "Winmm.lib") // timeGetTime
 #pragma comment(lib, "ddraw.lib") // DirectDrawCreate
@@ -6728,31 +6734,16 @@ LABEL_9:
 	return a4a;
 }
 
-//----- (0040E390) --------------------------------------------------------
-bool GAME_SetResolution()
-{
-	_478A00_fullscreen_unused = 1;
-	_4785E8_game_width_unused = 640;
-	_478A80_game_height_unused = 480;
-	if (_478AA0_game_width != 640 || _478A84_game_height != 480)
-	{
-		_478AA0_game_width = 640;
-		_478A84_game_height = 480;
-	}
-	return 1;
-}
-
 //----- (0040E3E0) --------------------------------------------------------
 char *get_resource_res_subfolder()
 {
 	char *result; // eax@1
 
 	result = _465650_display_modes[1].name;
-	if (_478AA0_game_width >= 640)
+	//if (_478AA0_game_width >= 640)
 		result = _465650_display_modes[2].name;
 	return result;
 }
-// 478AA0: using guessed type int _478AA0_game_width;
 
 //----- (0040E400) --------------------------------------------------------
 void _40E400_set_palette(PALETTEENTRY *palette)
@@ -17740,90 +17731,6 @@ void GAME_ReadRegistry()
 	}
 }
 
-//----- (00422610) --------------------------------------------------------
-bool GAME_ShowWait()
-{
-	int v0; // eax@12
-	int v1; // esi@12
-	char *v2; // eax@13
-	//char *v3; // eax@16
-	DataMapd *v4; // eax@24
-	int v5; // esi@24
-	int v7; // [sp+0h] [bp-80h]@13
-	char v8[120]; // [sp+8h] [bp-78h]@13
-
-	GAME_ReadRegistry();
-	_4240E0_kknd_sve_read(pKknd_sve);
-	GAME_ParseCommandLine();
-	if (!LVL_SysInit())
-	{
-		GAME_Deinit();
-		if (aLvl_sysinitFai)
-			printf((const char *)aS, aLvl_sysinitFai);
-		exit(0);
-	}
-	if (!GAME_SetResolution())
-	{
-		GAME_Deinit();
-		if (aLvl_sysinitFai)
-			printf((const char *)aS, aLvl_sysinitFai);
-		exit(0);
-	}
-	REND_SetRoutines();
-
-	if (nocd)
-		strcpy(app_root_dir, a_);
-	else
-		sprintf(app_root_dir, aC, game_installation_drive_letter);
-	v0 = netz_init(-1, nullsub_1, (int(*)(int))netz_42E820);
-	v1 = v0;
-	if (v0)
-	{
-		v2 = netz_get_error_string(v0);
-		sprintf(v8, (const char *)aNetz_initFaile, v1, v2);
-		GAME_Deinit();
-		if (&v7 != (int *)-8)
-			printf((const char *)aS, v8);
-		exit(0);
-	}
-
-	wait_lvl = LVL_LoadLevel("wait.lvl");
-	if (!wait_lvl)
-	{
-		netz_deinit();
-		GAME_Deinit();
-		if (aLvl_loadlevelW)
-			printf((const char *)aS, aLvl_loadlevelW);
-		exit(0);
-	}
-	_47A010_mapd_item_being_drawn[0] = 0;
-	_47A010_mapd_item_being_drawn[1] = 0;
-	_47A010_mapd_item_being_drawn[2] = 0;
-	message_pump();
-	if (!LVL_RunLevel(wait_lvl))
-	{
-		netz_deinit();
-		GAME_Deinit();
-		if (aWaitLvl_runlev)
-			printf((const char *)aS, aWaitLvl_runlev);
-		exit(0);
-	}
-	v4 = LVL_FindMapd();
-	_40E400_set_palette(&v4->items->palette);
-	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
-	_47C380_mapd.mapd_cplc_render_y = 0x1EA00;     // 490
-	v5 = 1;
-	do
-	{
-		draw_list_update_and_draw();
-		TimedMessagePump();
-		--v5;
-	} while (v5);
-	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-	LVL_Deinit();
-	return 1;
-}
-
 //----- (00422860) --------------------------------------------------------
 void GAME_PrepareSuperLvl(int mapd_idx)
 {
@@ -18320,190 +18227,6 @@ bool on_level_finished()
 		_47A18C_probably_play_outro_movie = 1;
 	}
 	return 0;
-}
-
-//----- (00423460) --------------------------------------------------------
-int GAME_Main()
-{
-	int result; // eax@2
-	int mapd_idx; // ecx@5
-	Bitmap **v3; // esi@27
-
-	timeBeginPeriod(1u);
-	if (GAME_ShowWait())
-	{
-		if (VIDEO_Play(0))
-		{
-		LABEL_5:
-            REND_DirectDrawClearScreen(1);
-			mapd_idx = 0;
-			netz_47A82C = 0;
-			if (!single_player_game)
-			{
-				if (*(_DWORD *)&netz_47A740[2].str_0[0])
-				{
-					if (netz_47A834)
-					{
-						j_netz_430640();
-						mapd_idx = 7;
-					}
-					else
-					{
-						mapd_idx = 8;
-					}
-				}
-				else
-				{
-					mapd_idx = netz_468B6C_providers_idx != 0 ? 1 : 4;
-				}
-			}
-			GAME_PrepareSuperLvl(mapd_idx);
-			game_state = 0;
-			do
-			{
-				sprite_list_init_mobd_items();
-				sprite_list_update_positions();
-				input_update_keyboard();
-				input_update_mouse();
-				_43A370_process_sound();
-				stru1_animate();
-				script_list_update();
-				_4393F0_call_mapd();
-				VIDEO_DoFrame();
-				draw_list_update_and_draw();
-				TimedMessagePump();
-			} while (!_47DCF4_wm_quit_received && !game_state);
-
-            for (int mapd_item = 0; mapd_item < 3; ++mapd_item)
-            {
-                if (_47A010_mapd_item_being_drawn[mapd_item])
-                {
-                    bitmap_list_remove(_47A010_mapd_item_being_drawn[mapd_item]);
-                    _47A010_mapd_item_being_drawn[mapd_item] = 0;
-                }
-            }
-
-			LVL_Deinit();
-			dword_47A180 = 0;
-			free(current_level_lvl);
-			free(sprites_lvl);
-			sprites_lvl = 0;
-			if (is_game_loading())
-			{
-				prev_level_idx = -1;
-				current_level_idx = get_saveload_level_id();
-				set_player_side_by_level();
-			}
-			if (game_state != 3)
-			{
-				while (1)
-				{
-                    REND_DirectDrawClearScreen(1);
-					if (!is_game_loading())
-					{
-						if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
-						{
-							//VIDEO_Play(1);
-						}
-						else
-						{
-							GAME_PrepareSuperLvl(13);
-							game_state = 0;
-							do
-							{
-								sprite_list_init_mobd_items();
-								sprite_list_update_positions();
-								input_update_keyboard();
-								input_update_mouse();
-								_43A370_process_sound();
-								stru1_animate();
-								script_list_update();
-								_4393F0_call_mapd();
-								VIDEO_DoFrame();
-								draw_list_update_and_draw();
-								TimedMessagePump();
-							} while (!_47DCF4_wm_quit_received && !game_state);
-							v3 = _47A010_mapd_item_being_drawn;
-							do
-							{
-								if (*v3)
-								{
-									bitmap_list_remove(*v3);
-									*v3 = 0;
-								}
-								++v3;
-							} while ((int)v3 < (int) & _47A01C_sound_id);
-							LVL_Deinit();
-							dword_47A180 = 0;
-							free(current_level_lvl);
-							free(sprites_lvl);
-							sprites_lvl = 0;
-							if (is_game_loading())
-							{
-								prev_level_idx = -1;
-								current_level_idx = get_saveload_level_id();
-								set_player_side_by_level();
-							}
-						}
-						if (_47DCF4_wm_quit_received)
-							break;
-					}
-					GAME_PrepareLevel();
-					game_state = 0;
-					do
-					{
-						if (!single_player_game)
-							is_coroutine_list_initialization_failed = dword_47A738 != 0;
-						sprite_list_init_mobd_items();
-						sprite_list_update_positions();
-						input_update_keyboard();
-						input_update_mouse();
-						_43A370_process_sound();
-						stru1_animate();
-						boxd_40EA20();
-						_44C4B0_mess_with_turrets();
-						script_list_update();
-						_4393F0_call_mapd();
-						draw_list_update_and_draw();
-						TimedMessagePump();
-						if (is_game_saving())
-						{
-							sound_list_43A800(0);
-							if (!GAME_Save())
-								GAME_OnSaveFailed();
-							sound_list_43A800(_4690AC_level_wav_sound_offset);
-						}
-					} while (!_47DCF4_wm_quit_received && !game_state);
-					if (!on_level_finished())
-					{
-						dword_47CB0C = 0;
-						VIDEO_Play(2);
-						if (!_47DCF4_wm_quit_received)
-							goto LABEL_5;
-						break;
-					}
-				}
-			}
-			netz_deinit();
-			free(wait_lvl);
-			sound_free_sounds();
-			GAME_Deinit();
-			timeEndPeriod(1u);
-			result = 0;
-		}
-		else
-		{
-			free(wait_lvl);
-			sound_free_sounds();
-			GAME_Deinit();
-			result = 1;
-		}
-	}
-	else
-	{
-		result = 1;
-	}
-	return result;
 }
 
 //----- (00423A70) --------------------------------------------------------
@@ -39629,11 +39352,18 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 {
     static_assert(sizeof(BuildingLimits) == 0x10);
 
+    timeBeginPeriod(1u);
+
     log_init();
 
 	global_win32_nCmdShow = nShowCmd;
 	global_hinstance = hInstance;
-	return GAME_Main();
+
+    GameFactory gameFactory;
+    auto game = gameFactory.Create();
+
+    game->Run();
+    return 0;
 }
 
 //----- (00456560) --------------------------------------------------------

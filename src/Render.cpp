@@ -1061,8 +1061,8 @@ void REND_DirectDrawClearScreen(int a2)
 //----- (0040E2A0) --------------------------------------------------------
 int REND_SetRoutines()
 {
-    render_width = _478AA0_game_width;
-    render_height = _478A84_game_height;
+    render_width = 640;
+    render_height = 480;
     render_478A94 = 1;
     render_478A0C = 1;
     p_render_set_clip = REND_SetClip;

@@ -225,7 +225,6 @@ void entity_40DF50_boxd_update_map_tile(Entity *a1, int a2);
 int entity_40E000_boxd(Entity *a1, int a2, int a3);
 int entity_40E1B0_boxd(Entity *a1, int x, int y, int a4); // idb
 int REND_SetRoutines();
-bool GAME_SetResolution();
 char *get_resource_res_subfolder();
 void _40E400_set_palette(PALETTEENTRY *palette);
 void _40E430_update_palette(unsigned int a1);
