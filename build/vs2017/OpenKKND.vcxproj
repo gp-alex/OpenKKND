@@ -125,6 +125,16 @@
     <ClCompile Include="..\..\src\Application\GameConfig.cpp" />
     <ClCompile Include="..\..\src\Application\GameConfigFactory.cpp" />
     <ClCompile Include="..\..\src\Application\GameFactory.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Aircraft.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Buildings.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Detenshn.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\EnemyAI.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Infantry.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\MainMenu.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Mission.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Projectiles.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Scar.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Schrap.cpp" />
     <ClCompile Include="..\..\src\Coroutine.cpp" />
     <ClCompile Include="..\..\src\Cursor.cpp" />
     <ClCompile Include="..\..\src\Entity.cpp" />
@@ -136,16 +146,6 @@
     <ClCompile Include="..\..\src\Render.cpp" />
     <ClCompile Include="..\..\src\Script.cpp" />
     <ClCompile Include="..\..\src\ScriptEvent.cpp" />
-    <ClCompile Include="..\..\src\Scripts\Aircraft.cpp" />
-    <ClCompile Include="..\..\src\Scripts\Buildings.cpp" />
-    <ClCompile Include="..\..\src\Scripts\Detenshn.cpp" />
-    <ClCompile Include="..\..\src\Scripts\EnemyAI.cpp" />
-    <ClCompile Include="..\..\src\Scripts\Infantry.cpp" />
-    <ClCompile Include="..\..\src\Scripts\MainMenu.cpp" />
-    <ClCompile Include="..\..\src\Scripts\Mission.cpp" />
-    <ClCompile Include="..\..\src\Scripts\Projectiles.cpp" />
-    <ClCompile Include="..\..\src\Scripts\Scar.cpp" />
-    <ClCompile Include="..\..\src\Scripts\Schrap.cpp" />
     <ClCompile Include="..\..\src\stru29.cpp" />
     <ClCompile Include="..\..\src\_unsorted_data.cpp" />
   </ItemGroup>

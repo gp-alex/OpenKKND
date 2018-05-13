@@ -13,9 +13,6 @@
     <Filter Include="lib\src\legacy_dx">
       <UniqueIdentifier>{101147fb-4553-49d0-81ac-37402d422f64}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Scripts">
-      <UniqueIdentifier>{cc1fb11a-e198-4ef9-8b96-ff4a34a7b930}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Infrastructure">
       <UniqueIdentifier>{e050ecab-636c-46eb-b775-09b9205139f3}</UniqueIdentifier>
     </Filter>
@@ -24,6 +21,9 @@
     </Filter>
     <Filter Include="src\Engine">
       <UniqueIdentifier>{19c8cf86-05ac-474c-80d7-65691690fca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Application\Scripts">
+      <UniqueIdentifier>{927792d4-97e9-4590-88f7-40b73a4af2aa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -170,41 +170,11 @@
     <ClCompile Include="..\..\src\_unsorted_data.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Scripts\Detenshn.cpp">
-      <Filter>src\Scripts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Scripts\Aircraft.cpp">
-      <Filter>src\Scripts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Scripts\Buildings.cpp">
-      <Filter>src\Scripts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Scripts\EnemyAI.cpp">
-      <Filter>src\Scripts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Scripts\Infantry.cpp">
-      <Filter>src\Scripts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Scripts\Mission.cpp">
-      <Filter>src\Scripts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Scripts\Projectiles.cpp">
-      <Filter>src\Scripts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Scripts\Scar.cpp">
-      <Filter>src\Scripts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Scripts\Schrap.cpp">
-      <Filter>src\Scripts</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Random.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Render.cpp">
       <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Scripts\MainMenu.cpp">
-      <Filter>src\Scripts</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\stru29.cpp">
       <Filter>src</Filter>
@@ -244,6 +214,36 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Infrastructure\Netz.cpp">
       <Filter>src\Infrastructure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Aircraft.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Buildings.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Detenshn.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\EnemyAI.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Infantry.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\MainMenu.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Mission.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Projectiles.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Scar.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Schrap.cpp">
+      <Filter>src\Application\Scripts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
