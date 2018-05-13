@@ -135,9 +135,15 @@
     <ClCompile Include="..\..\src\Application\Scripts\Projectiles.cpp" />
     <ClCompile Include="..\..\src\Application\Scripts\Scar.cpp" />
     <ClCompile Include="..\..\src\Application\Scripts\Schrap.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Towers.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Upgrade.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\Vehicles.cpp" />
     <ClCompile Include="..\..\src\Coroutine.cpp" />
     <ClCompile Include="..\..\src\Cursor.cpp" />
-    <ClCompile Include="..\..\src\Entity.cpp" />
+    <ClCompile Include="..\..\src\Engine\BuildingLimits.cpp" />
+    <ClCompile Include="..\..\src\Engine\Entity.cpp" />
+    <ClCompile Include="..\..\src\Engine\EntityFactory.cpp" />
+    <ClCompile Include="..\..\src\Engine\EntityRepository.cpp" />
     <ClCompile Include="..\..\src\Infrastructure\File.cpp" />
     <ClCompile Include="..\..\src\Infrastructure\Input.cpp" />
     <ClCompile Include="..\..\src\Infrastructure\Netz.cpp" />
@@ -182,7 +188,9 @@
     <ClInclude Include="..\..\src\Application\GameFactory.h" />
     <ClInclude Include="..\..\src\Coroutine.h" />
     <ClInclude Include="..\..\src\Cursor.h" />
-    <ClInclude Include="..\..\src\Entity.h" />
+    <ClInclude Include="..\..\src\Engine\Entity.h" />
+    <ClInclude Include="..\..\src\Engine\EntityFactory.h" />
+    <ClInclude Include="..\..\src\Engine\EntityRepository.h" />
     <ClInclude Include="..\..\src\hexrays-defs.h" />
     <ClInclude Include="..\..\src\Infrastructure\File.h" />
     <ClInclude Include="..\..\src\Infrastructure\Input.h" />

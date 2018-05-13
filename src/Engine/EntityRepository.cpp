@@ -1,3 +1,4 @@
+#include "Engine/EntityRepository.h"
 
 //----- (0044C890) --------------------------------------------------------
 void entity_list_remove(Entity *a1)

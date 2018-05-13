@@ -472,164 +472,93 @@ void entity_4038B0(Entity *a1, enum PLAYER_SIDE side)
     }
 }
 
-//----- (00403960) --------------------------------------------------------
-int building_limits_list_alloc()
+
+//----- (00437E80) --------------------------------------------------------
+void EventHandler_RepairStation(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
 {
-    building_limits_list = new BuildingLimits[20];
-    if (building_limits_list)
+    Entity *v4; // ecx@3
+
+    if (event == EVT_MSG_UPGRADE_COMPLETE)
     {
-        building_limits_list_free_pool = building_limits_list;
-        building_limits_list[19].next = nullptr;
-
-        for (int i = 0; i < 20; ++i)
-        {
-            building_limits_list[i].next = &building_limits_list[i + 1];
-        }
-
-        building_limits_list_head = (BuildingLimits *)&building_limits_list_head;
-        building_limits_list_end = (BuildingLimits *)&building_limits_list_head;
-        return true;
-    }
-    return false;
-}
-
-//----- (004039C0) --------------------------------------------------------
-int building_limits_count(enum UNIT_ID unit_stats_idx)
-{
-    BuildingLimits *v1; // eax@1
-    int result; // eax@4
-
-    v1 = building_limits_list_head;
-    if ((BuildingLimits **)building_limits_list_head == &building_limits_list_head)
-    {
-        result = 0;
+        v4 = (Entity *)receiver->param;
+        ++*((_DWORD *)v4->state + 1);
+        entity_4109A0_status_bar(v4);
     }
     else
     {
-        while (v1->building_unit_stat_idx != unit_stats_idx)
-        {
-            v1 = v1->next;
-            if ((BuildingLimits **)v1 == &building_limits_list_head)
-                return 0;
-        }
-        result = v1->num_buildings_of_this_type;
+        EventHandler_DefaultBuildingsHandler(receiver, sender, event, param);
     }
-    return result;
 }
 
-//----- (004039F0) --------------------------------------------------------
-bool building_limits_can_build(enum UNIT_ID unit_id)
+//----- (00437EB0) --------------------------------------------------------
+void UNIT_Handler_RepairStation(Script *a1)
 {
-    BuildingLimits *v1; // eax@3
+    Entity *v1; // esi@1
 
-    if (unit_id != UNIT_STATS_SURV_DRILL_RIG && unit_id != UNIT_STATS_MUTE_DRILL_RIG)
+    v1 = (Entity *)a1->param;
+    if (!_47C6DC_dont_execute_unit_handlers)
     {
-        v1 = building_limits_list_head;
-        if ((BuildingLimits **)building_limits_list_head != &building_limits_list_head)
+        if (!v1)
         {
-            while (v1->building_unit_stat_idx != unit_id)
+            v1 = entity_list_create(a1);
+            v1->script->event_handler = EventHandler_RepairStation;
+            v1->script->script_type = SCRIPT_REPAIR_STATION_HANDLER;
+            entity_44B100_buildings__mess_with_fog_of_war(v1);
+            entity_initialize_building(v1, 1, 0, 0);
+            if (!v1->sprite->cplc_ptr1_pstru20)
             {
-                v1 = v1->next;
-                if ((BuildingLimits **)v1 == &building_limits_list_head)
-                    return 1;
+                entity_402BB0_set_arrive_handler(v1, entity_mode_437F30_repairstation);
+                (v1->mode)(v1);
+                return;
             }
-            if (unit_id == UNIT_STATS_SURV_RESEARCH_LAB || unit_id == UNIT_STATS_MUTE_ALCHEMY_HALL)
-            {
-                show_message_ex(0, aYouCanOnlyBuild1OfThese);
-                return 0;
-            }
-            if (v1->num_buildings_of_this_type >= 4)
-            {
-                show_message_ex(0, aYouCanOnlyBuild4OfThese);
-                return 0;
-            }
+            v1->mode = entity_mode_437F30_repairstation;
         }
+        (v1->mode)(v1);
     }
-    return 1;
 }
+// 47C6DC: using guessed type int _47C6DC_dont_execute_unit_handlers;
 
-//----- (00403A50) --------------------------------------------------------
-int building_limits_on_new_building(enum UNIT_ID stats_idx)
+//----- (00437F30) --------------------------------------------------------
+void entity_mode_437F30_repairstation(Entity *a1)
 {
-    BuildingLimits *v1; // eax@3
-    BuildingLimits *v2; // eax@6
-    BuildingLimits *v3; // ecx@9
+    Entity *v1; // esi@1
+    EntityTurret *v2; // eax@1
+    DrawJob *v3; // eax@2
+    enum SOUND_ID v4; // ecx@6
+    int v5; // [sp-Ch] [bp-10h]@6
 
-    if (stats_idx == 46 || stats_idx == 47)
-        return 1;
-    v1 = building_limits_list_head;
-    if ((BuildingLimits **)building_limits_list_head == &building_limits_list_head)
+    v1 = a1;
+    *((_DWORD *)a1->state + 2) = 0;
+    v2 = a1->turret;
+    if (v2)
     {
-    LABEL_6:
-        v2 = building_limits_list_free_pool;
-        if (building_limits_list_free_pool)
-            building_limits_list_free_pool = building_limits_list_free_pool->next;
+        v2->turret_sprite->_60_mobd_anim_speed = 0;
+        v3 = a1->turret->turret_sprite->drawjob;
+        v3->flags &= 0xBFFFFFFF;
+    }
+    if (player_side == a1->player_side && !a1->sprite->cplc_ptr1_pstru20)
+    {
+        show_message_ex(0, aBuildingCompleted);
+        if (is_player_faction_evolved())
+        {
+            v5 = _4690A8_unit_sounds_volume;
+            v4 = SOUND_MUTE_BUILDING_COMPLETED;
+        }
         else
-            v2 = 0;
-        v2->num_buildings_of_this_type = 1;
-        v2->building_unit_stat_idx = stats_idx;
-        v3 = building_limits_list_head;
-        v2->prev = (BuildingLimits *)&building_limits_list_head;
-        v2->next = v3;
-        building_limits_list_head->prev = v2;
-        building_limits_list_head = v2;
-        return 1;
-    }
-    while (v1->building_unit_stat_idx != stats_idx)
-    {
-        v1 = v1->next;
-        if ((BuildingLimits **)v1 == &building_limits_list_head)
-            goto LABEL_6;
-    }
-    ++v1->num_buildings_of_this_type;
-    return 1;
-}
-
-//----- (00403AD0) --------------------------------------------------------
-void building_limits_on_building_destroyed(Entity *a1)
-{
-    enum UNIT_ID v1; // esi@1
-    BuildingLimits *v2; // eax@3
-    int v3; // edx@5
-
-    v1 = a1->unit_id;
-    if (v1 != 46 && v1 != 47)
-    {
-        v2 = building_limits_list_head;
-        if ((BuildingLimits **)building_limits_list_head != &building_limits_list_head)
         {
-            while (1)
-            {
-                if (v2->building_unit_stat_idx == v1)
-                {
-                    v3 = v2->num_buildings_of_this_type - 1;
-                    v2->num_buildings_of_this_type = v3;
-                    if (!v3)
-                        break;
-                }
-                v2 = v2->next;
-                if ((BuildingLimits **)v2 == &building_limits_list_head)
-                    goto LABEL_9;
-            }
-            v2->next->prev = v2->prev;
-            v2->prev->next = v2->next;
-            v2->next = building_limits_list_free_pool;
-            building_limits_list_free_pool = v2;
+            v5 = _4690A8_unit_sounds_volume;
+            v4 = SOUND_SURV_BUILDING_COMPLETED;
         }
-    LABEL_9:
-        if ((BuildingLimits **)building_limits_list_head == &building_limits_list_head && a1->player_side == player_side)
-        {
-            nullsub_1();
-            if (sub_44CA50(v1))
-                _4318E0_free_building_production();
-            else
-                _4318E0_free_building_production();
-        }
+        sound_play(v4, 0, v5, 16, 0);
     }
-}
-
-//----- (00403B60) --------------------------------------------------------
-void building_limits_list_free()
-{
-    free(building_limits_list);
+    if (v1->sprite->cplc_ptr1_pstru20)
+    {
+        v1->mode = entity_mode_4034B0;
+        entity_mode_403650_building(v1);
+    }
+    else
+    {
+        v1->mode = entity_mode_403650_building;
+        entity_mode_403650_building(v1);
+    }
 }

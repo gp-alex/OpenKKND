@@ -135,9 +135,6 @@
     <ClInclude Include="..\..\src\Cursor.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Entity.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Coroutine.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -161,6 +158,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Infrastructure\Netz.h">
       <Filter>src\Infrastructure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\EntityFactory.h">
+      <Filter>src\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\EntityRepository.h">
+      <Filter>src\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity.h">
+      <Filter>src\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -186,9 +192,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Cursor.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Entity.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Coroutine.cpp">
@@ -244,6 +247,27 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Application\Scripts\Schrap.cpp">
       <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\EntityFactory.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\EntityRepository.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Entity.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Vehicles.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Towers.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\Scripts\Upgrade.cpp">
+      <Filter>src\Application\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\BuildingLimits.cpp">
+      <Filter>src\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
