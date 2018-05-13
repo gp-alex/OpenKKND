@@ -1243,7 +1243,7 @@ struct stru24_stru310
 {
 	stru24_stru310 *next;
 	stru24_stru310 *prev;
-	int field_8;
+	Entity *field_8;
 	enum UNIT_ID unit_id;
 	int x;
 	int y;

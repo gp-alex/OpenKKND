@@ -8,6 +8,9 @@
 #include "src/ScriptEvent.h"
 
 #include "Engine/Entity.h"
+#include "Engine/EntityFactory.h"
+
+using Engine::EntityFactory;
 
 
 //----- (004072A0) --------------------------------------------------------
@@ -67,7 +70,7 @@ void UNIT_Handler_Prison(Script *a1)
     v1 = (Entity *)a1->param;
     if (!v1)
     {
-        v1 = entity_list_create(a1);
+        v1 = EntityFactory().Create(a1);
         v1->script->event_handler = EventHandler_Prison;
         entity_initialize_building(v1, 5, 0, 0);
         sprite_load_mobd(a1->sprite, 0);
@@ -480,7 +483,7 @@ void UNIT_Handler_TechBunker(Script *a1)
     {
         if (_441240_techbunker_should_create())
         {
-            v2 = entity_list_create(a1);
+            v2 = EntityFactory().Create(a1);
             entity_set_draw_handlers(v2);
             v3 = v2->script;
             v2->_128_spawn_param = (void *)24576;
@@ -506,7 +509,7 @@ void entity_mode_407C20_on_death_tech_bunker(Entity *a1)
     entity_40DDD0_boxd(v1);
     sprite_list_remove(v1->sprite);
     script_yield(v1->script);
-    entity_list_remove(v1);
+    entityRepo->Delete(v1);
 }
 
 //----- (00407C60) --------------------------------------------------------
@@ -548,7 +551,7 @@ void entity_mode_407D10(Entity *a1)
 
     v1 = a1;
     script_yield(a1->script);
-    entity_list_remove(v1);
+    entityRepo->Delete(v1);
 }
 
 //----- (00407D30) --------------------------------------------------------
@@ -635,7 +638,7 @@ void UNIT_Handler_Hut(Script *a1)
     v1 = (Entity *)a1->param;
     if (!v1)
     {
-        v1 = entity_list_create(a1);
+        v1 = EntityFactory().Create(a1);
         entity_set_draw_handlers(v1);
         v2 = v1->_12C_prison_bunker_spawn_type;
         v1->_128_spawn_param = (void *)24576;

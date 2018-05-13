@@ -1,5 +1,6 @@
 #include "src/kknd.h"
 #include "src/Random.h"
+#include "src/stru31.h"
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
@@ -9,6 +10,9 @@
 #include "src/Cursor.h"
 
 #include "Engine/Entity.h"
+#include "Engine/EntityFactory.h"
+
+using Engine::EntityFactory;
 
 
 //----- (00412B60) --------------------------------------------------------
@@ -33,7 +37,7 @@ void UNIT_Handler_Infantry(Script *a1)
         v1 = (Entity *)a1->param;
         if (!v1)
         {
-            v1 = entity_list_create(a1);
+            v1 = EntityFactory().Create(a1);
             entity_init_infantry(v1);
             entity_attach_turret(v1);
             entity_set_draw_handlers(v1);
@@ -4647,7 +4651,7 @@ void entity_mode_418B30(Entity *a1)
     LABEL_29:
         sprite_list_remove(v1->sprite);
         script_yield(v1->script);
-        entity_list_remove(v1);
+        entityRepo->Delete(v1);
         return;
     }
     v4 = a1->sprite;
@@ -4763,7 +4767,7 @@ void entity_mode_418D20(Entity *a1)
     }
     sprite_list_remove(v1->sprite);
     script_yield(v1->script);
-    entity_list_remove(v1);
+    entityRepo->Delete(v1);
 }
 
 //----- (00418E90) --------------------------------------------------------
@@ -5233,7 +5237,7 @@ void entity_419720(Entity *a1)
     entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->field_A4);
     sprite_list_remove(v1->sprite);
     script_yield(v1->script);
-    entity_list_remove(v1);
+    entityRepo->Delete(v1);
 }
 
 //----- (00419760) --------------------------------------------------------

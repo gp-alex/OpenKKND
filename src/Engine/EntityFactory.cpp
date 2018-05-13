@@ -4,8 +4,13 @@
 #include "kknd.h"
 #include "ScriptEvent.h"
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::EntityFactory;
+using Engine::Infrastructure::EntityRepository;
+
 //----- (0044C6B0) --------------------------------------------------------
-Entity *entity_list_create(Script *a1)
+Entity *EntityFactory::Create(Script *a1)
 {
     Entity *v1; // esi@1
     Sprite *v2; // edx@1
@@ -18,7 +23,10 @@ Entity *entity_list_create(Script *a1)
     enum PLAYER_SIDE v10; // eax@18
     Entity *v13; // ecx@22
 
-    v1 = entity_list_get();
+    //v1 = entity_list_get();
+    v1 = new Entity();
+    entityRepo->Save(v1);
+
     v2 = a1->sprite;
     if (!v1)
         return 0;
@@ -95,10 +103,11 @@ Entity *entity_list_create(Script *a1)
 
     script_trigger_event_group(a1, EVT_MSG_1521_entity_created, v1, SCRIPT_TYPE_39030);
 
-    v13 = entity_list_head;
-    v1->prev = (Entity *)&entity_list_head;
-    v1->next = v13;
-    entity_list_head->prev = v1;
-    entity_list_head = v1;
+    //v13 = entity_list_head;
+    //v1->prev = (Entity *)&entity_list_head;
+    //v1->prev = nullptr;
+    //v1->next = v13;
+    //entity_list_head->prev = v1;
+    //entity_list_head = v1;
     return v1;
 }

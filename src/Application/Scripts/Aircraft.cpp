@@ -1,14 +1,16 @@
-#include "src/kknd.h"
-
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
+#include "src/kknd.h"
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/stru31.h"
 
 #include "Engine/Entity.h"
+#include "Engine/EntityFactory.h"
+
+using Engine::EntityFactory;
 
 
 //----- (00401110) --------------------------------------------------------
@@ -106,7 +108,6 @@ void UNIT_Handler_Aircraft(Script *a1)
     Script *v1; // edi@1
     Entity *v2; // esi@1
     DrawJobDetails *v3; // ebx@2
-    stru31 *v4; // eax@2
     Sprite *v5; // eax@7
     unsigned int v6; // edi@8
     int v7; // edi@8
@@ -121,20 +122,8 @@ void UNIT_Handler_Aircraft(Script *a1)
     {
         v3 = &_47A010_mapd_item_being_drawn[0]->draw_job->job_details;
         a1a = kknd_rand_debug(__FILE__, __LINE__) & 3;
-        v2 = entity_list_create(v1);
-        v4 = stru31_list_free_pool;                 // INLINED entity_401070_stru31
-        if (stru31_list_free_pool)
-            stru31_list_free_pool = stru31_list_free_pool->next;
-        else
-            v4 = 0;
-        if (v4)
-        {
-            v4->param__entity__int = v2;
-            v4->next = stru31_list_477300;
-            v4->prev = (stru31 *)&stru31_list_477300;
-            stru31_list_477300->prev = v4;
-            stru31_list_477300 = v4;
-        }
+        v2 = EntityFactory().Create(v1);
+        entity_401070_stru31(v2);
         v2->sprite->field_88_unused = 1;
         v5 = v2->sprite;
         v2->sprite_x = v5->x;
@@ -278,7 +267,7 @@ void entity_mode_401600_aircraft_stru31(Entity *a1)
 LABEL_6:
     sprite_list_remove(v2->sprite);
     script_yield(v2->script);
-    entity_list_remove(v2);
+    entityRepo->Delete(v2);
 }
 
 //----- (00401660) --------------------------------------------------------
@@ -421,4 +410,94 @@ void entity_mode_401800_aircraft(Entity *a1)
                 entity_401530_aircraft(v1, 0);
         }
     }
+}
+
+
+//----- (00401D10) --------------------------------------------------------
+void Task_context_1_BomberDmgHandler_401D10(Task_context_1_BomberDmgHandler *a1)
+{
+    Task_context_1_BomberDmgHandler *v1; // esi@1
+
+    v1 = a1;
+    --_47C048_unit_bomberdmg;
+    sprite_list_remove(a1->sprite);
+    script_yield(v1->task);
+}
+// 47C048: using guessed type int _47C048_unit_bomberdmg;
+
+//----- (00401D30) --------------------------------------------------------
+void Task_context_1_BomberDmgHandler_401D30(Task_context_1_BomberDmgHandler *a1)
+{
+    Task_context_1_BomberDmgHandler *v1; // ebx@1
+    Sprite *v2; // esi@1
+    void *v3; // edi@1
+    Script *v4; // ST00_4@3
+
+    v1 = a1;
+    v2 = a1->sprite;
+    v3 = v2->param;
+    v2->x_speed = 0;
+    v2->y_speed = 0;
+    v2->z_speed = 0;
+    v2->z_speed_factor_2 = 0;
+    v2->z_index = 1;
+    if (*((_DWORD *)v3 + 3) != -1)
+    {
+        v2->z_index = 255;
+        sprite_408800_play_sound(v2, SOUND_GENERIC_PROJECTILE_DMG_2, _4690A8_unit_sounds_volume, 0);
+        v2->mobd_id = MOBD_EXPLOSIONS;
+        sprite_load_mobd(v2, *((_DWORD *)v3 + 3));
+        v2->_60_mobd_anim_speed = 0x20000000;
+        v2->z_index = 768;
+        sprite_439180_add_explosions(v2);
+        sprite_40D8B0_dmg(v2, *((_DWORD *)v3 + 8));
+    }
+    v4 = v1->task;
+    v1->handler = Task_context_1_BomberDmgHandler_401D10;
+    script_445370_yield_to_main_thread(v4, 0x10000000, 0);
+}
+
+//----- (00401DC0) --------------------------------------------------------
+void Task_context_1_BomberDmgHandler_401DC0(Task_context_1_BomberDmgHandler *a1)
+{
+    if (a1->sprite->z_index <= 0)
+        a1->handler = Task_context_1_BomberDmgHandler_401D30;
+}
+
+//----- (00401DE0) --------------------------------------------------------
+void Task_context_1_BomberDmgHandler_401DE0(Task_context_1_BomberDmgHandler *a1)
+{
+    Task_context_1_BomberDmgHandler *v1; // esi@1
+    Sprite *v2; // ecx@1
+
+    v1 = a1;
+    v2 = a1->sprite;
+    v2->pstru7 = &_479D48_stru7;
+    v2->z_speed = 512;
+    v2->z_speed_limit = 512;
+    v2->z_speed_factor_2 = -34;
+    sprite_408800_play_sound(v2, SOUND_163, _4690A8_unit_sounds_volume, 0);
+    v1->handler = Task_context_1_BomberDmgHandler_401DC0;
+}
+
+//----- (00401E20) --------------------------------------------------------
+void UNIT_DmgHandler_Bomber(Script *a1)
+{
+    Task_context_1_BomberDmgHandler *v1; // eax@1
+    Sprite *v2; // ecx@3
+
+    v1 = (Task_context_1_BomberDmgHandler *)a1->param;
+    if (!v1)
+    {
+        v1 = (Task_context_1_BomberDmgHandler *)script_create_local_object(a1, 12);
+        if (v1)
+        {
+            v2 = a1->sprite;
+            a1->param = v1;
+            v1->sprite = v2;
+            v1->task = a1;
+            v1->handler = Task_context_1_BomberDmgHandler_401DE0;
+        }
+    }
+    (v1->handler)(v1);
 }

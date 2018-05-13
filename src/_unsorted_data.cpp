@@ -6347,10 +6347,6 @@ int dword_476FE0 = 0; // weak
 //int(*off_4772E8[3])() = { &sub_45D147, &sub_45D25B, &sub_45D2C1 }; // weak
 //int(*off_4772EC[2])() = { &sub_45D25B, &sub_45D2C1 }; // weak
 //int(*off_4772F0)() = &sub_45D2C1; // weak
-stru31 *stru31_list_477300 = NULL;
-stru31 *stru31_list_477304 = NULL;
-stru31 *stru31_list = NULL;
-stru31 *stru31_list_free_pool = NULL;
 int __477318_beastenclosure_negindex[] = { 0 }; // weak
 stru15unit _477318_beastenclosure = { { 0, 0, 0, 0, 0 }, 0, 0, 0, 0 };
 int max_beastenclosure_level = 0; // weak
@@ -6904,10 +6900,6 @@ int entity_drag_selection_w; // weak
 int entity_drag_selection_z; // weak
 Script *pscript_show_message; // idb
 int entity_drag_selection_y; // weak
-Entity *entity_list_head;
-Entity *entity_list_47D9AC;
-Entity *entity_list;
-Entity *entity_list_free_pool;
 int _4269B0_task_attachment__4_some_task_flags; // weak
 stru11unit *stru11unit_list_47DC70;
 stru11unit *stru11unit_list_47DC74;

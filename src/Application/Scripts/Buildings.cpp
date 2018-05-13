@@ -8,6 +8,9 @@
 #include "src/ScriptEvent.h"
 
 #include "Engine/Entity.h"
+#include "Engine/EntityFactory.h"
+
+using Engine::EntityFactory;
 
 
 
@@ -369,7 +372,7 @@ void entity_mode_403720_on_prison_death__or__prolly_any_generic_building(Entity 
     entity_40DDD0_boxd(v1);
     sprite_list_remove(v1->sprite);
     script_yield(v1->script);
-    entity_list_remove(v1);
+    entityRepo->Delete(v1);
 }
 
 //----- (00403780) --------------------------------------------------------
@@ -501,7 +504,7 @@ void UNIT_Handler_RepairStation(Script *a1)
     {
         if (!v1)
         {
-            v1 = entity_list_create(a1);
+            v1 = EntityFactory().Create(a1);
             v1->script->event_handler = EventHandler_RepairStation;
             v1->script->script_type = SCRIPT_REPAIR_STATION_HANDLER;
             entity_44B100_buildings__mess_with_fog_of_war(v1);

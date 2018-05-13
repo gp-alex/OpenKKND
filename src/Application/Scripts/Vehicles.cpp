@@ -4,6 +4,9 @@
 #include "ScriptEvent.h"
 
 #include "Engine/Entity.h"
+#include "Engine/EntityFactory.h"
+
+using Engine::EntityFactory;
 
 
 //----- (00444180) --------------------------------------------------------
@@ -18,7 +21,7 @@ void UNIT_Handler_OilTanker(Script *a1)
         v1 = (Entity *)a1->param;
         if (!v1)
         {
-            v1 = entity_list_create(a1);
+            v1 = EntityFactory().Create(a1);
             entity_oil_tanker_initialize(v1);
             entity_oil_tanker_initialize_state(v1);
         }
@@ -161,7 +164,7 @@ void entity_oil_tanker_initialize(Entity *a1)
         v18->x_speed = 0;
         v1->sprite->y_speed = 0;
         sprite_list_remove(v1->sprite);
-        entity_list_remove(v1);
+        entityRepo->Delete(v1);
         script_yield(v1->script);
     }
 }

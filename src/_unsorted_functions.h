@@ -5,9 +5,6 @@ void log_init();
 void log(const char *, ...);
 
 void stru28_list_free();
-int stru31_list_alloc();
-void stru31_list_free();
-void entity_401070_stru31(Entity *a1);
 void UNIT_AttachHandler_DockPoint(Script *self);
 void EntityTowerAttachment_handler_4010C0(EntityTurret *a1);
 void EntityTowerAttachment_handler_4010E0(EntityTurret *a1);
@@ -908,8 +905,6 @@ int UNIT_Init();
 void drawjob_update_handler_44C430_default_sprite(Sprite *a1, DrawJob *a2);
 void _44C4B0_mess_with_turrets();
 void _44C5C0_level_cleanup();
-Entity *entity_list_create(Script *a1);
-void entity_list_remove(Entity *a1);
 Sprite *spawn_unit(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE player_side); // idb
 Entity *entity_find_by_id(int entity_id);
 bool sub_44CA50(enum UNIT_ID id); // idb

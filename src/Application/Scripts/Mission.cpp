@@ -10,6 +10,9 @@
 #include "src/Cursor.h"
 
 #include "Engine/Entity.h"
+#include "Engine/EntityFactory.h"
+
+using Engine::EntityFactory;
 
 
 //----- (00424B90) --------------------------------------------------------
@@ -954,7 +957,7 @@ void UNIT_Handler_General(Script *a1)
     v1 = (Entity *)a1->param;
     if (!v1)
     {
-        v1 = entity_list_create(a1);
+        v1 = EntityFactory().Create(a1);
         entity_init_infantry(v1);
         entity_set_draw_handlers(v1);
         v1->player_side = player_side;
@@ -979,7 +982,7 @@ void UNIT_Handler_Scout(Script *a1)
     v1 = (Entity *)a1->param;
     if (!v1)
     {
-        v1 = entity_list_create(a1);
+        v1 = EntityFactory().Create(a1);
         entity_init_infantry(v1);
         entity_set_draw_handlers(v1);
         entity_load_idle_mobd(v1);

@@ -2,8 +2,12 @@
 #include "kknd.h"
 #include "Script.h"
 #include "ScriptEvent.h"
+#include "stru31.h"
 
 #include "Engine/Entity.h"
+#include "Engine/EntityFactory.h"
+
+using Engine::EntityFactory;
 
 
 //----- (00447380) --------------------------------------------------------
@@ -29,7 +33,7 @@ void UNIT_Handler_Towers(Script *a1)
         (v1->mode)(v1);
         return;
     }
-    v2 = entity_list_create(a1);
+    v2 = EntityFactory().Create(a1);
     v1 = v2;
     v2->script->event_handler = EventHandler_Towers;
     entity_load_idle_mobd(v2);
@@ -127,7 +131,7 @@ void entity_mode_tower_dead(Entity *a1)
     v3 = v1->script;
     v1->sprite = 0;
     script_yield(v3);
-    entity_list_remove(v1);
+    entityRepo->Delete(v1);
 }
 // 47DCD0: using guessed type int num_players_towers;
 
@@ -900,4 +904,37 @@ void MessageHandler_TowersAttachment(Script *receiver, Script *sender, enum SCRI
         v4->_C_entity = v5->_E0_current_attack_target;
         v4->_C_entity_idx = v5->_E0_current_attack_target->entity_id;
     }
+}
+
+
+//----- (004010B0) --------------------------------------------------------
+void UNIT_AttachHandler_DockPoint(Script *self)
+{
+    (*((void(**)(void))self->param + 4))();
+}
+
+//----- (004010C0) --------------------------------------------------------
+void EntityTowerAttachment_handler_4010C0(EntityTurret *a1)
+{
+    int v1; // eax@1
+
+    v1 = a1->entity->current_mobd_lookup_idx;
+    a1->mobd_lookup_id = v1;
+    sprite_4272E0_load_mobd_item(
+        a1->turret_sprite,
+        a1->stats_attachment_point->mobd_lookup_table_offset,
+        _47D3C4_entity_mobd_lookup_ids[v1 + 1]);
+}
+
+//----- (004010E0) --------------------------------------------------------
+void EntityTowerAttachment_handler_4010E0(EntityTurret *a1)
+{
+    EntityTurret *v1; // esi@1
+
+    v1 = a1;
+    sprite_4272E0_load_mobd_item(
+        a1->turret_sprite,
+        a1->stats_attachment_point->mobd_lookup_table_offset,
+        _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
+    v1->handler = EntityTowerAttachment_handler_4010C0;
 }

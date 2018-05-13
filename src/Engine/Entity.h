@@ -176,9 +176,6 @@ struct Entity
 void entity_drag_selection_init(int y, int x, int z, int w);
 Script *entity_drag_selection_get_next_entity();
 
-Entity *entity_list_get();
-Entity *entity_list_end();
-
 int entity_get_dx(Entity *entity);
 int entity_get_dy(Entity *entity);
 int entity_transform_x(Entity *entity, int x);

@@ -31,25 +31,6 @@ bool entity_is_xl_vehicle(Entity *entity)
 }
 
 
-Entity *entity_list_get()
-{
-    if (entity_list_free_pool)
-    {
-        Entity *entity = entity_list_free_pool;
-        entity_list_free_pool = entity_list_free_pool->next;
-
-        return entity;
-    }
-    return nullptr;
-}
-
-Entity *entity_list_end()
-{
-    return (Entity *)&entity_list_head;
-}
-
-
-
 bool entity_is_tower(Entity *entity)
 {
     return entity->unit_id >= UNIT_STATS_SURV_GUARD_TOWER && entity->unit_id <= UNIT_STATS_MUTE_ROTARY_CANNON;

@@ -437,10 +437,6 @@ extern int dword_476DD8; // weak
 extern int dword_476DDC; // weak
 extern __int16 word_476DE0[]; // weak
 extern int dword_476FE0; // weak
-extern stru31 *stru31_list_477300;
-extern stru31 *stru31_list_477304;
-extern stru31 *stru31_list;
-extern stru31 *stru31_list_free_pool;
 extern int __477318_beastenclosure_negindex[]; // weak
 extern stru15unit _477318_beastenclosure;
 extern int max_beastenclosure_level; // weak
@@ -944,10 +940,6 @@ extern int entity_drag_selection_w; // weak
 extern int entity_drag_selection_z; // weak
 extern Script *pscript_show_message; // idb
 extern int entity_drag_selection_y; // weak
-extern Entity *entity_list_head;
-extern Entity *entity_list_47D9AC;
-extern Entity *entity_list;
-extern Entity *entity_list_free_pool;
 extern int _4269B0_task_attachment__4_some_task_flags; // weak
 extern stru11unit *stru11unit_list_47DC70;
 extern stru11unit *stru11unit_list_47DC74;

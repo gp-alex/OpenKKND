@@ -126,6 +126,7 @@
     <ClCompile Include="..\..\src\Application\GameConfigFactory.cpp" />
     <ClCompile Include="..\..\src\Application\GameFactory.cpp" />
     <ClCompile Include="..\..\src\Application\Scripts\Aircraft.cpp" />
+    <ClCompile Include="..\..\src\Application\Scripts\BuildingsMute.cpp" />
     <ClCompile Include="..\..\src\Application\Scripts\Buildings.cpp" />
     <ClCompile Include="..\..\src\Application\Scripts\Detenshn.cpp" />
     <ClCompile Include="..\..\src\Application\Scripts\EnemyAI.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="..\..\src\Script.cpp" />
     <ClCompile Include="..\..\src\ScriptEvent.cpp" />
     <ClCompile Include="..\..\src\stru29.cpp" />
+    <ClCompile Include="..\..\src\stru31.cpp" />
     <ClCompile Include="..\..\src\_unsorted_data.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +204,7 @@
     <ClInclude Include="..\..\src\Script.h" />
     <ClInclude Include="..\..\src\ScriptEvent.h" />
     <ClInclude Include="..\..\src\stru29.h" />
+    <ClInclude Include="..\..\src\stru31.h" />
     <ClInclude Include="..\..\src\_unsorted_data.h" />
     <ClInclude Include="..\..\src\_unsorted_functions.h" />
   </ItemGroup>
