@@ -12,6 +12,9 @@
 
 using Engine::EntityFactory;
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::Infrastructure::EntityRepository;
 
 
 //----- (00402F30) --------------------------------------------------------
@@ -285,7 +288,7 @@ void entity_mode_403540(Entity *a1)
     Entity *v1; // esi@1
 
     v1 = a1;
-    if (entity_425820_find(a1, 76800))
+    if (entity_find_player_entity_in_radius(a1, 300 * 256))
     {
         sound_play(SOUND_MobileOutpost_ClanhallWagon_Planted, 0, _4690A8_unit_sounds_volume, 16, 0);
         entity_4258C0_init_palettes_inc_unit_counter(v1, player_side);

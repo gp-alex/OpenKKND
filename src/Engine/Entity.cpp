@@ -5,6 +5,10 @@
 #include "src/kknd.h"
 #include "src/Script.h"
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::Infrastructure::EntityRepository;
+
 
 int entity_get_mobd_speed_x(Entity *entity)
 {
@@ -25,21 +29,25 @@ int entity_get_mobd_speed_y(Entity *entity)
 }
 
 // XL vehicles: mobile outpost, autocannon tank & missile crab
-bool entity_is_xl_vehicle(Entity *entity)
-{
+bool entity_is_xl_vehicle(Entity *entity) {
     return entity->stats->field_4C == 4096;
 }
 
 
-bool entity_is_tower(Entity *entity)
-{
-    return entity->unit_id >= UNIT_STATS_SURV_GUARD_TOWER && entity->unit_id <= UNIT_STATS_MUTE_ROTARY_CANNON;
+bool entity_is_tower(Entity *entity) {
+    return is_tower(entity->unit_id);
 }
 
-bool entity_is_moveable(Entity *entity)
-{
-    return entity->unit_id <= UNIT_STATS_MUTE_MISSILE_CRAB || entity->unit_id >= UNIT_STATS_GORT;
+bool entity_is_bomber(Entity *entity) {
+    return is_bomber(entity->unit_id);
+}
 
+bool entity_is_21st_century(Entity *entity) {
+    return is_21st_century(entity->unit_id);
+}
+
+bool entity_is_moveable(Entity *entity) {
+    return entity->unit_id <= UNIT_STATS_MUTE_MISSILE_CRAB || entity->unit_id >= UNIT_STATS_GORT;
 }
 
 bool entity_is_attacker(Entity *entity)
@@ -53,15 +61,18 @@ bool entity_is_attacker(Entity *entity)
 
 
 
-bool is_21st_century(UNIT_ID unit_id)
-{
+bool is_21st_century(UNIT_ID unit_id) {
     return unit_id >= UNIT_STATS_GORT && unit_id <= UNIT_STATS_MECH;
 }
 
-bool entity_is_21st_century(Entity *entity)
-{
-    return is_21st_century(entity->unit_id);
+bool is_tower(UNIT_ID unit_id) {
+    return unit_id >= UNIT_STATS_SURV_GUARD_TOWER && unit_id <= UNIT_STATS_MUTE_ROTARY_CANNON;
 }
+
+bool is_bomber(UNIT_ID unitId) {
+    return unitId == UNIT_STATS_SURV_BOMBER || unitId == UNIT_STATS_MUTE_WASP;
+}
+
 
 
 
@@ -256,4 +267,38 @@ void entity_attack(Entity *a1, _47CAF0_task_attachment1_attack_task *param)
             v3->mode = entity_mode_move_attack;
         }
     }
+}
+
+
+//----- (00425820) --------------------------------------------------------
+Entity *entity_find_player_entity_in_radius(Entity *a1, int max_distance_squared)
+{
+    for (auto i : entityRepo->FindAll())
+    {
+        if (!i->destroyed && i->player_side == player_side)
+        {
+            int dx = abs(a1->sprite->x - i->sprite->x);
+            int dy = abs(a1->sprite->y - i->sprite->y);
+            if (dx + dy < max_distance_squared)
+                return i;
+        }
+    }
+    return nullptr;
+}
+
+
+//----- (004078B0) --------------------------------------------------------
+Entity *entity_find_any_entity_in_radius(Entity *a1, int max_distance_squared)
+{
+    for (auto i : entityRepo->FindAll())
+    {
+        if (!i->destroyed && i->player_side != PLAYER_SIDE_UNSPECIFIED)
+        {
+            int dx = abs(a1->sprite->x - i->sprite->x);
+            int dy = abs(a1->sprite->y - i->sprite->y);
+            if (dx + dy < max_distance_squared)
+                return i;
+        }
+    }
+    return nullptr;
 }

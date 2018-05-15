@@ -12,6 +12,9 @@
 
 using Engine::EntityFactory;
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::Infrastructure::EntityRepository;
 
 //----- (00401110) --------------------------------------------------------
 void entity_401110_aircraft(Entity *a1)

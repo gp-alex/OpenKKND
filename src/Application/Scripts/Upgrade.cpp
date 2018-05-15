@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "_unsorted_data.h"
 #include "kknd.h"
 #include "Random.h"

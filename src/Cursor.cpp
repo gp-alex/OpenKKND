@@ -11,6 +11,10 @@
 
 #include "Engine/Entity.h"
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::Infrastructure::EntityRepository;
+
 #include "Infrastructure/Input.h"
 
 
@@ -366,12 +370,12 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
 
     if (num_units_selected == 1)
     {
-        a1->field_3C = 1;
+        a1->_3C_is_single_unit_selected = 1;
         cursor_on_unit_selection(a1, selected_unit);
     }
     else
     {
-        a1->field_3C = 0;
+        a1->_3C_is_single_unit_selected = 0;
         cursor_on_unit_group_selection(a1);
     }
 
@@ -1589,7 +1593,7 @@ void cursor_group_orders(_428940_local *a1)
         cursor_load_mobd(v2, CURSOR_MOBD_OFFSET_UNIT_HOVER);
         if (cursor_check_click(v2))
         {
-            if (v2->field_3C)
+            if (v2->_3C_is_single_unit_selected)
                 v76 = v2->next->_8_task == cursor_target->script;
             else
                 v76 = 0;
@@ -1667,17 +1671,14 @@ void cursor_group_orders(_428940_local *a1)
 
 
 //----- (004297D0) --------------------------------------------------------
-void sub_4297D0(_428940_local *a1, int edx0)
+void sub_4297D0(_428940_local *a1, int a2)
 {
     _428940_local *v2; // esi@1
     _428940_local *v8; // edi@8
-    Entity *v9; // edi@12
-    Entity *i; // ebp@12
     task_428940_attach__cursors_2 *v11; // eax@15
     int v12; // eax@22
     enum UNIT_ID v13; // ecx@26
     enum UNIT_ID v14; // eax@26
-    int v15; // eax@29
     enum SOUND_ID v16; // ecx@35
     _428940_local *v17; // ecx@48
     int v18; // ebx@48
@@ -1689,17 +1690,12 @@ void sub_4297D0(_428940_local *a1, int edx0)
     int v24; // esi@51
     int v25; // edi@51
     int v26; // [sp-Ch] [bp-24h]@35
-    int v27; // [sp+10h] [bp-8h]@2
-    int a2; // [sp+14h] [bp-4h]@1
 
-    a2 = edx0;
     v2 = a1;
-    if (_47A608_stru13_associated_array.field_0[edx0] > 0)
+    if (_47A608_stru13_associated_array.field_0[a2] > 0)
     {
-        v27 = 0;
-
         _47A714._stru209.type = stru209_TYPE_5;
-        _47A714._stru209.param = edx0;
+        _47A714._stru209.param = a2;
         _428940_list_do_stuff(&_47A714._stru209);
 
         v8 = v2->next;
@@ -1722,8 +1718,10 @@ void sub_4297D0(_428940_local *a1, int edx0)
             v2->next = v2;
             v2->prev = v2;
         }
-        v9 = entity_list_head;
-        for (i = (Entity *)a2; (Entity **)v9 != &entity_list_head; v9 = v9->next)
+
+        int num_selected_own_units_with_behaviour = 0;
+        Entity *entity_to_make_sound = nullptr;
+        for (auto v9: entityRepo->FindAll())
         {
             if (v9->array_294[player_side] == a2 && !v9->destroyed)
             {
@@ -1742,8 +1740,10 @@ void sub_4297D0(_428940_local *a1, int edx0)
                     script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v11->_8_task);
                     if (v9->player_side == player_side)
                         v2->_38_are_owned_units_selected = true;
-                    ++v27;
-                    i = v9;
+
+                    ++num_selected_own_units_with_behaviour;
+                    entity_to_make_sound = v9;
+
                     if (v9->player_side == player_side)
                     {
                         v12 = v9->unit_id;
@@ -1760,62 +1760,29 @@ void sub_4297D0(_428940_local *a1, int edx0)
                             if ((int)v14 > (int)v13 && v14 != UNIT_STATS_MUTE_BIKE_AND_SIDECAR)
                                 v2->_48_highest_ranking_selected_unit = v14;
                         }
-                        v15 = v9->unit_id;
-                        if (v15 >= (int)UNIT_STATS_SURV_GUARD_TOWER && v15 <= (int)UNIT_STATS_MUTE_ROTARY_CANNON)
+
+                        if (entity_is_tower(v9))
                             v2->_44_is_combat_unit_selected = true;
                     }
                 }
             }
         }
-        if (v27 > 1)
+
+
+        if (num_selected_own_units_with_behaviour == 1)
         {
-            switch (v2->_48_highest_ranking_selected_unit)
-            {
-            case 0x4Au:
-            case 0x4Cu:
-            case 0x4Du:
-            case 0x4Eu:
-                v26 = _4690A8_unit_sounds_volume;
-                v16 = _4689A8_sound_ids[kknd_rand() % -2];
-                break;
-            case 0x1Bu:
-                v26 = _4690A8_unit_sounds_volume;
-                v16 = (SOUND_ID)165;
-                break;
-            case 0x25u:
-                v26 = _4690A8_unit_sounds_volume;
-                v16 = (SOUND_ID)168;
-                break;
-            case 0x21u:
-                v26 = _4690A8_unit_sounds_volume;
-                v16 = (SOUND_ID)172;
-                break;
-            case 0x27u:
-                v26 = _4690A8_unit_sounds_volume;
-                v16 = (SOUND_ID)170;
-                break;
-            case 0x23u:
-                v26 = _4690A8_unit_sounds_volume;
-                v16 = (SOUND_ID)160;
-                break;
-            default:
-                if (is_player_faction_evolved())
-                {
-                    v26 = _4690A8_unit_sounds_volume;
-                    v16 = _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
-                }
-                else
-                {
-                    v26 = _4690A8_unit_sounds_volume;
-                    v16 = _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
-                }
-                break;
-            }
-            sound_play(v16, 0, v26, 16, 0);
+            cursor_on_unit_selection(v2, entity_to_make_sound);
         }
-        v2->field_3C = v27 == 1;
-        if (v27 == 1)
-            cursor_on_unit_selection(v2, i);
+        else if (num_selected_own_units_with_behaviour > 1)
+        {
+            sound_play(
+                get_unit_seletion_sound(v2->_48_highest_ranking_selected_unit),
+                0, _4690A8_unit_sounds_volume, 16, 0
+            );
+        }
+
+        v2->_3C_is_single_unit_selected = num_selected_own_units_with_behaviour == 1;
+
         if (_47A700_input.pressed_keys_mask & INPUT_KEYBOARD_MENU_MASK)
         {
             v17 = v2->next;
@@ -2052,7 +2019,6 @@ void script_game_cursor_handler(Script *a1)
     UnitAttachmentPoint *v24; // eax@66
     Entity *v32; // esi@96
     enum UNIT_ID v33; // eax@98
-    Entity *v39; // ecx@127
     int v40; // edi@127
     int v41; // eax@127
     int i; // ebx@127
@@ -2117,7 +2083,7 @@ void script_game_cursor_handler(Script *a1)
     v62.field_4C = 0;
     v62._68_selected_moveable_entity = nullptr;
     v62._68_selected_moveable_entity_type = SELECTED_ENTITY_0;
-    v62.field_3C = 0;
+    v62._3C_is_single_unit_selected = 0;
     v62._70_sprite = sprite_create(MOBD_CURSORS, 0, 0);
     v62._70_sprite->script = a1;
     v62._70_sprite->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
@@ -2276,10 +2242,10 @@ void script_game_cursor_handler(Script *a1)
                         }
                         else
                         {
-                            v39 = entity_list_head;
                             v40 = 0;
                             v41 = 0;
-                            for (i = 0; (Entity **)v39 != &entity_list_head; v39 = v39->next)
+                            i = 0;
+                            for (auto v39: entityRepo->FindAll())
                             {
                                 if (v39->player_side == player_side)
                                 {

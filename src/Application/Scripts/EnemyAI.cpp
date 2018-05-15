@@ -923,7 +923,6 @@ void script_409770_ai(Script *a1)
     int *v67; // ecx@124
     int v68; // ST00_4@124
     stru24_stru310 *v69; // edi@125
-    int v70; // eax@126
     int v71; // ecx@128
     int v72; // edx@128
     stru24_stru160 *v73; // edi@129
@@ -1378,17 +1377,18 @@ LABEL_97:
             v69 = v1->list_318;
             if ((stru24_stru310 **)v69 != &v1->list_318)
             {
-                v70 = v69->field_8;
+                Entity *v70 = v69->field_8;
                 if (v70)
                 {
-                    if (*(void(**)(Script *, Script *, enum SCRIPT_EVENT, void *))(*(_DWORD *)(v70 + 12) + 52) != EventHandler_General_Scout)
+                    if (*(void(**)(Script *, Script *, enum SCRIPT_EVENT, void *))((int)v70->script + 52) != EventHandler_General_Scout)
                     {
                         v71 = v69->x;
                         v172 = v1->_2A0_player_side;
                         v72 = v69->y;
                         v170 = v71;
                         i1 = v72;
-                        script_trigger_event(0, EVT_ENTITY_MOVE, &v172, *(Script **)(v70 + 12));
+
+                        script_trigger_event(0, EVT_ENTITY_MOVE, &v172, v70->script);
                         v69->next->prev = v69->prev;
                         v69->prev->next = v69->next;
                         v69->next = v1->list_310_head;
@@ -2756,13 +2756,13 @@ int UNIT_InitAiPlayers()
     _4778C8_singleplayer_available_units_denom = 0;
     if (current_level_idx == LEVEL_MUTE_05_AMBUSH)// Evolved Mission #5: Ambush
     {
-        v59 = array_470514;
+        v59 = dword_470510 + 1;
         do
         {
             if (*v59 == 1)
                 ++v0;
             ++v59;
-        } while ((int)v59 < (int)&array_470514[6]);
+        } while ((int)v59 < (int)&dword_470510[7]);
         _4778C8_singleplayer_available_units_denom = v0;
         v77 = SURVIVORS;
         v80 = cpu_player_scripts_attached_stru24s;
@@ -2770,7 +2770,7 @@ int UNIT_InitAiPlayers()
         v83 = 0;
         while (1)
         {
-            if (array_470514[v83] == 1 && dword_464DCC)
+            if (dword_470510[v83+1] == 1 && dword_464DCC)
             {
                 v61 = script_create_function(SCRIPT_TYPE_INVALID, script_42DF20);
                 *v60 = v61;
@@ -2916,7 +2916,7 @@ int UNIT_InitAiPlayers()
                 return 1;
         }
     }
-    v1 = array_470514;
+    v1 = dword_470510+1;
     if (current_level_idx == LEVEL_MUTE_08_SMASH_THE_CONVOY)// Evolved Mission #8
     {
         do
@@ -2924,7 +2924,7 @@ int UNIT_InitAiPlayers()
             if (*v1 == 1)
                 ++v0;
             ++v1;
-        } while ((int)v1 < (int)&array_470514[6]);
+        } while ((int)v1 < (int)&dword_470510[7]);
         _4778C8_singleplayer_available_units_denom = v0;
         v76 = SURVIVORS;
         v79 = cpu_player_scripts_attached_stru24s;
@@ -2932,7 +2932,7 @@ int UNIT_InitAiPlayers()
         v82 = 0;
         do
         {
-            if (array_470514[v82] == 1 && dword_464DCC)
+            if (dword_470510[v82+1] == 1 && dword_464DCC)
             {
                 v39 = script_create_function(SCRIPT_TYPE_INVALID, script_42DC70_ai);
                 *v38 = v39;
@@ -3112,7 +3112,7 @@ int UNIT_InitAiPlayers()
             if (*v1 == 1)
                 ++v0;
             ++v1;
-        } while ((int)v1 < (int)&array_470514[6]);
+        } while ((int)v1 < (int)&dword_470510[7]);
         _4778C8_singleplayer_available_units_denom = v0;
         v75 = 1;
         v81 = cpu_player_scripts_attached_stru24s;
@@ -3120,7 +3120,7 @@ int UNIT_InitAiPlayers()
         v78 = 0;
         do
         {
-            if (array_470514[v78] == 1 && dword_464DCC)
+            if (dword_470510[v78+1] == 1 && dword_464DCC)
             {
                 v3 = script_create_function(SCRIPT_TYPE_INVALID, script_40B700_ai);
                 *v2 = v3;

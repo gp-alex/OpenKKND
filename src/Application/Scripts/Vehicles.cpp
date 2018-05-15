@@ -8,6 +8,9 @@
 
 using Engine::EntityFactory;
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::Infrastructure::EntityRepository;
 
 //----- (00444180) --------------------------------------------------------
 void UNIT_Handler_OilTanker(Script *a1)

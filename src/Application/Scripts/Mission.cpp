@@ -14,6 +14,9 @@
 
 using Engine::EntityFactory;
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::Infrastructure::EntityRepository;
 
 //----- (00424B90) --------------------------------------------------------
 void UNIT_Handler_TechBunker_2(Script *a1)
@@ -180,106 +183,102 @@ void script_424CE0_mission_outcome_modal(Script *a1)
 //----- (00424EC0) --------------------------------------------------------
 int sub_424EC0()
 {
-    Entity *v0; // eax@1
     int v1; // edi@1
     int v2; // ebx@1
-    int v3; // ecx@2
-    int v4; // ecx@14
-    enum UNIT_ID v6; // ecx@23
 
-    v0 = entity_list_head;
     v1 = 0;
     v2 = 0;
-    if ((Entity **)entity_list_head != &entity_list_head)
+
+    auto entities = entityRepo->FindAll();
+    auto v0 = entities.begin();
+    if (entities.size() > 0)
     {
         while (1)
         {
-            v3 = v0->unit_id;
+            auto v3 = (*v0)->unit_id;
             if (v3 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                || v3 >= (int)UNIT_STATS_GORT && v3 <= (int)UNIT_STATS_MECH)
+                || entity_is_21st_century(*v0))
             {
                 break;
             }
-            v0 = v0->next;
-            if ((Entity **)v0 == &entity_list_head)
+
+            if (++v0 == entities.end())
                 goto LABEL_11;
         }
-        if (game_globals_cpu[0].cash[7 * player_side + v0->player_side])
+        if (game_globals_cpu[0].cash[7 * player_side + (*v0)->player_side])
             v2 = 1;
         else
             v1 = 1;
-        v0 = v0->next;
+        v0++;
     }
+
 LABEL_11:
     if (!v1)
     {
         if (_4269B0_task_attachment__num_units_created_manually <= 0)
         {
-            if ((Entity **)v0 == &entity_list_head)
+            if (v0 == entities.end())
                 return v2 | 2 * v1;
             while (1)
             {
-                if (!game_globals_cpu[0].cash[7 * player_side + v0->player_side])
+                if (!game_globals_cpu[0].cash[7 * player_side + (*v0)->player_side])
                 {
-                    v6 = v0->unit_id;
+                    auto v6 = (*v0)->unit_id;
                     if ((int)v6 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                        || (int)v6 >= (int)UNIT_STATS_GORT && (int)v6 <= (int)UNIT_STATS_MECH)
+                        || entity_is_21st_century(*v0))
                     {
                         break;
                     }
                 }
-                v0 = v0->next;
-                if ((Entity **)v0 == &entity_list_head)
+
+                if (++v0 == entities.end())
                     return v2;
             }
         }
         v1 = 1;
         return v2 | 2 * v1;
     }
-    if ((Entity **)v0 == &entity_list_head)
+    if (v0 == entities.end())
         return v2 | 2 * v1;
     while (1)
     {
-        if (game_globals_cpu[0].cash[7 * player_side + v0->player_side])
+        if (game_globals_cpu[0].cash[7 * player_side + (*v0)->player_side])
         {
-            v4 = v0->unit_id;
+            auto v4 = (*v0)->unit_id;
             if (v4 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                || v4 >= (int)UNIT_STATS_GORT && v4 <= (int)UNIT_STATS_MECH)
+                || v4 >= entity_is_21st_century(*v0))
             {
                 break;
             }
         }
-        v0 = v0->next;
-        if ((Entity **)v0 == &entity_list_head)
+
+        if (++v0 == entities.end())
             return v2 | 2 * v1;
     }
     return 2 * v1 | 1;
 }
-// 47A2F8: using guessed type int _4269B0_task_attachment__num_units_created_manually;
+
 
 //----- (00424FD0) --------------------------------------------------------
 int sub_424FD0()
 {
-    Entity *v0; // eax@1
     int v1; // edi@1
     int v2; // ebx@1
-    enum UNIT_ID v3; // ecx@2
-    enum PLAYER_SIDE v4; // ecx@5
-    enum UNIT_ID v5; // ecx@17
-    enum UNIT_ID v7; // ecx@26
 
-    v0 = entity_list_head;
     v1 = 0;
     v2 = 0;
-    if ((Entity **)entity_list_head != &entity_list_head)
+
+    auto entities = entityRepo->FindAll();
+    auto v0 = entities.begin();
+    if (entities.size() > 0)
     {
         while (1)
         {
-            v3 = v0->unit_id;
+            auto v3 = (*v0)->unit_id;
             if ((int)v3 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                || (int)v3 >= (int)UNIT_STATS_GORT && (int)v3 <= (int)UNIT_STATS_MECH)
+                || entity_is_21st_century(*v0))
             {
-                v4 = v0->player_side;
+                auto v4 = (*v0)->player_side;
                 if (v4 == player_side)
                 {
                     v2 = 1;
@@ -291,130 +290,128 @@ int sub_424FD0()
                 if (v1 || v2)
                     break;
             }
-            v0 = v0->next;
-            if ((Entity **)v0 == &entity_list_head)
+
+            if (++v0 == entities.end())
                 goto LABEL_14;
         }
-        v0 = v0->next;
+        v0++;
     }
+
 LABEL_14:
     if (!v1)
     {
         if (_4269B0_task_attachment__num_units_created_manually <= 0)
         {
-            if ((Entity **)v0 == &entity_list_head)
+            if (v0 == entities.end())
                 return v2 | 2 * v1;
             while (1)
             {
-                if (!game_globals_cpu[0].cash[7 * player_side + v0->player_side])
+                if (!game_globals_cpu[0].cash[7 * player_side + (*v0)->player_side])
                 {
-                    v7 = v0->unit_id;
-                    if ((int)v7 <= 66 || (int)v7 >= 74 && (int)v7 <= 78)
+                    auto v7 = (*v0)->unit_id;
+                    if ((int)v7 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
+                        || entity_is_21st_century(*v0))
                         break;
                 }
-                v0 = v0->next;
-                if ((Entity **)v0 == &entity_list_head)
+
+                if (++v0 == entities.end())
                     return v2;
             }
         }
         v1 = 1;
         return v2 | 2 * v1;
     }
-    if ((Entity **)v0 == &entity_list_head)
+    if (v0 == entities.end())
         return v2 | 2 * v1;
     while (1)
     {
-        if (v0->player_side == player_side)
+        if ((*v0)->player_side == player_side)
         {
-            v5 = v0->unit_id;
+            auto v5 = (*v0)->unit_id;
             if ((int)v5 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                || (int)v5 >= (int)UNIT_STATS_GORT && (int)v5 <= (int)UNIT_STATS_MECH)
+                || entity_is_21st_century(*v0))
             {
                 break;
             }
         }
-        v0 = v0->next;
-        if ((Entity **)v0 == &entity_list_head)
+        if (++v0 == entities.end())
             return v2 | 2 * v1;
     }
     return 2 * v1 | 1;
 }
-// 47A2F8: using guessed type int _4269B0_task_attachment__num_units_created_manually;
+
 
 //----- (004250E0) --------------------------------------------------------
 int sub_4250E0()
 {
-    Entity *v0; // eax@1
     int v1; // esi@1
     int v2; // edi@1
-    enum UNIT_ID v3; // ecx@2
-    enum UNIT_ID v4; // ecx@14
-    enum UNIT_ID v6; // ecx@23
 
-    v0 = entity_list_head;
     v1 = 0;
     v2 = 0;
-    if ((Entity **)entity_list_head != &entity_list_head)
+
+    auto entities = entityRepo->FindAll();
+    auto v0 = entities.begin();
+    if (entities.size() > 0)
     {
         while (1)
         {
-            v3 = v0->unit_id;
+            auto v3 = (*v0)->unit_id;
             if ((int)v3 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                || (int)v3 >= (int)UNIT_STATS_GORT && (int)v3 <= (int)UNIT_STATS_MECH)
+                || entity_is_21st_century(*v0))
             {
                 break;
             }
-            v0 = v0->next;
-            if ((Entity **)v0 == &entity_list_head)
+
+            if (++v0 == entities.end())
                 goto LABEL_11;
         }
-        if (v0->player_side == player_side)
+        if ((*v0)->player_side == player_side)
             v2 = 1;
         else
             v1 = 1;
-        v0 = v0->next;
+        v0++;
     }
+
 LABEL_11:
     if (!v1)
     {
         if (_4269B0_task_attachment__num_units_created_manually <= 0)
         {
-            if ((Entity **)v0 == &entity_list_head)
+            if (v0 == entities.end())
                 return v2 | 2 * v1;
             while (1)
             {
-                if (v0->player_side != player_side)
+                if ((*v0)->player_side != player_side)
                 {
-                    v6 = v0->unit_id;
+                    auto v6 = (*v0)->unit_id;
                     if ((int)v6 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                        || (int)v6 >= (int)UNIT_STATS_GORT && (int)v6 <= (int)UNIT_STATS_MECH)
+                        || entity_is_21st_century(*v0))
                     {
                         break;
                     }
                 }
-                v0 = v0->next;
-                if ((Entity **)v0 == &entity_list_head)
+                if (++v0 == entities.end())
                     return v2;
             }
         }
         v1 = 1;
         return v2 | 2 * v1;
     }
-    if ((Entity **)v0 == &entity_list_head)
+    if (v0 == entities.end())
         return v2 | 2 * v1;
     while (1)
     {
-        if (v0->player_side == player_side)
+        if ((*v0)->player_side == player_side)
         {
-            v4 = v0->unit_id;
+            auto v4 = (*v0)->unit_id;
             if ((int)v4 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                || (int)v4 >= (int)UNIT_STATS_GORT && (int)v4 <= (int)UNIT_STATS_MECH)
+                || entity_is_21st_century(*v0))
             {
                 break;
             }
         }
-        v0 = v0->next;
-        if ((Entity **)v0 == &entity_list_head)
+        if (++v0 == entities.end())
             return v2 | 2 * v1;
     }
     return 2 * v1 | 1;
@@ -423,89 +420,89 @@ LABEL_11:
 //----- (004251B0) --------------------------------------------------------
 int sub_4251B0()
 {
-    Entity *v0; // eax@1
     int v1; // ebx@1
     int v2; // ebp@1
     int v3; // esi@1
     enum PLAYER_SIDE v4; // edx@1
-    enum UNIT_ID v5; // ecx@2
-    enum UNIT_ID v6; // ecx@13
-    enum UNIT_ID v8; // ecx@27
 
-    v0 = entity_list_head;
     v1 = 0;
     v2 = 0;
     v3 = 0;
     v4 = PLAYER_SIDE_UNSPECIFIED;
-    if ((Entity **)entity_list_head != &entity_list_head)
+
+    auto entities = entityRepo->FindAll();
+    auto v0 = entities.begin();
+    if (entities.size() > 0)
     {
         while (1)
         {
-            v5 = v0->unit_id;
+            auto v5 = (*v0)->unit_id;
             if ((int)v5 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                || (int)v5 >= (int)UNIT_STATS_GORT && (int)v5 <= (int)UNIT_STATS_MECH)
+                || entity_is_21st_century(*v0))
             {
                 break;
             }
-            v0 = v0->next;
-            if ((Entity **)v0 == &entity_list_head)
+
+            if (++v0 == entities.end())
                 goto LABEL_11;
         }
-        if (v0->player_side == player_side)
+        if ((*v0)->player_side == player_side)
         {
             v2 = 1;
         }
         else
         {
-            v4 = v0->player_side;
+            v4 = (*v0)->player_side;
             v1 = 1;
         }
-        v0 = v0->next;
+        v0++;
     }
+
 LABEL_11:
     if (!v1)
     {
-        if ((Entity **)v0 != &entity_list_head)
+        if (v0 != entities.end())
         {
             while (1)
             {
-                if (v0->player_side != player_side)
+                if ((*v0)->player_side != player_side)
                 {
-                    v8 = v0->unit_id;
+                    auto v8 = (*v0)->unit_id;
                     if ((int)v8 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                        || (int)v8 >= (int)UNIT_STATS_GORT && (int)v8 <= (int)UNIT_STATS_MECH)
+                        || entity_is_21st_century(*v0))
                     {
                         break;
                     }
                 }
-                v0 = v0->next;
-                if ((Entity **)v0 == &entity_list_head)
+
+                if (++v0 == entities.end())
                     return v2;
             }
             v1 = 1;
         }
         return v2 | 2 * (v1 | 2 * v3);
     }
+
     v3 = 1;
-    if ((Entity **)v0 == &entity_list_head)
+    if (v0 == entities.end())
         return v2 | 2 * (v1 | 2 * v3);
     while (1)
     {
-        v6 = v0->unit_id;
+        auto v6 = (*v0)->unit_id;
         if (((int)v6 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-            || (int)v6 >= (int)UNIT_STATS_GORT && (int)v6 <= (int)UNIT_STATS_MECH)
-            && v0->player_side != v4)
+            || entity_is_21st_century(*v0))
+            && (*v0)->player_side != v4)
         {
             v3 = 0;
         }
-        if (v0->player_side == player_side
+        if ((*v0)->player_side == player_side
             && ((int)v6 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL
-                || (int)v6 >= (int)UNIT_STATS_GORT && (int)v6 <= (int)UNIT_STATS_MECH))
+                || entity_is_21st_century(*v0)))
         {
             break;
         }
-        v0 = v0->next;
-        if ((Entity **)v0 == &entity_list_head)
+
+        if (++v0 == entities.end())
             return v2 | 2 * (v1 | 2 * v3);
     }
     return 2 * (v1 | 2 * v3) | 1;
@@ -583,7 +580,6 @@ void script_425400(Script *a1)
     char v7; // bl@22
     enum PLAYER_SIDE v8; // edi@25
     int v9; // eax@25
-    Entity *v10; // esi@27
     int j; // eax@27
     void *v12; // edx@46
     char v13; // al@49
@@ -673,8 +669,8 @@ void script_425400(Script *a1)
                         break;
                     if (v9 < unit_stats[UNIT_STATS_SURV_POWER_STATION].cost)
                     {
-                        v10 = entity_list_head;
-                        for (j = 0; (Entity **)v10 != &entity_list_head; v10 = v10->next)
+                        j = 0;
+                        for (auto v10: entityRepo->FindAll())
                         {
                             if (!v10->destroyed && v10->player_side == v8 && v10->unit_id == UNIT_STATS_SURV_POWER_STATION)
                             {
@@ -688,7 +684,7 @@ void script_425400(Script *a1)
                                 j = 1;
                             }
                         }
-                        if (j != 2 && (!j || j == 1 && !game_globals_per_player.cash[player_side]))
+                        if (j != 2 && (j == 0 || j == 1 && !game_globals_per_player.cash[player_side]))
                             goto LABEL_53;
                     }
                 }
@@ -810,63 +806,6 @@ void entity_check_special_mission_death_conditions(Entity *victim)
     }
 }
 
-//----- (00425820) --------------------------------------------------------
-Entity *entity_425820_find(Entity *a1, int a2)
-{
-    Sprite *v2; // ecx@1
-    Entity *result; // eax@1
-    int v4; // ebx@1
-    Sprite *v5; // ecx@4
-    int v6; // esi@4
-    int v7; // esi@4
-    bool v8; // zf@4
-    bool v9; // sf@4
-    Sprite *v10; // esi@4
-    int v11; // ecx@5
-    int v12; // esi@7
-    int v13; // edi@7
-    int v14; // [sp+10h] [bp-4h]@1
-
-    a1->sprite->field_88_unused = 1;
-    v2 = a1->sprite;
-    result = entity_list_head;
-    v4 = v2->x;
-    v14 = v2->y;
-    if ((Entity **)entity_list_head == &entity_list_head)
-    {
-    LABEL_11:
-        result = 0;
-    }
-    else
-    {
-        while (1)
-        {
-            if (!result->destroyed && result->player_side == player_side)
-            {
-                result->sprite->field_88_unused = 1;
-                v5 = result->sprite;
-                v6 = v5->x;
-                v5->field_88_unused = 1;
-                v7 = v6 - v4;
-                v8 = v7 == 0;
-                v9 = v7 < 0;
-                v10 = result->sprite;
-                v11 = v9 || v8 ? v4 - v10->x : v10->x - v4;
-                v12 = v10->y;
-                v13 = v12 - v14;
-                if (v12 - v14 <= 0)
-                    v13 = v14 - v12;
-                if (v11 + v13 < a2)
-                    break;
-            }
-            result = result->next;
-            if ((Entity **)result == &entity_list_head)
-                goto LABEL_11;
-        }
-    }
-    return result;
-}
-
 //----- (004258C0) --------------------------------------------------------
 void entity_4258C0_init_palettes_inc_unit_counter(Entity *a1, enum PLAYER_SIDE side)
 {
@@ -900,7 +839,7 @@ void entity_mode_425920_scout(Entity *a1)
     {
         v2 = a1->_128_spawn_param;
         a1->_134_param__unitstats_after_mobile_outpost_plant = a1->_12C_prison_bunker_spawn_type;
-        if (entity_425820_find(a1, (int)v2))
+        if (entity_find_player_entity_in_radius(a1, (int)v2))
         {
             v3 = player_side;
             ++UNIT_num_player_units;
@@ -1001,205 +940,213 @@ void UNIT_Handler_Scout(Script *a1)
         v1->_134_param__unitstats_after_mobile_outpost_plant = v3 - 1;
 }
 
+enum MISSION_RESULT
+{
+    MISSION_RESULT_ACCOMPLISHED,
+    MISSION_RESULT_FAILED
+};
+
+MISSION_RESULT script_425BE0_check_special_victory_conditions_surv04(Script *a1)
+{
+    do
+    {
+        do
+            script_445370_yield_to_main_thread(a1, 0x80000000, 30);
+        while (!entity_scout);
+
+        entity_scout->sprite->field_88_unused = 1;
+    } while (entity_scout->sprite->x <= 35328
+        || entity_scout->sprite->x >= 59904
+        || entity_scout->sprite->y <= 378112
+        || entity_scout->sprite->y >= 402688
+    );
+
+    return MISSION_RESULT_ACCOMPLISHED;
+}
+
+MISSION_RESULT script_425BE0_check_special_victory_conditions_surv06(Script *a1)
+{
+    int v6 = 0;
+    do
+    {
+        while (1)
+        {
+            v6 = 0;
+            script_445370_yield_to_main_thread(a1, 0x80000000, 30);
+            if (entityRepo->CountAll() <= 0)
+                break;
+
+            int n = 0;
+            for (auto i: entityRepo->FindAll())
+            {
+                ++n;
+                if (i->player_side != player_side)
+                {
+                    if (!i->stats->speed)
+                    {
+                        auto v8 = i->stats->attach;
+                        v6 = 1;
+                        if (v8 && v8->dmg_source)
+                            v6 = 0;
+                        if (v6)
+                            break;
+                    }
+                }
+            }
+
+            if (n >= entityRepo->CountAll())
+                break;
+        }
+    } while (v6);
+
+    int v9 = 1;
+    sprite_create_scripted(MOBD_CURSORS, 0, script_426710_mission_objectives_draw_x_mark, SCRIPT_COROUTINE, 0);
+    do
+    {
+        v9 = 1;
+        script_445370_yield_to_main_thread(a1, 0x80000000, 30);
+
+        if (entityRepo->CountAll() > 0)
+        {
+            int n = 0;
+            for (auto i: entityRepo->FindAll())
+            {
+                ++n;
+                if (i->player_side == player_side)
+                {
+                    i->sprite->field_88_unused = 1;
+                    auto v11 = i->sprite;
+                    if (v11->x > 76800 || v11->y <= 604160)
+                        break;
+                }
+            }
+            if (n >= entityRepo->CountAll())
+                break;
+            v9 = 0;
+        }
+    } while (!v9);
+
+    return MISSION_RESULT_ACCOMPLISHED;
+}
+
+MISSION_RESULT script_425BE0_check_special_victory_conditions_mute04(Script *a1) {
+    while (true) {
+        do
+            script_445370_yield_to_main_thread(a1, 0x80000000, 30);
+        while (!entity_scout);
+
+        int num_mute_tankers_alive = 0;
+        int num_mute_tankers_on_spot = 0;
+
+        auto tankers = entityRepo->FindAll(
+            [&](Entity *e) {
+                return e->unit_id == UNIT_STATS_MUTE_TANKER;
+            }
+        );
+        for (auto i : tankers)
+        {
+            ++num_mute_tankers_alive;
+            auto v15 = i->sprite;
+            v15->field_88_unused = 1;
+            if (v15->x <= 464 * 256 && v15->y >= 1618 * 256)
+                ++num_mute_tankers_on_spot;
+        }
+
+        if (num_mute_tankers_alive < 2) {
+            return MISSION_RESULT_FAILED;
+        }
+
+        if (num_mute_tankers_on_spot == num_mute_tankers_alive) {
+            return MISSION_RESULT_ACCOMPLISHED;
+        }
+    }
+}
+
+MISSION_RESULT script_425BE0_check_special_victory_conditions_surv18(Script *a1) {
+    while (true) {
+        script_445370_yield_to_main_thread(a1, 0x80000000, 30);
+
+        auto presidente = entityRepo->FindSingle(
+            [&](Entity *e) {
+                return e->unit_id == UNIT_STATS_SURV_EL_PRESIDENTE;
+            }
+        );
+
+        if (presidente == nullptr) {
+            return MISSION_RESULT_FAILED;
+        }
+
+        auto v19 = presidente->sprite;
+        v19->field_88_unused = 1;
+        if (v19->x >= 3386 * 256 && v19->y >= 1894 * 256) {
+            return MISSION_RESULT_ACCOMPLISHED;
+        }
+    }
+}
+
 //----- (00425BE0) --------------------------------------------------------
 void script_425BE0_check_special_victory_conditions(Script *a1)
 {
-    Sprite *v1; // eax@3
-    int v2; // ecx@3
-    int v3; // eax@3
-    Script *v4; // eax@7
-    Entity *v5; // eax@9
-    int v6; // edx@9
-    UnitStat *v7; // ecx@11
-    UnitAttachmentPoint *v8; // ecx@12
-    int v9; // esi@19
-    Entity *v10; // eax@19
-    Sprite *v11; // ecx@21
-    Entity *v12; // eax@30
-    int v13; // edx@30
-    int i; // esi@30
-    Sprite *v15; // ecx@32
-    enum SCRIPT_EVENT v16; // edx@41
-    int v17; // edi@42
-    Entity *v18; // eax@43
-    Sprite *v19; // ecx@45
-    Script *v20; // [sp-4h] [bp-14h]@41
-
+    MISSION_RESULT mission_result;
     switch (current_level_idx)
     {
-    case LEVEL_SURV_04_RESCUE_THE_SCOUT:
-        do
-        {
-            do
-                script_445370_yield_to_main_thread(a1, 0x80000000, 30);
-            while (!entity_scout);
-            entity_scout->sprite->field_88_unused = 1;
-            v1 = entity_scout->sprite;
-            v2 = v1->x;
-            v3 = v1->y;
-        } while (v2 <= 35328 || v2 >= 59904 || v3 <= 378112 || v3 >= 402688);
-        v4 = script_47A3CC;
-        if (script_47A3CC)
-            goto mission_accomplished;
-        break;
-    case LEVEL_SURV_06_EXTERMINATE_THE_VILLAGE:
-        do
-        {
-            while (1)
-            {
-                script_445370_yield_to_main_thread(a1, 0x80000000, 30);
-                v5 = entity_list_head;
-                v6 = 0;
-                if ((Entity **)entity_list_head == &entity_list_head)
-                    break;
-                while (1)
-                {
-                    if (v5->player_side != player_side)
-                    {
-                        v7 = v5->stats;
-                        if (!v7->speed)
-                        {
-                            v8 = v7->attach;
-                            v6 = 1;
-                            if (v8 && v8->dmg_source)
-                                v6 = 0;
-                            if (v6)
-                                break;
-                        }
-                    }
-                    v5 = v5->next;
-                    if ((Entity **)v5 == &entity_list_head)
-                        goto LABEL_17;
-                }
-            }
-        LABEL_17:
-            ;
-        } while (v6);
-        sprite_create_scripted(MOBD_CURSORS, 0, script_426710_mission_objectives_draw_x_mark, SCRIPT_COROUTINE, 0);
-        do
-        {
-            v9 = 1;
-            script_445370_yield_to_main_thread(a1, 0x80000000, 30);
-            v10 = entity_list_head;
-            if ((Entity **)entity_list_head != &entity_list_head)
-            {
-                while (1)
-                {
-                    if (v10->player_side == player_side)
-                    {
-                        v10->sprite->field_88_unused = 1;
-                        v11 = v10->sprite;
-                        if (v11->x > 76800 || v11->y <= 604160)
-                            break;
-                    }
-                    v10 = v10->next;
-                    if ((Entity **)v10 == &entity_list_head)
-                        goto LABEL_26;
-                }
-                v9 = 0;
-            }
-        LABEL_26:
-            ;
-        } while (!v9);
-        v4 = script_47A3CC;
-        if (script_47A3CC)
-            goto mission_accomplished;
-        break;
-    case LEVEL_MUTE_04_RAID_THE_FORT:
-        while (1)
-        {
-            do
-                script_445370_yield_to_main_thread(a1, 2147483648, 30);
-            while (!entity_scout);
-            v12 = entity_list_head;
-            v13 = 0;
-            for (i = 0; (Entity **)v12 != &entity_list_head; v12 = v12->next)
-            {
-                if (v12->unit_id == 24)
-                {
-                    ++v13;
-                    v12->sprite->field_88_unused = 1;
-                    v15 = v12->sprite;
-                    if (v15->x <= 118784 && v15->y >= 414208)
-                        ++i;
-                }
-            }
-            if (v13 <= 1)
-                break;
-            if (i == v13)
-            {
-                v4 = script_47A3CC;
-                if (script_47A3CC)
-                    goto mission_accomplished;
-                goto end;
-            }
+        case LEVEL_SURV_04_RESCUE_THE_SCOUT: {
+            mission_result = script_425BE0_check_special_victory_conditions_surv04(a1);
+            break;
         }
-        if (script_47A3CC)
-        {
-            v20 = script_47A3CC;
-            v16 = (SCRIPT_EVENT)1498;
-            goto mission_failed;
+
+        case LEVEL_SURV_06_EXTERMINATE_THE_VILLAGE: {
+            mission_result = script_425BE0_check_special_victory_conditions_surv06(a1);
+            break;
         }
-        break;
-    case LEVEL_SURV_18:
-        v17 = 0;
-        do
-        {
-            script_445370_yield_to_main_thread(a1, 2147483648, 30);
-            v18 = entity_list_head;
-            if ((Entity **)entity_list_head != &entity_list_head)
-            {
-                while (1)
-                {
-                    if (v18->unit_id == 8)
-                    {
-                        v18->sprite->field_88_unused = 1;
-                        v19 = v18->sprite;
-                        if (v19->x >= 866816 && v19->y >= 484864)
-                            break;
-                    }
-                    v18 = v18->next;
-                    if ((Entity **)v18 == &entity_list_head)
-                        goto LABEL_50;
-                }
-                v17 = 1;
-            }
-        LABEL_50:
-            ;
-        } while (!v17);
-        v4 = script_47A3CC;
-        if (script_47A3CC)
-        {
-        mission_accomplished:
-            v20 = v4;
-            v16 = (SCRIPT_EVENT)1524;
-        mission_failed:
-            script_trigger_event(0, v16, 0, v20);
+
+        case LEVEL_MUTE_04_RAID_THE_FORT: {
+            mission_result = script_425BE0_check_special_victory_conditions_mute04(a1);
+            break;
         }
-        break;
-    default:
-        break;
+
+        case LEVEL_SURV_18: {
+            mission_result = script_425BE0_check_special_victory_conditions_surv18(a1);
+            break;
+        }
+
+        default:
+            script_yield(a1);
+            return;
     }
-end:
+
+
+    switch (mission_result)
+    {
+        case MISSION_RESULT_ACCOMPLISHED: {
+            if (script_47A3CC) {
+                script_trigger_event(0, EVT_ENTITY_MOVE, 0, script_47A3CC);
+            }
+            break;
+        };
+
+        case MISSION_RESULT_FAILED: {
+            if (script_47A3CC) {
+                script_trigger_event(0, EVT_MSG_MISSION_FAILED, 0, script_47A3CC);
+            }
+            break;
+        }
+    }
+
     script_yield(a1);
 }
 
 //----- (00425EC0) --------------------------------------------------------
-int sub_425EC0(enum UNIT_ID a1, enum PLAYER_SIDE a2)
+int _425EC0_entities_check_modes(enum UNIT_ID a1, enum PLAYER_SIDE a2)
 {
-    Entity *v2; // esi@1
     int result; // eax@1
-    enum PLAYER_SIDE v4; // edi@1
-    enum UNIT_ID i; // ebx@1
 
-    v2 = entity_list_head;
     result = 0;
-    v4 = a2;
-    for (i = a1; (Entity **)v2 != &entity_list_head; v2 = v2->next)
+    for (auto i: entityRepo->FindAll())
     {
-        if (!v2->destroyed && v2->player_side == v4 && v2->unit_id == i)
+        if (!i->destroyed && i->player_side == a2 && i->unit_id == a1)
         {
-            if (!entity_402AC0_is_mode_402AB0(v2))
+            if (!entity_402AC0_is_mode_402AB0(i))
                 return 2;
             result = 1;
         }
@@ -1208,26 +1155,13 @@ int sub_425EC0(enum UNIT_ID a1, enum PLAYER_SIDE a2)
 }
 
 //----- (00425F20) --------------------------------------------------------
-Entity *sub_425F20(enum UNIT_ID unit_id, enum PLAYER_SIDE side)
+Entity *FindEntityBySideAndType(enum UNIT_ID unit_id, enum PLAYER_SIDE side)
 {
-    Entity *result; // eax@1
-
-    result = entity_list_head;
-    if ((Entity **)entity_list_head == &entity_list_head)
-    {
-    LABEL_6:
-        result = 0;
-    }
-    else
-    {
-        while (result->destroyed || result->player_side != side || result->unit_id != unit_id)
-        {
-            result = result->next;
-            if ((Entity **)result == &entity_list_head)
-                goto LABEL_6;
+    return entityRepo->FindSingle(
+        [&](Entity *e) {
+            return !e->destroyed && e->player_side == side && e->unit_id == unit_id;
         }
-    }
-    return result;
+    );
 }
 
 //----- (00425F50) --------------------------------------------------------

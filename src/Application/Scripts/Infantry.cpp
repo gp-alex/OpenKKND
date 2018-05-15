@@ -14,6 +14,10 @@
 
 using Engine::EntityFactory;
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::Infrastructure::EntityRepository;
+
 
 //----- (00412B60) --------------------------------------------------------
 void UNIT_Handler_Vehicle(Script *a1)

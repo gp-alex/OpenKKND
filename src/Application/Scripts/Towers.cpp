@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "_unsorted_data.h"
 #include "kknd.h"
 #include "Script.h"
@@ -9,6 +10,9 @@
 
 using Engine::EntityFactory;
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::Infrastructure::EntityRepository;
 
 //----- (00447380) --------------------------------------------------------
 void UNIT_Handler_GuardTower(Script *a1)

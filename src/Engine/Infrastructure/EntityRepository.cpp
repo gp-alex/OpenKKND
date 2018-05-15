@@ -8,16 +8,36 @@ using Engine::Infrastructure::EntityRepository;
 #include "kknd.h"
 
 
-
-EntityRepository *entityRepo = nullptr;
-
-Entity *entity_list_head;
-Entity *entity_list_47D9AC;
-Entity *entity_list;
-Entity *entity_list_free_pool;
+EntityRepository *entityRepo = new EntityRepository();
 
 
-Entity *EntityRepository::FindById(int id) {
+Entity *EntityRepository::FindSingle(EntitySpecification spec) const {
+    auto entity = std::find_if(
+        entities.begin(),
+        entities.end(),
+        spec
+    );
+
+    if (entity != entities.end()) {
+        return *entity;
+    }
+    return nullptr;
+}
+
+std::list<Entity *> EntityRepository::FindAll(EntitySpecification spec) const {
+    std::list<Entity *> results;
+    std::copy_if(
+        entities.begin(),
+        entities.end(),
+        std::back_inserter(results),
+        spec
+    );
+
+    return results;
+}
+
+//----- (0044CA30) --------------------------------------------------------
+Entity *EntityRepository::FindById(int id) const {
     if (id == -1) {
         return nullptr;
     }
@@ -25,7 +45,7 @@ Entity *EntityRepository::FindById(int id) {
     auto entity = std::find_if(
         entities.begin(),
         entities.end(),
-        [&](Entity *const& entity) {
+        [&](Entity *entity) {
             return entity->entity_id == id;
         }
     );
@@ -37,8 +57,12 @@ Entity *EntityRepository::FindById(int id) {
     return nullptr;
 }
 
-std::list<Entity *> EntityRepository::FindAll() {
+std::list<Entity *> EntityRepository::FindAll() const {
     return std::list<Entity *>(entities);
+}
+
+int EntityRepository::CountAll() const {
+    return entities.size();
 }
 
 void EntityRepository::Save(Entity *entity) {
@@ -82,4 +106,9 @@ void EntityRepository::Delete(Entity *a1)
     //a1->next = entity_list_free_pool;
     //entity_list_free_pool = a1;
     entities.remove(a1);
+}
+
+
+void EntityRepository::DeleteAll() {
+    entities.clear();
 }

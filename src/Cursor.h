@@ -34,7 +34,7 @@ struct _428940_local
     int field_30;
     int _34_is_cursor_over_impassible_terrain;
     int _38_are_owned_units_selected;
-    int field_3C;
+    int _3C_is_single_unit_selected;
     int _40_is_infantry_or_vehicle_selected;
     int _44_is_combat_unit_selected;
     enum UNIT_ID _48_highest_ranking_selected_unit;
@@ -154,7 +154,7 @@ void _428940_list_return(task_428940_attach__cursors *item);
 stru209 *_47A660_list_get();
 void _428940_list_do_stuff(stru209 *a1);
 
-void sub_4297D0(_428940_local *a1, int edx0);
+void sub_4297D0(_428940_local *a1, int a2);
 void cursor_load_mobd(_428940_local *a1, int offset); // idb
 bool cursor_check_click(_428940_local *a1);
 void cursor_group_orders(_428940_local *a1); // cursor handler for unit group

@@ -9,6 +9,11 @@
 
 #include "Engine/Entity.h"
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::Infrastructure::EntityRepository;
+
+
 //----- (00435A40) --------------------------------------------------------
 void UNIT_DmgHandler_Sapper(Script *a1)
 {
@@ -139,18 +144,15 @@ void script_435CF0_rocket_dmg_handler(Script *a1)
 //----- (00435D40) --------------------------------------------------------
 void script_435D40_bombers_dmg(Sprite *a1, int a2)
 {
-    Entity *v2; // esi@1
     int v3; // ebx@1
     Sprite *i; // edi@1
-    enum UNIT_ID v5; // eax@2
     int v6; // eax@6
 
-    v2 = entity_list_head;
     v3 = a2;
-    for (i = a1; (Entity **)v2 != &entity_list_head; v2 = v2->next)
+    i = a1;
+    for (auto v2: entityRepo->FindAll())
     {
-        v5 = v2->unit_id;
-        if ((v5 == UNIT_STATS_SURV_BOMBER || v5 == UNIT_STATS_MUTE_WASP) && !v2->destroyed && v2->script)
+        if (entity_is_bomber(v2) && !v2->destroyed && v2->script)
         {
             LOBYTE_HEXRAYS(v6) = _40D860_prolly_sprite_distance(i, v2->sprite, v3);
             if (v6)
@@ -190,9 +192,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
     int v26; // ST04_4@22
     char v27; // al@22
     DrawJob *v28; // ecx@23
-    Entity *v29; // edi@24
     int i; // ebx@24
-    enum UNIT_ID v31; // eax@25
     int v32; // eax@29
     int v33; // [sp+10h] [bp-18h]@1
     void *v34; // [sp+14h] [bp-14h]@1
@@ -292,18 +292,14 @@ void UNIT_DmgHandler_Rocket(Script *a1)
         v2->_60_mobd_anim_speed = 0x20000000;
         if (v35)
         {
-            v29 = entity_list_head;
-            for (i = *((_DWORD *)v34 + 8); (Entity **)v29 != &entity_list_head; v29 = v29->next)
+            i = *((_DWORD *)v34 + 8);
+            for (auto v29: entityRepo->FindAll())
             {
-                v31 = v29->unit_id;
-                if ((v31 == UNIT_STATS_SURV_BOMBER || v31 == UNIT_STATS_MUTE_WASP) && !v29->destroyed)
+                if (entity_is_bomber(v29) && !v29->destroyed && v29->script)
                 {
-                    if (v29->script)
-                    {
-                        LOBYTE_HEXRAYS(v32) = _40D860_prolly_sprite_distance(v2, v29->sprite, i);
-                        if (v32)
-                            script_trigger_event(v2->script, EVT_MSG_DAMAGE, v2, v29->script);
-                    }
+                    LOBYTE_HEXRAYS(v32) = _40D860_prolly_sprite_distance(v2, v29->sprite, i);
+                    if (v32)
+                        script_trigger_event(v2->script, EVT_MSG_DAMAGE, v2, v29->script);
                 }
             }
         }
@@ -713,9 +709,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
     int v43; // ST04_4@34
     char v44; // al@34
     DrawJob *v45; // ecx@35
-    Entity *v46; // edi@36
     int i; // ebp@36
-    enum UNIT_ID v48; // eax@37
     int v49; // eax@41
     int v50; // [sp+10h] [bp-18h]@1
     int v51; // [sp+10h] [bp-18h]@2
@@ -874,18 +868,14 @@ void UNIT_DmgHandler_Mech(Script *a1)
             v1->_60_mobd_anim_speed = 0x20000000;
             if (v56)
             {
-                v46 = entity_list_head;
-                for (i = *(_DWORD *)(v55 + 32); (Entity **)v46 != &entity_list_head; v46 = v46->next)
+                i = *(_DWORD *)(v55 + 32);
+                for (auto v46: entityRepo->FindAll())
                 {
-                    v48 = v46->unit_id;
-                    if ((v48 == UNIT_STATS_SURV_BOMBER || v48 == UNIT_STATS_MUTE_WASP) && !v46->destroyed)
+                    if (entity_is_bomber(v46) && !v46->destroyed && v46->script)
                     {
-                        if (v46->script)
-                        {
-                            LOBYTE_HEXRAYS(v49) = _40D860_prolly_sprite_distance(v1, v46->sprite, i);
-                            if (v49)
-                                script_trigger_event(v1->script, EVT_MSG_DAMAGE, v1, v46->script);
-                        }
+                        LOBYTE_HEXRAYS(v49) = _40D860_prolly_sprite_distance(v1, v46->sprite, i);
+                        if (v49)
+                            script_trigger_event(v1->script, EVT_MSG_DAMAGE, v1, v46->script);
                     }
                 }
             }
@@ -903,8 +893,6 @@ void UNIT_DmgHandler_Mech(Script *a1)
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
-// 47C04C: using guessed type int _47C04C_num_explosions_max20;
 
 //----- (00436FB0) --------------------------------------------------------
 void script_436FB0_dmg_handler(Script *a1)

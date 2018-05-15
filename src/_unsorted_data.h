@@ -1,8 +1,8 @@
 #pragma once
+
+#include <list>
+
 #include "src/kknd.h"
-
-
-#include "src/_unsorted_data.h"
 #include "src/_unsorted_functions.h"
 
 extern _UNKNOWN loc_45D19B; // weak
@@ -345,8 +345,7 @@ extern int _4704A8_per_sidebar_button_mobd_lookup_table_offsets[2][11];
 extern char a8d[]; // idb
 extern enum PLAYER_SIDE player_side;
 extern int dword_47050C; // weak
-extern int dword_470510[]; // weak
-extern int array_470514[7];
+extern int dword_470510[8]; // weak
 extern char aCouldnTCreat_0[]; // idb
 extern char aWaitingForServ[]; // idb
 extern char aWaitingForPlay[]; // idb
@@ -687,7 +686,7 @@ extern int _47A3D0_unit; // weak
 extern int _47A3D4_tanker_convoy_units_left; // weak
 extern int _47A3D8_num_convoy_tankers_still_to_arrive; // weak
 extern int dword_47A3DC; // weak
-extern Entity *entity_scout;
+extern Entity volatile *entity_scout;
 extern int _47A378_stru48_array_num_items; // weak
 extern int _47A300_stru51_tech_bunkers_num_items; // weak
 extern DataMobd *currently_running_lvl_mobd;
@@ -946,7 +945,7 @@ extern stru11unit *stru11unit_list_47DC74;
 extern stru11unit *stru11unit_list;
 extern stru11unit *stru11unit_list_head;
 extern unsigned __int8 *per_player_sprite_palettes[7];
-extern Entity *entity_drag_selection_list;
+extern std::list<Entity *> entity_drag_selection_list;
 extern int player_sprite_color_by_player_side[7];
 extern int _47DCC4_entity_id_counter; // weak
 extern int UNIT_num_player_units; // weak

@@ -3,6 +3,8 @@
 
 #include "src/Render.h"
 
+#include "Engine/Entity.h"
+
 _UNKNOWN loc_45D19B; // weak
 _UNKNOWN loc_45D1A4; // weak
 _UNKNOWN loc_45D267; // weak
@@ -651,14 +653,14 @@ void *script_handlers[353] =
 	&script_4252C0,
 	&script_425400,
 	&entity_check_special_mission_death_conditions,
-	&entity_425820_find,
+	&entity_find_player_entity_in_radius,
 	&entity_4258C0_init_palettes_inc_unit_counter,
 	&entity_mode_425920_scout,
 	&entity_425A50_setup_spawn,
 	&UNIT_Handler_General,
 	&UNIT_Handler_Scout,
-	&sub_425EC0,
-	&sub_425F20,
+	&_425EC0_entities_check_modes,
+	&FindEntityBySideAndType,
 	&script_425F50_stru48_stru51_tech_bunkers,
 	&script_425BE0_check_special_victory_conditions,
 	&handler_4267F0,
@@ -3422,8 +3424,7 @@ int _4704A8_per_sidebar_button_mobd_lookup_table_offsets[2][11] =
 char a8d[] = " %8d"; // idb
 enum PLAYER_SIDE player_side = SURVIVORS;
 int dword_47050C = -1; // weak
-int dword_470510[] = { 2 }; // weak
-int array_470514[7] = { 2, 2, 2, 2, 2, 2, 2 };
+int dword_470510[] = { 2, 2, 2, 2, 2, 2, 2, 2 }; // weak
 char aCouldnTCreat_0[] = "Couldn't create new building"; // idb
 char aWaitingForServ[] = "waiting for server packet"; // idb
 char aWaitingForPlay[] = "waiting for player packet"; // idb
@@ -6647,7 +6648,7 @@ int _47A3D0_unit; // weak
 int _47A3D4_tanker_convoy_units_left; // weak
 int _47A3D8_num_convoy_tankers_still_to_arrive; // weak
 int dword_47A3DC; // weak
-Entity *entity_scout;
+Entity volatile *entity_scout;
 int _47A378_stru48_array_num_items; // weak
 int _47A300_stru51_tech_bunkers_num_items; // weak
 DataMobd *currently_running_lvl_mobd;
@@ -6906,7 +6907,7 @@ stru11unit *stru11unit_list_47DC74;
 stru11unit *stru11unit_list;
 stru11unit *stru11unit_list_head;
 unsigned __int8 *per_player_sprite_palettes[7];
-Entity *entity_drag_selection_list;
+std::list<Entity *>entity_drag_selection_list;
 int player_sprite_color_by_player_side[7];
 int _47DCC4_entity_id_counter; // weak
 int UNIT_num_player_units; // weak

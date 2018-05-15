@@ -12,6 +12,9 @@
 
 using Engine::EntityFactory;
 
+#include "Engine/Infrastructure/EntityRepository.h"
+
+using Engine::Infrastructure::EntityRepository;
 
 //----- (004072A0) --------------------------------------------------------
 void EventHandler_Prison(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
@@ -310,63 +313,6 @@ void entity_mode_407870_techbubker(Entity *a1)
     a1->mode = entity_407690_techbunker_spawn;
 }
 
-//----- (004078B0) --------------------------------------------------------
-Entity *entity_4078B0_techbunker_find_entity(Entity *a1, int a2)
-{
-    Sprite *v2; // ecx@1
-    Entity *result; // eax@1
-    int v4; // ebx@1
-    Sprite *v5; // ecx@4
-    int v6; // esi@4
-    int v7; // esi@4
-    bool v8; // zf@4
-    bool v9; // sf@4
-    Sprite *v10; // esi@4
-    int v11; // ecx@5
-    int v12; // esi@7
-    int v13; // edi@7
-    int v14; // [sp+10h] [bp-4h]@1
-
-    a1->sprite->field_88_unused = 1;
-    v2 = a1->sprite;
-    result = entity_list_head;
-    v4 = v2->x;
-    v14 = v2->y;
-    if ((Entity **)entity_list_head == &entity_list_head)
-    {
-    LABEL_11:
-        result = 0;
-    }
-    else
-    {
-        while (1)
-        {
-            if (!result->destroyed && result->player_side)
-            {
-                result->sprite->field_88_unused = 1;
-                v5 = result->sprite;
-                v6 = v5->x;
-                v5->field_88_unused = 1;
-                v7 = v6 - v4;
-                v8 = v7 == 0;
-                v9 = v7 < 0;
-                v10 = result->sprite;
-                v11 = v9 || v8 ? v4 - v10->x : v10->x - v4;
-                v12 = v10->y;
-                v13 = v12 - v14;
-                if (v12 - v14 <= 0)
-                    v13 = v14 - v12;
-                if (v11 + v13 < a2)
-                    break;
-            }
-            result = result->next;
-            if ((Entity **)result == &entity_list_head)
-                goto LABEL_11;
-        }
-    }
-    return result;
-}
-
 //----- (00407950) --------------------------------------------------------
 void entity_mode_407950_techbunker_spawn_generic(Entity *a1)
 {
@@ -392,7 +338,7 @@ void entity_mode_407950_techbunker_spawn_generic(Entity *a1)
     }
     else
     {
-        v3 = entity_4078B0_techbunker_find_entity(v1, (int)v1->_128_spawn_param);
+        v3 = entity_find_any_entity_in_radius(v1, (int)v1->_128_spawn_param);
         if (v3)
         {
             v1->_128_spawn_param = (void *)v3->player_side;
@@ -428,7 +374,7 @@ void entity_mode_4079F0_techbunker_spawn10_surv18_lvl(Entity *a1)
     }
     else
     {
-        v3 = entity_4078B0_techbunker_find_entity(v1, (int)v1->_128_spawn_param);
+        v3 = entity_find_any_entity_in_radius(v1, (int)v1->_128_spawn_param);
         if (v3)
         {
             v1->_12C_prison_bunker_spawn_type = 10;

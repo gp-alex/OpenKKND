@@ -148,7 +148,6 @@ void entity_4075F0_techbunker(Entity *a1);
 void entity_mode_407630_bunker(Entity *a1);
 void entity_407690_techbunker_spawn(Entity *a1);
 void entity_mode_407870_techbubker(Entity *a1);
-Entity *entity_4078B0_techbunker_find_entity(Entity *a1, int a2); // idb
 void entity_mode_407950_techbunker_spawn_generic(Entity *a1);
 void entity_mode_4079F0_techbunker_spawn10_surv18_lvl(Entity *a1);
 void entity_mode_407A90_techbunker(Entity *a1);
@@ -401,7 +400,6 @@ OilDepositSaveStruct *GAME_Save_PackOilData(size_t *oil_data_size);
 int GAME_Load_UnpackOilData(OilDepositSaveStruct *a1);
 bool GAME_Save_PackEntity(Entity *entity, int save_data, int save_data_size);
 bool GAME_Save_PackSprite(Sprite *a1, SpriteSerialized *out);
-bool GAME_Load_UnpackEntity(Entity *a1, EntitySerialized *save_data);
 Sprite *GAME_Load_UnpackSprite(SpriteSerialized *serialized);
 char *GAME_Save_PackProductionInfo(size_t *size);
 bool GAME_Load_UnpackProductionInfo(void *a1);
@@ -456,15 +454,14 @@ void script_4252C0(Script *a1, void *param);
 void script_425400(Script *a1); // idb
 void script_47A3CC_die();
 void entity_check_special_mission_death_conditions(Entity *victim);
-Entity *entity_425820_find(Entity *a1, int a2); // idb
 void entity_4258C0_init_palettes_inc_unit_counter(Entity *a1, enum PLAYER_SIDE side);
 void entity_mode_425920_scout(Entity *a1);
 void entity_425A50_setup_spawn(Entity *a1, void *spawn_param, int spawn_type); // idb
 void UNIT_Handler_General(Script *a1);
 void UNIT_Handler_Scout(Script *a1);
 void script_425BE0_check_special_victory_conditions(Script *a1); // idb
-int sub_425EC0(enum UNIT_ID a1, enum PLAYER_SIDE a2);
-Entity *sub_425F20(enum UNIT_ID unit_id, enum PLAYER_SIDE side); // idb
+int _425EC0_entities_check_modes(enum UNIT_ID a1, enum PLAYER_SIDE a2);
+Entity *FindEntityBySideAndType(enum UNIT_ID unit_id, enum PLAYER_SIDE side); // idb
 void script_425F50_stru48_stru51_tech_bunkers(Script *a1);
 void script_426680_cursor_mobd(Script *a1); // idb
 void script_426710_mission_objectives_draw_x_mark(Script *a1);
@@ -906,7 +903,6 @@ void drawjob_update_handler_44C430_default_sprite(Sprite *a1, DrawJob *a2);
 void _44C4B0_mess_with_turrets();
 void _44C5C0_level_cleanup();
 Sprite *spawn_unit(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE player_side); // idb
-Entity *entity_find_by_id(int entity_id);
 bool sub_44CA50(enum UNIT_ID id); // idb
 Entity *entity_44CA70_find(Entity *a1, enum UNIT_ID a2, int player_side); // idb
 bool show_message_ex(Entity *a1, const char *text);
@@ -932,6 +928,7 @@ _BYTE *sub_45A48E(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, in
 _BYTE *sub_45D3B8(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8, int a9);
 
 
+SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id);
 SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced);
 SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced);
 SOUND_ID get_unit_ready_sound(UNIT_ID unit_id);

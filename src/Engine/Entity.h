@@ -187,8 +187,11 @@ bool entity_is_building(Entity *unit);
 bool entity_is_moveable(Entity *unit);
 bool entity_is_attacker(Entity *unit);
 bool entity_is_tower(Entity *entity);
+bool entity_is_bomber(Entity *entity);
 
 bool is_21st_century(UNIT_ID unit_id);
+bool is_tower(UNIT_ID unit_id);
+bool is_bomber(UNIT_ID unitId);
 bool entity_is_21st_century(Entity *entity);
 
 bool entity_is_xl_vehicle(Entity *entity);
@@ -208,3 +211,7 @@ int entity_get_mobd_speed_y(Entity *entity);
 
 void entity_attack(Entity *a1, _47CAF0_task_attachment1_attack_task *param);
 void entity_move(Entity *a1, _47CAF0_task_attachment1_move_task *a2);
+
+
+Entity *entity_find_player_entity_in_radius(Entity *a1, int max_distance_squared);
+Entity *entity_find_any_entity_in_radius(Entity *a1, int max_distance_squared);
