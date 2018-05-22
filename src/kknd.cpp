@@ -2417,10 +2417,10 @@ void UNIT_Handler_OilTankerConvoy(Script *a1)
 		if (v4)
 		{
 			v1->state = v4;
-			if (LOWORD_HEXRAYS(v2->_1C_oilspot_oil_units__or__param) >= 0xFu)
+			if (LOWORD_HEXRAYS(v2->param_1C) >= 0xFu)
 				v4->checkpoint = 0;
 			else
-				v4->checkpoint = LOWORD_HEXRAYS(v2->_1C_oilspot_oil_units__or__param);
+				v4->checkpoint = LOWORD_HEXRAYS(v2->param_1C);
 			entity_4056E0_tanker_convoy_update_checkpoint(v1->sprite->x, v4);
 
 			v1->_DC_order = ENTITY_ORDER_6_tanker;
@@ -2990,9 +2990,6 @@ void cplc_4060F0()
 		}
 	}
 }
-// 477428: using guessed type int __47C380_mapd_cplc_item0_ptr_field_4_minus_3FFF;
-// 477434: using guessed type int _47C384_mapd_cplc_item0_ptr_field_8_minus_3FFF;
-// 477468: using guessed type int currently_running_lvl_cplc_data_size;
 
 //----- (004061D0) --------------------------------------------------------
 void cplc_create_sprite_script(DataCplcItem_ptr1 *a1)
@@ -3002,10 +2999,6 @@ void cplc_create_sprite_script(DataCplcItem_ptr1 *a1)
 	DataCplcItem_ptr1 *v3; // eax@4
 	DataCplcItem_ptr1 *v4; // eax@6
 	DataCplcItem_ptr1 *v5; // eax@9
-	Script4 *v6; // eax@12
-	void(*v7)(Script *); // edx@12
-	Script *v8; // eax@14
-	enum MOBD_ID v9; // ecx@18
 	Sprite *v10; // eax@19
 	DataCplc_stru0 *v11; // eax@19
 
@@ -3028,16 +3021,11 @@ void cplc_create_sprite_script(DataCplcItem_ptr1 *a1)
 		v5->prev2 = a1->prev2;
 	if (!a1->_20_stru20.field_C)
 	{
-		v6 = scripts[a1->script_handler_id];
-		v7 = v6->script_handler;
-		if (v7)
-			v8 = v6->script_type == SCRIPT_FUNCTION ? script_create_function(SCRIPT_TYPE_INVALID, v7) : script_create_coroutine(SCRIPT_TYPE_INVALID, v7, 0);
-		else
-			v8 = 0;
-		if (v1->script_handler_id >= 0)
-		{
-			v9 = scripts[v1->script_handler_id]->mobd_id;
-			if ((v9 & 0x80000000) == 0)
+        if (v1->script_handler_id >= 0)
+        {
+            auto v8 = create_script(v1->script_handler_id);
+			auto v9 = get_script_mobd(v1->script_handler_id);
+			if (v9 >= 0)
 			{
 				v10 = sprite_create(v9, v8, 0);
 				v10->cplc_ptr1 = v1;
@@ -4012,7 +4000,6 @@ void UNIT_Handler_OilPatch(Script *a1)
 	DataCplcItem_ptr1 *v2; // eax@1
 	unsigned int v3; // edx@1
 	OilDeposit *v4; // edi@2
-	unsigned __int16 v5; // ax@5
 	int v6; // eax@7
 	char *v7; // eax@7
 
@@ -4032,10 +4019,9 @@ void UNIT_Handler_OilPatch(Script *a1)
 		else
 			v4 = 0;
 		v4->sprite = v1;
-		v5 = v1->cplc_ptr1_pstru20->_1C_oilspot_oil_units__or__param;
 		v4->drillrig = 0;
 		v4->drillrig_entity_id = 0;
-		v4->oil_left = 500 * v5;
+		v4->oil_left = 500 * LOWORD_HEXRAYS(v1->cplc_ptr1_pstru20->param_1C);
 		v4->next = oilspot_list_head;
 		v4->prev = (OilDeposit *)&oilspot_list_head;
 		oilspot_list_head->prev = v4;
@@ -4263,7 +4249,7 @@ void script_408370(Script *a1)
 void sub_4083D0()
 {
 	if (!dword_477890 && !dword_477894)
-		script_create_coroutine(SCRIPT_TYPE_INVALID, script_408370, 0);
+		script_create_coroutine(SCRIPT_TYPE_INVALID, script_408370, 0, "script_408370");
 }
 
 //----- (00408400) --------------------------------------------------------
@@ -7120,7 +7106,7 @@ Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int heig
 	{
 		v5->script = script;
 		if (!script)
-			v5->script = script_create_coroutine(SCRIPT_TYPE_51914_sidebar, script_sidebar, 0);
+			v5->script = script_create_coroutine(SCRIPT_TYPE_51914_sidebar, script_sidebar, 0, "script_sidebar");
 		v5->num_buttons = 0;
 		v5->x = (width + render_width - 320) << 8;
 		v5->w = height << 8;
@@ -7830,7 +7816,9 @@ SidebarButton *sidebar_add_button_1(Sidebar *sidebar, int mobd_lookup_table_offs
 		0,
 		param,
 		task_context,
-		SCRIPT_TYPE_47802_fog_of_war);
+		SCRIPT_TYPE_47802_fog_of_war,
+        "script_40F5D0_sidebar_button_1_2"
+    );
 }
 
 //----- (004100F0) --------------------------------------------------------
@@ -7844,7 +7832,9 @@ SidebarButton *sidebar_add_button_2(Sidebar *sidebar, int mobd_lookup_table_offs
 		button_close_handler,
 		0,
 		task_context,
-		SCRIPT_TYPE_47802_fog_of_war);
+		SCRIPT_TYPE_47802_fog_of_war,
+        "script_40F5D0_sidebar_button_1_2"
+    );
 }
 
 //----- (00410120) --------------------------------------------------------
@@ -7858,7 +7848,9 @@ SidebarButton *sidebar_add_button_3(Sidebar *sidebar, int mobd_lookup_table_offs
 		button_close_handler,
 		0,
 		task_context,
-		SCRIPT_TYPE_48059);
+		SCRIPT_TYPE_48059,
+        "script_40F8F0_sidebar_button_3"
+    );
 }
 
 //----- (00410150) --------------------------------------------------------
@@ -7874,7 +7866,9 @@ SidebarButton *sidebar_add_button_4(Sidebar *sidebar, int mobd_lookup_table_offs
 		0,
 		param,
 		(void *)a7,
-		SCRIPT_TYPE_47802_fog_of_war);
+		SCRIPT_TYPE_47802_fog_of_war,
+        "script_40FC10_sidebar_button_4"
+    );
 	if (result)
 	{
 		result->field_18 = a5;
@@ -7884,7 +7878,11 @@ SidebarButton *sidebar_add_button_4(Sidebar *sidebar, int mobd_lookup_table_offs
 }
 
 //----- (00410190) --------------------------------------------------------
-SidebarButton *sidebar_add_buttton_internal(Sidebar *a1, int mobd_lookup_table_offset, void(*task_routine)(Script *), void(*open_handler)(SidebarButton *), void(*close_handler)(SidebarButton *), void *param, void *task_context, enum SCRIPT_TYPE event)
+SidebarButton *sidebar_add_buttton_internal(
+    Sidebar *a1, int mobd_lookup_table_offset, void(*task_routine)(Script *),
+    void(*open_handler)(SidebarButton *), void(*close_handler)(SidebarButton *), void *param,
+    void *task_context, enum SCRIPT_TYPE event, const char *task_routine_name
+)
 {
 	SidebarButton *v8; // esi@1
 	int mobd_lookup_table_0ffset; // ebp@1
@@ -7904,7 +7902,7 @@ SidebarButton *sidebar_add_buttton_internal(Sidebar *a1, int mobd_lookup_table_o
 		v8 = 0;
 	if (v8)
 	{
-		v12 = script_create_coroutine(event, task_routine, 0);
+		v12 = script_create_coroutine(event, task_routine, 0, task_routine_name);
 		v8->task = v12;
 		v12->param = task_context;
 		v8->mobd_lookup_table_offset = mobd_lookup_table_0ffset;
@@ -11753,59 +11751,11 @@ bool GAME_Save_PackEntity(Entity *entity, int save_data, int save_data_size)
 	int v8; // ecx@4
 	Script *v9; // esi@9
 	BOOL result; // eax@10
-	int v11; // edx@11
-	void(*v12)(Script *); // eax@11
-	void **v13; // ecx@12
-	int v14; // eax@16
-	void(*v15)(Script *, Script *, enum SCRIPT_EVENT, void *); // eax@18
-	int v16; // edx@18
-	void **v17; // ecx@19
-	int v18; // edx@23
 	EntityTurret *v19; // eax@25
-	int v20; // edx@25
 	Script *v21; // edi@26
-	void(*v22)(Script *); // eax@28
-	void **v23; // ecx@29
-	int v24; // eax@33
-	void(*v25)(Script *, Script *, enum SCRIPT_EVENT, void *); // eax@35
-	int v26; // edx@35
-	void **v27; // ecx@36
-	int v28; // edx@40
 	Entity *v29; // ecx@43
 	int v30; // edx@43
 	int v31; // eax@44
-	void(*v32)(EntityTurret *); // eax@49
-	int v33; // edx@49
-	void **v34; // ecx@50
-	int v35; // eax@54
-	void(*v36)(Entity *); // eax@60
-	int v37; // edx@60
-	void **v38; // ecx@61
-	int v39; // eax@65
-	int(*v40)(int); // eax@69
-	int v41; // edx@69
-	void **v42; // ecx@70
-	int v43; // eax@74
-	void(*v44)(Entity *); // eax@78
-	int v45; // edx@78
-	void **v46; // ecx@79
-	int v47; // eax@83
-	int(*v48)(int); // eax@87
-	int v49; // edx@87
-	void **v50; // ecx@88
-	int v51; // eax@92
-	void(*v52)(Entity *); // eax@96
-	int v53; // edx@96
-	void **v54; // ecx@97
-	int v55; // eax@101
-	void(*v56)(Entity *); // eax@105
-	int v57; // edx@105
-	void **v58; // ecx@106
-	int v59; // eax@110
-	void(*v60)(Script *, Script *, enum SCRIPT_EVENT, void *); // eax@114
-	int v61; // edx@114
-	void **v62; // ecx@115
-	int v63; // eax@119
 	Entity *v64; // eax@124
 	int v65; // edx@124
 	int v66; // eax@126
@@ -11894,50 +11844,14 @@ bool GAME_Save_PackEntity(Entity *entity, int save_data, int save_data_size)
 LABEL_9:
 	v4->id = v7;
 	v9 = v3->script;
-	if (v9->routine_type != 1)
+	if (v9->routine_type != SCRIPT_FUNCTION)
 	{
 		errmsg_save[1] = aTaskIsWrongTyp;
 		return 0;
 	}
-	v11 = 0;
-	v4->entity_task_event = v9->script_type;
-	v12 = (void(*)(Script *))script_handlers[0];
-	if (script_handlers[0] != (void *)-1)
-	{
-		v13 = script_handlers;
-		do
-		{
-			if (v12 == v9->handler)
-				break;
-			v12 = (void(*)(Script *))v13[1];
-			++v13;
-			++v11;
-		} while (v12 != (void(*)(Script *)) - 1);
-	}
-	if (script_handlers[v11] == (void *)-1)
-		v14 = 0;
-	else
-		v14 = v11 + 1;
-	v4->entity_task_handler_idx = v14;
-	v15 = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))script_handlers[0];
-	v16 = 0;
-	if (script_handlers[0] != (void *)-1)
-	{
-		v17 = script_handlers;
-		do
-		{
-			if (v15 == v9->event_handler)
-				break;
-			v15 = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))v17[1];
-			++v17;
-			++v16;
-		} while (v15 != (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *)) - 1);
-	}
-	if (script_handlers[v16] == (void *)-1)
-		v18 = 0;
-	else
-		v18 = v16 + 1;
-	v4->entity_task_message_handler_idx = v18;
+    v4->entity_task_event = v9->script_type;
+	v4->entity_task_handler_idx = get_handler_id(v9->handler);
+	v4->entity_task_message_handler_idx = get_handler_id(v9->event_handler);
 	v4->entity_task_field_20 = v9->flags_20;
 	v4->entity_task_field_14 = v9->field_14;
 	v4->entity_task_field_24 = v9->field_24;
@@ -11946,54 +11860,18 @@ LABEL_9:
 	v4->unit_stats_idx = v3->unit_id;
 	v4->player_side = v3->player_side;
 	v19 = v3->turret;
-	v20 = 0;
 	v128 = v19;
 	if (v19)
 	{
 		v21 = v19->sprite_task;
-		if (v19->sprite_task->routine_type != 1)
+		if (v19->sprite_task->routine_type != SCRIPT_FUNCTION)
 		{
 			errmsg_save[1] = aTaskIsWrongTyp;
 			return 0;
 		}
 		v4->turret_sprite_task_event = v21->script_type;
-		v22 = (void(*)(Script *))script_handlers[0];
-		if (script_handlers[0] != (void *)-1)
-		{
-			v23 = script_handlers;
-			do
-			{
-				if (v22 == v21->handler)
-					break;
-				v22 = (void(*)(Script *))v23[1];
-				++v23;
-				++v20;
-			} while (v22 != (void(*)(Script *)) - 1);
-		}
-		if (script_handlers[v20] == (void *)-1)
-			v24 = 0;
-		else
-			v24 = v20 + 1;
-		v4->turret_sprite_task_handler_idx = v24;
-		v25 = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))script_handlers[0];
-		v26 = 0;
-		if (script_handlers[0] != (void *)-1)
-		{
-			v27 = script_handlers;
-			do
-			{
-				if (v25 == v21->event_handler)
-					break;
-				v25 = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))v27[1];
-				++v27;
-				++v26;
-			} while (v25 != (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *)) - 1);
-		}
-		if (script_handlers[v26] == (void *)-1)
-			v28 = 0;
-		else
-			v28 = v26 + 1;
-		v4->turret_sprite_task_message_handler_idx = v28;
+		v4->turret_sprite_task_handler_idx = get_handler_id(v21->handler);
+		v4->turret_sprite_task_message_handler_idx = get_handler_id(v21->event_handler);
 		v4->turret_sprite_task_field_20 = v21->flags_20;
 		v4->turret_sprite_task_field_14 = v21->field_14;
 		v4->turret_sprite_task_field_24 = v21->field_24;
@@ -12007,28 +11885,10 @@ LABEL_9:
 		if (!v29 || (v31 = v29->entity_id, v30 != -1) && (!v31 || v31 != v30 || v29->destroyed))
 			v31 = -1;
 		v4->turret_C_entity_id = v31;
-		v32 = (void(*)(EntityTurret *))script_handlers[0];
-		v33 = 0;
-		if (script_handlers[0] != (void *)-1)
+		v4->turret_mode = get_handler_id(v128->handler);
+		if (v4->turret_mode < 0)
 		{
-			v34 = script_handlers;
-			do
-			{
-				if (v32 == v128->handler)
-					break;
-				v32 = (void(*)(EntityTurret *))v34[1];
-				++v34;
-				++v33;
-			} while (v32 != (void(*)(EntityTurret *)) - 1);
-		}
-		if (script_handlers[v33] == (void *)-1)
-			v35 = 0;
-		else
-			v35 = v33 + 1;
-		v4->turret_mode = v35;
-		if (!v35)
-		{
-			sprintf(byte_479EF8, aUnitDS, v3->unit_id, aUnknownTurretM);
+			sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown turret mode");
 		LABEL_224:
 			errmsg_save[1] = byte_479EF8;
 			return 0;
@@ -12045,176 +11905,56 @@ LABEL_9:
 	{
 		v4->turret_sprite_task_handler_idx = 0;
 	}
-	v36 = (void(*)(Entity *))script_handlers[0];
-	v37 = 0;
-	if (script_handlers[0] != (void *)-1)
+
+	v4->entity_mode = get_handler_id(v3->mode);
+	if (v4->entity_mode < 0)
 	{
-		v38 = script_handlers;
-		do
-		{
-			if (v36 == v3->mode)
-				break;
-			v36 = (void(*)(Entity *))v38[1];
-			++v38;
-			++v37;
-		} while (v36 != (void(*)(Entity *)) - 1);
-	}
-	if (script_handlers[v37] == (void *)-1)
-		v39 = 0;
-	else
-		v39 = v37 + 1;
-	v4->entity_mode = v39;
-	if (!v39)
-	{
-		v127 = aUnknownMode;
-	LABEL_223:
-		sprintf(byte_479EF8, aUnitDS, v3->unit_id, v127);
+		sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown mode");
 		goto LABEL_224;
 	}
-	v40 = (int(*)(int))script_handlers[0];
-	v41 = 0;
-	if (script_handlers[0] != (void *)-1)
+
+	v4->entity_mode_idle = get_handler_id(v3->mode_idle);
+	if (v4->entity_mode_idle < 0)
 	{
-		v42 = script_handlers;
-		do
-		{
-			if (v40 == v3->mode_idle)
-				break;
-			v40 = (int(*)(int))v42[1];
-			++v42;
-			++v41;
-		} while (v40 != (int(*)(int)) - 1);
-	}
-	if (script_handlers[v41] == (void *)-1)
-		v43 = 0;
-	else
-		v43 = v41 + 1;
-	v4->entity_mode_idle = v43;
-	if (!v43)
-	{
-		sprintf(byte_479EF8, aUnitDS, v3->unit_id, aUnknownIdleMod);
+		sprintf(byte_479EF8, "unit %d %s", v3->unit_id, "unknown idle mode");
 		goto LABEL_224;
 	}
-	v44 = (void(*)(Entity *))script_handlers[0];
-	v45 = 0;
-	if (script_handlers[0] != (void *)-1)
+
+	v4->entity_mode_arrive = get_handler_id(v3->mode_arrive);
+	if (v4->entity_mode_arrive < 0)
 	{
-		v46 = script_handlers;
-		do
-		{
-			if (v44 == v3->mode_arrive)
-				break;
-			v44 = (void(*)(Entity *))v46[1];
-			++v46;
-			++v45;
-		} while (v44 != (void(*)(Entity *)) - 1);
-	}
-	if (script_handlers[v45] == (void *)-1)
-		v47 = 0;
-	else
-		v47 = v45 + 1;
-	v4->entity_mode_arrive = v47;
-	if (!v47)
-	{
-		sprintf(byte_479EF8, aUnitDS, v3->unit_id, aUnknownArriveM);
+		sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown arrive mode");
 		goto LABEL_224;
 	}
-	v48 = (int(*)(int))script_handlers[0];
-	v49 = 0;
-	if (script_handlers[0] != (void *)-1)
+
+	v4->entity_mode_attacked = get_handler_id(v3->mode_attacked);
+	if (v4->entity_mode_attacked < 0)
 	{
-		v50 = script_handlers;
-		do
-		{
-			if (v48 == v3->mode_attacked)
-				break;
-			v48 = (int(*)(int))v50[1];
-			++v50;
-			++v49;
-		} while (v48 != (int(*)(int)) - 1);
+        sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown attacked mode");
+        goto LABEL_224;
 	}
-	if (script_handlers[v49] == (void *)-1)
-		v51 = 0;
-	else
-		v51 = v49 + 1;
-	v4->entity_mode_attacked = v51;
-	if (!v51)
+
+	v4->entity_mode_return = get_handler_id(v3->mode_return);
+	if (v4->entity_mode_return < 0)
 	{
-		v127 = aUnknownAttacke;
-		goto LABEL_223;
-	}
-	v52 = (void(*)(Entity *))script_handlers[0];
-	v53 = 0;
-	if (script_handlers[0] != (void *)-1)
-	{
-		v54 = script_handlers;
-		do
-		{
-			if (v52 == v3->mode_return)
-				break;
-			v52 = (void(*)(Entity *))v54[1];
-			++v54;
-			++v53;
-		} while (v52 != (void(*)(Entity *)) - 1);
-	}
-	if (script_handlers[v53] == (void *)-1)
-		v55 = 0;
-	else
-		v55 = v53 + 1;
-	v4->entity_mode_return = v55;
-	if (!v55)
-	{
-		sprintf(byte_479EF8, aUnitDS, v3->unit_id, aUnknownReturnM);
+		sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown return mode");
 		goto LABEL_224;
 	}
-	v56 = (void(*)(Entity *))script_handlers[0];
-	v57 = 0;
-	if (script_handlers[0] != (void *)-1)
+
+	v4->entity_mode_turn_return = get_handler_id(v3->mode_turn_return);
+	if (v4->entity_mode_turn_return < 0)
 	{
-		v58 = script_handlers;
-		do
-		{
-			if (v56 == v3->mode_turn_return)
-				break;
-			v56 = (void(*)(Entity *))v58[1];
-			++v58;
-			++v57;
-		} while (v56 != (void(*)(Entity *)) - 1);
-	}
-	if (script_handlers[v57] == (void *)-1)
-		v59 = 0;
-	else
-		v59 = v57 + 1;
-	v4->entity_mode_turn_return = v59;
-	if (!v59)
-	{
-		sprintf(byte_479EF8, aUnitDS, v3->unit_id, aUnknownTurnRet);
+		sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown turn-return mode");
 		goto LABEL_224;
 	}
-	v60 = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))script_handlers[0];
-	v61 = 0;
-	if (script_handlers[0] != (void *)-1)
+
+	v4->entity_message_handler_idx = get_handler_id(v3->event_handler);
+	if (v4->entity_message_handler_idx < 0)
 	{
-		v62 = script_handlers;
-		do
-		{
-			if (v60 == v3->event_handler)
-				break;
-			v60 = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))v62[1];
-			++v62;
-			++v61;
-		} while (v60 != (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *)) - 1);
+        sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown message handler");
+        goto LABEL_224;
 	}
-	if (script_handlers[v61] == (void *)-1)
-		v63 = 0;
-	else
-		v63 = v61 + 1;
-	v4->entity_message_handler_idx = v63;
-	if (!v63)
-	{
-		v127 = aUnknownMessage;
-		goto LABEL_223;
-	}
+
 	result = GAME_Save_PackSprite(v3->sprite, &v4->entity_sprite);
 	if (!result)
 		return result;
@@ -13650,7 +13390,7 @@ void *GAME_Save_PackAiPlayers(size_t *size)
 		*((_DWORD *)v38 + 70) = v93->field_360;
 		goto LABEL_140;
 	}
-	errmsg_save[1] = aUnknownMode;
+	errmsg_save[1] = "unknown mode";
 	return 0;
 }
 // 41EF20: using guessed type int var_1C[7];
@@ -13769,13 +13509,10 @@ bool GAME_Load_UnpackAiPlayers(void *save_data)
 		v117 = v5;
 		v7 = *(_DWORD *)v5;
 		a2 = v6;
-		if (*(_DWORD *)v5 < 1u || v7 > num_script_handlers)
-			v8 = 0;
-		else
-			v8 = *(void(**)(Script *))&aWb__AND__handlers_minus1_indexer[4 * v7];
-		if (!v8)
-			return 0;
-		v3->handler = v8;
+		v3->handler = (void(*)(Script *))get_handler(v7 - 1);
+        v3->debug_handler_name = get_handler_name(v7 - 1);
+        if (!v3->handler)
+            return 0;
 		v9 = (PLAYER_SIDE)*((_DWORD *)v5 + 40);
 		v4->_2A0_player_side = v9;
 		v10 = 0;
@@ -14819,8 +14556,7 @@ bool GAME_Load_UnpackMiscInfo(void *save_data)
 	unsigned int v8; // eax@15
 	void(*v9)(Script *); // edx@17
 	BOOL result; // eax@20
-	unsigned int v11; // ecx@22
-	int v12; // ecx@24
+
 	task_sidebar_attachment *v13; // esi@28
 	unsigned int v14; // eax@29
 	Script *v15; // eax@35
@@ -14861,21 +14597,13 @@ bool GAME_Load_UnpackMiscInfo(void *save_data)
 	}
 	_47CA2C_should_airstrike_mess_with_sidebar = *((_DWORD *)v1 + 72);
 	v8 = *((_DWORD *)v1 + 86);
-	if (v8 < 1 || v8 > num_script_handlers)
-		v9 = 0;
-	else
-		v9 = *(void(**)(Script *))&aWb__AND__handlers_minus1_indexer[4 * v8];
+    v9 = (void(*)(Script *))get_handler(v8 - 1);
 	if (v9)
 	{
-		result = (BOOL)script_create_function(*((enum SCRIPT_TYPE *)v1 + 85), v9);
+		result = (BOOL)script_create_function(*((enum SCRIPT_TYPE *)v1 + 85), v9, get_handler_name(v8));
 		if (result)
 		{
-			v11 = *((_DWORD *)v1 + 87);
-			if (v11 < 1 || v11 > num_script_handlers)
-				v12 = 0;
-			else
-				v12 = *(_DWORD *)&aWb__AND__handlers_minus1_indexer[4 * v11];
-			*(_DWORD *)(result + 52) = v12;
+			*(_DWORD *)(result + 52) = (int)get_handler(*((_DWORD *)v1 + 87) - 1);
 			*(_DWORD *)(result + 32) = *((_DWORD *)v1 + 88);
 			*(_DWORD *)(result + 20) = *((_DWORD *)v1 + 89);
 			*(_DWORD *)(result + 36) = *((_DWORD *)v1 + 90);
@@ -14895,13 +14623,9 @@ bool GAME_Load_UnpackMiscInfo(void *save_data)
 		if (result)
 		{
 			*(_DWORD *)(result + 16) = (int)_47C970_sidebar_task;
-			v14 = *((_DWORD *)v1 + 73);
-			if (v14 < 1 || v14 > num_script_handlers)
-				result = 0;
-			else
-				result = *(_DWORD *)&aWb__AND__handlers_minus1_indexer[4 * v14];
-			v13->handler = (void *)result;
-			if (result)
+			v14 = *((_DWORD *)v1 + 73) - 1;
+			v13->handler = (void *)get_handler(v14);
+			if (v13->handler)
 			{
 				v13->field_4 = *((_DWORD *)v1 + 74);
 				result = (BOOL)GAME_Load_UnpackSprite((SpriteSerialized *)((char *)v1 + 300));
@@ -15137,7 +14861,7 @@ LABEL_40:
     }
     all_data_ok = 0;
     SetFileAttributesA(current_savegame_filename, 0x80u);
-    file = fopen(current_savegame_filename, aWb__AND__handlers_minus1_indexer);
+    file = fopen(current_savegame_filename, "wb");
     fIle = file;
     if (!file)
     {
@@ -15466,11 +15190,11 @@ LABEL_59:
 //----- (00421D40) --------------------------------------------------------
 void GAME_OnSaveFailed()
 {
-	Script *v0; // eax@1
-
-	v0 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_421D60_on_savegame_failed, 0);
+	auto v0 = script_create_coroutine(
+        SCRIPT_TYPE_INVALID, script_421D60_on_savegame_failed, 0, "script_421D60_on_savegame_failed"
+    );
 	if (v0)
-		v0->field_1C |= 1u;
+		v0->field_1C |= 1;
 }
 
 //----- (00421D60) --------------------------------------------------------
@@ -17473,7 +17197,7 @@ void task_4269B0_mobd_20_handler(Script *a1)
 	}
 	v3 = a1->sprite;
 	a1a = v3->y;
-	v4 = v3->cplc_ptr1_pstru20->field_18;
+	v4 = v3->cplc_ptr1_pstru20->param_18;
 	v3->field_88_unused = 1;
 	v5 = v1->sprite->x;
 	v17 = &_47A010_mapd_item_being_drawn[0]->draw_job->job_details;
@@ -17739,7 +17463,10 @@ Sprite *sprite_create(enum MOBD_ID mobd_item_idx, Script *script, Sprite *parent
 // 47A400: using guessed type Sprite sprite_47A400;
 
 //----- (00426EC0) --------------------------------------------------------
-Sprite *sprite_create_scripted(enum MOBD_ID mobd_item_idx, Sprite *parent, void(*script)(Script *), enum SCRIPT_ROUTINE_TYPE task_type, Entity_stru_dmg_related *a5)
+Sprite *sprite_create_scripted(
+    enum MOBD_ID mobd_item_idx, Sprite *parent, void(*script)(Script *), enum SCRIPT_ROUTINE_TYPE task_type,
+    Entity_stru_dmg_related *a5, const char *script_name
+)
 {
 	Sprite *v5; // esi@1
 	enum MOBD_ID v6; // edi@1
@@ -17747,7 +17474,7 @@ Sprite *sprite_create_scripted(enum MOBD_ID mobd_item_idx, Sprite *parent, void(
 
 	v5 = parent;
 	v6 = mobd_item_idx;
-    //__debugbreak(); // COROUTINE CREATION ALTER CAUSED v5 AND parnet to become corrupt after cr creation & yield
+
 	if (!script)
 	{
 		result = 0;
@@ -17765,9 +17492,9 @@ Sprite *sprite_create_scripted(enum MOBD_ID mobd_item_idx, Sprite *parent, void(
 		return result;
 	}
 	if (task_type == SCRIPT_FUNCTION)
-		result = (Sprite *)script_create_function(SCRIPT_TYPE_INVALID, script);
+		result = (Sprite *)script_create_function(SCRIPT_TYPE_INVALID, script, script_name);
 	else if (task_type == SCRIPT_COROUTINE)
-		result = (Sprite *)script_create_coroutine(SCRIPT_TYPE_INVALID, script, 0);
+		result = (Sprite *)script_create_coroutine(SCRIPT_TYPE_INVALID, script, 0, script_name);
     else
     {
         __debugbreak();
@@ -18661,7 +18388,7 @@ bool stru37_stru38_list_alloc()
 		stru38_list[99].next = 0;
 		stru38_list_47A4B0 = (stru38 *)&stru38_list_47A4B0;
 		stru38_list_47A4B4 = (stru38 *)&stru38_list_47A4B0;
-		result = script_create_function(SCRIPT_TYPE_INVALID, script_4280A0_stru38_list__production_loop) != 0;
+		result = script_create_function(SCRIPT_TYPE_INVALID, script_4280A0_stru38_list__production_loop, "script_4280A0_stru38_list__production_loop") != 0;
 	}
 	else
 	{
@@ -21349,7 +21076,7 @@ void script_431E60_mobd_20_input(Script *a1)
 	dword_47C6C4 = 0;
 	a1->field_1C = 1;
 	script_445370_yield_to_main_thread(a1, 0x80000000, 2);
-	if (!script_create_coroutine(SCRIPT_TYPE_INVALID, script_425400, 0))
+	if (!script_create_coroutine(SCRIPT_TYPE_INVALID, script_425400, 0, "script_425400")
 		game_state = 3;
 	while (1)
 	{
@@ -24901,7 +24628,7 @@ void script_netz_43BA70(Script *a1)
 //----- (0043BA90) --------------------------------------------------------
 Script *netz_43BA90_create_script_43BA70()
 {
-	return script_create_coroutine(SCRIPT_TYPE_INVALID, script_netz_43BA70, 0);
+	return script_create_coroutine(SCRIPT_TYPE_INVALID, script_netz_43BA70, 0, "script_netz_43BA70");
 }
 
 //----- (0043BAA0) --------------------------------------------------------
@@ -26933,7 +26660,7 @@ __debugbreak();
 	a1->script_type = SCRIPT_TYPE_5;
 	stru29_list_4439F0(v1, 0, 0, 1, 0);
 	dword_47C5F8 = -1;
-	if (!script_create_coroutine(SCRIPT_TYPE_5, script_43FAD0_mobd45_evt5, 0))
+	if (!script_create_coroutine(SCRIPT_TYPE_5, script_43FAD0_mobd45_evt5, 0, "script_43FAD0_mobd45_evt5"))
 		game_state = 3;
 	while (1)
 	{
@@ -28052,7 +27779,7 @@ void script_441CE0_mobd45_evt8(Script *a1)
 	}
 	else
 	{
-		if (!script_create_coroutine(SCRIPT_TYPE_8, script_43F7C0, 0))
+		if (!script_create_coroutine(SCRIPT_TYPE_8, script_43F7C0, 0, "script_43F7C0"))
 			game_state = 3;
 		do
 		{
@@ -28312,9 +28039,9 @@ void script_4421F0_mobd45_evt8(Script *a1)
 	v5->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_17;
 	stru29_list_4439F0(v5, 0, 1, 1, 0);
-	if (!script_create_coroutine(SCRIPT_TYPE_9, script_43F7C0, 0))
+	if (!script_create_coroutine(SCRIPT_TYPE_9, script_43F7C0, 0, "script_43F7C0"))
 		game_state = 3;
-	if (!script_create_coroutine(SCRIPT_TYPE_9, script_441F10, 0))
+	if (!script_create_coroutine(SCRIPT_TYPE_9, script_441F10, 0, "script_441F10"))
 		game_state = 3;
 	while (!script_443780(a1, 2044, 1, 0))
 		;
@@ -32354,16 +32081,12 @@ bool UNIT_InitTasks()
 	}
 	else
 	{
-        auto cr = script_create_coroutine(SCRIPT_TYPE_INVALID, script_449820_netz, 0);
+        auto cr = script_create_coroutine(SCRIPT_TYPE_INVALID, script_449820_netz, 0, "script_449820_netz");
 		cr->field_1C = 1;
 		result = 1;
 	}
 	return result;
 }
-// 468B5C: using guessed type int single_player_game;
-// 470510: using guessed type int dword_470510[];
-// 47A830: using guessed type int dword_47A830;
-// 47A844: using guessed type int netz_47A844;
 
 //----- (00449800) --------------------------------------------------------
 void __47CAF0_tasks_evt39030_array_free()

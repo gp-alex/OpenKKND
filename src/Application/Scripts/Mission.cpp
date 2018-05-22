@@ -50,7 +50,7 @@ void script_424BF0_mobd_20_handler(Script *a1)
     v2 = _47A378_stru48_array_num_items + 1;
     _47A378_stru48_array[v1].sprite_x = a1->sprite->x;
     _47A378_stru48_array[v1].sprite_y = a1->sprite->y;
-    v3 = a1->sprite->cplc_ptr1_pstru20->field_18;
+    v3 = a1->sprite->cplc_ptr1_pstru20->param_18;
     _47A378_stru48_array_num_items = v2;
     _47A378_stru48_array[v1]._8_sprite_cplc = v3;
     if (v2 >= 6)
@@ -585,7 +585,7 @@ void script_425400(Script *a1)
     char v13; // al@49
 
     dword_47A180 = 0;
-    script_create_coroutine(SCRIPT_TYPE_INVALID, script_425BE0_check_special_victory_conditions, 0);
+    script_create_coroutine(SCRIPT_TYPE_INVALID, script_425BE0_check_special_victory_conditions, 0, "script_425BE0_check_special_victory_conditions");
     if (_47C6D8_use__466098_cost_multipliers)
     {
         v1 = a1;
@@ -1453,11 +1453,11 @@ LABEL_28:
                     v41 = 0;
                     if (v39 == 4 || v39 == 5)
                     {
-                        v40 = v36->cplc_ptr1_pstru20->field_24;
+                        v40 = v36->cplc_ptr1_pstru20->param_24;
                     }
                     else if (v39 >= 91 && v39 <= 156)
                     {
-                        v40 = v36->cplc_ptr1_pstru20->field_18;
+                        v40 = v36->cplc_ptr1_pstru20->param_18;
                     }
                     if (v40)
                     {

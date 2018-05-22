@@ -52,7 +52,7 @@ Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name) 
   size_t stack_size = 1048576;
   int *result = (int *)malloc(stack_size);
   if (result == nullptr) {
-    return nullptr;
+      return nullptr;
   }
 
   Coroutine *coroutine = coroutine_list_next;

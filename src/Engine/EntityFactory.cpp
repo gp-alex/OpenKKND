@@ -15,56 +15,45 @@ Entity *EntityFactory::Create(Script *a1)
 {
     Entity *v1; // esi@1
     Sprite *v2; // edx@1
-    DataCplcItem_ptr1 *v4; // eax@6
     int v5; // eax@7
-    unsigned __int16 v6; // ax@11
-    enum PLAYER_SIDE v7; // eax@13
-    void *v8; // eax@14
-    int v9; // eax@15
     enum PLAYER_SIDE v10; // eax@18
     Entity *v13; // ecx@22
 
     //v1 = entity_list_get();
     v1 = new Entity();
-    entityRepo->Save(v1);
-
-    v2 = a1->sprite;
     if (!v1)
         return 0;
 
+    entityRepo->Save(v1);
+
     memset(v1, 0, sizeof(Entity));
-    v4 = v2->cplc_ptr1;
-    if (v4)
+    v2 = a1->sprite;
+    if (v2->cplc_ptr1)
     {
-        v5 = v4->script_handler_id;
-        if (v5 != 4 && v5 != 5 && v5 != 2 && v5 != 3)// Prison, Prison, Outpost, Clannhall
-        {
-            v1->unit_id = scripts[v5]->stats_idx;
-            v1->player_side = (PLAYER_SIDE)v2->cplc_ptr1_pstru20->field_18;
-            v6 = v2->cplc_ptr1_pstru20->_1C_oilspot_oil_units__or__param;
-            v1->_12C_prison_bunker_spawn_type = v6;
-            if (v6)
-                v1->field_124 |= 0x80u;
+        v5 = v2->cplc_ptr1->script_handler_id;
+
+        if (get_script_type(v5) == 3) {
+            // Prison, Prison, Outpost, Clannhall
+            v1->unit_id = get_script_unit_id(v5);
+            v1->player_side = (PLAYER_SIDE)v2->cplc_ptr1_pstru20->param_24;
         }
         else
         {
-            v1->unit_id = (UNIT_ID)scripts[v5][1].script_type;
-            v7 = (PLAYER_SIDE)v2->cplc_ptr1_pstru20->field_24;
-            v1->player_side = v7;
+            v1->unit_id = get_script_unit_id(v5);
+            v1->player_side = (PLAYER_SIDE)v2->cplc_ptr1_pstru20->param_18;
+            if (v1->_12C_prison_bunker_spawn_type = LOWORD_HEXRAYS(v2->cplc_ptr1_pstru20->param_1C))
+                v1->field_124 |= 0x80;
         }
     }
     else
     {
-        v8 = v2->param;
-        if (BYTE1(v8) & 0x80)
+        if ((int)v2->param & 0x8000)
         {
-            v9 = v1->field_124;
             v1->_12C_prison_bunker_spawn_type = 2;
-            v1->field_124 = v9 | 0x80;
+            v1->field_124 = v1->field_124 | 0x80;
         }
         v1->unit_id = (UNIT_ID)((unsigned int)v2->param & 0x7FFF);
-        v7 = (PLAYER_SIDE)((int)v2->param >> 16);
-        v1->player_side = v7;
+        v1->player_side = (PLAYER_SIDE)((int)v2->param >> 16);
     }
 
     v10 = v1->player_side;
@@ -104,12 +93,6 @@ Entity *EntityFactory::Create(Script *a1)
 
     script_trigger_event_group(a1, EVT_MSG_1521_entity_created, v1, SCRIPT_TYPE_39030);
 
-    //v13 = entity_list_head;
-    //v1->prev = (Entity *)&entity_list_head;
-    //v1->prev = nullptr;
-    //v1->next = v13;
-    //entity_list_head->prev = v1;
-    //entity_list_head = v1;
     return v1;
 }
 
@@ -129,9 +112,6 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
     unsigned int v12; // ecx@27
     int v13; // ecx@29
     enum UNIT_ID v14; // eax@34
-    unsigned int v17; // eax@43
-    unsigned int v18; // eax@50
-    void(*v19)(Entity *); // eax@52
     unsigned int v20; // eax@56
     int(*v21)(int); // eax@58
     unsigned int v22; // eax@60
@@ -184,21 +164,15 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
     v2 = save_data;
     auto v3 = new Entity();
     v3->entity_8 = entityRepo->FindById(save_data->id);
-    v5 = save_data->entity_task_handler_idx;
-    if (v5 < 1 || v5 > num_script_handlers)
-        result = 0;
-    else
-        result = *(_DWORD *)&aWb__AND__handlers_minus1_indexer[4 * v5];
-    if (result)
+    v5 = save_data->entity_task_handler_idx - 1;
+    auto _handler = get_handler(v5);
+    if (_handler)
     {
-        result = (BOOL)script_create_function(save_data->entity_task_event, (void(*)(Script *))result);
+        result = (BOOL)script_create_function(save_data->entity_task_event, (void(*)(Script *))_handler, get_handler_name(v5));
         if (result)
         {
-            v7 = v2->entity_task_message_handler_idx;
-            if (v7 < 1 || v7 > num_script_handlers)
-                v8 = 0;
-            else
-                v8 = *(_DWORD *)&aWb__AND__handlers_minus1_indexer[4 * v7];
+            v7 = v2->entity_task_message_handler_idx - 1;
+            v8 = (int)get_handler(v7);
             *(_DWORD *)(result + 52) = v8;
             *(_DWORD *)(result + 32) = v2->entity_task_field_20;
             *(_DWORD *)(result + 20) = v2->entity_task_field_14;
@@ -233,21 +207,15 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 v3->turret = (EntityTurret *)result;
                 *(_DWORD *)(result + 8) = (int)v3;
                 *(_DWORD *)(result + 40) = (int)v3->stats->attach;
-                v11 = v2->turret_sprite_task_handler_idx;
-                if (v11 < 1 || v11 > num_script_handlers)
-                    result = 0;
-                else
-                    result = *(_DWORD *)&aWb__AND__handlers_minus1_indexer[4 * v11];
-                if (result)
+                v11 = v2->turret_sprite_task_handler_idx - 1;
+                auto _handler = get_handler(v11);
+                if (_handler)
                 {
-                    result = (BOOL)script_create_function(v2->turret_sprite_task_event, (void(*)(Script *))result);
+                    result = (BOOL)script_create_function(v2->turret_sprite_task_event, (void(*)(Script *))_handler, get_handler_name(v11));
                     if (result)
                     {
-                        v12 = v2->turret_sprite_task_message_handler_idx;
-                        if (v12 < 1 || v12 > num_script_handlers)
-                            v13 = 0;
-                        else
-                            v13 = *(_DWORD *)&aWb__AND__handlers_minus1_indexer[4 * v12];
+                        v12 = v2->turret_sprite_task_message_handler_idx - 1;
+                        v13 = (int)get_handler(v12);
                         *(_DWORD *)(result + 52) = v13;
                         *(_DWORD *)(result + 32) = v2->turret_sprite_task_field_20;
                         *(_DWORD *)(result + 20) = v2->turret_sprite_task_field_14;
@@ -276,13 +244,9 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                     v10->turret_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_44BDC0_entity_turret;
                 v10->turret_sprite->parent = v3->sprite;
                 v10->_C_entity = entityRepo->FindById(v2->turret_C_entity_id);
-                v17 = v2->turret_mode;
-                if (v17 < 1 || v17 > num_script_handlers)
-                    result = 0;
-                else
-                    result = *(_DWORD *)&aWb__AND__handlers_minus1_indexer[4 * v17];
-                v10->handler = (void(*)(EntityTurret *))result;
-                if (!result)
+
+                v10->handler = (void(*)(EntityTurret *))get_handler(v2->turret_mode - 1);
+                if (!v10->handler)
                     return delete v3, nullptr;
                 v10->mobd_lookup_id = v2->turret_mobd_lookup_id;
                 v10->field_18 = v2->turret_field_18;
@@ -296,50 +260,29 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             {
                 v3->turret = 0;
             }
-            v18 = v2->entity_mode;
-            if (v18 < 1 || v18 > num_script_handlers)
-                v19 = 0;
-            else
-                v19 = *(void(**)(Entity *))&aWb__AND__handlers_minus1_indexer[4 * v18];
-            v3->mode = v19;
-            if (!v19)
+
+            v3->mode = (void(*)(Entity *))get_handler(v2->entity_mode - 1);
+            if (!v3->mode)
                 return delete v3, nullptr;
+
             v20 = v2->entity_mode_idle;
-            if (v20 < 1 || v20 > num_script_handlers)
-                v21 = 0;
-            else
-                v21 = *(int(**)(int))&aWb__AND__handlers_minus1_indexer[4 * v20];
-            v3->mode_idle = v21;
+            v3->mode_idle = (void(*)(Entity *))get_handler(v20 - 1);
+
             v22 = v2->entity_mode_arrive;
-            if (v22 < 1 || v22 > num_script_handlers)
-                v23 = 0;
-            else
-                v23 = *(void(**)(Entity *))&aWb__AND__handlers_minus1_indexer[4 * v22];
-            v3->mode_arrive = v23;
+            v3->mode_arrive = (void(*)(Entity *))get_handler(v22 - 1);
+
             v24 = v2->entity_mode_attacked;
-            if (v24 < 1 || v24 > num_script_handlers)
-                v25 = 0;
-            else
-                v25 = *(int(**)(int))&aWb__AND__handlers_minus1_indexer[4 * v24];
-            v3->mode_attacked = v25;
+            v3->mode_attacked = (void(*)(Entity *))get_handler(v24 - 1);
+
             v26 = v2->entity_mode_return;
-            if (v26 < 1 || v26 > num_script_handlers)
-                v27 = 0;
-            else
-                v27 = *(void(**)(Entity *))&aWb__AND__handlers_minus1_indexer[4 * v26];
-            v3->mode_return = v27;
+            v3->mode_return = (void(*)(Entity *))get_handler(v26 - 1);
+
             v28 = v2->entity_mode_turn_return;
-            if (v28 < 1 || v28 > num_script_handlers)
-                v29 = 0;
-            else
-                v29 = *(void(**)(Entity *))&aWb__AND__handlers_minus1_indexer[4 * v28];
-            v3->mode_turn_return = v29;
+            v3->mode_turn_return = (void(*)(Entity *))get_handler(v28 - 1);
+
             v30 = v2->entity_message_handler_idx;
-            if (v30 < 1 || v30 > num_script_handlers)
-                v31 = 0;
-            else
-                v31 = *(void(**)(Script *, Script *, enum SCRIPT_EVENT, void *))&aWb__AND__handlers_minus1_indexer[4 * v30];
-            v3->event_handler = v31;
+            v3->event_handler = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))get_handler(v30 - 1);
+
             memset(&v3->_24_ai_node_per_player_side, 0, sizeof(v3->_24_ai_node_per_player_side));
             memset32(&v3->stru60, (int)&entity_default_stru60_ptr, 6u);
             v3->field_78 = v2->entity_field_78;
@@ -522,7 +465,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 }
                 for (j = 0; j < (int)v3->_128_spawn_param; ++j)
                 {
-                    v84 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_4188F0, 0);
+                    v84 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_4188F0, 0, "script_4188F0");
                     if (v84)
                         v84->param = v3;
                 }
@@ -577,29 +520,23 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 building_limits_on_new_building(v3->unit_id);
             for (k = 0; k < *((_DWORD *)v56 + 9); ++k)
             {
-                v66 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_418A10, 0);
+                v66 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_418A10, 0, "script_418A10");
                 if (v66)
                     v66->param = v3;
             }
             v67 = v3->unit_id;
             if (v67 != 65 && v67 != 66 || !*a2a)
                 goto LABEL_189;
-            v68 = v2[1].turret_sprite.z_index;
-            if (v68 < 1 || v68 > num_script_handlers)
-                v69 = 0;
-            else
-                v69 = *(void(**)(Script *))&aWb__AND__handlers_minus1_indexer[4 * v68];
+            v68 = v2[1].turret_sprite.z_index - 1;
+            v69 = (void(*)(Script *))get_handler(v68);
             if (v69)
             {
-                v71 = script_create_function((enum SCRIPT_TYPE)v2[1].turret_sprite.y, v69);
+                v71 = script_create_function((enum SCRIPT_TYPE)v2[1].turret_sprite.y, v69, get_handler_name(v68));
                 if (v71)
                 {
                     v72 = v2[1].turret_sprite.x_speed;
-                    if (v72 < 1 || v72 > num_script_handlers)
-                        v73 = 0;
-                    else
-                        v73 = *(void(**)(Script *, Script *, enum SCRIPT_EVENT, void *))&aWb__AND__handlers_minus1_indexer[4 * v72];
-                    v71->event_handler = v73;
+                    v71->event_handler = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))get_handler(v72 - 1);
+                    //v71->debug_handler_name = get_handler_name(v72 - 1);
                     v71->flags_20 = v2[1].turret_sprite.y_speed;
                     v71->field_14 = v2[1].turret_sprite.z_speed;
                     v71->field_24 = v2[1].turret_sprite._inside_mobd_item;
@@ -621,11 +558,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             {
                 *(_DWORD *)(result + 28) = (int)v70;
                 v75 = v2[1].entity_task_field_24;
-                if (v75 < 1 || v75 > num_script_handlers)
-                    v76 = 0;
-                else
-                    v76 = *(_DWORD *)&aWb__AND__handlers_minus1_indexer[4 * v75];
-                *(_DWORD *)v74 = v76;
+                *(_DWORD *)v74 = (int)get_handler(v75 - 1);
                 *(_DWORD *)(v74 + 4) = v2[1].entity_task_field_28;
                 *(_DWORD *)(v74 + 8) = v2[1].entity_task_field_2C;
                 *(_DWORD *)(v74 + 12) = v2[1].unit_stats_idx;

@@ -1791,10 +1791,16 @@ struct DataCplcItem_ptr1_stru20
     int field_C;
     Sprite *sprite;
     int field_14;
-    int field_18;
-    int _1C_oilspot_oil_units__or__param;
+
+    int param_18;   // INDEX in _468410_stru49_array
+                    // PLAYER_SIDE for ScriptDescType4
+                    // script handler id?
+    int param_1C;   // loword: oilspot num oil units (div 500)
+                    // loword: tanker convoy checkpoint
     enum UNIT_ID unit_stats_id;
-    int field_24;
+
+    int param_24;   // PLAYER_SIDE for ScriptDescType1-3
+                    // script handler id?
     int field_28;
     int field_2C;
 };

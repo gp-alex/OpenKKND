@@ -47,9 +47,6 @@ extern char aWarningOutOfTa[]; // idb
 extern char aWarningOutOfBu[]; // idb
 extern char aWarningOutOfEnemyNodes[]; // idb
 extern char aEnemyaiCreatur[]; // idb
-extern char aWb__AND__handlers_minus1_indexer[3];
-extern void *script_handlers[353];
-extern int num_script_handlers; // weak
 extern int _465610_damage_multipliers[12];
 extern int _465640_accuracy_bonus[4];
 extern stru201_displaymode _465650_display_modes[3];
@@ -82,14 +79,6 @@ extern const char *errmsg_save[2];
 extern char aMemory[7]; // weak
 extern char aUnitDS[]; // idb
 extern char aBadUpgradeTask[17]; // weak
-extern char aUnknownMessage[24]; // weak
-extern char aUnknownTurnRet[25]; // weak
-extern char aUnknownReturnM[20]; // weak
-extern char aUnknownAttacke[22]; // weak
-extern char aUnknownArriveM[20]; // weak
-extern char aUnknownIdleMod[18]; // weak
-extern char aUnknownMode[13]; // weak
-extern char aUnknownTurretM[20]; // weak
 extern char aTaskIsWrongTyp[19]; // weak
 extern char aBadConstructs[15]; // weak
 extern char aBadMode[9]; // weak
