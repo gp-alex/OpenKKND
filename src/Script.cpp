@@ -755,7 +755,7 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(entity_mode_419390_oiltanker),
     MAKE_HANDLER_PTR(entity_mode_move_tanker),
     MAKE_HANDLER_PTR(entity_419560_on_death),
-    MAKE_HANDLER_PTR(entity_419720),
+    MAKE_HANDLER_PTR(entity_infantry_on_dead),
     MAKE_HANDLER_PTR(entity_mode_419760_infantry_destroyed),
     MAKE_HANDLER_PTR(entity_mode_4197E0_infantry),
     MAKE_HANDLER_PTR(EventHandler_Infantry),
@@ -1107,36 +1107,43 @@ void script_deinit(Script *a1)
     v1->handler = 0;
 }
 
-int script_yield_num_repeats(Script *a1, int repeats) {
-    return script_yield(a1, SCRIPT_FLAGS_20_REPEATS_TRIGGER, repeats);
+// thread will awake after REPEATS attempts
+int script_sleep(Script *a1, int num_turns) {
+    return script_yield(a1, SCRIPT_FLAGS_20_REPEATS_TRIGGER, num_turns);
 }
 
-int script_yield_any_trigger(Script *a1, int repeats) {
-    return script_yield(a1, SCRIPT_FLAGS_20_ANY_TRIGGER, repeats);
+// thread will awake after receiving an event
+int script_wait_event(Script *a1) {
+    return script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+}
+
+int script_yield_any_trigger(Script *a1, int num_turns) {
+    return script_yield(a1, SCRIPT_FLAGS_20_ANY_TRIGGER, num_turns);
 }
 
 //----- (00445370) --------------------------------------------------------
-int script_yield(Script *a1, int flags, int param)
+int script_yield(Script *a1, int yield_flags, int param)
 {
     int v5; // eax@8
     unsigned int v6; // eax@8
 
-    if (flags & SCRIPT_FLAGS_20_EVENT_TRIGGER && a1->event_list)
+    if (yield_flags & SCRIPT_FLAGS_20_EVENT_TRIGGER && a1->event_list)
     {
         a1->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
         a1->flags_24 |= a1->flags_20;
     }
-    if (flags & SCRIPT_FLAGS_20_REPEATS_TRIGGER)
+    if (yield_flags & SCRIPT_FLAGS_20_REPEATS_TRIGGER)
     {
         if (param)
-            a1->_14_num_repeats = param;
-        if (a1->_14_num_repeats == 0)
+            a1->num_runs_to_skip = param;
+        if (a1->num_runs_to_skip == 0)
         {
-            a1->field_28 = 0;
+            // return immediately as 0 repeats elapsed
             a1->flags_24 |= SCRIPT_FLAGS_20_REPEATS_TRIGGER;
             int v6 = a1->flags_20 | SCRIPT_FLAGS_20_REPEATS_TRIGGER;
             a1->flags_20 = 0;
-            return flags & v6;
+            a1->_28_yield_flags = 0;
+            return yield_flags & v6;
         }
     }
     else if (param)
@@ -1145,11 +1152,11 @@ int script_yield(Script *a1, int flags, int param)
     }
 
     a1->flags_20 = 0;
-    a1->field_28 = flags;
+    a1->_28_yield_flags = yield_flags;
     if (a1->routine_type == SCRIPT_COROUTINE)
     {
         coroutine_list_head->resume();
-        a1->field_28 = 0;
+        a1->_28_yield_flags = 0;
         a1->field_2C = 0;
     }
     return a1->flags_20;
@@ -1258,18 +1265,18 @@ void script_list_update()
             i = script_terminate_internal(i);
         }
         else {
-            if (i->_14_num_repeats > 0)
+            if (i->num_runs_to_skip > 0)
             {
-                i->_14_num_repeats -= 1;
-                if (i->_14_num_repeats == 0)
+                i->num_runs_to_skip -= 1;
+                if (i->num_runs_to_skip == 0)
                 {
                     i->flags_20 |= SCRIPT_FLAGS_20_REPEATS_TRIGGER;
                     i->flags_24 |= i->flags_20;
                 }
             }
             v10 = i->flags_20;
-            v9 = i->field_28;
-            if (!v9 || (v9 & v10) || (int)i->field_2C & ~v10)
+            v9 = i->_28_yield_flags;
+            if (!v9 || (v9 & v10) || i->field_2C & ~v10)
             {
                 switch (i->routine_type)
                 {

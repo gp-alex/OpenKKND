@@ -538,9 +538,9 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                     v71->event_handler = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))get_handler(v72 - 1);
                     //v71->debug_handler_name = get_handler_name(v72 - 1);
                     v71->flags_20 = v2[1].turret_sprite.y_speed;
-                    v71->_14_num_repeats = v2[1].turret_sprite.z_speed;
+                    v71->num_runs_to_skip = v2[1].turret_sprite.z_speed;
                     v71->flags_24 = v2[1].turret_sprite._inside_mobd_item;
-                    v71->field_28 = v2[1].turret_sprite._54_inside_mobd_ptr4;
+                    v71->_28_yield_flags = v2[1].turret_sprite._54_inside_mobd_ptr4;
                     v71->field_2C = v2[1].turret_sprite._60_mobd_anim_speed;
                 }
                 v70 = v71;

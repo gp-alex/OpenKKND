@@ -347,7 +347,7 @@ char *entity_4192F0(Entity *a1);
 void entity_mode_419390_oiltanker(Entity *a1);
 void entity_mode_move_tanker(Entity *a1);
 void entity_419560_on_death(Entity *a1);
-void entity_419720(Entity *a1);
+void entity_infantry_on_dead(Entity *a1);
 void entity_mode_419760_infantry_destroyed(Entity *a1);
 void entity_mode_4197E0_infantry(Entity *a1);
 void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);

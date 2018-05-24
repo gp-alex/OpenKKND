@@ -101,13 +101,13 @@ struct Script
     ScriptLocalObject *locals_list;
     enum SCRIPT_TYPE script_type;
     int(*mode_turret)(int);
-    int _14_num_repeats; // decreases with each execution until 0, then SCRIPT_FLAGS_20_REPEATS_TRIGGER
+    int num_runs_to_skip; // decreases with each execution until 0, then SCRIPT_FLAGS_20_REPEATS_TRIGGER
     SCRIPT_ROUTINE_TYPE routine_type;
     int field_1C; // & 1 - speial case when coroutine init failed (depricated)
     int flags_20; // C0000000 - when mouse hovered (SCRIPT_FLAGS_20_EVENT_TRIGGER | SCRIPT_FLAGS_20_REPEATS_TRIGGER)
                   // 20000000 - terminate script
     int flags_24;
-    int field_28;
+    int _28_yield_flags; // flags requested in script_yield
     int field_2C;
     ScriptEvent *event_list;
     void(*event_handler)(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
@@ -130,7 +130,8 @@ bool script_list_alloc(int coroutine_stack_size = 0);
 Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *));
 void script_deinit(Script *a1);
 int script_yield(Script *a1, int flags, int a3);
-int script_yield_num_repeats(Script *a1, int repeats);
+int script_sleep(Script *a1, int num_turns);
+int script_wait_event(Script *a1);
 int script_yield_any_trigger(Script *a1, int repeats);
 void *script_create_local_object(Script *a1, int size);
 void script_free_local_object(Script *a1, void *data); // idb

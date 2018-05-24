@@ -696,7 +696,7 @@ int entity_402E40_destroy(Entity *a1, void(*new_mode)(Entity *))
 	{
 		v5 = a1->script;
 		a1->hitpoints = 0;
-		result = script_yield_num_repeats(v5, 1);
+		result = script_sleep(v5, 1);
 		v2->hitpoints = 0;
 		v2->mode = nEw_mode;
 		v2->destroyed = 1;
@@ -736,7 +736,7 @@ void entity_402E90_on_damage(Entity *a1, void *param, void(*on_death_mode)(Entit
 			v3->hitpoints = v7;
 			if (v7 <= 0)
 			{
-                script_yield_num_repeats(v3->script, 1);
+                script_sleep(v3->script, 1);
 				v3->hitpoints = 0;
 				v3->mode = on_death_mode;
 				v3->destroyed = 1;
@@ -1735,7 +1735,7 @@ bool sub_404C60(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	Script *v5; // eax@1
 
 	v5 = a1->script;
-	if (v5 && v5->field_28 & SCRIPT_FLAGS_20_EVENT_TRIGGER)
+	if (v5 && v5->_28_yield_flags & SCRIPT_FLAGS_20_EVENT_TRIGGER)
 		script_trigger_event(0, EVT_MOUSE_HOVER, a2, a1->script);
 	return 0;
 }
@@ -3821,7 +3821,7 @@ void entity_mode_plant_mobile_derrick(Entity *a1)
 		v3->_80_entity__stru29__sprite__initial_hitpoints = (void *)v1->hitpoints;
 	v4 = v1->script;
 	v1->mode = entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant;
-    script_yield_num_repeats(v4, 5);
+    script_sleep(v4, 5);
 }
 
 //----- (00406F40) --------------------------------------------------------
@@ -4034,7 +4034,7 @@ void UNIT_Handler_OilPatch(Script *a1)
 	if (a1)
 	{
 		while (1)
-            script_yield_num_repeats(a1, 1000);
+            script_sleep(a1, 1000);
 	}
 	v4->next->prev = v4->prev;
 	v4->prev->next = v4->next;
@@ -4149,7 +4149,7 @@ void entity_mode_4081C0_drillrig(Entity *a1)
 	}
 	else
 	{
-        script_yield_num_repeats(a1->script, 1);
+        script_sleep(a1->script, 1);
 	}
 }
 
@@ -4157,7 +4157,7 @@ void entity_mode_4081C0_drillrig(Entity *a1)
 void entity_mode_408240_drillrig(Entity *a1)
 {
 	a1->mode = entity_mode_408260_drillrig;
-    script_yield_num_repeats(a1->script, 1);
+    script_sleep(a1->script, 1);
 }
 
 //----- (00408260) --------------------------------------------------------
@@ -4204,7 +4204,7 @@ void entity_mode_drillrig_on_death(Entity *a1)
 
     a1->destroyed = 1;
     a1->mode = entity_mode_building_default_on_death;
-    script_yield_num_repeats(a1->script, 1);
+    script_sleep(a1->script, 1);
 }
 
 //----- (00408370) --------------------------------------------------------
@@ -4220,7 +4220,7 @@ void script_408370(Script *a1)
 		do
 		{
 			dword_477890 = v1 << 8;
-            script_yield_num_repeats(a1, 1);
+            script_sleep(a1, 1);
 			v1 = *v2;
 			++v2;
 		} while (v1);
@@ -4301,7 +4301,7 @@ void script_4084A0_animation(Script *a1)
 		stru1_set_animation(0, 0, 0, 0);
 		dword_4778A0 = 1;
 		stru1_set_animation(0, 0, 0x80000000, 30);
-        script_yield_num_repeats(v1, 30);
+        script_sleep(v1, 30);
 		dword_4778A0 = 0;
 	}
 }
@@ -4315,7 +4315,7 @@ void script_408500_anim(Script *a1)
 	v1 = a1;
 	dword_4778A0 = 1;
 	stru1_set_animation(0, 0x80000000, 0, 30);
-    script_yield_num_repeats(v1, 30);
+    script_sleep(v1, 30);
 	dword_4778A0 = 0;
 	stru1_set_animation(0, 0, 0, 0);
 	dword_4778A0 = 0;
@@ -7167,7 +7167,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 			v4 = 0;
 			v5 = 0;
 			v6 = 0;
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v8 = i->event;
@@ -7232,7 +7232,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 		{
 			if (v6)
 				goto LABEL_64;
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			for (k = script_get_next_event(v1); k; k = script_get_next_event(v1))
 			{
 				v16 = k->event;
@@ -7255,7 +7255,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 			sprite_load_mobd(v24, 1980);
 			while (v6)
 			{
-				script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+                script_wait_event(v1);
 				for (l = script_get_next_event(v1); l; l = script_get_next_event(v1))
 				{
 					if (l->event == EVT_MSG_1514)
@@ -7368,7 +7368,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 			v4 = 0;
 			v5 = 0;
 			v6 = 0;
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v8 = i->event;
@@ -7435,7 +7435,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 					goto LABEL_70;
 				if (v26)
 					break;
-				script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+                script_wait_event(v1);
 				for (k = script_get_next_event(v1); k; k = script_get_next_event(v1))
 				{
 					v18 = k->event;
@@ -7499,7 +7499,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 			sprite_load_mobd(v25, 1980);
 			while (v6)
 			{
-				script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+                script_wait_event(v1);
 				for (m = script_get_next_event(v1); m; m = script_get_next_event(v1))
 				{
 					if (m->event == EVT_MSG_1514)
@@ -7637,7 +7637,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 						v18 = *(_DWORD *)(v4 + 4);
 						v19 = 0;
 						v36 = 0;
-                        script_yield_num_repeats(a1, 6);
+                        script_sleep(a1, 6);
 						if (v18 != *(_DWORD *)(v4 + 4))
 							v36 = 1;
 						for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
@@ -7743,7 +7743,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 				}
 			}
 			sprite_4272E0_load_mobd_item(v2, v3->mobd_lookup_table_offset, 0);
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			for (j = script_get_next_event(v1); j; j = script_get_next_event(v1))
 			{
 				if (j->event == 1511)
@@ -9343,7 +9343,7 @@ void entity_41A060_evt1525(Entity *a1, void *a2)
 			|| (*((_DWORD *)a2 + 1) ^ a1->sprite_x_2) & 0xFFFFE000
 			|| (*((_DWORD *)a2 + 2) ^ a1->sprite_y_2) & 0xFFFFE000))
 	{
-        script_yield_num_repeats(a1->script, 1);
+        script_sleep(a1->script, 1);
 		v4 = v3->stats;
 		v3->_DC_order = ENTITY_ORDER_9;
 		v3->_134_param__unitstats_after_mobile_outpost_plant = 600;
@@ -9386,7 +9386,7 @@ void entity_41A170_evt1524(Entity *a1, int a2)
 			|| (*(_DWORD *)(a2 + 4) ^ a1->sprite_x_2) & 0xFFFFE000
 			|| (*(_DWORD *)(a2 + 8) ^ a1->sprite_y_2) & 0xFFFFE000))
 	{
-        script_yield_num_repeats(a1->script, 1);
+        script_sleep(a1->script, 1);
 		v4 = v3->stats;
 		v3->_DC_order = ENTITY_ORDER_MOVE;
 		if (v4->is_infantry)
@@ -9417,7 +9417,7 @@ void entity_41A400_evt1547(Entity *a1, Entity *a2)
 	v3 = a2;
 	if (a2 != a1->_E0_current_attack_target)
 	{
-        script_yield_num_repeats(a1->script, 1);
+        script_sleep(a1->script, 1);
 		v2->_DC_order = ENTITY_ORDER_3;
 		v2->_E0_current_attack_target = v3;
 		v2->_E0_current_attack_target_entity_id = v3->entity_id;
@@ -9439,7 +9439,7 @@ void entity_41A470(Entity *a1, Entity *a2)
 
 	v2 = a1;
 	v3 = a2;
-    script_yield_num_repeats(a1->script, 1);
+    script_sleep(a1->script, 1);
 	v2->_DC_order = ENTITY_ORDER_10;
 	v2->_E0_current_attack_target = v3;
 	v2->_E0_current_attack_target_entity_id = v3->entity_id;
@@ -9492,7 +9492,7 @@ void entity_41A510_evt1503(Entity *a1, int a2)
 			v2->hitpoints = v7;
 			if (v7 <= 0)
 			{
-                script_yield_num_repeats(v2->script, 1);
+                script_sleep(v2->script, 1);
 				v8 = v2->_E0_current_attack_target;
 				if (v8)
 				{
@@ -9549,7 +9549,7 @@ void entity_41A610_evt1503(Entity *a1, void *a2)
 			v2->hitpoints = v7;
 			if (v7 <= 0)
 			{
-                script_yield_num_repeats(v2->script, 1);
+                script_sleep(v2->script, 1);
 				v2->hitpoints = 0;
 				v2->mode = entity_419560_on_death;
 				v2->destroyed = 1;
@@ -9626,7 +9626,7 @@ void entity_41A6D0_evt1497(Entity *a1, Entity *a2)
 		a1->_DC_order = ENTITY_ORDER_8;
 		a1->entity_8 = 0;
 		entity_mode_move_attack(a1);
-        script_yield_num_repeats(v2->script, 1);
+        script_sleep(v2->script, 1);
 	}
 }
 
@@ -9812,7 +9812,7 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 		{
 			if (a5)
 			{
-                script_yield_num_repeats(a5, 1);
+                script_sleep(a5, 1);
 			}
 			else
 			{
@@ -9929,10 +9929,10 @@ bool _41B020_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	Script *v8; // eax@4
 
 	v7 = a1->script;
-	if (v7 && v7->field_28 & SCRIPT_FLAGS_20_EVENT_TRIGGER)
+	if (v7 && v7->_28_yield_flags & SCRIPT_FLAGS_20_EVENT_TRIGGER)
 		script_trigger_event(0, EVT_MOUSE_HOVER, a2->script, a1->script);
 	v8 = a2->script;
-	if (v8 && v8->field_28 & SCRIPT_FLAGS_20_EVENT_TRIGGER)
+	if (v8 && v8->_28_yield_flags & SCRIPT_FLAGS_20_EVENT_TRIGGER)
 		script_trigger_event(0, EVT_MOUSE_HOVER, a1, a2->script);
 	return 0;
 }
@@ -11814,9 +11814,9 @@ LABEL_9:
 	v4->entity_task_handler_idx = get_handler_id(v9->handler);
 	v4->entity_task_message_handler_idx = get_handler_id(v9->event_handler);
 	v4->entity_task_field_20 = v9->flags_20;
-	v4->entity_task_field_14 = v9->_14_num_repeats;
+	v4->entity_task_field_14 = v9->num_runs_to_skip;
 	v4->entity_task_field_24 = v9->flags_24;
-	v4->entity_task_field_28 = v9->field_28;
+	v4->entity_task_field_28 = v9->_28_yield_flags;
 	v4->entity_task_field_2C = v9->field_2C;
 	v4->unit_stats_idx = v3->unit_id;
 	v4->player_side = v3->player_side;
@@ -11834,9 +11834,9 @@ LABEL_9:
 		v4->turret_sprite_task_handler_idx = get_handler_id(v21->handler);
 		v4->turret_sprite_task_message_handler_idx = get_handler_id(v21->event_handler);
 		v4->turret_sprite_task_field_20 = v21->flags_20;
-		v4->turret_sprite_task_field_14 = v21->_14_num_repeats;
+		v4->turret_sprite_task_field_14 = v21->num_runs_to_skip;
 		v4->turret_sprite_task_field_24 = v21->flags_24;
-		v4->turret_sprite_task_field_28 = v21->field_28;
+		v4->turret_sprite_task_field_28 = v21->_28_yield_flags;
 		v4->turret_sprite_task_field_2C = v21->field_2C;
 		result = GAME_Save_PackSprite(v128->turret_sprite, &v4->turret_sprite);
 		if (!result)
@@ -15045,7 +15045,7 @@ void script_421D60_on_savegame_failed(Script *a1)
 	if (v5)
 	{
 		render_string_445770(v5, str, 0);
-        script_yield_num_repeats(a1, 180);
+        script_sleep(a1, 180);
 		render_string_list_remove(v6);
 	}
 }
@@ -15974,7 +15974,7 @@ void script_custom_mission_briefing_loop(Script *a1)
 	{
 		do
 		{
-            script_yield_num_repeats(a1, 1);
+            script_sleep(a1, 1);
 			input_get_keyboard_state(&keys_state);
 			if (keys_state.just_pressed_keys_mask & INPUT_KEYBOARD_ESCAPE_MASK)
 			{
@@ -16955,15 +16955,15 @@ void _4268B0_4269B0_task_attachment_handler(_4269B0_task_attachment *a1)
 		v7 = a1->field_14;
 		v1->handler = _426860_4269B0_task_attachment_handler;
 		if (v7 <= 0)
-            script_yield_num_repeats(v1->task, 1);
+            script_sleep(v1->task, 1);
 		else
-            script_yield_num_repeats(v1->task, _468410_stru49_array[v2]._8_some_task_flags);
+            script_sleep(v1->task, _468410_stru49_array[v2]._8_some_task_flags);
 	}
 	else if (a1->_24_iftrue__call_UNIT_Spawn__else__create_manually)
 	{
 		spawn_unit(v3, a1->x, a1->y, player_side);
 		++v1->stru53_54_55_unit_stats_idx_idx;
-        script_yield_num_repeats(v1->task, 6);
+        script_sleep(v1->task, 6);
 	}
 	else
 	{
@@ -16980,7 +16980,7 @@ void _4268B0_4269B0_task_attachment_handler(_4269B0_task_attachment *a1)
 			v6->param = (void *)(v3 | (v4 << 16) | 0x8000);
 		}
 		++v1->stru53_54_55_unit_stats_idx_idx;
-        script_yield_num_repeats(v1->task, 6);
+        script_sleep(v1->task, 6);
 	}
 }
 
@@ -17116,19 +17116,19 @@ LABEL_18:
 				v15 = 1;
 			}
 			v2->handler = _426860_4269B0_task_attachment_handler;
-            script_yield_num_repeats(v1, v15);
+            script_sleep(v1, v15);
 		}
 		else
 		{
 			v2->handler = _426860_4269B0_task_attachment_handler;
-            script_yield_num_repeats(v1, -v11);
+            script_sleep(v1, -v11);
 		}
 	}
 	else
 	{
 		v16 = v2->__468410_stru49_array_idx;
 		v2->handler = _426860_4269B0_task_attachment_handler;
-        script_yield_num_repeats(v1, _468410_stru49_array[v16]._4_some_task_flags);
+        script_sleep(v1, _468410_stru49_array[v16]._4_some_task_flags);
 	}
 }
 
@@ -17776,7 +17776,7 @@ void sprite_427460_init_mobd_item(Sprite *pstru6)
 					v15 = v1->script;
 					if (v15)
 					{
-						if (v15->field_28 & 0x40000)
+						if (v15->_28_yield_flags & SCRIPT_FLAGS_20_40000)
 						{
 							script_trigger_event(0, (SCRIPT_EVENT)((int)EVT_MOUSE_HOVER | 0x1), v14, v1->script);
 							v1->script->flags_20 |= SCRIPT_FLAGS_20_40000;
@@ -18119,7 +18119,7 @@ void entity_427BB0_mobile_outpost_clanhall_planting(Entity *a1)
 	sprite_4272E0_load_mobd_item(a1->sprite, v2, 1);
 	v3 = v1->script;
 	v1->mode = entity_mode_427BF0_mobile_outpost_clanhall_planting;
-    script_yield_num_repeats(v3, 30);
+    script_sleep(v3, 30);
 }
 
 //----- (00427BF0) --------------------------------------------------------
@@ -18136,7 +18136,7 @@ void entity_mode_427BF0_mobile_outpost_clanhall_planting(Entity *a1)
 	sprite_4272E0_load_mobd_item(a1->sprite, v2, 2);
 	v3 = v1->script;
 	v1->mode = entity_427C30_after_mobile_outpost_clanhall_wagon_plant;
-    script_yield_num_repeats(v3, 30);
+    script_sleep(v3, 30);
 }
 
 //----- (00427C30) --------------------------------------------------------
@@ -18164,7 +18164,7 @@ void entity_427C30_after_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 	}
 	v5 = v1->script;
 	v1->mode = entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant;
-    script_yield_num_repeats(v5, 10);
+    script_sleep(v5, 10);
 }
 
 //----- (00427CA0) --------------------------------------------------------
@@ -18606,7 +18606,7 @@ void script_4280A0_stru38_list__production_loop(Script *task)
 	LABEL_35:
 		;
 	}
-    script_yield_num_repeats(task, 1);
+    script_sleep(task, 1);
 }
 
 //----- (00428730) --------------------------------------------------------
@@ -18936,7 +18936,7 @@ void script_42D030_sidebar_tooltips(Script *a1)
 		v14 = 0;
 		do
 		{
-			script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(a1);
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				if (i->event == EVT_MSG_1511_sidebar_click_category)
@@ -19001,7 +19001,7 @@ void script_42D030_sidebar_tooltips(Script *a1)
 			render_string_445770(v11, v15, 0);
 			do
 			{
-				script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+                script_wait_event(a1);
 				for (j = script_get_next_event(a1); j; j = script_get_next_event(a1))
 				{
 					if (j->event == EVT_SHOW_UI_CONTROL)
@@ -19713,14 +19713,14 @@ void script_42DA90_ai(Script *a2)
 		}
 	}
 	stru24_42E070(v1);
-    script_yield_num_repeats(a2, 60);
+    script_sleep(a2, 60);
 }
 
 //----- (0042DC70) --------------------------------------------------------
 void script_42DC70_ai(Script *a1)
 {
 	a1->handler = script_42DA90_ai;
-    script_yield_num_repeats(a1, 60);
+    script_sleep(a1, 60);
 }
 
 //----- (0042DC90) --------------------------------------------------------
@@ -19901,14 +19901,14 @@ void script_42DE80(Script *a1)
 		}
 	}
 	stru24_42E070(v1);
-    script_yield_num_repeats(a1, 60);
+    script_sleep(a1, 60);
 }
 
 //----- (0042DF20) --------------------------------------------------------
 void script_42DF20(Script *a1)
 {
 	a1->handler = script_42DE80;
-    script_yield_num_repeats(a1, 60);
+    script_sleep(a1, 60);
 }
 
 //----- (0042DF40) --------------------------------------------------------
@@ -20893,12 +20893,12 @@ void script_431E60_mobd_20_input(Script *a1)
 	v1 = 0;
 	dword_47C6C4 = 0;
 	a1->field_1C = 1;
-    script_yield_num_repeats(a1, 2);
+    script_sleep(a1, 2);
 	if (!script_create_coroutine(SCRIPT_TYPE_INVALID, script_425400, 0))
 		game_state = 3;
 	while (1)
 	{
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 		input_get_keyboard_state(&out);
 		v2 = out.just_pressed_keys_mask;
 		if (v1 > 0)
@@ -21326,7 +21326,7 @@ void script_432730_ingame_menu(Script *a1)
 		v4 = 0;
 		do
 		{
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			v5 = script_get_next_event(v1);
 			if (v5)
 			{
@@ -21387,7 +21387,7 @@ void script_432800_ingame_menu(Script *a1)
 		v4 = 0;
 		do
 		{
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v6 = i->event;
@@ -21870,7 +21870,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 		{
 			script_trigger_event(v1, EVT_MSG_1532, 0, task_mobd17_cursor);
 			while (!is_coroutine_list_initialization_failed)
-                script_yield_num_repeats(v1, 1);
+                script_sleep(v1, 1);
 			if (dword_47050C == 1)
 			{
 				dword_47C030 = 1;
@@ -22125,7 +22125,7 @@ void script_433780_ingame_menu(Script *a1)
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_MISSION_ARROW_SW, 0, 0))
 	{
 		script_trigger_event(a1, EVT_ENTITY_MOVE, 0, task_47C028);
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 	}
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -22143,7 +22143,7 @@ void script_433810_ingame_menu(Script *a1)
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_888, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1509_stru11, 0, task_47C028);
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 	}
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -22160,7 +22160,7 @@ void script_433880_ingame_menu(Script *a1)
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_900, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1507_stru11, 0, task_47C028);
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 	}
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -22177,7 +22177,7 @@ void script_4338F0_ingame_menu(Script *a1)
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_MISSION_ARROW_S_BLINK, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1526_infiltrate, 0, task_47C028);
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 	}
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -22197,7 +22197,7 @@ void script_433960_ingame_menu(Script *a1)
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_BORDERLESS_CURSOR, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1528, 0, task_47C028);
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 	}
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -22215,7 +22215,7 @@ void script_4339F0_ingame_menu(Script *a1)
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_876, 0, 0))
 	{
 		script_trigger_event(a1, EVT_MSG_1527, 0, task_47C028);
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 	}
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -22235,7 +22235,7 @@ void script_433A60_ingame_menu(Script *a1)
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_828, 0, 0))
 	{
 		script_trigger_event(a1, EVT_ENTITY_ATTACK, 0, task_47C028);
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 	}
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -22361,7 +22361,7 @@ void script_433DB0_ingame_menu(Script *a1)
 	Sprite *v1; // edi@6
 
 	script_433640(a1, SCRIPT_TYPE_DA000001, -200, 153, 3);
-    script_yield_num_repeats(a1, 2);
+    script_sleep(a1, 2);
 	dword_47C6C4 = 0;
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_RUNNING, 1, 0))
 	{
@@ -22638,7 +22638,7 @@ void script_434460_DA000007(Script *a1)
 	sprite_load_mobd(v2, 1392);
 	do
 	{
-		script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+        script_wait_event(a1);
 		for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 		{
 			if (i->event == EVT_MSG_1528)
@@ -24569,7 +24569,7 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 	v3 = 0;
 	do
 	{
-		script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+        script_wait_event(a1);
 		for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 		{
 			v5 = i->event;
@@ -24622,7 +24622,7 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 	v3 = 0;
 	do
 	{
-		script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+        script_wait_event(a1);
 		for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 		{
 			v5 = i->event;
@@ -24675,13 +24675,13 @@ void script_43CF50_mobd45(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -24727,13 +24727,13 @@ void script_43D090_mobd45_directx_ipx(Script *a1)
 				script_408500_anim(a1);
                 stru29_list_realloc(a1);
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-                script_yield_num_repeats(a1, 3);
+                script_sleep(a1, 3);
 				v7 = LVL_FindMapd();
 				_40E400_set_palette(&v7[4].items->palette);
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
 				cplc_select(4);
 				cplc_406320();
-                script_yield_num_repeats(a1, 1);
+                script_sleep(a1, 1);
 				script_4084A0_animation(a1);
 				script_terminate(a1);
 			}
@@ -24778,13 +24778,13 @@ void script_43D270_mobd45_directx_serial(Script *a1)
 				script_408500_anim(a1);
                 stru29_list_realloc(a1);
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-                script_yield_num_repeats(a1, 3);
+                script_sleep(a1, 3);
 				v6 = LVL_FindMapd();
 				_40E400_set_palette(&v6[5].items->palette);
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)5, 0, -10);
 				cplc_select(5);
 				cplc_406320();
-                script_yield_num_repeats(a1, 1);
+                script_sleep(a1, 1);
 				script_4084A0_animation(a1);
 				script_terminate(a1);
 			}
@@ -24831,13 +24831,13 @@ void script_43D430_mobd45_directx_modem(Script *a1)
 				script_408500_anim(a1);
                 stru29_list_realloc(a1);
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-                script_yield_num_repeats(a1, 3);
+                script_sleep(a1, 3);
 				v6 = LVL_FindMapd();
 				_40E400_set_palette(&v6[6].items->palette);
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 				cplc_select(6);
 				cplc_406320();
-                script_yield_num_repeats(a1, 1);
+                script_sleep(a1, 1);
 				script_4084A0_animation(a1);
 				script_terminate(a1);
 			}
@@ -24876,13 +24876,13 @@ void script_43D5F0_mobd45(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -24911,13 +24911,13 @@ void script_43D740_mobd45_evt17(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5[6].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -24946,13 +24946,13 @@ void script_43D890_mobd45(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5[6].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -25043,7 +25043,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 		v6 = 0;
 		do
 		{
-			script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(a1);
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				v8 = i->event;
@@ -25190,7 +25190,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 		render_string_443D80(_47C604_mission_briefing, v7, 0);
 		do
 		{
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v9 = i->event;
@@ -25436,13 +25436,13 @@ void script_43E230_mobd45_modems(Script *a1)
 	script_408500_anim(v1);
     stru29_list_realloc(v1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(v1, 3);
+    script_sleep(v1, 3);
 	v10 = LVL_FindMapd();
 	_40E400_set_palette(&v10[6].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
-    script_yield_num_repeats(v1, 1);
+    script_sleep(v1, 1);
 	script_4084A0_animation(v1);
 	script_terminate(v1);
 }
@@ -25506,13 +25506,13 @@ void script_43E470_mobd45_modems(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v9 = LVL_FindMapd();
 	_40E400_set_palette(&v9[6].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -25540,13 +25540,13 @@ void script_43E670_mobd45(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -25653,7 +25653,8 @@ void script_43E890_mobd45_modems(Script *a1)
 			} while ((int)v8 < (int)&unk_47C690);
 		}
 		v1 = 0;
-		script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+
+        script_wait_event(a1);
 		for (j = script_get_next_event(a1); j; j = script_get_next_event(a1))
 		{
 			switch (j->event)
@@ -25713,7 +25714,7 @@ void script_43EA90_mobd45(Script *a1)
 		v3 = 0;
 		do
 		{
-			script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(a1);
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				v5 = i->event;
@@ -25758,7 +25759,7 @@ void script_43EB80_mobd45(Script *a1)
 		v3 = 0;
 		do
 		{
-			script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(a1);
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				v5 = i->event;
@@ -25805,7 +25806,7 @@ void script_43EC70_mobd45(Script *a1)
 		v4 = 0;
 		do
 		{
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v6 = i->event;
@@ -25943,13 +25944,13 @@ void script_43EE90_mobd45(Script *a1)
 	script_408500_anim(v1);
     stru29_list_realloc(v1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(v1, 3);
+    script_sleep(v1, 3);
 	v12 = LVL_FindMapd();
 	_40E400_set_palette(&v12[9].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)9, 0, -10);
 	cplc_select(9);
 	cplc_406320();
-    script_yield_num_repeats(v1, 1);
+    script_sleep(v1, 1);
 	script_4084A0_animation(v1);
 	script_terminate(v1);
 }
@@ -26002,13 +26003,13 @@ void script_43F0E0_mobd45_modems(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v11 = LVL_FindMapd();
 	_40E400_set_palette(&v11[8].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -26057,13 +26058,13 @@ void script_43F330_mobd45(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v10 = LVL_FindMapd();
 	_40E400_set_palette(&v10[7].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 	cplc_select(7);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -26093,13 +26094,13 @@ void script_43F520_mobd45(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v6 = LVL_FindMapd();
 	_40E400_set_palette(&v6[10].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)10, 0, -10);
 	cplc_select(10);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -26128,13 +26129,13 @@ void script_43F670_mobd45(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5[1].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 	cplc_select(1);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -26247,7 +26248,7 @@ void script_43F9E0_mobd45(Script *a1)
 		v4 = 0;
 		do
 		{
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v6 = i->event;
@@ -26431,13 +26432,13 @@ void script_43FDE0_mobd45(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5[1].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 	cplc_select(1);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -26491,7 +26492,7 @@ __debugbreak();
 			dword_46E3F0 = -1;
 			while ((dword_468B54 == -1 || v8 == (void *)-1) && v9 < 1800)
 			{
-                script_yield_num_repeats(a1, 1);
+                script_sleep(a1, 1);
 				netz_42F9C0(0, 0);
 				v8 = (void *)dword_46E3F0;
 				++v9;
@@ -26507,13 +26508,13 @@ __debugbreak();
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v14 = LVL_FindMapd();
 	_40E400_set_palette(&v14[8].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -26562,13 +26563,13 @@ void script_4402A0_mobd45_evt5(Script *a1)
 		script_408500_anim(a1);
         stru29_list_realloc(a1);
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-        script_yield_num_repeats(a1, 3);
+        script_sleep(a1, 3);
 		v11 = LVL_FindMapd();
 		_40E400_set_palette(&v11[7].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 		cplc_select(7);
 		cplc_406320();
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 		script_4084A0_animation(a1);
 		script_terminate(a1);
 	}
@@ -26829,7 +26830,7 @@ void script_440810_mobd45(Script *a1)
 		v8 = 0;
 		do
 		{
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 			{
 				v10 = i->event;
@@ -27505,13 +27506,13 @@ void script_441940_mobd45_evt17(Script *a1)
 		stru29_list_remove_all(a1);
 		stru29_list_alloc();
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-        script_yield_num_repeats(a1, 3);
+        script_sleep(a1, 3);
 		v4 = LVL_FindMapd();
 		_40E400_set_palette(&v4->items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 		cplc_select(0);
 		cplc_406320();
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 		script_4084A0_animation(a1);
 		script_terminate(a1);
 	}
@@ -27532,7 +27533,7 @@ void script_441940_mobd45_evt17(Script *a1)
 		script_408500_anim(a1);
         stru29_list_realloc(a1);
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-        script_yield_num_repeats(a1, 3);
+        script_sleep(a1, 3);
 		v14 = LVL_FindMapd();
 		_40E400_set_palette(&v14[1].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
@@ -27545,7 +27546,7 @@ void script_441940_mobd45_evt17(Script *a1)
 		script_408500_anim(a1);
         stru29_list_realloc(a1);
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-        script_yield_num_repeats(a1, 3);
+        script_sleep(a1, 3);
 		v9 = LVL_FindMapd();
 		_40E400_set_palette(&v9[4].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
@@ -27553,7 +27554,7 @@ void script_441940_mobd45_evt17(Script *a1)
 	}
 	cplc_select(v10);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -27875,7 +27876,7 @@ void script_4421F0_mobd45_evt8(Script *a1)
 		script_408500_anim(a1);
         stru29_list_realloc(a1);
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-        script_yield_num_repeats(a1, 3);
+        script_sleep(a1, 3);
 		v16 = LVL_FindMapd();
 		_40E400_set_palette(&v16[1].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
@@ -27890,7 +27891,7 @@ void script_4421F0_mobd45_evt8(Script *a1)
 		stru29_list_remove_all(a1);
 		stru29_list_alloc();
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-        script_yield_num_repeats(a1, 3);
+        script_sleep(a1, 3);
 		v12 = LVL_FindMapd();
 		_40E400_set_palette(&v12[4].items->palette);
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
@@ -27898,7 +27899,7 @@ void script_4421F0_mobd45_evt8(Script *a1)
 	}
 	cplc_select(v13);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -27927,13 +27928,13 @@ void script_442580_mobd45_evt17(Script *task)
 	script_408500_anim(task);
     stru29_list_realloc(task);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(task, 3);
+    script_sleep(task, 3);
 	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
-    script_yield_num_repeats(task, 1);
+    script_sleep(task, 1);
 	script_4084A0_animation(task);
 	script_terminate(task);
 }
@@ -27984,13 +27985,13 @@ __debugbreak();
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v11 = LVL_FindMapd();
 	_40E400_set_palette(&v11[7].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 	cplc_select(7);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -28042,7 +28043,7 @@ void script_4428C0_mobd45_evt6(Script *a1)
 			dword_46E3F0 = -1;
 			while ((dword_468B54 == -1 || v9 == -1) && v7 < 1800)
 			{
-                script_yield_num_repeats(a1, 1);
+                script_sleep(a1, 1);
 				netz_42F9C0(0, 0);
 				v9 = dword_46E3F0;
 				++v7;
@@ -28059,13 +28060,13 @@ void script_4428C0_mobd45_evt6(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v14 = LVL_FindMapd();
 	_40E400_set_palette(&v14[8].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -28114,7 +28115,7 @@ void script_442BB0_mobd46(Script *a1)
 	v1->script_type = SCRIPT_TYPE_14;
 	stru29_list_4439F0(v4, 0, 0, 1, 0);
 	sprite_load_mobd(v4, 180);
-    script_yield_num_repeats(v1, 1);
+    script_sleep(v1, 1);
 	if (netz_47C6C0_mapd_idx == SCRIPT_TYPE_14)
 	{
 		v5 = pstru6;
@@ -28122,7 +28123,7 @@ void script_442BB0_mobd46(Script *a1)
 		{
 			while (1)
 			{
-				v6 = dword_47C6E4 ? _46E4C0_mobd_offsets[BYTE2(a1a->_14_num_repeats)] : _46E4F0_mobd_offsets[BYTE2(a1a->_14_num_repeats)];
+				v6 = dword_47C6E4 ? _46E4C0_mobd_offsets[BYTE2(a1a->num_runs_to_skip)] : _46E4F0_mobd_offsets[BYTE2(a1a->num_runs_to_skip)];
 				if (dword_47C6E8 >= 0)
 				{
 					if (dword_47C6E8 > 9)
@@ -28132,13 +28133,13 @@ void script_442BB0_mobd46(Script *a1)
 				{
 					dword_47C6E8 = 0;
 				}
-				v7 = BYTE2(a1a->_14_num_repeats);
+				v7 = BYTE2(a1a->num_runs_to_skip);
 				v8 = v7 < 9u;
 				v9 = v7 == 9;
 				if (!v8 && !v9)
 					break;
                 stru29_list_clear_bit_by_sprite(v5, 1);
-				if (BYTE2(a1a->_14_num_repeats) == dword_47C6E8)
+				if (BYTE2(a1a->num_runs_to_skip) == dword_47C6E8)
 				{
 					_47C664_ingame_menu_sprite->field_88_unused = 1;
 					v11 = v5->x;
@@ -28152,7 +28153,7 @@ void script_442BB0_mobd46(Script *a1)
 				v13 = 0;
 				do
 				{
-					script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+                    script_wait_event(v1);
 					v14 = script_get_next_event(v1);
 					if (v14)
 					{
@@ -28180,11 +28181,11 @@ void script_442BB0_mobd46(Script *a1)
 					}
 				} while (!v13);
 				if (v12)
-					dword_47C6E8 = BYTE2(a1a->_14_num_repeats);
+					dword_47C6E8 = BYTE2(a1a->num_runs_to_skip);
 			}
             stru29_list_set_bit_by_sprite(v5, 1);
 			sprite_release_mobd_item(v5);
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
 				script_discard_event(i);
 		}
@@ -28198,11 +28199,11 @@ void script_442BB0_mobd46(Script *a1)
 			if (dword_47C6E4)
 			{
 				v20 = current_mute_level;
-				v21 = _46E440_mobd_offsets[BYTE2(a1a->_14_num_repeats)];
+				v21 = _46E440_mobd_offsets[BYTE2(a1a->num_runs_to_skip)];
 			}
 			else
 			{
-				v21 = _46E480_mobd_offsets[BYTE2(a1a->_14_num_repeats)];
+				v21 = _46E480_mobd_offsets[BYTE2(a1a->num_runs_to_skip)];
 				v20 = current_surv_level;
 			}
 			if (v18 == -1)
@@ -28223,14 +28224,14 @@ void script_442BB0_mobd46(Script *a1)
 				v18 = 14;
 				dword_47C6E8 = 14;
 			}
-			v22 = BYTE2(a1a->_14_num_repeats);
+			v22 = BYTE2(a1a->num_runs_to_skip);
 			v8 = v22 < (unsigned __int16)v20;
 			v9 = v22 == v20;
 			if (v8 || v9)
 				break;
             stru29_list_set_bit_by_sprite(v19, 1);
 			sprite_release_mobd_item(v19);
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			v30 = script_get_next_event(v1);
 			if (v30)
 			{
@@ -28248,7 +28249,7 @@ void script_442BB0_mobd46(Script *a1)
 			}
 		}
         stru29_list_clear_bit_by_sprite(v19, 1);
-		if (BYTE2(a1a->_14_num_repeats) == v18)
+		if (BYTE2(a1a->num_runs_to_skip) == v18)
 		{
 			_47C664_ingame_menu_sprite->field_88_unused = 1;
 			v24 = v19->x;
@@ -28262,7 +28263,7 @@ void script_442BB0_mobd46(Script *a1)
 		v26 = 0;
 		do
 		{
-			script_yield(v1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(v1);
 			v27 = script_get_next_event(v1);
 			if (v27)
 			{
@@ -28291,8 +28292,8 @@ void script_442BB0_mobd46(Script *a1)
 		} while (!v26);
 		if (!v25)
 			goto LABEL_44;
-		v18 = BYTE2(a1a->_14_num_repeats);
-		dword_47C6E8 = BYTE2(a1a->_14_num_repeats);
+		v18 = BYTE2(a1a->num_runs_to_skip);
+		dword_47C6E8 = BYTE2(a1a->num_runs_to_skip);
 	}
 }
 
@@ -28319,13 +28320,13 @@ void script_443000_mobd45(Script *a1)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
 	_40E400_set_palette(&v5->items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
@@ -28768,13 +28769,13 @@ void script_443C40(Script *a1, int cplc_item)
 	script_408500_anim(a1);
     stru29_list_realloc(a1);
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(v3, 3);
+    script_sleep(v3, 3);
 	v6 = LVL_FindMapd();
 	_40E400_set_palette(&v6[v2].items->palette);
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(v2, 0, -10);
 	cplc_select(v2);
 	cplc_406320();
-    script_yield_num_repeats(v3, 1);
+    script_sleep(v3, 1);
 	script_4084A0_animation(v3);
 	if (netz_47C6BC_mapd_idx || v2 != 12)
 		script_terminate(v3);
@@ -30569,7 +30570,7 @@ void script_446ED0_sidebar_buttons(Script *a1)
 	SidebarButton **v1; // esi@1
 
 	_44A6B0_minimap(render_width - 32, 32);
-    script_yield_num_repeats(a1, 2);
+    script_sleep(a1, 2);
 	v1 = _47CA18_sidebar_production_buttons;
 	do
 	{
@@ -30587,7 +30588,7 @@ void script_446ED0_sidebar_buttons(Script *a1)
 			_47CA00_render_string->num_lines = 0;
 			render_string_445770(_47CA00_render_string, asc_470198, 0);
 		}
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
 	}
 }
 
@@ -32008,7 +32009,7 @@ void script_44A700_minimap(Script *a1)
 		{
 			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v2->script);
 			script_trigger_event(0, EVT_MOUSE_HOVER, 0, v2->script);
-            script_yield_num_repeats(v1, 1);
+            script_sleep(v1, 1);
 			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, v2->script);
 			script_trigger_event(0, EVT_MOUSE_HOVER, 0, v2->script);
 		}
@@ -34028,7 +34029,7 @@ void script_show_message_ex(Script *a1)
 		else
 		{
 			v3 = a1;
-			script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(a1);
 		}
 		v1 = 0;
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
@@ -34169,7 +34170,7 @@ void script_show_message(Script *a1)
 		else
 		{
 			v3 = a1;
-			script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+            script_wait_event(a1);
 		}
 		v1 = 0;
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))

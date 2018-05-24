@@ -22,7 +22,7 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
     sprite_create_scripted(MOBD_79, a1->sprite, script_mobd79_evt1__main_menu_play_mission, SCRIPT_COROUTINE, 0);
     sprite_create_scripted(MOBD_79, a1->sprite, script_mobd79_evt1__main_menu_new_missions, SCRIPT_COROUTINE, 0);
     sprite_create_scripted(MOBD_79, a1->sprite, script_mobd79_evt1__main_menu_kaos_mode, SCRIPT_COROUTINE, 0);
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     v1 = a1->sprite;
     v2 = sprite_create(MOBD_79, 0, v1);
     v1->parent = v2;
@@ -48,13 +48,13 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
     script_408500_anim(a1);
     stru29_list_realloc(a1);
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
     v8 = LVL_FindMapd();
     _40E400_set_palette(&v8[2].items->palette);
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)2, 0, -10);
     cplc_select(2);
     cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     script_4084A0_animation(a1);
     script_terminate(a1);
 }
@@ -71,7 +71,7 @@ void script_mobd79_evt19__main_menu_load(Script *a1)
     single_player_game = 1;
     a1->sprite->y = 270 * 256;
     a1->sprite->z_index = 6;
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     v1 = a1->sprite;
     v2 = sprite_create(MOBD_79, 0, v1);
     v1->parent = v2;
@@ -109,7 +109,7 @@ void script_mobd79_evt1__main_menu_play_mission(Script *a1)
 
     a1->sprite->y = 300 * 256;
     a1->sprite->z_index = 8;
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     v1 = a1->sprite;
     v2 = sprite_create(MOBD_79, 0, v1);
     v1->parent = v2;
@@ -136,13 +136,13 @@ void script_mobd79_evt1__main_menu_play_mission(Script *a1)
     script_408500_anim(a1);
     stru29_list_realloc(a1);
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
     v8 = LVL_FindMapd();
     _40E400_set_palette(&v8[11].items->palette);
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)11, 0, -10);
     cplc_select(11);
     cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     script_4084A0_animation(a1);
     script_terminate(a1);
 }
@@ -156,7 +156,7 @@ void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
     Sprite *v4; // esi@3
     DataMapd *v8; // eax@13
 
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     a1->sprite->y = 330 * 256;
     a1->sprite->z_index = 10;
     v1 = a1->sprite;
@@ -184,13 +184,13 @@ void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
     script_408500_anim(a1);
     stru29_list_realloc(a1);
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
     v8 = LVL_FindMapd();
     _40E400_set_palette(&v8[1].items->palette);
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
     cplc_select(1);
     cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     script_4084A0_animation(a1);
     script_terminate(a1);
 }
@@ -206,7 +206,7 @@ void script_mobd79_evt1__main_menu_new_missions(Script *a1)
 
     a1->sprite->y = 360 * 256;
     a1->sprite->z_index = 11;
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     v1 = a1->sprite;
     v2 = sprite_create(MOBD_79, 0, v1);
     v1->parent = v2;
@@ -232,13 +232,13 @@ void script_mobd79_evt1__main_menu_new_missions(Script *a1)
     script_408500_anim(a1);
     stru29_list_realloc(a1);
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
     v8 = LVL_FindMapd();
     _40E400_set_palette(&v8[14].items->palette);
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)14, 0, -10);
     cplc_select(14);
     cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     script_4084A0_animation(a1);
     script_terminate(a1);
 }
@@ -254,7 +254,7 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
 
     a1->sprite->y = 390 * 256;
     a1->sprite->z_index = 12;
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     v1 = a1->sprite;
     v2 = sprite_create(MOBD_79, 0, v1);
     v1->parent = v2;
@@ -280,13 +280,13 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
     script_408500_anim(a1);
     stru29_list_realloc(a1);
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_yield_num_repeats(a1, 3);
+    script_sleep(a1, 3);
     v8 = LVL_FindMapd();
     _40E400_set_palette(&v8[15].items->palette);
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)15, 0, -10);
     cplc_select(15);
     cplc_406320();
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     script_4084A0_animation(a1);
     script_terminate(a1);
 }
@@ -299,7 +299,7 @@ void script_mobd79_evt1__main_menu_quit(Script *a1)
     Sprite *v3; // edi@3
     Sprite *v4; // esi@3
 
-    script_yield_num_repeats(a1, 1);
+    script_sleep(a1, 1);
     a1->sprite->y = 420 * 256;
     a1->sprite->z_index = 13;
     v1 = a1->sprite;
@@ -360,19 +360,19 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
     if (dword_47A184)
     {
         dword_47A184 = 0;
-        script_yield_num_repeats(v1, 10);
+        script_sleep(v1, 10);
         netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
         netz_47C6C0_mapd_idx = 12;
         script_408500_anim(v1);
         stru29_list_realloc(a1);
         bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-        script_yield_num_repeats(v1, 3);
+        script_sleep(v1, 3);
         v5 = LVL_FindMapd();
         _40E400_set_palette(&v5[12].items->palette);
         _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)12, 0, -10);
         cplc_select(12);
         cplc_406320();
-        script_yield_num_repeats(v1, 1);
+        script_sleep(v1, 1);
         script_4084A0_animation(v1);
         if (netz_47C6BC_mapd_idx)
             script_terminate(v1);
@@ -389,13 +389,13 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
             stru29_list_remove_all(v1);
             stru29_list_alloc();
             bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-            script_yield_num_repeats(v1, 3);
+            script_sleep(v1, 3);
             v6 = LVL_FindMapd();
             _40E400_set_palette(&v6[12].items->palette);
             _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)12, 0, -10);
             cplc_select(12);
             cplc_406320();
-            script_yield_num_repeats(v1, 1);
+            script_sleep(v1, 1);
             script_4084A0_animation(v1);
             if (netz_47C6BC_mapd_idx)
                 script_terminate(v1);

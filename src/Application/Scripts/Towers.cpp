@@ -109,7 +109,7 @@ void entity_mode_tower_on_death(Entity *a1)
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v5 = v1->script;
     v1->mode = entity_mode_tower_dead;
-    script_yield_num_repeats(v5, 60);
+    script_sleep(v5, 60);
 }
 
 //----- (00447580) --------------------------------------------------------
@@ -521,9 +521,9 @@ void EntityTowerAttachment_handler_447C40(EntityTurret *a1)
     {
         v4 = v1->sprite_task;
         v1->handler = EntityTowerAttachment_handler_447CA0;
-        script_yield_num_repeats(v4, 1);
+        script_sleep(v4, 1);
     }
-    script_yield_num_repeats(v1->sprite_task, 90);
+    script_sleep(v1->sprite_task, 90);
 }
 
 //----- (00447CA0) --------------------------------------------------------
@@ -891,7 +891,7 @@ void EntityTowerAttachment_handler_4482D0_missile_battery(EntityTurret *a1)
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
     v2 = v1->sprite_task;
     v1->handler = EntityTowerAttachment_handler_448290;
-    script_yield_num_repeats(v2, 15);
+    script_sleep(v2, 15);
 }
 
 //----- (00448320) --------------------------------------------------------

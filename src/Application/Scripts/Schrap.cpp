@@ -55,7 +55,7 @@ void script_438B80_on_death_infantry_gore(Script *task)
     v1->z_speed_factor_2 = -10;
     v1->z_speed = (v3 & 0x7F) + 336;
     while (v1->z_index >= 0)
-        script_yield_num_repeats(task, 1);
+        script_sleep(task, 1);
     if (_47C350_num_explosions_min0_max30 > 0)
         --_47C350_num_explosions_min0_max30;
     sprite_list_remove(v1);
@@ -92,7 +92,7 @@ void script_438C20_on_death_explosion(Script *a1)
         v1->_60_mobd_anim_speed *= (((unsigned __int64)v5 >> 32) ^ abs(v5) & 1) - ((unsigned __int64)v5 >> 32) + 1;
     }
     while (v1->z_index >= 0)
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
     v1->z_index = 1;
     v1->x_speed = 0;
     v1->y_speed = 0;
@@ -207,7 +207,7 @@ void script_438F50_explosions(Script *a1)
     v1->z_index = 0;
     v1->y = ((v4 - 128) << 8) + v5;
     v6 = kknd_rand_debug("k/Scripts/Schrap.cpp", 303);
-    script_yield_num_repeats(a1, v2 + (v6 & 0x3F));
+    script_sleep(a1, v2 + (v6 & 0x3F));
     sprite_load_mobd(v1, dword_46BC98[v3]);
     _4389A0_prolly_create_map_damage_decal(v1->x, v1->y);
     script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);

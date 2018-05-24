@@ -90,7 +90,7 @@ void EventHandler_Aircraft(Script *receiver, Script *sender, enum SCRIPT_EVENT e
                     v4->hitpoints = v6;
                     if (v6 <= 0)
                     {
-                        script_yield_num_repeats(v4->script, 1);
+                        script_sleep(v4->script, 1);
                         v4->hitpoints = 0;
                         v4->mode = entity_mode_401660_aircraft;
                         v4->destroyed = 1;
@@ -188,7 +188,7 @@ void entity_mode_401480_aircraft(Entity *a1)
         sprite_40D8B0_dmg(v2, 64);
         v4 = v1->script;
         v1->mode = entity_mode_401600_aircraft_stru31;
-        script_yield_num_repeats(v4, 20);
+        script_sleep(v4, 20);
     }
     else
     {
@@ -198,7 +198,7 @@ void entity_mode_401480_aircraft(Entity *a1)
             v3->z_index = v1->sprite->z_index + 256;
             v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448510_aircraft;
         }
-        script_yield_num_repeats(v1->script, 20);
+        script_sleep(v1->script, 20);
     }
 }
 
@@ -240,7 +240,7 @@ void entity_401530_aircraft(Entity *a1, int a2)
     {
         v7 = v2->script;
         v2->mode = entity_mode_401600_aircraft_stru31;
-        script_yield_num_repeats(v7, 60);
+        script_sleep(v7, 60);
     }
 }
 
@@ -353,7 +353,7 @@ void entity_mode_4016B0_aircraft(Entity *a1)
 //----- (004017E0) --------------------------------------------------------
 void entity_yield_40_repeats(Entity *a1)
 {
-    script_yield_num_repeats(a1->script, 40);
+    script_sleep(a1->script, 40);
 }
 
 //----- (00401800) --------------------------------------------------------
@@ -400,13 +400,13 @@ void entity_mode_401800_aircraft(Entity *a1)
             }
             else
             {
-                script_yield_num_repeats(v1->script, 40);
+                script_sleep(v1->script, 40);
             }
         }
         else
         {
             if (v10 == -2)
-                script_yield_num_repeats(v1->script, 40);
+                script_sleep(v1->script, 40);
             if (v1->_128_spawn_param == (void *)-1)
                 v1->sprite_x = (render_call_draw_handler_mode1(&_47A010_mapd_item_being_drawn[0]->draw_job->job_details) + 32) << 8;
             else

@@ -190,7 +190,7 @@ void entity_move(Entity *a1, _47CAF0_task_attachment1_move_task *a2)
                 {
                     a1->stru224.field_54 = 0;
                     a1->stru224.field_50 = 0;
-                    script_yield_num_repeats(a1->script, 1);
+                    script_sleep(a1->script, 1);
 
                     a1->_DC_order = ENTITY_ORDER_MOVE;
                     a1->_E4_prev_attack_target = a1->_E0_current_attack_target;
@@ -257,7 +257,7 @@ void entity_attack(Entity *a1, _47CAF0_task_attachment1_attack_task *param)
             }
             v3->stru224.field_54 = 0;
             v3->stru224.field_50 = 0;
-            script_yield_num_repeats(v3->script, 1);
+            script_sleep(v3->script, 1);
             v3->_DC_order = ENTITY_ORDER_ATTACK;
             v3->_E0_current_attack_target = param->target;
             v3->_E0_current_attack_target_entity_id = param->target->entity_id;

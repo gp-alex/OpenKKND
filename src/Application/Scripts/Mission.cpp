@@ -55,9 +55,9 @@ void script_424BF0_mobd_20_handler(Script *a1)
     _47A378_stru48_array[v1]._8_sprite_cplc = v3;
     if (v2 >= 6)
     {
-        script_yield_num_repeats(a1, 1);
+        script_sleep(a1, 1);
         for (i = script_47A3CC; !script_47A3CC; i = script_47A3CC)
-            script_yield_num_repeats(a1, 1);
+            script_sleep(a1, 1);
         script_trigger_event(0, EVT_MSG_1514, 0, i);
     }
     sprite_list_remove(a1->sprite);
@@ -121,10 +121,10 @@ void script_424CE0_mission_outcome_modal(Script *a1)
             do
             {
                 sound_play(SOUND_MISSION_OUTCOME_LETTER_APPEARING, 0, _4690A8_unit_sounds_volume, 16, 0);
-                script_yield_num_repeats(v1, 8);
+                script_sleep(v1, 8);
                 --v7;
             } while (v7);
-            script_yield_num_repeats(v1, 30);
+            script_sleep(v1, 30);
             sprite_load_mobd(v3, v6);
             v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
             v3->x = (int)a1;
@@ -132,7 +132,7 @@ void script_424CE0_mission_outcome_modal(Script *a1)
             v3->z_index = 999;
             script_yield(v1, SCRIPT_FLAGS_20_10000000, 0);
             sound_play(SOUND_MISSION_OUTCOME_LETTER_APPEARING, 0, _4690A8_unit_sounds_volume, 16, 0);
-            script_yield_num_repeats(v1, 200);
+            script_sleep(v1, 200);
             script_408500_anim(v1);
             if (single_player_game)
             {
@@ -170,7 +170,7 @@ void script_424CE0_mission_outcome_modal(Script *a1)
                 *(_DWORD *)&netz_47A740[2].str_0[0] = 1;
             }
             while (1)
-                script_yield_num_repeats(v1, 5000);
+                script_sleep(v1, 5000);
         }
     }
     v6 = 60;
@@ -526,7 +526,7 @@ void script_4252C0(Script *a1, void *param)
     a1->field_1C = 1;
     is_coroutine_list_initialization_failed = 1;
     while (sub_408400())
-        script_yield_num_repeats(v2, 1);
+        script_sleep(v2, 1);
     v3 = sprite_create(MOBD_MISSION_OUTCOME_MODAL, 0, 0);
     v4 = v3;
     if (v3)
@@ -592,7 +592,7 @@ void script_425400(Script *a1)
         script_425F50_stru48_stru51_tech_bunkers(a1);
         while (1)
         {
-            script_yield_num_repeats(a1, 30);
+            script_sleep(a1, 30);
             v2 = sub_424EC0();
             if (!(v2 & 2))
                 break;
@@ -611,7 +611,7 @@ void script_425400(Script *a1)
         script_425F50_stru48_stru51_tech_bunkers(a1);
         while (1)
         {
-            script_yield_num_repeats(a1, 30);
+            script_sleep(a1, 30);
             v13 = sub_4251B0();
             if (!(v13 & 2))
                 goto LABEL_52;
@@ -629,7 +629,7 @@ void script_425400(Script *a1)
     {
         do
         {
-            while (script_yield_num_repeats(a1, 30) != 0x80000000)
+            while (script_sleep(a1, 30) != 0x80000000)
             {
                 v3 = 0;
                 for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
@@ -697,7 +697,7 @@ void script_425400(Script *a1)
     }
 LABEL_55:
     script_47A3CC = 0;
-    script_yield_num_repeats(v1, 300);
+    script_sleep(v1, 300);
     script_terminate(v1);
 }
 
@@ -951,7 +951,7 @@ MISSION_RESULT script_425BE0_check_special_victory_conditions_surv04(Script *a1)
     do
     {
         do
-            script_yield_num_repeats(a1, 30);
+            script_sleep(a1, 30);
         while (!entity_scout);
 
         entity_scout->sprite->field_88_unused = 1;
@@ -972,7 +972,7 @@ MISSION_RESULT script_425BE0_check_special_victory_conditions_surv06(Script *a1)
         while (1)
         {
             v6 = 0;
-            script_yield_num_repeats(a1, 30);
+            script_sleep(a1, 30);
             if (entityRepo->CountAll() <= 0)
                 break;
 
@@ -1004,7 +1004,7 @@ MISSION_RESULT script_425BE0_check_special_victory_conditions_surv06(Script *a1)
     do
     {
         v9 = 1;
-        script_yield_num_repeats(a1, 30);
+        script_sleep(a1, 30);
 
         if (entityRepo->CountAll() > 0)
         {
@@ -1032,7 +1032,7 @@ MISSION_RESULT script_425BE0_check_special_victory_conditions_surv06(Script *a1)
 MISSION_RESULT script_425BE0_check_special_victory_conditions_mute04(Script *a1) {
     while (true) {
         do
-            script_yield_num_repeats(a1, 30);
+            script_sleep(a1, 30);
         while (!entity_scout);
 
         int num_mute_tankers_alive = 0;
@@ -1064,7 +1064,7 @@ MISSION_RESULT script_425BE0_check_special_victory_conditions_mute04(Script *a1)
 
 MISSION_RESULT script_425BE0_check_special_victory_conditions_surv18(Script *a1) {
     while (true) {
-        script_yield_num_repeats(a1, 30);
+        script_sleep(a1, 30);
 
         auto presidente = entityRepo->FindSingle(
             [&](Entity *e) {
@@ -1251,7 +1251,7 @@ void script_425F50_stru48_stru51_tech_bunkers(Script *a1)
     do
     {
         v1 = 0;
-        script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
+        script_wait_event(a1);
         for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
         {
             if (i->event == EVT_MSG_1514)
@@ -1653,7 +1653,7 @@ void script_426680_cursor_mobd(Script *a1)
     v1->y = render_height << 7;
     v1->pstru7 = &_479D48_stru7;
     sprite_load_mobd(v1, current_level_idx != LEVEL_MUTE_04_RAID_THE_FORT ? CURSOR_MOBD_OFFSET_MISSION_ARROW_S_BLINK : CURSOR_MOBD_OFFSET_MISSION_ARROW_SW_BLINK);
-    script_yield_num_repeats(a1, 600);
+    script_sleep(a1, 600);
     sprite_list_remove(v1);
     script_terminate(a1);
 }

@@ -46,7 +46,7 @@ void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum
                 {
                     v6 = (Script *)*((_DWORD *)v5 + 3);
                     *((_DWORD *)v5 + 36) = 0;
-                    script_yield_num_repeats(v6, 1);
+                    script_sleep(v6, 1);
                     *((_DWORD *)v5 + 36) = 0;
                     *((_DWORD *)v5 + 16) = (_DWORD)entity_mode_building_default_on_death;
                     *((_DWORD *)v5 + 35) = 1;
@@ -177,7 +177,7 @@ void script_4032F0_building_grand_explosion(Script *a1)
 
     v1 = a1->sprite;
     v1->pstru7 = &_479D48_stru7;
-    script_yield_num_repeats(a1, 130);
+    script_sleep(a1, 130);
     sprite_408800_play_sound(v1, SOUND_3, _4690A8_unit_sounds_volume, 0);
     sprite_load_mobd(v1, SPRITE_EXPLOSION_MOBD_OFFSET_BIG);
     v2 = v1->y + 2048;
@@ -224,13 +224,13 @@ void script_403380_explosions(Script *a1)
         }
         v5 = kknd_rand_debug(__FILE__, __LINE__);
         v2 += v5 & 0x1F;
-        script_yield_num_repeats(a1, v5 & 0x1F);
+        script_sleep(a1, v5 & 0x1F);
         --v4;
     } while (v4);
     v6 = 120 - v2;
     if (120 - v2 < 0)
         v6 = 0;
-    script_yield_num_repeats(a1, v6);
+    script_sleep(a1, v6);
     if (v1)
         v1->z_index = a1->sprite->z_index + 1024;
     a1->sprite->field_88_unused = 1;
@@ -279,7 +279,7 @@ void entity_mode_4034B0(Entity *a1)
     entity_40DD00_boxd(a1);
     v2 = v1->script;
     v1->mode = entity_mode_403650_building;
-    script_yield_num_repeats(v2, 1);
+    script_sleep(v2, 1);
 }
 
 //----- (00403540) --------------------------------------------------------
@@ -297,7 +297,7 @@ void entity_mode_403540(Entity *a1)
         script_trigger_event_group(v1->script, EVT_MSG_1521_entity_created, v1, SCRIPT_TYPE_39030);
         v1->mode = v1->mode_arrive;
     }
-    script_yield_num_repeats(v1->script, 1);
+    script_sleep(v1->script, 1);
 }
 
 //----- (004035C0) --------------------------------------------------------
@@ -315,7 +315,7 @@ void entity_mode_4035C0_building(Entity *a1)
     entity_40DD00_boxd(a1);
     v2 = v1->script;
     v1->mode = entity_mode_403540;
-    script_yield_num_repeats(v2, 1);
+    script_sleep(v2, 1);
 }
 
 //----- (00403650) --------------------------------------------------------
@@ -347,7 +347,7 @@ void entity_mode_403650_building(Entity *a1)
         v1->_12C_prison_bunker_spawn_type = 0;
     else
         v1->_12C_prison_bunker_spawn_type = v4 - 1;
-    script_yield_num_repeats(v1->script, 1);
+    script_sleep(v1->script, 1);
 }
 
 //----- (00403720) --------------------------------------------------------
@@ -434,7 +434,7 @@ void entity_mode_building_default_on_death(Entity *a1)
     entity_438D90_on_death_explosion(v1);
     v9 = v1->script;
     v1->mode = entity_mode_403720_on_prison_death__or__prolly_any_generic_building;
-    script_yield_num_repeats(v9, 165);
+    script_sleep(v9, 165);
 }
 
 //----- (004038B0) --------------------------------------------------------
