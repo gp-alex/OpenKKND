@@ -109,7 +109,7 @@ void entity_mode_tower_on_death(Entity *a1)
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v5 = v1->script;
     v1->mode = entity_mode_tower_dead;
-    script_445370_yield_to_main_thread(v5, 0x80000000, 60);
+    script_yield_num_repeats(v5, 60);
 }
 
 //----- (00447580) --------------------------------------------------------
@@ -125,7 +125,7 @@ void entity_mode_tower_dead(Entity *a1)
     {
         v2->turret_sprite->param = 0;
         sprite_list_remove(a1->turret->turret_sprite);
-        script_yield(v1->turret->sprite_task);
+        script_terminate(v1->turret->sprite_task);
         v1->turret = 0;
     }
     if (v1->player_side == player_side && num_players_towers > 0)
@@ -134,7 +134,7 @@ void entity_mode_tower_dead(Entity *a1)
     sprite_list_remove(v1->sprite);
     v3 = v1->script;
     v1->sprite = 0;
-    script_yield(v3);
+    script_terminate(v3);
     entityRepo->Delete(v1);
 }
 // 47DCD0: using guessed type int num_players_towers;
@@ -521,9 +521,9 @@ void EntityTowerAttachment_handler_447C40(EntityTurret *a1)
     {
         v4 = v1->sprite_task;
         v1->handler = EntityTowerAttachment_handler_447CA0;
-        script_445370_yield_to_main_thread(v4, 0x80000000, 1);
+        script_yield_num_repeats(v4, 1);
     }
-    script_445370_yield_to_main_thread(v1->sprite_task, 0x80000000, 90);
+    script_yield_num_repeats(v1->sprite_task, 90);
 }
 
 //----- (00447CA0) --------------------------------------------------------
@@ -661,7 +661,7 @@ void EntityTowerAttachment_handler_447E20(EntityTurret *a1)
                         v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
                         _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
                 v1->handler = EntityTowerAttachment_handler_447FA0;
-                v1->sprite_task->field_24 &= 0xEFFFFFFF;
+                v1->sprite_task->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
             }
         }
         else
@@ -689,7 +689,7 @@ void EntityTowerAttachment_handler_447F50(EntityTurret *a1)
             a1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
             _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
     v1->handler = EntityTowerAttachment_handler_447FA0;
-    v1->sprite_task->field_24 &= 0xEFFFFFFF;
+    v1->sprite_task->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
 }
 
 //----- (00447FA0) --------------------------------------------------------
@@ -850,7 +850,7 @@ void EntityTowerAttachment_handler_448230(EntityTurret *a1)
         a1->turret_sprite,
         a1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
         _47D3C4_entity_mobd_lookup_ids[129]);
-    script_445370_yield_to_main_thread(v1->sprite_task, 0x10000000, 0);
+    script_yield(v1->sprite_task, SCRIPT_FLAGS_20_10000000, 0);
     v2 = v1->_C_entity;
     if (v2)
         v3 = v2->entity_id == v1->_C_entity_idx;
@@ -891,7 +891,7 @@ void EntityTowerAttachment_handler_4482D0_missile_battery(EntityTurret *a1)
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
     v2 = v1->sprite_task;
     v1->handler = EntityTowerAttachment_handler_448290;
-    script_445370_yield_to_main_thread(v2, 0x80000000, 15);
+    script_yield_num_repeats(v2, 15);
 }
 
 //----- (00448320) --------------------------------------------------------

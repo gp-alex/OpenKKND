@@ -41,18 +41,16 @@ bool script_trigger_event(Script *sender, enum SCRIPT_EVENT event, void *param, 
 {
     ScriptEvent *result; // eax@1
     void(*event_handler)(Script *, Script *, enum SCRIPT_EVENT, void *); // edi@2
-    int v6; // ecx@6
-    int v7; // edx@6
 
-    result = script_event_list_free_pool;
     if (receiver->routine_type == SCRIPT_FUNCTION && (event_handler = receiver->event_handler) != 0)
     {
         event_handler(receiver, sender, event, param);
     }
     else
     {
+        result = script_event_list_free_pool;
         if (!script_event_list_free_pool)
-            return (BOOL)result;
+            return false;
         script_event_list_free_pool = script_event_list_free_pool->next;
         result->next = 0;
         result->sender = 0;
@@ -64,10 +62,8 @@ bool script_trigger_event(Script *sender, enum SCRIPT_EVENT event, void *param, 
         result->next = receiver->event_list;
         receiver->event_list = result;
     }
-    v6 = receiver->field_24;
-    v7 = receiver->flags_20 | 0x40000000;
-    receiver->flags_20 = v7;
-    receiver->field_24 = v7 | v6;
+    receiver->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
+    receiver->flags_24 |= receiver->flags_20;
     return true;
 }
 
@@ -75,16 +71,10 @@ bool script_trigger_event(Script *sender, enum SCRIPT_EVENT event, void *param, 
 bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *param, enum SCRIPT_TYPE receiver_type)
 {
     Script *self; // esi@1
-    enum SCRIPT_EVENT v5; // edi@1
-    Script *tAsk; // ebx@1
     ScriptEvent *v7; // eax@3
-    int v8; // edx@8
     ScriptEvent *v9; // eax@12
-    int v10; // edx@17
 
     self = script_execute_list;
-    v5 = event;
-    tAsk = sender;
     if (receiver_type == SCRIPT_TYPE_ANY)
     {
         if ((Script **)script_execute_list != &script_execute_list)
@@ -94,7 +84,7 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
                 v7 = script_event_list_free_pool;
                 if (self->routine_type == SCRIPT_FUNCTION && self->event_handler)
                 {
-                    self->event_handler(self, tAsk, v5, param);
+                    self->event_handler(self, sender, event, param);
                 }
                 else
                 {
@@ -105,15 +95,14 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
                     v7->sender = 0;
                     v7->event = (SCRIPT_EVENT)0;
                     v7->param = 0;
-                    v7->sender = tAsk;
+                    v7->sender = sender;
                     v7->param = param;
-                    v7->event = v5;
+                    v7->event = event;
                     v7->next = self->event_list;
                     self->event_list = v7;
                 }
-                v8 = self->flags_20 | 0x40000000;
-                self->flags_20 = v8;
-                self->field_24 |= v8;
+                self->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
+                self->flags_24 |= self->flags_20;
                 self = self->next;
             } while ((Script **)self != &script_execute_list);
         }
@@ -124,13 +113,13 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
         {
             if (self->script_type == receiver_type)
             {
-                v9 = script_event_list_free_pool;
                 if (self->routine_type == SCRIPT_FUNCTION && self->event_handler)
                 {
-                    self->event_handler(self, tAsk, v5, param);
+                    self->event_handler(self, sender, event, param);
                 }
                 else
                 {
+                    v9 = script_event_list_free_pool;
                     if (!script_event_list_free_pool)
                         return 0;
                     script_event_list_free_pool = script_event_list_free_pool->next;
@@ -138,15 +127,14 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
                     v9->sender = 0;
                     v9->event = (SCRIPT_EVENT)0;
                     v9->param = 0;
-                    v9->sender = tAsk;
+                    v9->sender = sender;
                     v9->param = param;
-                    v9->event = v5;
+                    v9->event = event;
                     v9->next = self->event_list;
                     self->event_list = v9;
                 }
-                v10 = self->flags_20 | 0x40000000;
-                self->flags_20 = v10;
-                self->field_24 |= v10;
+                self->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
+                self->flags_24 |= self->flags_20;
             }
             self = self->next;
         } while ((Script **)self != &script_execute_list);

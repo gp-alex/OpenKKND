@@ -2957,7 +2957,7 @@ void script_449820_netz(Script *a1)
                     v34 = 1;
                     v31 = a1;
                 }
-                script_445370_yield_to_main_thread(v31, 0x80000000, v34);
+                script_yield_num_repeats(v31, v34);
                 if (dword_47CB1C != 1)
                     break;
                 dword_47CB14 = netz_468B50_available_units_denom - 1;
@@ -3038,7 +3038,7 @@ void script_449820_netz(Script *a1)
                     v35 = 1;
                     v32 = a1;
                 }
-                script_445370_yield_to_main_thread(v32, 0x80000000, v35);
+                script_yield_num_repeats(v32, v35);
                 v28 = (stru209 *)dword_47CB1C;
                 if (dword_47CB1C != 1)
                     goto LABEL_57;
@@ -3080,7 +3080,7 @@ LABEL_57:
     }
     if (netz_468B50_available_units_denom <= 2)
         *(_DWORD *)&netz_47A740[2].str_0[0] = 1;
-    script_yield(a1);
+    script_terminate(a1);
 }
 
 //----- (00449E00) --------------------------------------------------------

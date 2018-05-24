@@ -71,9 +71,28 @@ struct ScriptLocalObject
     char data;
 };
 
-#define SCRIPT_FLAGS_20_X_SPEED_LIMIT 0x8000000
-#define SCRIPT_FLAGS_20_Y_SPEED_LIMIT 0x4000000
-#define SCRIPT_FLAGS_20_Z_SPEED_LIMIT 0x2000000
+#define SCRIPT_FLAGS_20_1               0x00000001 // oil related
+#define SCRIPT_FLAGS_20_2               0x00000002
+#define SCRIPT_FLAGS_20_20000           0x00020000
+#define SCRIPT_FLAGS_20_40000           0x00040000
+#define SCRIPT_FLAGS_20_80000           0x00080000
+#define SCRIPT_FLAGS_20_100000          0x00100000
+#define SCRIPT_FLAGS_20_200000          0x00200000
+#define SCRIPT_FLAGS_20_400000          0x00400000
+#define SCRIPT_FLAGS_20_800000          0x00800000
+#define SCRIPT_FLAGS_20_1000000         0x01000000
+#define SCRIPT_FLAGS_20_Z_SPEED_LIMIT   0x02000000
+#define SCRIPT_FLAGS_20_Y_SPEED_LIMIT   0x04000000
+#define SCRIPT_FLAGS_20_X_SPEED_LIMIT   0x08000000
+#define SCRIPT_FLAGS_20_10000000        0x10000000  // turret-related
+#define SCRIPT_FLAGS_20_TERMINATE       0x20000000  // yield by 00445470 script_terminate 
+#define SCRIPT_FLAGS_20_EVENT_TRIGGER   0x40000000  // when script gets triggered by
+                                                    // script_trigger_event / script_trigger_event_group
+                                                    // or yielded via script_yield
+                                                    // with 0x40000000 flag
+#define SCRIPT_FLAGS_20_REPEATS_TRIGGER 0x80000000  // when script gets triggered by exhausting _14_num_repeats
+#define SCRIPT_FLAGS_20_ANY_TRIGGER     (SCRIPT_FLAGS_20_EVENT_TRIGGER | SCRIPT_FLAGS_20_REPEATS_TRIGGER)
+
 /* 72 */
 struct Script
 {
@@ -82,11 +101,12 @@ struct Script
     ScriptLocalObject *locals_list;
     enum SCRIPT_TYPE script_type;
     int(*mode_turret)(int);
-    int field_14;
+    int _14_num_repeats; // decreases with each execution until 0, then SCRIPT_FLAGS_20_REPEATS_TRIGGER
     SCRIPT_ROUTINE_TYPE routine_type;
-    int field_1C;
-    int flags_20; // C00000000 - when mouse hovered
-    int field_24;
+    int field_1C; // & 1 - speial case when coroutine init failed (depricated)
+    int flags_20; // C0000000 - when mouse hovered (SCRIPT_FLAGS_20_EVENT_TRIGGER | SCRIPT_FLAGS_20_REPEATS_TRIGGER)
+                  // 20000000 - terminate script
+    int flags_24;
     int field_28;
     int field_2C;
     ScriptEvent *event_list;
@@ -109,10 +129,12 @@ Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *),
 bool script_list_alloc(int coroutine_stack_size = 0);
 Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *));
 void script_deinit(Script *a1);
-int script_445370_yield_to_main_thread(Script *a1, int flags, int a3);
+int script_yield(Script *a1, int flags, int a3);
+int script_yield_num_repeats(Script *a1, int repeats);
+int script_yield_any_trigger(Script *a1, int repeats);
 void *script_create_local_object(Script *a1, int size);
 void script_free_local_object(Script *a1, void *data); // idb
-void script_yield(Script *a1);
+void script_terminate(Script *a1);
 void script_list_update();
 void script_list_free();
 

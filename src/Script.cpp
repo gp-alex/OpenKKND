@@ -612,7 +612,7 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(entity_401670_aircraft),
     MAKE_HANDLER_PTR(entity_401680),
     MAKE_HANDLER_PTR(entity_mode_4016B0_aircraft),
-    MAKE_HANDLER_PTR(entity_4017E0),
+    MAKE_HANDLER_PTR(entity_yield_40_repeats),
     MAKE_HANDLER_PTR(entity_mode_401800_aircraft),
     MAKE_HANDLER_PTR(UNIT_DmgHandler_Bomber),
     MAKE_HANDLER_PTR(Task_context_1_BomberDmgHandler_401D10),
@@ -1107,34 +1107,41 @@ void script_deinit(Script *a1)
     v1->handler = 0;
 }
 
+int script_yield_num_repeats(Script *a1, int repeats) {
+    return script_yield(a1, SCRIPT_FLAGS_20_REPEATS_TRIGGER, repeats);
+}
+
+int script_yield_any_trigger(Script *a1, int repeats) {
+    return script_yield(a1, SCRIPT_FLAGS_20_ANY_TRIGGER, repeats);
+}
+
 //----- (00445370) --------------------------------------------------------
-int script_445370_yield_to_main_thread(Script *a1, int flags, int a3)
+int script_yield(Script *a1, int flags, int param)
 {
     int v5; // eax@8
     unsigned int v6; // eax@8
 
-    if (flags & 0x40000000 && a1->event_list)
+    if (flags & SCRIPT_FLAGS_20_EVENT_TRIGGER && a1->event_list)
     {
-        int v4 = a1->flags_20 | 0x40000000;
-        a1->flags_20 = v4;
-        a1->field_24 |= v4;
+        a1->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
+        a1->flags_24 |= a1->flags_20;
     }
-    if (flags & 0x80000000)
+    if (flags & SCRIPT_FLAGS_20_REPEATS_TRIGGER)
     {
-        if (a3)
-            a1->field_14 = a3;
-        if (!a1->field_14)
+        if (param)
+            a1->_14_num_repeats = param;
+        if (a1->_14_num_repeats == 0)
         {
             a1->field_28 = 0;
-            a1->field_24 |= 0x80000000;
-            int v6 = a1->flags_20 | 0x80000000;
+            a1->flags_24 |= SCRIPT_FLAGS_20_REPEATS_TRIGGER;
+            int v6 = a1->flags_20 | SCRIPT_FLAGS_20_REPEATS_TRIGGER;
             a1->flags_20 = 0;
             return flags & v6;
         }
     }
-    else if (a3)
+    else if (param)
     {
-        a1->field_2C |= a3;
+        a1->field_2C |= param;
     }
 
     a1->flags_20 = 0;
@@ -1190,93 +1197,91 @@ void script_free_local_object(Script *a1, void *data)
 }
 
 //----- (00445470) --------------------------------------------------------
-void script_yield(Script *a1)
+void script_terminate(Script *a1)
 {
-    int v2; // eax@1
-
-    v2 = a1->flags_20 | 0x20000000;
-    a1->flags_20 = v2;
-    a1->field_24 |= v2;
-    if (a1->routine_type == SCRIPT_COROUTINE)
+    a1->flags_20 |= SCRIPT_FLAGS_20_TERMINATE;
+    a1->flags_24 |= a1->flags_20;
+    if (a1->routine_type == SCRIPT_COROUTINE) {
         coroutine_list_head->resume();
+    }
+}
+
+Script *script_terminate_internal(Script *i) {
+    Script *v1;
+    ScriptLocalObject *v2; // eax@3
+    ScriptLocalObject *v3; // ebx@4
+
+    i = i->prev;
+    v1 = i->next;
+    v2 = i->next->locals_list;
+    if (v2)
+    {
+        do
+        {
+            v3 = v2->next;
+            free(v2);
+            v2 = v3;
+        } while (v3);
+    }
+    script_discard_all_events(v1);
+    v1->prev->next = v1->next;
+    v1->next->prev = v1->prev;
+    v1->next = script_list_free_pool;
+    script_list_free_pool = v1;
+    if (v1->routine_type == SCRIPT_COROUTINE)
+        coroutine_list_remove((Coroutine *)v1->handler);
+    v1->handler = 0;
+
+    return i;
+}
+
+//----- (00402A30) --------------------------------------------------------
+void script_execute_function(Script *self) {
+    self->handler(self);
+}
+
+void script_execute_coroutine(Script *self) {
+    auto coroutine = (Coroutine *)self->handler;
+    coroutine->resume();
 }
 
 //----- (004454A0) --------------------------------------------------------
 void script_list_update()
 {
     Script *i; // esi@1
-    Script *v1; // edi@3
-    ScriptLocalObject *v2; // eax@3
-    ScriptLocalObject *v3; // ebx@4
-    signed __int16 v4; // ax@9
-    int v5; // eax@12
-    int v6; // eax@13
-    int v7; // ecx@14
-    unsigned int v8; // eax@14
     int v9; // ecx@15
     int v10; // eax@16
 
     for (i = script_execute_list_first(); i != script_execute_list_end(); i = i->next)
     {
-        if (i->flags_20 & 0x20000000)
-        {
-            i = i->prev;
-            v1 = i->next;
-            v2 = i->next->locals_list;
-            if (v2)
-            {
-                do
-                {
-                    v3 = v2->next;
-                    free(v2);
-                    v2 = v3;
-                } while (v3);
-            }
-            script_discard_all_events(v1);
-            v1->prev->next = v1->next;
-            v1->next->prev = v1->prev;
-            v1->next = script_list_free_pool;
-            script_list_free_pool = v1;
-            if (v1->routine_type == SCRIPT_COROUTINE)
-                coroutine_list_remove((Coroutine *)v1->handler);
-            v1->handler = 0;
+        if (i->flags_20 & SCRIPT_FLAGS_20_TERMINATE) {
+            i = script_terminate_internal(i);
         }
-        else
-        {
-            if (is_coroutine_list_initialization_failed)
-                v4 = i->field_1C & 1;
-            else
-                v4 = 1;
-            if (v4)
+        else {
+            if (i->_14_num_repeats > 0)
             {
-                v5 = i->field_14;
-                if (v5)
+                i->_14_num_repeats -= 1;
+                if (i->_14_num_repeats == 0)
                 {
-                    v6 = v5 - 1;
-                    i->field_14 = v6;
-                    if (!v6)
-                    {
-                        v7 = i->field_24;
-                        v8 = i->flags_20 | 0x80000000;
-                        i->flags_20 = v8;
-                        i->field_24 = v8 | v7;
-                    }
+                    i->flags_20 |= SCRIPT_FLAGS_20_REPEATS_TRIGGER;
+                    i->flags_24 |= i->flags_20;
                 }
-                v9 = i->field_28;
-                if (!v9 || (v10 = i->flags_20, v9 & v10) || (int)i->field_2C & ~v10)
+            }
+            v10 = i->flags_20;
+            v9 = i->field_28;
+            if (!v9 || (v9 & v10) || (int)i->field_2C & ~v10)
+            {
+                switch (i->routine_type)
                 {
-                    switch (i->routine_type)
-                    {
-                    case SCRIPT_COROUTINE:
-                        ((Coroutine *)i->handler)->resume();
-                        break;
+                case SCRIPT_COROUTINE:
+                    script_execute_coroutine(i);
+                    break;
 
-                    case SCRIPT_FUNCTION:
-                        script_execute(i);
-                        break;
+                case SCRIPT_FUNCTION:
+                    script_execute_function(i);
+                    break;
 
-                    default: __debugbreak();
-                    }
+                default: __debugbreak();
                 }
             }
         }

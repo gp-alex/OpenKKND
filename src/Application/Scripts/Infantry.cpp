@@ -2206,11 +2206,11 @@ void entity_mode_415690(Entity *a1)
     }
     v6 = v1->script;
     v1->_134_param__unitstats_after_mobile_outpost_plant = 0;
-    script_445370_yield_to_main_thread(v6, 0x80000000, 6);
+    script_yield_num_repeats(v6, 6);
     v7 = v1->entity_id & 0x3F;
     if ((dword_47953C & 0x3F) <= v7 && ((dword_47953C + 6) & 0x3F) > v7 && (entity_414670(v1), entity_4135E0(v1)))
     {
-        script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+        script_yield_num_repeats(v1->script, 1);
     }
     else if (v1->script->script_type != SCRIPT_TANKER_CONVOY_HANDLER || v1->_DC_order != 7)
     {
@@ -2267,7 +2267,7 @@ void entity_mode_4157F0(Entity *a1)
     }
     v11 = v1->script;
     v1->mode = entity_mode_415540_infantry;
-    script_445370_yield_to_main_thread(v11, 0x80000000, 80);
+    script_yield_num_repeats(v11, 80);
 }
 
 //----- (004158B0) --------------------------------------------------------
@@ -3486,7 +3486,7 @@ void entity_mode_417360_infantry(Entity *a1)
                     v14 = v1->script;
                     v1->stru224.field_54 = 0;
                     v1->stru224.field_50 = 0;
-                    script_445370_yield_to_main_thread(v14, 0x80000000, 1);
+                    script_yield_num_repeats(v14, 1);
                     v15 = v1->sprite_height_3;
                     v1->sprite_x_2 = v1->sprite_width_3;
                     v1->_DC_order = ENTITY_ORDER_MOVE;
@@ -3503,7 +3503,7 @@ void entity_mode_417360_infantry(Entity *a1)
                     v11 = v1->script;
                     v1->stru224.field_54 = 0;
                     v1->stru224.field_50 = 0;
-                    script_445370_yield_to_main_thread(v11, 0x80000000, 1);
+                    script_yield_num_repeats(v11, 1);
                     v12 = v1->_2A8_entity;
                     v13 = v1->_2A8_entity_id;
                     v1->_DC_order = ENTITY_ORDER_ATTACK;
@@ -4031,7 +4031,7 @@ void entity_mode_attack_move_4_order_3_7_417E60(Entity *a1)
             v1->mode_return = entity_mode_417F50;
             entity_mode_416A70_oiltanker(v1);
         }
-        script_445370_yield_to_main_thread(v1->script, 0x80000000, v6);
+        script_yield_num_repeats(v1->script, v6);
     }
 }
 
@@ -4132,7 +4132,7 @@ void entity_mode_417FC0(Entity *a1)
     }
     if (v1->field_124 & 0x40)
         entity_40DF50_boxd_update_map_tile(v1, 0);
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 3);
+    script_yield_num_repeats(v1->script, 3);
 }
 
 //----- (00418120) --------------------------------------------------------
@@ -4193,7 +4193,7 @@ void entity_mode_4181B0(Entity *a1)
         v1->_128_spawn_param = v6 - 1;
         if (v6)
         {
-            script_445370_yield_to_main_thread(v1->script, 0x80000000, 3);
+            script_yield_num_repeats(v1->script, 3);
         }
         else
         {
@@ -4398,11 +4398,10 @@ void entity_mode_418590(Entity *a1)
         v9->field_90_building_damage = LOWORD_HEXRAYS(v6->damage_building)
             + (v6->damage_building * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
         script_trigger_event(v1->script, EVT_MSG_1497, v1, v1->entity_8->script);
-        script_445370_yield_to_main_thread(
+        script_yield_num_repeats(
             v1->script,
-            0x80000000,
-            v1->stats->reload_time
-            - (v1->stats->reload_time * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx + 4] >> 8));
+            v1->stats->reload_time - (v1->stats->reload_time * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx + 4] >> 8)
+        );
     }
     if (v1->_DC_order == 8)
     {
@@ -4522,7 +4521,7 @@ void script_4188F0(Script *a1)
         if (v9 >= v10)
             v1->hitpoints = v10;
         entity_410710_status_bar(v1);
-        script_445370_yield_to_main_thread(a1, 0x80000000, 1);
+        script_yield_num_repeats(a1, 1);
         if (++v2 >= 600)
             break;
     }
@@ -4537,7 +4536,7 @@ void script_4188F0(Script *a1)
             v1->sprite->parent = 0;
         }
     }
-    script_yield(a1);
+    script_terminate(a1);
 }
 
 //----- (00418A10) --------------------------------------------------------
@@ -4604,7 +4603,7 @@ void script_418A10(Script *a1)
         if (v10 >= v11)
             v1->hitpoints = v11;
         entity_410520_update_healthbar_color(v1);
-        script_445370_yield_to_main_thread(a1, 0x80000000, 1);
+        script_yield_num_repeats(a1, 1);
         if (++v6 >= 600)
             break;
     }
@@ -4618,7 +4617,7 @@ void script_418A10(Script *a1)
             *(_DWORD *)(v13 + 32) = 0;
         }
     }
-    script_yield(a1);
+    script_terminate(a1);
 }
 
 //----- (00418B30) --------------------------------------------------------
@@ -4654,7 +4653,7 @@ void entity_mode_418B30(Entity *a1)
         a1->entity_id = 0;
     LABEL_29:
         sprite_list_remove(v1->sprite);
-        script_yield(v1->script);
+        script_terminate(v1->script);
         entityRepo->Delete(v1);
         return;
     }
@@ -4770,7 +4769,7 @@ void entity_mode_418D20(Entity *a1)
         a1->entity_id = 0;
     }
     sprite_list_remove(v1->sprite);
-    script_yield(v1->script);
+    script_terminate(v1->script);
     entityRepo->Delete(v1);
 }
 
@@ -4814,7 +4813,7 @@ void entity_mode_418E90(Entity *a1)
             entity_mode_416A70_oiltanker(v1);
         }
     }
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+    script_yield_num_repeats(v1->script, 1);
 }
 
 //----- (00418F60) --------------------------------------------------------
@@ -4938,7 +4937,7 @@ LABEL_20:
         }
     }
 LABEL_27:
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 4 * v2);
+    script_yield_num_repeats(v1->script, 4 * v2);
 }
 
 //----- (00419180) --------------------------------------------------------
@@ -4975,7 +4974,7 @@ void entity_mode_419180(Entity *a1)
         entity_mode_416A70_oiltanker(a1);
         v1->script->event_handler = v1->event_handler;
     }
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+    script_yield_num_repeats(v1->script, 1);
 }
 
 //----- (00419230) --------------------------------------------------------
@@ -5005,7 +5004,7 @@ void entity_mode_419230(Entity *a1)
         *((_DWORD *)v3->state + 2) = 1;
         v1->event_handler = v1->script->event_handler;
     }
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+    script_yield_num_repeats(v1->script, 1);
 }
 
 //----- (004192F0) --------------------------------------------------------
@@ -5064,7 +5063,7 @@ void entity_mode_419390_oiltanker(Entity *a1)
         entity_40DF50_boxd_update_map_tile(v1, 0);
         if (!v4 || (v5 = *(_DWORD *)(v4 + 24)) != 0 && *(_DWORD *)(v5 + 304) == *(_DWORD *)(v4 + 28))
         {
-            script_445370_yield_to_main_thread(v1->script, 0x80000000, 30);
+            script_yield_num_repeats(v1->script, 30);
         }
         else
         {
@@ -5171,7 +5170,7 @@ void entity_419560_on_death(Entity *a1)
     v1 = a1;
     v2 = a1->script;
     a1->destroyed = 1;
-    v2->field_24 &= 0xEFFFFFFF;
+    v2->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
     script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
     v3 = v1->turret;
     if (v3)
@@ -5229,7 +5228,7 @@ void entity_419560_on_death(Entity *a1)
     entity_load_idle_mobd(v1);
 
 LABEL_15:
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 60);
+    script_yield_num_repeats(v1->script, 60);
 }
 
 //----- (00419720) --------------------------------------------------------
@@ -5240,7 +5239,7 @@ void entity_419720(Entity *a1)
     v1 = a1;
     entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->field_A4);
     sprite_list_remove(v1->sprite);
-    script_yield(v1->script);
+    script_terminate(v1->script);
     entityRepo->Delete(v1);
 }
 
@@ -5269,7 +5268,7 @@ void entity_mode_4197E0_infantry(Entity *a1)
     a1->sprite->y_speed = 0;
     v3 = a1->sprite;
     entity_load_move_mobd(a1, a1->current_mobd_lookup_idx + 64);
-    script_445370_yield_to_main_thread(v1->script, 0x10000000, 0);
+    script_yield(v1->script, SCRIPT_FLAGS_20_10000000, 0);
 }
 
 //----- (00419830) --------------------------------------------------------
@@ -5319,7 +5318,7 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
         case EVT_MSG_1526_infiltrate:                        // param -> Entity *
             if (param != v4->_E0_current_attack_target || v4->_DC_order != ENTITY_ORDER_3)
             {
-                script_445370_yield_to_main_thread(v4->script, 0x80000000, 1);
+                script_yield_num_repeats(v4->script, 1);
                 v4->_DC_order = ENTITY_ORDER_3;
                 v4->_E0_current_attack_target = (Entity *)param;
                 v4->_E0_current_attack_target_entity_id = *((_DWORD *)param + 76);// ->entity_id
@@ -5333,7 +5332,7 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
         case EVT_MSG_1527:
             if (v4->player_side == *(_DWORD *)param && (Entity *)*((_DWORD *)param + 1) != v4->_E8_entity)
             {
-                script_445370_yield_to_main_thread(v4->script, 0x80000000, 1);
+                script_yield_num_repeats(v4->script, 1);
                 v4->_DC_order = ENTITY_ORDER_5;
                 v5 = (Entity *)*((_DWORD *)param + 1);
                 v4->_E8_entity = v5;
@@ -5384,7 +5383,7 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
             }
             break;
         case EVT_MSG_1499:
-            script_445370_yield_to_main_thread(v4->script, 0x80000000, 1);
+            script_yield_num_repeats(v4->script, 1);
             v4->hitpoints = 0;
             v4->destroyed = 1;
             v4->mode = entity_419560_on_death;
@@ -5411,7 +5410,7 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
                 v4->_98_465610_accuracy_dmg_bonus_idx = 2;
             break;
         case EVT_MSG_1546_repair_at_station:
-            script_445370_yield_to_main_thread(v4->script, 0x80000000, 1);
+            script_yield_num_repeats(v4->script, 1);
             v4->_DC_order = ENTITY_ORDER_10;
             v4->_E0_current_attack_target = (Entity *)param;
             v13 = *((_DWORD *)param + 76);

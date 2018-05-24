@@ -54,7 +54,7 @@ void entity_mode_407300_prison(Entity *a1)
     entity_40DD00_boxd(a1);
     v2 = v1->script;
     v1->mode = (void(*)(Entity *))nullsub_1;
-    script_445370_yield_to_main_thread(v2, 0x80000000, 1);
+    script_yield_num_repeats(v2, 1);
 }
 
 //----- (00407390) --------------------------------------------------------
@@ -62,7 +62,7 @@ void entity_mode_407390_prison(Entity *a1)
 {
     entity_load_idle_mobd(a1);
     a1->mode = entity_mode_407300_prison;
-    script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
+    script_yield_num_repeats(a1->script, 1);
 }
 
 //----- (004073D0) --------------------------------------------------------
@@ -125,7 +125,7 @@ void entity_mode_prison_on_death(Entity *a1)
     v2 = v1->script;
     v1->_12C_prison_bunker_spawn_type = 10;
     v1->mode = entity_mode_prison_spawn_unit;
-    script_445370_yield_to_main_thread(v2, 0x80000000, 80);
+    script_yield_num_repeats(v2, 80);
 }
 
 //----- (004074E0) --------------------------------------------------------
@@ -139,7 +139,7 @@ void entity_mode_prison_spawn_unit_surv09(Entity *a1)
     spawn_unit(UNIT_STATS_SURV_GENERAL, a1->sprite->x, a1->sprite->y, player_side);
     v2 = v1->script;
     v1->mode = entity_mode_403720_on_prison_death__or__prolly_any_generic_building;
-    script_445370_yield_to_main_thread(v2, 0x80000000, 10);
+    script_yield_num_repeats(v2, 10);
 }
 
 //----- (00407530) --------------------------------------------------------
@@ -152,7 +152,7 @@ void entity_mode_prison_on_death_surv09(Entity *a1)
     entity_mode_building_default_on_death(a1);
     v2 = v1->script;
     v1->mode = entity_mode_prison_spawn_unit_surv09;
-    script_445370_yield_to_main_thread(v2, 0x80000000, 80);
+    script_yield_num_repeats(v2, 80);
 }
 
 //----- (00407560) --------------------------------------------------------
@@ -191,7 +191,7 @@ void entity_4075F0_techbunker(Entity *a1)
 
     v1 = a1;
     entity_load_move_mobd(a1);
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+    script_yield_num_repeats(v1->script, 1);
 }
 
 //----- (00407630) --------------------------------------------------------
@@ -295,12 +295,12 @@ LABEL_23:
     {
         v6 = v1->script;
         v1->_12C_prison_bunker_spawn_type = 5;
-        script_445370_yield_to_main_thread(v6, 0x80000000, 1);
+        script_yield_num_repeats(v6, 1);
         v1->mode = entity_mode_407630_bunker;
     }
     else
     {
-        script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+        script_yield_num_repeats(v1->script, 1);
         v1->mode = entity_4075F0_techbunker;
     }
 }
@@ -309,7 +309,7 @@ LABEL_23:
 void entity_mode_407870_techbubker(Entity *a1)
 {
     entity_load_attack_mobd(a1);
-    script_445370_yield_to_main_thread(a1->script, 0x10000000, 0);
+    script_yield(a1->script, SCRIPT_FLAGS_20_10000000, 0);
     a1->mode = entity_407690_techbunker_spawn;
 }
 
@@ -346,7 +346,7 @@ void entity_mode_407950_techbunker_spawn_generic(Entity *a1)
             v1->mode = entity_mode_407870_techbubker;
         }
     }
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+    script_yield_num_repeats(v1->script, 1);
 }
 
 //----- (004079F0) --------------------------------------------------------
@@ -383,7 +383,7 @@ void entity_mode_4079F0_techbunker_spawn10_surv18_lvl(Entity *a1)
             v1->mode = entity_mode_407870_techbubker;
         }
     }
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+    script_yield_num_repeats(v1->script, 1);
 }
 
 //----- (00407A90) --------------------------------------------------------
@@ -406,7 +406,7 @@ void entity_mode_407A90_techbunker(Entity *a1)
         v1->_134_param__unitstats_after_mobile_outpost_plant = kknd_rand_debug(__FILE__, __LINE__) % 25200 + 28800;
     else
         v1->_134_param__unitstats_after_mobile_outpost_plant = 5;
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+    script_yield_num_repeats(v1->script, 1);
 }
 
 //----- (00407B70) --------------------------------------------------------
@@ -414,7 +414,7 @@ void entity_mode_407B70_techbunker(Entity *a1)
 {
     entity_load_idle_mobd(a1);
     a1->mode = entity_mode_407A90_techbunker;
-    script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
+    script_yield_num_repeats(a1->script, 1);
 }
 
 //----- (00407BB0) --------------------------------------------------------
@@ -440,7 +440,7 @@ void UNIT_Handler_TechBunker(Script *a1)
             return;
         }
         sprite_list_remove(a1->sprite);
-        script_yield(a1);
+        script_terminate(a1);
     }
     (v1->mode)(v1);
 }
@@ -454,7 +454,7 @@ void entity_mode_407C20_on_death_tech_bunker(Entity *a1)
     sound_play(SOUND_23, 0, _4690A8_unit_sounds_volume, 16, 0);
     entity_40DDD0_boxd(v1);
     sprite_list_remove(v1->sprite);
-    script_yield(v1->script);
+    script_terminate(v1->script);
     entityRepo->Delete(v1);
 }
 
@@ -472,7 +472,7 @@ void entity_mode_407C60_on_death_tech_bunker(Entity *a1)
     sub_4083D0();
     v2 = v1->script;
     v1->destroyed = 1;
-    v2->field_24 &= 0xEFFFFFFF;
+    v2->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
     v3 = &v1->turret->sprite_task;
     if (v3)
         script_trigger_event(0, EVT_MSG_1500, 0, *v3);
@@ -487,7 +487,7 @@ void entity_mode_407C60_on_death_tech_bunker(Entity *a1)
     entity_438D90_on_death_explosion(v1);
     v5 = v1->script;
     v1->mode = entity_mode_407C20_on_death_tech_bunker;
-    script_445370_yield_to_main_thread(v5, 0x80000000, 185);
+    script_yield_num_repeats(v5, 185);
 }
 
 //----- (00407D10) --------------------------------------------------------
@@ -496,7 +496,7 @@ void entity_mode_407D10(Entity *a1)
     Entity *v1; // esi@1
 
     v1 = a1;
-    script_yield(a1->script);
+    script_terminate(a1->script);
     entityRepo->Delete(v1);
 }
 
@@ -510,14 +510,14 @@ void entity_mode_hut_on_death(Entity *a1)
     a1->destroyed = 1;
     entity_439120_add_explosion(a1);
     entity_438D90_on_death_explosion(a1);
-    script_445370_yield_to_main_thread(a1->script, 0xC0000000, 1);
+    script_yield_any_trigger(a1->script, 1);
 }
 
 //----- (00407DA0) --------------------------------------------------------
 void entity_mode_407DA0(Entity *a1)
 {
     entity_load_idle_mobd(a1);
-    script_445370_yield_to_main_thread(a1->script, 0xC0000000, 1);
+    script_yield_any_trigger(a1->script, 1);
 }
 
 //----- (00407DE0) --------------------------------------------------------
@@ -564,7 +564,7 @@ void entity_mode_407E70_hut(Entity *a1)
     entity_40DD00_boxd(a1);
     v2 = v1->script;
     v1->mode = entity_mode_407DA0;
-    script_445370_yield_to_main_thread(v2, 0x80000000, 1);
+    script_yield_num_repeats(v2, 1);
 }
 
 //----- (00407F00) --------------------------------------------------------
@@ -572,7 +572,7 @@ void entity_mode_407F00_hut(Entity *a1)
 {
     entity_load_idle_mobd(a1);
     a1->mode = entity_mode_407E70_hut;
-    script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
+    script_yield_num_repeats(a1->script, 1);
 }
 
 //----- (00407F40) --------------------------------------------------------

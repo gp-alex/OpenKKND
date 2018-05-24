@@ -1864,7 +1864,7 @@ LABEL_97:
         goto LABEL_221;
     }
 LABEL_272:
-    script_445370_yield_to_main_thread(a1, 2147483648, 60);
+    script_yield_num_repeats(a1, 60);
 }
 
 //----- (0040AB60) --------------------------------------------------------
@@ -2661,7 +2661,7 @@ bool stru24_40B490(stru24 *a1, UNIT_ID a2, int *out_x, int *out_y)
 void script_40B700_ai(Script *a1)
 {
     a1->handler = script_409770_ai;
-    script_445370_yield_to_main_thread(a1, 0x80000000, 60);
+    script_yield_num_repeats(a1, 60);
 }
 
 //----- (0040B720) --------------------------------------------------------

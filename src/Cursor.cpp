@@ -465,7 +465,7 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
                 _47A714._stru209.param2 = 3;
                 _428940_list_do_stuff(&_47A714._stru209);
 
-                script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
+                script_yield_any_trigger(v2->_14_task, 1);
                 v3->next->prev = v3->prev;
                 v3->prev->next = v3->next;
                 v3->next = stru13construct_list_free_pool;
@@ -485,7 +485,7 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
                 _47A714._stru209.param2 = 2;
                 _428940_list_do_stuff(&_47A714._stru209);
 
-                script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
+                script_yield_any_trigger(v2->_14_task, 1);
                 goto LABEL_26;
             }
         LABEL_26:
@@ -503,11 +503,11 @@ void cursor_process_user_actions(_428940_local *a1, int a2)
         _47A714._stru209.param2 = 1;
         _428940_list_do_stuff(&_47A714._stru209);
 
-        script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
+        script_yield_any_trigger(v2->_14_task, 1);
         goto LABEL_26;
     }
 LABEL_27:
-    script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
+    script_yield_any_trigger(v2->_14_task, 1);
     input_get_mouse_state(&_47A5E0_mouse_input);
     input_get_keyboard_state(&_47A700_input);
     v21 = is_coroutine_list_initialization_failed;
@@ -706,7 +706,7 @@ LABEL_82:
             v2->next = v2;
             v2->prev = v2;
         }
-        script_445370_yield_to_main_thread(v2->_14_task, 0xC0000000, 1);
+        script_yield_any_trigger(v2->_14_task, 1);
     }
     v2->_70_sprite->field_88_unused = 1;
     v39 = v2->_70_sprite;
@@ -2056,7 +2056,7 @@ void script_game_cursor_handler(Script *a1)
     v62.pstru2 = v3;
     if (!v3)
     {
-        script_yield(a1);
+        script_terminate(a1);
         v3 = v62.pstru2;
     }
     v62.ptr_10 = v3;

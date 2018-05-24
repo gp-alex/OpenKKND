@@ -98,7 +98,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
     else
         v1->z_speed_factor_2 = -512;
     v1->_60_mobd_anim_speed = (kknd_rand_debug(__FILE__, __LINE__) % 3 + 1) << 28;
-    script_445370_yield_to_main_thread(a1, 0x80000000, a3);
+    script_yield_num_repeats(a1, a3);
     v1->z_index = 1;
     v1->x_speed = 0;
     v1->y_speed = 0;
@@ -121,7 +121,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
         }
         sprite_40D8B0_dmg(v1, *(_DWORD *)(v10 + 32));
     }
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
 }
@@ -135,7 +135,7 @@ void script_435CF0_rocket_dmg_handler(Script *a1)
     v1 = a1->sprite;
     ++_47C04C_num_explosions_max20;
     sprite_load_mobd(v1, 412);
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
     --_47C04C_num_explosions_max20;
 }
@@ -271,7 +271,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
                     sprite_create_scripted(MOBD_EXPLOSIONS, v2, script_435CF0_rocket_dmg_handler, SCRIPT_COROUTINE, 0);
                 v33 = 12;
             }
-            script_445370_yield_to_main_thread(a1, 0x80000000, 1);
+            script_yield_num_repeats(a1, 1);
             --v25;
             --v33;
         } while (v25);
@@ -312,12 +312,10 @@ void UNIT_DmgHandler_Rocket(Script *a1)
             sprite_40D8B0_dmg(v2, *((_DWORD *)v34 + 8));
         }
     }
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v2);
     --_47C048_unit_bomberdmg;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
-// 47C04C: using guessed type int _47C04C_num_explosions_max20;
 
 //----- (00436140) --------------------------------------------------------
 void script_436140_flamethrower_dmg_handler(Script *a1)
@@ -351,7 +349,7 @@ void script_436140_flamethrower_dmg_handler(Script *a1)
         - *(_DWORD *)(v3 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v8 + 1]]
         - 8;
     v9 = math_42D64D_prolly_vec_length(v7, v6);
-    script_445370_yield_to_main_thread(a1, 0x80000002, v9 / *(_DWORD *)(v3 + 16));
+    script_yield_num_repeats(a1, v9 / *(_DWORD *)(v3 + 16));
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
 }
@@ -414,7 +412,7 @@ void UNIT_DmgHandler_Flamethrower(Script *a1)
         v8->field_90_building_damage = *(_WORD *)(v3 + 28)
             + (*(_DWORD *)(v3 + 28)
                 * _465610_damage_multipliers[v5->_98_465610_accuracy_dmg_bonus_idx] >> 8);
-        script_445370_yield_to_main_thread(a1, 0x80000000, 5);
+        script_yield_num_repeats(a1, 5);
         if (v4 >= 8)
             break;
         v2 = v12;
@@ -465,7 +463,7 @@ void script_4363C0_giant_bettle_dmg(Script *a1)
     if (v9 >= 0)
     {
         do
-            script_445370_yield_to_main_thread(v1, 0x80000000, 1);
+            script_yield_num_repeats(v1, 1);
         while (v3->z_index >= 0);
     }
     v3->x_speed = 0;
@@ -484,7 +482,7 @@ void script_4363C0_giant_bettle_dmg(Script *a1)
             v3->z_index = v10->z_index + 256;
     }
     sprite_40D8B0_dmg(v3, *(_DWORD *)(v11 + 32));
-    script_445370_yield_to_main_thread(v1, 0x10000000, 0);
+    script_yield(v1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v3);
     --_47C048_unit_bomberdmg;
 }
@@ -567,7 +565,7 @@ void UNIT_DmgHandler_Beetle(Script *a1)
         v7->x_speed = v26 + *(_DWORD *)(v2 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v23 + 1]];
         v7->y_speed = 4 * (v14 % (100 - v22) - (100 - v20) / 2)
             - *(_DWORD *)(v2 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v23 + 1]];
-        script_445370_yield_to_main_thread(a1, 0x80000000, 2);
+        script_yield_num_repeats(a1, 2);
         do
         {
             if (v18->destroyed || v3->destroyed)
@@ -600,10 +598,10 @@ void UNIT_DmgHandler_Beetle(Script *a1)
                 v15->y_speed = v24->y_speed + 4 * (kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 64;
             }
             ++v25;
-            script_445370_yield_to_main_thread(a1, 0x80000000, 2);
+            script_yield_num_repeats(a1, 2);
         } while (v25 < 6);
         v17 = math_42D64D_prolly_vec_length(v28, v27);
-        script_445370_yield_to_main_thread(a1, 0x80000000, v17 / *(_DWORD *)(v2 + 16) - 12);
+        script_yield_num_repeats(a1, v17 / *(_DWORD *)(v2 + 16) - 12);
     }
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
@@ -640,7 +638,7 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     sprite_load_mobd(v1, 1152);
     v1->pstru7 = &_479D48_stru7;
     v9 = math_42D64D_prolly_vec_length(v7, v8);
-    script_445370_yield_to_main_thread(a1, 0x80000000, v9 / *(_DWORD *)(v12 + 16));
+    script_yield_num_repeats(a1, v9 / *(_DWORD *)(v12 + 16));
     v1->x_speed = 0;
     v1->y_speed = 0;
     v1->z_speed = 0;
@@ -655,7 +653,7 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     if (v6 == v2->entity_id)
         v1->z_index = v2->sprite->z_index + 256;
     sprite_40D8B0_dmg(v1, *(_DWORD *)(v12 + 32));
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
 }
@@ -768,7 +766,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         v1->x_speed = v57 + *(_DWORD *)(v55 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v53 + 1]];
         v1->y_speed = v16 - *(_DWORD *)(v55 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v53 + 1]];
         v17 = math_42D64D_prolly_vec_length(v8, v59);
-        script_445370_yield_to_main_thread(a1, 0x80000000, v17 / *(_DWORD *)(v55 + 16));
+        script_yield_num_repeats(a1, v17 / *(_DWORD *)(v55 + 16));
         v1->x_speed = 0;
         v1->y_speed = 0;
         if (*(_DWORD *)(v55 + 12) != -1)
@@ -847,7 +845,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
                         sprite_create_scripted(MOBD_EXPLOSIONS, v1, script_435CF0_rocket_dmg_handler, SCRIPT_COROUTINE, 0);
                     v50 = 8;
                 }
-                script_445370_yield_to_main_thread(a1, 0x80000000, 1);
+                script_yield_num_repeats(a1, 1);
                 --v42;
                 --v50;
             } while (v42);
@@ -889,7 +887,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
             }
         }
     }
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
 }
@@ -900,7 +898,7 @@ void script_436FB0_dmg_handler(Script *a1)
     Sprite *v1; // esi@1
 
     v1 = a1->sprite;
-    script_445370_yield_to_main_thread(a1, 0x80000000, 30);
+    script_yield_num_repeats(a1, 30);
     sprite_408800_play_sound(v1, SOUND_3, _4690A8_unit_sounds_volume, 0);
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
@@ -927,7 +925,7 @@ void script_436FF0_rifle_dmg_handler(Script *a1)
     v2 = (Entity *)v1->parent->param;
     while (!v2->destroyed)
     {
-        if (a1->flags_20 & 0x10000000)
+        if (a1->flags_20 & SCRIPT_FLAGS_20_10000000)
             break;
         v3 = v2->turret;
         v1->field_88_unused = 1;
@@ -955,7 +953,7 @@ void script_436FF0_rifle_dmg_handler(Script *a1)
             v10 = v2->sprite;
         }
         v1->y = v9->y_offset + v10->y + 2560;
-        script_445370_yield_to_main_thread(a1, 0x80000000, 1);
+        script_yield_num_repeats(a1, 1);
     }
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
@@ -969,7 +967,7 @@ void script_4370D0_gort_dmg_handler(Script *a1)
 
     v1 = a1->sprite;
     sprite_408800_play_sound(a1->sprite, SOUND_187, _4690A8_unit_sounds_volume, 0);
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
 }
 
@@ -1003,7 +1001,7 @@ void UNIT_DmgHandler_GORT(Script *a1)
     v1->z_index = v3->sprite->z_index + 5120;
     while (!v3->destroyed)
     {
-        if (a1->flags_20 & 0x10000000)
+        if (a1->flags_20 & SCRIPT_FLAGS_20_10000000)
             break;
         v1->field_88_unused = 1;
         v3->sprite->field_88_unused = 1;
@@ -1013,7 +1011,7 @@ void UNIT_DmgHandler_GORT(Script *a1)
         v1->y = v3->sprite->y + v3->stru60.ptr_0->y_offset + 2560;
         if (!v3->destroyed)
             script_trigger_event(a1, EVT_MSG_DAMAGE, v1, v2->script);
-        script_445370_yield_to_main_thread(a1, 0x80000000, 1);
+        script_yield_num_repeats(a1, 1);
     }
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
@@ -1126,7 +1124,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
     v2->field_88_unused = 1;
     v2->y = v1->sprite->y + (((kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 16) << 8);
     v2->z_index = v1->sprite->z_index + 256;
-    script_445370_yield_to_main_thread(a1, 0x80000000, 10);
+    script_yield_num_repeats(a1, 10);
     v2->x_speed = 0;
     v2->y_speed = 0;
     v2->mobd_id = MOBD_EXPLOSIONS;
@@ -1154,7 +1152,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
         if (kknd_rand_debug(__FILE__, __LINE__) % 100 < v16)
             script_trigger_event(a1, EVT_MSG_DAMAGE, v2, v1->script);
     }
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v2);
     --_47C048_unit_bomberdmg;
 }
@@ -1218,7 +1216,7 @@ int sub_437690(Script *a1)
         v1->y_speed = v16 - v19[4] * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v20 + 1]];
     }
     v1->_60_mobd_anim_speed *= 2;
-    script_445370_yield_to_main_thread(a1, 2147483648, 30);
+    script_yield_num_repeats(a1, 30);
     sprite_list_remove(v1);
     return _47C048_unit_bomberdmg-- - 1;
 }
@@ -1294,7 +1292,7 @@ void UNIT_DmgHandler_Bow(Script *a1)
         v1->y_speed = v15 - *(_DWORD *)(v19 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v24 + 1]];
         v16 = math_42D64D_prolly_vec_length(v7, v6);
         v17 = a1;
-        script_445370_yield_to_main_thread(a1, 0x80000000, v16 / *(_DWORD *)(v19 + 16));
+        script_yield_num_repeats(a1, v16 / *(_DWORD *)(v19 + 16));
         sprite_408800_play_sound(v1, SOUND_90_dmg_handler, _4690A8_unit_sounds_volume, 0);
     }
     else
@@ -1308,7 +1306,7 @@ void UNIT_DmgHandler_Bow(Script *a1)
         v18 = 99;
     if (kknd_rand_debug(__FILE__, __LINE__) % 100 < v18 && !v26->destroyed)
         script_trigger_event(v17, EVT_MSG_DAMAGE, v1, v26->script);
-    script_445370_yield_to_main_thread(v17, 0x10000000, 0);
+    script_yield(v17, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
 }
@@ -1406,7 +1404,7 @@ void UNIT_DmgHandler_Projectile(Script *a1)
         v1->x_speed = v27 + *(_DWORD *)(v25 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v31 + 1]];
         v1->y_speed = v17 - *(_DWORD *)(v25 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v31 + 1]];
         v20 = math_42D64D_prolly_vec_length(v7, v6);
-        script_445370_yield_to_main_thread(a1, 0x80000000, v20 / *(_DWORD *)(v25 + 16));
+        script_yield_num_repeats(a1, v20 / *(_DWORD *)(v25 + 16));
         v16 = v30;
     }
     v1->x_speed = 0;
@@ -1432,7 +1430,7 @@ void UNIT_DmgHandler_Projectile(Script *a1)
         _4389A0_prolly_create_map_damage_decal(v1->x, v1->y);
         sprite_40D8B0_dmg(v1, *(_DWORD *)(v25 + 32));
     }
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
 }

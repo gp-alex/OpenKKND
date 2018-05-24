@@ -18,7 +18,7 @@ void entity_mode_401660_aircraft(Entity *a1);
 void entity_401670_aircraft(Entity *a1);
 void entity_401680(Entity *a1);
 void entity_mode_4016B0_aircraft(Entity *a1);
-void entity_4017E0(Entity *a1);
+void entity_yield_40_repeats(Entity *a1);
 void entity_mode_401800_aircraft(Entity *a1);
 void Task_context_0_4019A0(Task_context_0 *a1);
 void Task_context_0_401A40(Task_context_0 *a1);
@@ -46,7 +46,6 @@ void entity_mode_402780_blacksmith(Entity *a1);
 void entity_mode_402840_blacksmith(Entity *); // idb
 void entity_mode_402870_blacksmith(Entity *a1);
 void entity_mode_blacksmith_on_death(Entity *a1);
-int script_execute(Script *self);
 void entity_mode_402AB0(Entity *);
 bool entity_402AC0_is_mode_402AB0(Entity *a1);
 void entity_attach_docking_point(Entity *a1);

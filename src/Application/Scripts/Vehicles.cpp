@@ -168,18 +168,15 @@ void entity_oil_tanker_initialize(Entity *a1)
         v1->sprite->y_speed = 0;
         sprite_list_remove(v1->sprite);
         entityRepo->Delete(v1);
-        script_yield(v1->script);
+        script_terminate(v1->script);
     }
 }
 
 //----- (004444D0) --------------------------------------------------------
 void entity_mode_4444D0_oiltanker(Entity *a1)
 {
-    Script *v1; // ST00_4@1
-
-    v1 = a1->script;
     a1->mode = entity_mode_4448C0_oiltanker;
-    script_445370_yield_to_main_thread(v1, 0x80000000, 5);
+    script_yield_num_repeats(a1->script, 5);
 }
 
 //----- (004444F0) --------------------------------------------------------
@@ -221,7 +218,7 @@ void entity_mode_4444F0_oiltanker(Entity *a1)
     else
     {
         entity_load_idle_mobd(v1);
-        script_445370_yield_to_main_thread(v1->script, 0x80000000, 20);
+        script_yield_num_repeats(v1->script, 20);
     }
 }
 
@@ -264,7 +261,7 @@ void entity_mode_444590_oiltanker(Entity *a1)
     else
     {
         entity_load_idle_mobd(v1);
-        script_445370_yield_to_main_thread(v1->script, 0x80000000, 20);
+        script_yield_num_repeats(v1->script, 20);
     }
 }
 
@@ -281,7 +278,7 @@ void entity_mode_444630_oiltanker(Entity *a1)
     entity_load_idle_mobd(a1);
     if (!entity_advance_mobd_rotation(v2, 160, v1->stats->turning_speed))
         v1->mode = entity_mode_4446B0_oiltanker_load_oil;
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+    script_yield_num_repeats(v1->script, 1);
 }
 
 //----- (004446A0) --------------------------------------------------------
@@ -347,7 +344,7 @@ void entity_mode_4446B0_oiltanker_load_oil(Entity *a1)
     }
     v1->mode = entity_mode_4447C0_oiltanker;
 LABEL_23:
-    script_445370_yield_to_main_thread(v1->script, 0x80000000, 1);
+    script_yield_num_repeats(v1->script, 1);
 }
 // 470510: using guessed type int dword_470510[];
 
@@ -513,7 +510,7 @@ void entity_mode_4449D0_oiltanker(Entity *a1)
 
     if (!entity_advance_mobd_rotation(&a1->current_mobd_lookup_idx, 160, a1->stats->turning_speed))
         a1->mode = entity_mode_444A40_oiltanker;
-    script_445370_yield_to_main_thread(a1->script, 0x80000000, 1);
+    script_yield_num_repeats(a1->script, 1);
 }
 
 //----- (00444A40) --------------------------------------------------------
@@ -525,7 +522,7 @@ void entity_mode_444A40_oiltanker(Entity *a1)
     a1->sprite->y_speed = -(-entity_get_mobd_speed_y(a1));
     v1 = a1->script;
     a1->mode = entity_mode_444B40_oiltanker_unload_oil;
-    script_445370_yield_to_main_thread(v1, 0x80000000, 80);
+    script_yield_num_repeats(v1, 80);
 }
 
 //----- (00444AB0) --------------------------------------------------------
@@ -551,7 +548,7 @@ void entity_mode_444AB0_oiltanker(Entity *a1)
     a1->sprite->y_speed = -entity_get_mobd_speed_y(a1);
     v4 = a1->script;
     a1->mode = entity_mode_4448C0_oiltanker;
-    script_445370_yield_to_main_thread(v4, 0x80000000, 80);
+    script_yield_num_repeats(v4, 80);
 }
 
 //----- (00444B40) --------------------------------------------------------
@@ -573,7 +570,7 @@ void entity_mode_444B40_oiltanker_unload_oil(Entity *a1)
             sound_play(SOUND_TANKER_OIL_UNLOADING, 0, _4690A8_unit_sounds_volume, 16, 0);
         add_integer((int *)&game_globals_per_player + v1->player_side, 20);
         entity_4107B0_oiltanker_oil_bar(v1);
-        script_445370_yield_to_main_thread(v1->script, 0x80000000, 20);
+        script_yield_num_repeats(v1->script, 20);
     }
     else
     {
@@ -893,7 +890,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
                 {
                     v21 = v5->script;
                 LABEL_65:
-                    script_445370_yield_to_main_thread(v21, 0x80000000, 1);
+                    script_yield_num_repeats(v21, 1);
                     v5->hitpoints = 0;
                     v5->mode = entity_419560_on_death;
                     v5->destroyed = 1;

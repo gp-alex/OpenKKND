@@ -32,7 +32,7 @@ void EntityUpgradeAttachment_438000(EntityUpgradeAttachment *a1)
     stru38_list_427FD0(v2, 0);
     *v2 = 0;
     sprite_list_remove(v1->_18_sprite);
-    script_yield(v1->script);
+    script_terminate(v1->script);
 }
 
 //----- (00438030) --------------------------------------------------------

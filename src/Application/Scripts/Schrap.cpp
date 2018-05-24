@@ -55,11 +55,11 @@ void script_438B80_on_death_infantry_gore(Script *task)
     v1->z_speed_factor_2 = -10;
     v1->z_speed = (v3 & 0x7F) + 336;
     while (v1->z_index >= 0)
-        script_445370_yield_to_main_thread(task, 0x80000000, 1);
+        script_yield_num_repeats(task, 1);
     if (_47C350_num_explosions_min0_max30 > 0)
         --_47C350_num_explosions_min0_max30;
     sprite_list_remove(v1);
-    script_yield(task);
+    script_terminate(task);
 }
 
 //----- (00438C20) --------------------------------------------------------
@@ -92,7 +92,7 @@ void script_438C20_on_death_explosion(Script *a1)
         v1->_60_mobd_anim_speed *= (((unsigned __int64)v5 >> 32) ^ abs(v5) & 1) - ((unsigned __int64)v5 >> 32) + 1;
     }
     while (v1->z_index >= 0)
-        script_445370_yield_to_main_thread(a1, 0x80000000, 1);
+        script_yield_num_repeats(a1, 1);
     v1->z_index = 1;
     v1->x_speed = 0;
     v1->y_speed = 0;
@@ -100,11 +100,11 @@ void script_438C20_on_death_explosion(Script *a1)
     v1->z_speed_factor_2 = 0;
     v1->mobd_id = MOBD_EXPLOSIONS;
     sprite_load_mobd(v1, 412);
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     if (_47C350_num_explosions_min0_max30 > 0)
         --_47C350_num_explosions_min0_max30;
     sprite_list_remove(v1);
-    script_yield(a1);
+    script_terminate(a1);
 }
 
 //----- (00438D90) --------------------------------------------------------
@@ -207,14 +207,14 @@ void script_438F50_explosions(Script *a1)
     v1->z_index = 0;
     v1->y = ((v4 - 128) << 8) + v5;
     v6 = kknd_rand_debug("k/Scripts/Schrap.cpp", 303);
-    script_445370_yield_to_main_thread(a1, 0x80000000, v2 + (v6 & 0x3F));
+    script_yield_num_repeats(a1, v2 + (v6 & 0x3F));
     sprite_load_mobd(v1, dword_46BC98[v3]);
     _4389A0_prolly_create_map_damage_decal(v1->x, v1->y);
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     if (_47C350_num_explosions_min0_max30 > 0)
         --_47C350_num_explosions_min0_max30;
     sprite_list_remove(v1);
-    script_yield(a1);
+    script_terminate(a1);
 }
 
 //----- (00439050) --------------------------------------------------------
@@ -245,11 +245,11 @@ void script_439050_explosions(Script *a1)
         v1->param = &v2;
     sprite_408800_play_sound(v1, SOUND_3, _4690A8_unit_sounds_volume, 0);
     sprite_load_mobd(v1, 144);
-    script_445370_yield_to_main_thread(a1, 0x10000000, 0);
+    script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     if (num_explosions > 0)
         --num_explosions;
     sprite_list_remove(a1->sprite);
-    script_yield(a1);
+    script_terminate(a1);
 }
 
 //----- (004390F0) --------------------------------------------------------
