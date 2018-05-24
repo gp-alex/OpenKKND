@@ -841,8 +841,8 @@ struct MiscSaveStruct
 	int field_14C;
 	int field_150;
 	int field_154;
-	int field_158;
-	int field_15C;
+	int _158_script_handler_id;
+	int _15C_script_handler_id;
 	int field_160;
 	int field_164;
 	int field_168;

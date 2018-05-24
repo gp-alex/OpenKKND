@@ -101,8 +101,12 @@ void EntityRepository::Delete(Entity *a1)
     v2->job_details.image = 0;
     a1->drawjob->flags |= 0x80000000;
 
-    a1->next->prev = a1->prev;
-    a1->prev->next = a1->next;
+    if (a1->next) {
+        a1->next->prev = a1->prev;
+    }
+    if (a1->prev) {
+        a1->prev->next = a1->next;
+    }
     //a1->next = entity_list_free_pool;
     //entity_list_free_pool = a1;
     entities.remove(a1);

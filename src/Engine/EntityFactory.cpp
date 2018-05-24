@@ -168,7 +168,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
     auto _handler = get_handler(v5);
     if (_handler)
     {
-        result = (BOOL)script_create_function(save_data->entity_task_event, (void(*)(Script *))_handler, get_handler_name(v5));
+        result = (BOOL)script_create_function(save_data->entity_task_event, (void(*)(Script *))_handler);
         if (result)
         {
             v7 = v2->entity_task_message_handler_idx - 1;
@@ -211,7 +211,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 auto _handler = get_handler(v11);
                 if (_handler)
                 {
-                    result = (BOOL)script_create_function(v2->turret_sprite_task_event, (void(*)(Script *))_handler, get_handler_name(v11));
+                    result = (BOOL)script_create_function(v2->turret_sprite_task_event, (void(*)(Script *))_handler);
                     if (result)
                     {
                         v12 = v2->turret_sprite_task_message_handler_idx - 1;
@@ -465,7 +465,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 }
                 for (j = 0; j < (int)v3->_128_spawn_param; ++j)
                 {
-                    v84 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_4188F0, 0, "script_4188F0");
+                    v84 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_4188F0, 0);
                     if (v84)
                         v84->param = v3;
                 }
@@ -520,7 +520,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 building_limits_on_new_building(v3->unit_id);
             for (k = 0; k < *((_DWORD *)v56 + 9); ++k)
             {
-                v66 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_418A10, 0, "script_418A10");
+                v66 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_418A10, 0);
                 if (v66)
                     v66->param = v3;
             }
@@ -531,7 +531,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             v69 = (void(*)(Script *))get_handler(v68);
             if (v69)
             {
-                v71 = script_create_function((enum SCRIPT_TYPE)v2[1].turret_sprite.y, v69, get_handler_name(v68));
+                v71 = script_create_function((enum SCRIPT_TYPE)v2[1].turret_sprite.y, v69);
                 if (v71)
                 {
                     v72 = v2[1].turret_sprite.x_speed;

@@ -509,7 +509,8 @@ void entity_attach_docking_point(Entity *a1)
 			v1->sprite,
 			UNIT_AttachHandler_DockPoint,
 			SCRIPT_FUNCTION,
-			v1->stru60.ptr_0);
+			v1->stru60.ptr_0
+        );
 		v2->turret_sprite = v3;
 		v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_44BDC0_entity_turret;
 		v2->turret_sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[v1->player_side]];
@@ -4249,7 +4250,7 @@ void script_408370(Script *a1)
 void sub_4083D0()
 {
 	if (!dword_477890 && !dword_477894)
-		script_create_coroutine(SCRIPT_TYPE_INVALID, script_408370, 0, "script_408370");
+		script_create_coroutine(SCRIPT_TYPE_INVALID, script_408370, 0);
 }
 
 //----- (00408400) --------------------------------------------------------
@@ -7106,7 +7107,7 @@ Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int heig
 	{
 		v5->script = script;
 		if (!script)
-			v5->script = script_create_coroutine(SCRIPT_TYPE_51914_sidebar, script_sidebar, 0, "script_sidebar");
+			v5->script = script_create_coroutine(SCRIPT_TYPE_51914_sidebar, script_sidebar, 0);
 		v5->num_buttons = 0;
 		v5->x = (width + render_width - 320) << 8;
 		v5->w = height << 8;
@@ -7811,13 +7812,12 @@ SidebarButton *sidebar_add_button_1(Sidebar *sidebar, int mobd_lookup_table_offs
 	return sidebar_add_buttton_internal(
 		sidebar,
 		mobd_lookup_table_offset,
-		(void(*)(Script *))script_40F5D0_sidebar_button_1_2,
+		script_40F5D0_sidebar_button_1_2,
 		open_handler,
 		0,
 		param,
 		task_context,
-		SCRIPT_TYPE_47802_fog_of_war,
-        "script_40F5D0_sidebar_button_1_2"
+		SCRIPT_TYPE_47802_fog_of_war
     );
 }
 
@@ -7827,13 +7827,12 @@ SidebarButton *sidebar_add_button_2(Sidebar *sidebar, int mobd_lookup_table_offs
 	return sidebar_add_buttton_internal(
 		sidebar,
 		mobd_lookup_table_offset,
-		(void(*)(Script *))script_40F5D0_sidebar_button_1_2,
+		script_40F5D0_sidebar_button_1_2,
 		button_open_handler,
 		button_close_handler,
 		0,
 		task_context,
-		SCRIPT_TYPE_47802_fog_of_war,
-        "script_40F5D0_sidebar_button_1_2"
+		SCRIPT_TYPE_47802_fog_of_war
     );
 }
 
@@ -7843,13 +7842,12 @@ SidebarButton *sidebar_add_button_3(Sidebar *sidebar, int mobd_lookup_table_offs
 	return sidebar_add_buttton_internal(
 		sidebar,
 		mobd_lookup_table_offset,
-		(void(*)(Script *))script_40F8F0_sidebar_button_3,
+		script_40F8F0_sidebar_button_3,
 		button_open_handler,
 		button_close_handler,
 		0,
 		task_context,
-		SCRIPT_TYPE_48059,
-        "script_40F8F0_sidebar_button_3"
+		SCRIPT_TYPE_48059
     );
 }
 
@@ -7866,8 +7864,7 @@ SidebarButton *sidebar_add_button_4(Sidebar *sidebar, int mobd_lookup_table_offs
 		0,
 		param,
 		(void *)a7,
-		SCRIPT_TYPE_47802_fog_of_war,
-        "script_40FC10_sidebar_button_4"
+		SCRIPT_TYPE_47802_fog_of_war
     );
 	if (result)
 	{
@@ -7881,7 +7878,7 @@ SidebarButton *sidebar_add_button_4(Sidebar *sidebar, int mobd_lookup_table_offs
 SidebarButton *sidebar_add_buttton_internal(
     Sidebar *a1, int mobd_lookup_table_offset, void(*task_routine)(Script *),
     void(*open_handler)(SidebarButton *), void(*close_handler)(SidebarButton *), void *param,
-    void *task_context, enum SCRIPT_TYPE event, const char *task_routine_name
+    void *task_context, enum SCRIPT_TYPE event
 )
 {
 	SidebarButton *v8; // esi@1
@@ -7902,7 +7899,7 @@ SidebarButton *sidebar_add_buttton_internal(
 		v8 = 0;
 	if (v8)
 	{
-		v12 = script_create_coroutine(event, task_routine, 0, task_routine_name);
+		v12 = script_create_coroutine(event, task_routine, 0);
 		v8->task = v12;
 		v12->param = task_context;
 		v8->mobd_lookup_table_offset = mobd_lookup_table_0ffset;
@@ -11803,22 +11800,9 @@ bool GAME_Save_PackEntity(Entity *entity, int save_data, int save_data_size)
 	int v108; // eax@201
 	Entity *v109; // edx@202
 	enum UNIT_ID v110; // eax@207
-	void *v111; // eax@210
-	int v112; // edx@210
-	int v113; // esi@210
-	void **v114; // ecx@211
-	int v115; // edx@215
 	int v116; // eax@217
 	int v117; // eax@218
 	int v118; // esi@221
-	void *v119; // eax@226
-	int v120; // edx@226
-	void **v121; // ecx@227
-	int v122; // eax@231
-	void *v123; // eax@233
-	int v124; // edx@233
-	void **v125; // ecx@234
-	int v126; // eax@238
 	char *v127; // [sp-4h] [bp-18h]@68
 	EntityTurret *v128; // [sp+10h] [bp-4h]@25
 
@@ -12248,28 +12232,11 @@ LABEL_156:
 		v4[1].entity_task_field_20 = (int)v103[1].prev;
 		v4[1].entity_task_field_14 = v103[1].oil_left;
 		v110 = v3->unit_id;
-		if (v110 != 65 && v110 != 66 || !v103->sprite)
+		if (v110 != UNIT_STATS_SURV_RESEARCH_LAB && v110 != UNIT_STATS_MUTE_ALCHEMY_HALL || !v103->sprite)
 			goto LABEL_225;
-		v111 = script_handlers[0];
-		v112 = 0;
-		v113 = v103->next[2].oil_left;
-		if (script_handlers[0] != (void *)-1)
-		{
-			v114 = script_handlers;
-			do
-			{
-				if (v111 == *(void **)v113)
-					break;
-				v111 = v114[1];
-				++v114;
-				++v112;
-			} while (v111 != (void *)-1);
-		}
-		if (script_handlers[v112] == (void *)-1)
-			v115 = 0;
-		else
-			v115 = v112 + 1;
-		v4[1].entity_task_field_24 = v115;
+
+        int v113; v113 = v103->next[2].oil_left;
+		v4[1].entity_task_field_24 = get_handler_id(*(void **)(v113 + 0));
 		v4[1].entity_task_field_28 = *(_DWORD *)(v113 + 4);
 		v4[1].entity_task_field_2C = *(_DWORD *)(v113 + 8);
 		v4[1].unit_stats_idx = (UNIT_ID)*(_DWORD *)(v113 + 12);
@@ -12283,51 +12250,15 @@ LABEL_156:
 		if (result)
 		{
 			v118 = *(_DWORD *)(v113 + 28);
-			if (*(_DWORD *)(v118 + 24) != 1)
+			if (*(_DWORD *)(v118 + 24) != SCRIPT_FUNCTION)
 			{
 				errmsg_save[1] = aTaskIsWrongTyp;
-				v127 = aBadUpgradeTask;
-				goto LABEL_223;
+                sprintf(byte_479EF8, aUnitDS, v3->unit_id, "bad upgrade task");
+				goto LABEL_224;
 			}
 			v4[1].turret_sprite.y = *(_DWORD *)(v118 + 12);
-			v119 = script_handlers[0];
-			v120 = 0;
-			if (script_handlers[0] != (void *)-1)
-			{
-				v121 = script_handlers;
-				do
-				{
-					if (v119 == *(void **)(v118 + 64))
-						break;
-					v119 = v121[1];
-					++v121;
-					++v120;
-				} while (v119 != (void *)-1);
-			}
-			if (script_handlers[v120] == (void *)-1)
-				v122 = 0;
-			else
-				v122 = v120 + 1;
-			v4[1].turret_sprite.z_index = v122;
-			v123 = script_handlers[0];
-			v124 = 0;
-			if (script_handlers[0] != (void *)-1)
-			{
-				v125 = script_handlers;
-				do
-				{
-					if (v123 == *(void **)(v118 + 52))
-						break;
-					v123 = v125[1];
-					++v125;
-					++v124;
-				} while (v123 != (void *)-1);
-			}
-			if (script_handlers[v124] == (void *)-1)
-				v126 = 0;
-			else
-				v126 = v124 + 1;
-			v4[1].turret_sprite.x_speed = v126;
+            v4[1].turret_sprite.z_index = get_handler_id(*(void **)(v118 + 64));
+			v4[1].turret_sprite.x_speed = get_handler_id(*(void **)(v118 + 52));
 			v4[1].turret_sprite.y_speed = *(_DWORD *)(v118 + 32);
 			v4[1].turret_sprite.z_speed = *(_DWORD *)(v118 + 20);
 			v4[1].turret_sprite._inside_mobd_item = *(_DWORD *)(v118 + 36);
@@ -12866,11 +12797,6 @@ void *GAME_Save_PackAiPlayers(size_t *size)
 	Script *v36; // eax@56
 	stru24 *v37; // esi@57
 	void *v38; // ebp@57
-	void(*v39)(Script *); // eax@57
-	int v40; // edi@57
-	void(*v41)(Script *); // edx@58
-	void **v42; // ecx@58
-	int v43; // eax@62
 	stru24 *i9; // eax@65
 	stru24 *v45; // edi@67
 	void *v46; // eax@68
@@ -13059,29 +12985,11 @@ void *GAME_Save_PackAiPlayers(size_t *size)
 	v38 = i19;
 	v98[v35] = (int)i19;
 	memset(i19, 0, 0x11Cu);
-	v39 = (void(*)(Script *))script_handlers[0];
 	i19 = (char *)i19 + 284;
-	v40 = 0;
 	v93 = v37;
-	if (script_handlers[0] != (void *)-1)
-	{
-		v41 = task_ai_players[v35]->handler;
-		v42 = script_handlers;
-		do
-		{
-			if (v39 == v41)
-				break;
-			v39 = (void(*)(Script *))v42[1];
-			++v42;
-			++v40;
-		} while (v39 != (void(*)(Script *)) - 1);
-	}
-	if (script_handlers[v40] == (void *)-1)
-		v43 = 0;
-	else
-		v43 = v40 + 1;
-	*(_DWORD *)v38 = v43;
-	if (v43)
+
+	*(_DWORD *)v38 = get_handler_id(task_ai_players[v35]->handler);
+	if (*(_DWORD *)v38 >= 0)
 	{
 		for (i9 = (stru24 *)v37->enemy_list_108; (stru24_EnemyNode **)i9 != &v37->enemy_list_108; i9 = i9->next)
 		{
@@ -14370,8 +14278,6 @@ _BYTE *GAME_Save_PackMapInfo(int *a1)
 	}
 	return result;
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
 
 //----- (00420B30) --------------------------------------------------------
 MiscSaveStruct *GAME_Save_PackMiscInfo(size_t *a1)
@@ -14385,17 +14291,7 @@ MiscSaveStruct *GAME_Save_PackMiscInfo(size_t *a1)
 	Entity **v7; // eax@6
 	int *v8; // edx@6
 	int v9; // ecx@8
-	void *v10; // eax@11
-	int v11; // edx@11
-	void **v12; // ecx@12
 	int v13; // edi@21
-	void *v14; // eax@23
-	int v15; // edx@23
-	void **v16; // ecx@24
-	int v17; // eax@28
-	void *v18; // eax@30
-	int v19; // edx@30
-	void **v20; // ecx@31
 	int v21; // eax@35
 
 	v1 = _47C970_sidebar_task->param;
@@ -14445,25 +14341,7 @@ MiscSaveStruct *GAME_Save_PackMiscInfo(size_t *a1)
 		v5->_47A370_unit = _4269B0_task_attachment__num_units_spawned;
 		v5->_47A2F8_unit = _4269B0_task_attachment__num_units_created_manually;
 		v5->dword_47CA2C = _47CA2C_should_airstrike_mess_with_sidebar;
-		v10 = script_handlers[0];
-		v11 = 0;
-		if (script_handlers[0] != (void *)-1)
-		{
-			v12 = script_handlers;
-			do
-			{
-				if (v10 == *(void **)v1)
-					break;
-				v10 = v12[1];
-				++v12;
-				++v11;
-			} while (v10 != (void *)-1);
-		}
-		if (script_handlers[v11] == (void *)-1)
-			result = 0;
-		else
-			result = (MiscSaveStruct *)(v11 + 1);
-		v5->_47C970_stru0_ptr_3C_handler = (int)result;
+		v5->_47C970_stru0_ptr_3C_handler = get_handler_id(*(void **)v1);
 		if (result)
 		{
 			v5->field_128 = *((_DWORD *)v1 + 1);
@@ -14474,44 +14352,8 @@ MiscSaveStruct *GAME_Save_PackMiscInfo(size_t *a1)
 				if (*(_DWORD *)(v13 + 24) == 1)
 				{
 					v5->field_154 = *(_DWORD *)(v13 + 12);
-					v14 = script_handlers[0];
-					v15 = 0;
-					if (script_handlers[0] != (void *)-1)
-					{
-						v16 = script_handlers;
-						do
-						{
-							if (v14 == *(void **)(v13 + 64))
-								break;
-							v14 = v16[1];
-							++v16;
-							++v15;
-						} while (v14 != (void *)-1);
-					}
-					if (script_handlers[v15] == (void *)-1)
-						v17 = 0;
-					else
-						v17 = v15 + 1;
-					v5->field_158 = v17;
-					v18 = script_handlers[0];
-					v19 = 0;
-					if (script_handlers[0] != (void *)-1)
-					{
-						v20 = script_handlers;
-						do
-						{
-							if (v18 == *(void **)(v13 + 52))
-								break;
-							v18 = v20[1];
-							++v20;
-							++v19;
-						} while (v18 != (void *)-1);
-					}
-					if (script_handlers[v19] == (void *)-1)
-						v21 = 0;
-					else
-						v21 = v19 + 1;
-					v5->field_15C = v21;
+					v5->_158_script_handler_id = get_handler_id(*(void **)(v13 + 64));
+					v5->_15C_script_handler_id = get_handler_id(*(void **)(v13 + 52));
 					v5->field_160 = *(_DWORD *)(v13 + 32);
 					v5->field_164 = *(_DWORD *)(v13 + 20);
 					v5->field_168 = *(_DWORD *)(v13 + 36);
@@ -14600,7 +14442,7 @@ bool GAME_Load_UnpackMiscInfo(void *save_data)
     v9 = (void(*)(Script *))get_handler(v8 - 1);
 	if (v9)
 	{
-		result = (BOOL)script_create_function(*((enum SCRIPT_TYPE *)v1 + 85), v9, get_handler_name(v8));
+		result = (BOOL)script_create_function(*((enum SCRIPT_TYPE *)v1 + 85), v9);
 		if (result)
 		{
 			*(_DWORD *)(result + 52) = (int)get_handler(*((_DWORD *)v1 + 87) - 1);
@@ -15191,7 +15033,7 @@ LABEL_59:
 void GAME_OnSaveFailed()
 {
 	auto v0 = script_create_coroutine(
-        SCRIPT_TYPE_INVALID, script_421D60_on_savegame_failed, 0, "script_421D60_on_savegame_failed"
+        SCRIPT_TYPE_INVALID, script_421D60_on_savegame_failed, 0
     );
 	if (v0)
 		v0->field_1C |= 1;
@@ -17070,7 +16912,8 @@ bool handler_4267F0(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE side)
 		0,
 		unit_stats[unit_id].script_handler,
 		SCRIPT_FUNCTION,
-		0);
+		0
+    );
 	if (result)
 	{
 		v7 = v4 | (side << 16);
@@ -17465,7 +17308,7 @@ Sprite *sprite_create(enum MOBD_ID mobd_item_idx, Script *script, Sprite *parent
 //----- (00426EC0) --------------------------------------------------------
 Sprite *sprite_create_scripted(
     enum MOBD_ID mobd_item_idx, Sprite *parent, void(*script)(Script *), enum SCRIPT_ROUTINE_TYPE task_type,
-    Entity_stru_dmg_related *a5, const char *script_name
+    Entity_stru_dmg_related *a5
 )
 {
 	Sprite *v5; // esi@1
@@ -17492,9 +17335,9 @@ Sprite *sprite_create_scripted(
 		return result;
 	}
 	if (task_type == SCRIPT_FUNCTION)
-		result = (Sprite *)script_create_function(SCRIPT_TYPE_INVALID, script, script_name);
+		result = (Sprite *)script_create_function(SCRIPT_TYPE_INVALID, script);
 	else if (task_type == SCRIPT_COROUTINE)
-		result = (Sprite *)script_create_coroutine(SCRIPT_TYPE_INVALID, script, 0, script_name);
+		result = (Sprite *)script_create_coroutine(SCRIPT_TYPE_INVALID, script, 0);
     else
     {
         __debugbreak();
@@ -18388,7 +18231,7 @@ bool stru37_stru38_list_alloc()
 		stru38_list[99].next = 0;
 		stru38_list_47A4B0 = (stru38 *)&stru38_list_47A4B0;
 		stru38_list_47A4B4 = (stru38 *)&stru38_list_47A4B0;
-		result = script_create_function(SCRIPT_TYPE_INVALID, script_4280A0_stru38_list__production_loop, "script_4280A0_stru38_list__production_loop") != 0;
+		result = script_create_function(SCRIPT_TYPE_INVALID, script_4280A0_stru38_list__production_loop) != 0;
 	}
 	else
 	{
@@ -21076,7 +20919,7 @@ void script_431E60_mobd_20_input(Script *a1)
 	dword_47C6C4 = 0;
 	a1->field_1C = 1;
 	script_445370_yield_to_main_thread(a1, 0x80000000, 2);
-	if (!script_create_coroutine(SCRIPT_TYPE_INVALID, script_425400, 0, "script_425400")
+	if (!script_create_coroutine(SCRIPT_TYPE_INVALID, script_425400, 0))
 		game_state = 3;
 	while (1)
 	{
@@ -24628,7 +24471,7 @@ void script_netz_43BA70(Script *a1)
 //----- (0043BA90) --------------------------------------------------------
 Script *netz_43BA90_create_script_43BA70()
 {
-	return script_create_coroutine(SCRIPT_TYPE_INVALID, script_netz_43BA70, 0, "script_netz_43BA70");
+	return script_create_coroutine(SCRIPT_TYPE_INVALID, script_netz_43BA70, 0);
 }
 
 //----- (0043BAA0) --------------------------------------------------------
@@ -24733,7 +24576,7 @@ void script_43C040_cursors_handler(Script *a1)
 	if (!_47C6E0_task)
 	{
         stru29_list_alloc();
-		sprite_create_scripted(MOBD_79, 0, (void(*)(Script *))script_mobd79__main_menu_mouse_handler, SCRIPT_COROUTINE, 0);
+		sprite_create_scripted(MOBD_79, 0, script_mobd79__main_menu_mouse_handler, SCRIPT_COROUTINE, 0);
 	}
 	sprite_list_remove(a1->sprite);
 	script_yield(a1);
@@ -26660,7 +26503,7 @@ __debugbreak();
 	a1->script_type = SCRIPT_TYPE_5;
 	stru29_list_4439F0(v1, 0, 0, 1, 0);
 	dword_47C5F8 = -1;
-	if (!script_create_coroutine(SCRIPT_TYPE_5, script_43FAD0_mobd45_evt5, 0, "script_43FAD0_mobd45_evt5"))
+	if (!script_create_coroutine(SCRIPT_TYPE_5, script_43FAD0_mobd45_evt5, 0))
 		game_state = 3;
 	while (1)
 	{
@@ -27779,7 +27622,7 @@ void script_441CE0_mobd45_evt8(Script *a1)
 	}
 	else
 	{
-		if (!script_create_coroutine(SCRIPT_TYPE_8, script_43F7C0, 0, "script_43F7C0"))
+		if (!script_create_coroutine(SCRIPT_TYPE_8, script_43F7C0, 0))
 			game_state = 3;
 		do
 		{
@@ -28039,9 +27882,9 @@ void script_4421F0_mobd45_evt8(Script *a1)
 	v5->z_index = 1;
 	a1->script_type = SCRIPT_TYPE_17;
 	stru29_list_4439F0(v5, 0, 1, 1, 0);
-	if (!script_create_coroutine(SCRIPT_TYPE_9, script_43F7C0, 0, "script_43F7C0"))
+	if (!script_create_coroutine(SCRIPT_TYPE_9, script_43F7C0, 0))
 		game_state = 3;
-	if (!script_create_coroutine(SCRIPT_TYPE_9, script_441F10, 0, "script_441F10"))
+	if (!script_create_coroutine(SCRIPT_TYPE_9, script_441F10, 0))
 		game_state = 3;
 	while (!script_443780(a1, 2044, 1, 0))
 		;
@@ -32081,7 +31924,7 @@ bool UNIT_InitTasks()
 	}
 	else
 	{
-        auto cr = script_create_coroutine(SCRIPT_TYPE_INVALID, script_449820_netz, 0, "script_449820_netz");
+        auto cr = script_create_coroutine(SCRIPT_TYPE_INVALID, script_449820_netz, 0);
 		cr->field_1C = 1;
 		result = 1;
 	}
@@ -32512,7 +32355,7 @@ bool mapd_init_fog_of_war()
                             _47CBA0_MobdSprtImage_fog_of_war.flags = 0;
                             _47CBA0_MobdSprtImage_fog_of_war.handler = render_sprt_draw_handler;
                             dword_47059C = (__478AAC_map_height_x2 + 4) << 8;
-                            v40 = sprite_create_scripted(MOBD_MUTE_ALCHEMY_HALL, 0, (void(*)(Script *))script_44A500_fog_of_war, SCRIPT_COROUTINE, 0);
+                            v40 = sprite_create_scripted(MOBD_MUTE_ALCHEMY_HALL, 0, script_44A500_fog_of_war, SCRIPT_COROUTINE, 0);
                             _47CB58_minimap_sprite = v40;
                             v40->_54_inside_mobd_ptr4 = &_4705B0_minimap;
                             _47CB58_minimap_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;

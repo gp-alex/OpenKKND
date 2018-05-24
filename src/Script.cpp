@@ -8,6 +8,7 @@
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
 
+#include "src/Engine/Entity.h"
 
 /* 359 */
 struct ScriptDescType1
@@ -474,8 +475,8 @@ Script *create_script(int script_id) {
     auto desc = scripts[script_id];
     if (desc->script_handler) {
         return (desc->script_type == SCRIPT_FUNCTION)
-            ? script_create_function(SCRIPT_TYPE_INVALID, desc->script_handler, desc->script_handler_name)
-            : script_create_coroutine(SCRIPT_TYPE_INVALID, desc->script_handler, 0, desc->script_handler_name);
+            ? script_create_function(SCRIPT_TYPE_INVALID, desc->script_handler)
+            : script_create_coroutine(SCRIPT_TYPE_INVALID, desc->script_handler, 0);
     }
 
     return nullptr;
@@ -504,6 +505,10 @@ int get_script_type(int script_id) {
     }
 }
 
+int get_num_scripts() {
+    return sizeof(scripts) / sizeof(*scripts);
+}
+
 
 UNIT_ID get_script_unit_id(int script_id) {
     // Prison, Prison, Outpost, Clannhall
@@ -517,7 +522,21 @@ UNIT_ID get_script_unit_id(int script_id) {
     }
 }
 
+MOBD_ID get_script_mobd(int script_id) {
+    return scripts[script_id]->mobd_id;
+}
 
+const char *get_script_name(int script_id) {
+    return scripts[script_id]->script_handler_name;
+}
+const char *get_script_name(void *handler) {
+    for (int i = 0; i < get_num_scripts(); ++i) {
+        if (scripts[i]->script_handler == handler) {
+            return scripts[i]->script_handler_name;
+        }
+    }
+    return nullptr;
+}
 
 
 
@@ -545,367 +564,371 @@ bool script_execute_list_prepend(Script *script)
     return true;
 }
 
-struct UnitHandler {
+struct ScriptHandler {
     void *function;
     const char *function_name;
 };
 
-void *script_handlers[353] =
+#define MAKE_HANDLER_PTR(x) { (x), #x }
+
+ScriptHandler script_handlers[] =
 {
-    &UNIT_Handler_Outpost,
-    &UNIT_Handler_OilTanker,
-    &UNIT_Handler_MachineShop,
-    &UNIT_Handler_Clanhall,
-    &UNIT_Handler_BeastEnclosure,
-    &UNIT_Handler_PowerStation,
-    &UNIT_Handler_DrillRig,
-    &UNIT_Handler_OilPatch,
-    &UNIT_Handler_MobileDerrick,
-    &UNIT_Handler_RepairStation,
-    &UNIT_Handler_ResearchBuilding,
-    &UNIT_Handler_ResearchBuilding,
-    &UNIT_Handler_Blacksmith,
-    &UNIT_Handler_RepairStation,
-    &UNIT_Handler_GuardTower,
-    &UNIT_Handler_GuardTower,
-    &UNIT_Handler_GuardTower,
-    &UNIT_Handler_GuardTower,
-    &UNIT_Handler_GuardTower,
-    &script_433060_ingame_menu_DA000000,
-    &script_424CE0_mission_outcome_modal,
-    &script_425400,
-    &UNIT_Handler_General,
-    &UNIT_Handler_OilTankerConvoy,
-    &UNIT_Handler_Scout,
-    &UNIT_Handler_Prison,
-    &UNIT_Handler_Prison,
-    &UNIT_AttachHandler_DockPoint,
-    &UNIT_Handler_Aircraft,
-    &EntityTowerAttachment_handler_4010C0,
-    &EntityTowerAttachment_handler_4010E0,
-    &EventHandler_Aircraft,
-    &entity_mode_401480_aircraft,
-    &entity_401530_aircraft,
-    &entity_mode_401600_aircraft_stru31,
-    &entity_mode_401660_aircraft,
-    &entity_401670_aircraft,
-    &entity_401680,
-    &entity_mode_4016B0_aircraft,
-    &entity_4017E0,
-    &entity_mode_401800_aircraft,
-    &UNIT_DmgHandler_Bomber,
-    &Task_context_1_BomberDmgHandler_401D10,
-    &Task_context_1_BomberDmgHandler_401D30,
-    &Task_context_1_BomberDmgHandler_401DC0,
-    &Task_context_1_BomberDmgHandler_401DE0,
-    &EventHandler_BeastEnclosure,
-    &entity_402150_beastenclosure,
-    &UNIT_Handler_BeastEnclosure,
-    &entity_mode_beastenclosure_set_default_production,
-    &entity_mode_402350_beastenclosure,
-    &entity_mode_beastenclosure_on_death,
-    &entity_mode_402440_beastenclosure,
-    &entity_blacksmith_on_upgrade_complete,
-    &MessageHandler_Blacksmith,
-    &UNIT_Handler_Blacksmith,
-    &entity_mode_402780_blacksmith,
-    &entity_mode_402840_blacksmith,
-    &entity_mode_402870_blacksmith,
-    &entity_mode_blacksmith_on_death,
-    &entity_mode_402AB0,
-    &entity_402AC0_is_mode_402AB0,
-    &entity_402BB0_set_arrive_handler,
-    &entity_402C40_lower_hp_mute09_surv21,
-    &entity_initialize_building,
-    &entity_sabotage,
-    &EventHandler_DefaultBuildingsHandler,
-    &script_403230_building_mini_explosion,
-    &script_4032F0_building_grand_explosion,
-    &script_403380_explosions,
-    &entity_mode_4034B0,
-    &entity_mode_403540,
-    &entity_mode_4035C0_building,
-    &entity_mode_403650_building,
-    &entity_mode_403720_on_prison_death__or__prolly_any_generic_building,
-    &entity_mode_building_default_on_death,
-    &entity_4038B0,
-    &entity_clanhall_on_upgrade_complete,
-    &EventHandler_Clanhall,
-    &entity_mode_clanhall_set_default_production,
-    &UNIT_Handler_Clanhall,
-    &entity_mode_clanhall_on_building_completed,
-    &entity_mode_4042A0_clanhall,
-    &entity_mode_clanhall_on_death_reset_production_options,
-    &_4318E0_free_building_production,
-    &entity_mode_clanhall_on_death,
-    &entity_4054D0_tanker_convoy,
-    &EventHandler_TankerConvoy,
-    &entity_mode_405680_tanker_convoy,
-    &entity_mode_405690,
-    &entity_405750_tanker_convoy,
-    &UNIT_Handler_OilTankerConvoy,
-    &UNIT_Handler_MobileDerrick,
-    &entity_mode_406CC0_mobilederrick,
-    &EventHandler_MobileDerrick,
-    &entity_mode_406DC0_mobilederrick,
-    &entity_mode_plant_mobile_derrick,
-    &entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant,
-    &UNIT_Handler_OilPatch,
-    &EventHandler_Prison,
-    &nullsub_1,
-    &UNIT_Handler_Prison,
-    &entity_mode_407300_prison,
-    &entity_mode_407390_prison,
-    &entity_mode_prison_spawn_unit,
-    &entity_mode_prison_on_death,
-    &UNIT_Handler_Prison,
-    &entity_mode_prison_spawn_unit_surv09,
-    &entity_mode_prison_on_death_surv09,
-    &EventHandler_TechBunker,
-    &entity_4075F0_techbunker,
-    &entity_407690_techbunker_spawn,
-    &entity_mode_407870_techbubker,
-    &entity_mode_407950_techbunker_spawn_generic,
-    &entity_mode_4079F0_techbunker_spawn10_surv18_lvl,
-    &entity_mode_407A90_techbunker,
-    &entity_mode_407B70_techbunker,
-    &UNIT_Handler_TechBunker,
-    &entity_mode_407C20_on_death_tech_bunker,
-    &entity_mode_407C60_on_death_tech_bunker,
-    &entity_mode_407D10,
-    &entity_mode_hut_on_death,
-    &entity_mode_407DA0,
-    &EventHandler_Hut,
-    &entity_mode_407E70_hut,
-    &entity_mode_407F00_hut,
-    &UNIT_Handler_Hut,
-    &EventHandler_DrillRig,
-    &UNIT_Handler_DrillRig,
-    &entity_mode_4081C0_drillrig,
-    &entity_mode_408240_drillrig,
-    &entity_mode_408260_drillrig,
-    &entity_mode_drillrig_on_death,
-    &UNIT_Handler_Vehicle,
-    &UNIT_Handler_Infantry,
-    &entity_mode_415540_infantry,
-    &entity_mode_415690,
-    &entity_mode_4157F0,
-    &entity_4158B0,
-    &entity_mode_415980,
-    &entity_415A20,
-    &entity_mode_415A60_vehicle_rotate,
-    &entity_mode_move_attack,
-    &entity_mode_attack_move_1_415D30,
-    &entity_mode_416060,
-    &entity_mode_attack_move_2_5_4165C0,
-    &entity_mode_416790_vehicle_move,
-    &entity_mode_416A70_oiltanker,
-    &entity_mode_416CD0,
-    &entity_mode_416EB0,
-    &entity_mode_417100,
-    &entity_4172D0,
-    &entity_mode_417360_infantry,
-    &entity_mode_attack_move_4_417550,
-    &entity_mode_417670,
-    &entity_417810,
-    &entity_417980,
-    &entity_mode_417A20,
-    &entity_mode_417BD0,
-    &entity_mode_attack_move_4_order_3_7_417E60,
-    &entity_mode_417F50,
-    &entity_417F60,
-    &entity_mode_417FC0,
-    &entity_418120,
-    &entity_418170,
-    &entity_mode_4181B0,
-    &entity_418290,
-    &entity_mode_418550,
-    &entity_mode_418590,
-    &entity_4187F0,
-    &script_418A10,
-    &entity_mode_418B30,
-    &entity_mode_418D20,
-    &entity_mode_418E90,
-    &entity_mode_418F60,
-    &entity_mode_418FE0,
-    &entity_mode_419180,
-    &entity_mode_419230,
-    &entity_4192F0,
-    &entity_mode_419390_oiltanker,
-    &entity_mode_move_tanker,
-    &entity_419560_on_death,
-    &entity_419720,
-    &entity_mode_419760_infantry_destroyed,
-    &entity_mode_4197E0_infantry,
-    &EventHandler_Infantry,
-    &EventHandler_419CA0,
-    &EventHandler_General_Scout,
-    &EventHandler_419DF0,
-    &EventHandler_419E80,
-    &entity_machineshop_on_upgrade_complete,
-    &EventHandler_MachineShop,
-    &entity_4220B0_machineshop,
-    &UNIT_Handler_MachineShop,
-    &entity_mode_machineshop_set_default_production,
-    &entity_mode_machineshop_on_death_no_default,
-    &entity_mode_4223A0_machineshop,
-    &entity_mode_machineshop_on_death,
-    &script_424BF0_mobd_20_handler,
-    &_424CA0_script_47A3CC_evttrigger,
-    &_424CC0_script_47A3CC_evttrigger,
-    &script_424CE0_mission_outcome_modal,
-    &sub_4250E0,
-    &sub_4251B0,
-    &script_4252C0,
-    &script_425400,
-    &entity_check_special_mission_death_conditions,
-    &entity_find_player_entity_in_radius,
-    &entity_4258C0_init_palettes_inc_unit_counter,
-    &entity_mode_425920_scout,
-    &entity_425A50_setup_spawn,
-    &UNIT_Handler_General,
-    &UNIT_Handler_Scout,
-    &_425EC0_entities_check_modes,
-    &FindEntityBySideAndType,
-    &script_425F50_stru48_stru51_tech_bunkers,
-    &script_425BE0_check_special_victory_conditions,
-    &handler_4267F0,
-    &nullsub_1,
-    &script_426710_mission_objectives_draw_x_mark,
-    &_4268B0_4269B0_task_attachment_handler,
-    &_426860_4269B0_task_attachment_handler,
-    &task_4269B0_mobd_20_handler,
-    &UNIT_Handler_MobileOutpost,
-    &entity_mode_4278C0_mobile_outpost,
-    &MessageHandler_MobileOutpost,
-    &nullsub_2,
-    &entity_427BB0_mobile_outpost_clanhall_planting,
-    &entity_mode_427BF0_mobile_outpost_clanhall_planting,
-    &entity_427C30_after_mobile_outpost_clanhall_wagon_plant,
-    &entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant,
-    &EventHandler_4089B0_generic_ai,
-    &script_409770_ai,
-    &script_40B700_ai,
-    &EventHandler_42D6B0_evolved_mission8_ai,
-    &script_42DA90_ai,
-    &script_42DC70_ai,
-    &EventHandler_42DC90_evolved_mission5_ai,
-    &script_42DE80,
-    &script_42DF20,
-    &stru24_42DF40,
-    &stru24_42E030,
-    &stru24_42E070,
-    &entity_outpost_on_upgrade_complete,
-    &EventHandler_Outpost,
-    &entity_mode_outpost_enable_basic_construction,
-    &UNIT_Handler_Outpost,
-    &entity_mode_outpost_set_default_production,
-    &entity_mode_431680_outpost_arrive,
-    &entity_mode_outpost_on_death_update_production,
-    &_4318E0_free_building_production,
-    &entity_mode_outpost_on_death,
-    &EventHandler_PowerStation,
-    &UNIT_Handler_PowerStation,
-    &entity_mode_powerstation_spawn_tanker,
-    &entity_mode_powerstation_completed,
-    &entity_mode_powerstation_on_death,
-    &UNIT_DmgHandler_Sapper,
-    &script_435CF0_rocket_dmg_handler,
-    &script_435D40_bombers_dmg,
-    &UNIT_DmgHandler_Rocket,
-    &script_436140_flamethrower_dmg_handler,
-    &UNIT_DmgHandler_Flamethrower,
-    &script_4363C0_giant_bettle_dmg,
-    &UNIT_DmgHandler_Beetle,
-    &script_4368B0_plasma_tank_dmg_handler,
-    &UNIT_DmgHandler_Mech,
-    &script_436FB0_dmg_handler,
-    &script_436FF0_rifle_dmg_handler,
-    &script_4370D0_gort_dmg_handler,
-    &UNIT_DmgHandler_GORT,
-    &UNIT_DmgHandler_Rifle,
-    &sub_437690,
-    &UNIT_DmgHandler_Bow,
-    &UNIT_DmgHandler_Projectile,
-    &EventHandler_RepairStation,
-    &UNIT_Handler_RepairStation,
-    &UNIT_Handler_RepairStation,
-    &entity_mode_437F30_repairstation,
-    &EventHandler_UpgradeProcess,
-    &EntityUpgradeAttachment_438000,
-    &EntityUpgradeAttachment_438030,
-    &EntityUpgradeAttachment_438160_handler,
-    &script_4381A0_upgrade_process,
-    &EventHandler_ResearchBuilding,
-    &UNIT_Handler_ResearchBuilding,
-    &UNIT_Handler_ResearchBuilding,
-    &entity_mode_researchlab_completed,
-    &entity_mode_researchlab_on_death,
-    &script_438B80_on_death_infantry_gore,
-    &script_438C20_on_death_explosion,
-    &entity_mode_4444D0_oiltanker,
-    &entity_mode_4444F0_oiltanker,
-    &entity_mode_444590_oiltanker,
-    &entity_mode_444630_oiltanker,
-    &entity_mode_4446B0_oiltanker_load_oil,
-    &entity_mode_4447C0_oiltanker,
-    &entity_mode_4448C0_oiltanker,
-    &entity_mode_4449D0_oiltanker,
-    &entity_mode_444A40_oiltanker,
-    &entity_mode_444AB0_oiltanker,
-    &entity_mode_444B40_oiltanker_unload_oil,
-    &entity_mode_444CC0_oiltanker,
-    &entity_mode_444D10_oiltanker,
-    &entity_mode_4446A0_oiltanker,
-    &EventHandler_OilTanker,
-    &script_401C30_sidebar,
-    &Task_context_0_4019A0,
-    &Task_context_0_401A40,
-    &Task_context_0_401A80,
-    &Task_context_0_401AF0,
-    &EventHandler_401B80,
-    &UNIT_Handler_GuardTower,
-    &UNIT_Handler_GuardTower,
-    &UNIT_Handler_GuardTower,
-    &UNIT_Handler_GuardTower,
-    &UNIT_Handler_GuardTower,
-    &UNIT_Handler_Towers,
-    &entity_mode_4474D0_towers,
-    &entity_mode_4474E0_towers,
-    &entity_mode_tower_on_death,
-    &entity_mode_tower_dead,
-    &EventHandler_Towers,
-    &UNIT_AttachHandler_Turret,
-    &EntityTowerAttachment_handler_447C40,
-    &EntityTowerAttachment_handler_447CA0,
-    &EntityTowerAttachment_handler_447DD0,
-    &EntityTowerAttachment_handler_447E20,
-    &EntityTowerAttachment_handler_447F50,
-    &EntityTowerAttachment_handler_447FA0,
-    &EntityTowerAttachment_handler_448110,
-    &EntityTowerAttachment_handler_448160,
-    &EntityTowerAttachment_handler_448230,
-    &EntityTowerAttachment_handler_448290,
-    &EntityTowerAttachment_handler_4482D0_missile_battery,
-    &nullsub_1,
-    &MessageHandler_TowersAttachment,
-    &UNIT_AttachHandler_Turret,
-    &tower_attachment_handler_448980,
-    &tower_attachment_handler_4489B0,
-    &tower_attachment_handler_448B40,
-    &tower_attachment_handler_448BF0,
-    &tower_attachment_handler_448C40,
-    &tower_attachment_handler_448E90,
-    &MessageHandler_448EC0,
-    &script_44BE60_explosions,
-    &UNIT_AttachHandler_DockPoint,
-    &EntityTurret_44BF00_handler,
-    &EntityTurret_44BF70,
-    &sub_44BFC0,
-    &MessageHandler_EntityScript,
-    (void *)0xFFFFFFFF
+    MAKE_HANDLER_PTR(UNIT_Handler_Outpost),
+    MAKE_HANDLER_PTR(UNIT_Handler_OilTanker),
+    MAKE_HANDLER_PTR(UNIT_Handler_MachineShop),
+    MAKE_HANDLER_PTR(UNIT_Handler_Clanhall),
+    MAKE_HANDLER_PTR(UNIT_Handler_BeastEnclosure),
+    MAKE_HANDLER_PTR(UNIT_Handler_PowerStation),
+    MAKE_HANDLER_PTR(UNIT_Handler_DrillRig),
+    MAKE_HANDLER_PTR(UNIT_Handler_OilPatch),
+    MAKE_HANDLER_PTR(UNIT_Handler_MobileDerrick),
+    MAKE_HANDLER_PTR(UNIT_Handler_RepairStation),
+    MAKE_HANDLER_PTR(UNIT_Handler_ResearchBuilding),
+    MAKE_HANDLER_PTR(UNIT_Handler_ResearchBuilding),
+    MAKE_HANDLER_PTR(UNIT_Handler_Blacksmith),
+    MAKE_HANDLER_PTR(UNIT_Handler_RepairStation),
+    MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
+    MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
+    MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
+    MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
+    MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
+    MAKE_HANDLER_PTR(script_433060_ingame_menu_DA000000),
+    MAKE_HANDLER_PTR(script_424CE0_mission_outcome_modal),
+    MAKE_HANDLER_PTR(script_425400),
+    MAKE_HANDLER_PTR(UNIT_Handler_General),
+    MAKE_HANDLER_PTR(UNIT_Handler_OilTankerConvoy),
+    MAKE_HANDLER_PTR(UNIT_Handler_Scout),
+    MAKE_HANDLER_PTR(UNIT_Handler_Prison),
+    MAKE_HANDLER_PTR(UNIT_Handler_Prison),
+    MAKE_HANDLER_PTR(UNIT_AttachHandler_DockPoint),
+    MAKE_HANDLER_PTR(UNIT_Handler_Aircraft),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_4010C0),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_4010E0),
+    MAKE_HANDLER_PTR(EventHandler_Aircraft),
+    MAKE_HANDLER_PTR(entity_mode_401480_aircraft),
+    MAKE_HANDLER_PTR(entity_401530_aircraft),
+    MAKE_HANDLER_PTR(entity_mode_401600_aircraft_stru31),
+    MAKE_HANDLER_PTR(entity_mode_401660_aircraft),
+    MAKE_HANDLER_PTR(entity_401670_aircraft),
+    MAKE_HANDLER_PTR(entity_401680),
+    MAKE_HANDLER_PTR(entity_mode_4016B0_aircraft),
+    MAKE_HANDLER_PTR(entity_4017E0),
+    MAKE_HANDLER_PTR(entity_mode_401800_aircraft),
+    MAKE_HANDLER_PTR(UNIT_DmgHandler_Bomber),
+    MAKE_HANDLER_PTR(Task_context_1_BomberDmgHandler_401D10),
+    MAKE_HANDLER_PTR(Task_context_1_BomberDmgHandler_401D30),
+    MAKE_HANDLER_PTR(Task_context_1_BomberDmgHandler_401DC0),
+    MAKE_HANDLER_PTR(Task_context_1_BomberDmgHandler_401DE0),
+    MAKE_HANDLER_PTR(EventHandler_BeastEnclosure),
+    MAKE_HANDLER_PTR(entity_402150_beastenclosure),
+    MAKE_HANDLER_PTR(UNIT_Handler_BeastEnclosure),
+    MAKE_HANDLER_PTR(entity_mode_beastenclosure_set_default_production),
+    MAKE_HANDLER_PTR(entity_mode_402350_beastenclosure),
+    MAKE_HANDLER_PTR(entity_mode_beastenclosure_on_death),
+    MAKE_HANDLER_PTR(entity_mode_402440_beastenclosure),
+    MAKE_HANDLER_PTR(entity_blacksmith_on_upgrade_complete),
+    MAKE_HANDLER_PTR(MessageHandler_Blacksmith),
+    MAKE_HANDLER_PTR(UNIT_Handler_Blacksmith),
+    MAKE_HANDLER_PTR(entity_mode_402780_blacksmith),
+    MAKE_HANDLER_PTR(entity_mode_402840_blacksmith),
+    MAKE_HANDLER_PTR(entity_mode_402870_blacksmith),
+    MAKE_HANDLER_PTR(entity_mode_blacksmith_on_death),
+    MAKE_HANDLER_PTR(entity_mode_402AB0),
+    MAKE_HANDLER_PTR(entity_402AC0_is_mode_402AB0),
+    MAKE_HANDLER_PTR(entity_402BB0_set_arrive_handler),
+    MAKE_HANDLER_PTR(entity_402C40_lower_hp_mute09_surv21),
+    MAKE_HANDLER_PTR(entity_initialize_building),
+    MAKE_HANDLER_PTR(entity_sabotage),
+    MAKE_HANDLER_PTR(EventHandler_DefaultBuildingsHandler),
+    MAKE_HANDLER_PTR(script_403230_building_mini_explosion),
+    MAKE_HANDLER_PTR(script_4032F0_building_grand_explosion),
+    MAKE_HANDLER_PTR(script_403380_explosions),
+    MAKE_HANDLER_PTR(entity_mode_4034B0),
+    MAKE_HANDLER_PTR(entity_mode_403540),
+    MAKE_HANDLER_PTR(entity_mode_4035C0_building),
+    MAKE_HANDLER_PTR(entity_mode_403650_building),
+    MAKE_HANDLER_PTR(entity_mode_403720_on_prison_death__or__prolly_any_generic_building),
+    MAKE_HANDLER_PTR(entity_mode_building_default_on_death),
+    MAKE_HANDLER_PTR(entity_4038B0),
+    MAKE_HANDLER_PTR(entity_clanhall_on_upgrade_complete),
+    MAKE_HANDLER_PTR(EventHandler_Clanhall),
+    MAKE_HANDLER_PTR(entity_mode_clanhall_set_default_production),
+    MAKE_HANDLER_PTR(UNIT_Handler_Clanhall),
+    MAKE_HANDLER_PTR(entity_mode_clanhall_on_building_completed),
+    MAKE_HANDLER_PTR(entity_mode_4042A0_clanhall),
+    MAKE_HANDLER_PTR(entity_mode_clanhall_on_death_reset_production_options),
+    MAKE_HANDLER_PTR(_4318E0_free_building_production),
+    MAKE_HANDLER_PTR(entity_mode_clanhall_on_death),
+    MAKE_HANDLER_PTR(entity_4054D0_tanker_convoy),
+    MAKE_HANDLER_PTR(EventHandler_TankerConvoy),
+    MAKE_HANDLER_PTR(entity_mode_405680_tanker_convoy),
+    MAKE_HANDLER_PTR(entity_mode_405690),
+    MAKE_HANDLER_PTR(entity_405750_tanker_convoy),
+    MAKE_HANDLER_PTR(UNIT_Handler_OilTankerConvoy),
+    MAKE_HANDLER_PTR(UNIT_Handler_MobileDerrick),
+    MAKE_HANDLER_PTR(entity_mode_406CC0_mobilederrick),
+    MAKE_HANDLER_PTR(EventHandler_MobileDerrick),
+    MAKE_HANDLER_PTR(entity_mode_406DC0_mobilederrick),
+    MAKE_HANDLER_PTR(entity_mode_plant_mobile_derrick),
+    MAKE_HANDLER_PTR(entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant),
+    MAKE_HANDLER_PTR(UNIT_Handler_OilPatch),
+    MAKE_HANDLER_PTR(EventHandler_Prison),
+    MAKE_HANDLER_PTR(nullsub_1),
+    MAKE_HANDLER_PTR(UNIT_Handler_Prison),
+    MAKE_HANDLER_PTR(entity_mode_407300_prison),
+    MAKE_HANDLER_PTR(entity_mode_407390_prison),
+    MAKE_HANDLER_PTR(entity_mode_prison_spawn_unit),
+    MAKE_HANDLER_PTR(entity_mode_prison_on_death),
+    MAKE_HANDLER_PTR(UNIT_Handler_Prison),
+    MAKE_HANDLER_PTR(entity_mode_prison_spawn_unit_surv09),
+    MAKE_HANDLER_PTR(entity_mode_prison_on_death_surv09),
+    MAKE_HANDLER_PTR(EventHandler_TechBunker),
+    MAKE_HANDLER_PTR(entity_4075F0_techbunker),
+    MAKE_HANDLER_PTR(entity_407690_techbunker_spawn),
+    MAKE_HANDLER_PTR(entity_mode_407870_techbubker),
+    MAKE_HANDLER_PTR(entity_mode_407950_techbunker_spawn_generic),
+    MAKE_HANDLER_PTR(entity_mode_4079F0_techbunker_spawn10_surv18_lvl),
+    MAKE_HANDLER_PTR(entity_mode_407A90_techbunker),
+    MAKE_HANDLER_PTR(entity_mode_407B70_techbunker),
+    MAKE_HANDLER_PTR(UNIT_Handler_TechBunker),
+    MAKE_HANDLER_PTR(entity_mode_407C20_on_death_tech_bunker),
+    MAKE_HANDLER_PTR(entity_mode_407C60_on_death_tech_bunker),
+    MAKE_HANDLER_PTR(entity_mode_407D10),
+    MAKE_HANDLER_PTR(entity_mode_hut_on_death),
+    MAKE_HANDLER_PTR(entity_mode_407DA0),
+    MAKE_HANDLER_PTR(EventHandler_Hut),
+    MAKE_HANDLER_PTR(entity_mode_407E70_hut),
+    MAKE_HANDLER_PTR(entity_mode_407F00_hut),
+    MAKE_HANDLER_PTR(UNIT_Handler_Hut),
+    MAKE_HANDLER_PTR(EventHandler_DrillRig),
+    MAKE_HANDLER_PTR(UNIT_Handler_DrillRig),
+    MAKE_HANDLER_PTR(entity_mode_4081C0_drillrig),
+    MAKE_HANDLER_PTR(entity_mode_408240_drillrig),
+    MAKE_HANDLER_PTR(entity_mode_408260_drillrig),
+    MAKE_HANDLER_PTR(entity_mode_drillrig_on_death),
+    MAKE_HANDLER_PTR(UNIT_Handler_Vehicle),
+    MAKE_HANDLER_PTR(UNIT_Handler_Infantry),
+    MAKE_HANDLER_PTR(entity_mode_415540_infantry),
+    MAKE_HANDLER_PTR(entity_mode_415690),
+    MAKE_HANDLER_PTR(entity_mode_4157F0),
+    MAKE_HANDLER_PTR(entity_4158B0),
+    MAKE_HANDLER_PTR(entity_mode_415980),
+    MAKE_HANDLER_PTR(entity_415A20),
+    MAKE_HANDLER_PTR(entity_mode_415A60_vehicle_rotate),
+    MAKE_HANDLER_PTR(entity_mode_move_attack),
+    MAKE_HANDLER_PTR(entity_mode_attack_move_1_415D30),
+    MAKE_HANDLER_PTR(entity_mode_416060),
+    MAKE_HANDLER_PTR(entity_mode_attack_move_2_5_4165C0),
+    MAKE_HANDLER_PTR(entity_mode_416790_vehicle_move),
+    MAKE_HANDLER_PTR(entity_mode_416A70_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_416CD0),
+    MAKE_HANDLER_PTR(entity_mode_416EB0),
+    MAKE_HANDLER_PTR(entity_mode_417100),
+    MAKE_HANDLER_PTR(entity_4172D0),
+    MAKE_HANDLER_PTR(entity_mode_417360_infantry),
+    MAKE_HANDLER_PTR(entity_mode_attack_move_4_417550),
+    MAKE_HANDLER_PTR(entity_mode_417670),
+    MAKE_HANDLER_PTR(entity_417810),
+    MAKE_HANDLER_PTR(entity_417980),
+    MAKE_HANDLER_PTR(entity_mode_417A20),
+    MAKE_HANDLER_PTR(entity_mode_417BD0),
+    MAKE_HANDLER_PTR(entity_mode_attack_move_4_order_3_7_417E60),
+    MAKE_HANDLER_PTR(entity_mode_417F50),
+    MAKE_HANDLER_PTR(entity_417F60),
+    MAKE_HANDLER_PTR(entity_mode_417FC0),
+    MAKE_HANDLER_PTR(entity_418120),
+    MAKE_HANDLER_PTR(entity_418170),
+    MAKE_HANDLER_PTR(entity_mode_4181B0),
+    MAKE_HANDLER_PTR(entity_418290),
+    MAKE_HANDLER_PTR(entity_mode_418550),
+    MAKE_HANDLER_PTR(entity_mode_418590),
+    MAKE_HANDLER_PTR(entity_4187F0),
+    MAKE_HANDLER_PTR(script_418A10),
+    MAKE_HANDLER_PTR(entity_mode_418B30),
+    MAKE_HANDLER_PTR(entity_mode_418D20),
+    MAKE_HANDLER_PTR(entity_mode_418E90),
+    MAKE_HANDLER_PTR(entity_mode_418F60),
+    MAKE_HANDLER_PTR(entity_mode_418FE0),
+    MAKE_HANDLER_PTR(entity_mode_419180),
+    MAKE_HANDLER_PTR(entity_mode_419230),
+    MAKE_HANDLER_PTR(entity_4192F0),
+    MAKE_HANDLER_PTR(entity_mode_419390_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_move_tanker),
+    MAKE_HANDLER_PTR(entity_419560_on_death),
+    MAKE_HANDLER_PTR(entity_419720),
+    MAKE_HANDLER_PTR(entity_mode_419760_infantry_destroyed),
+    MAKE_HANDLER_PTR(entity_mode_4197E0_infantry),
+    MAKE_HANDLER_PTR(EventHandler_Infantry),
+    MAKE_HANDLER_PTR(EventHandler_419CA0),
+    MAKE_HANDLER_PTR(EventHandler_General_Scout),
+    MAKE_HANDLER_PTR(EventHandler_419DF0),
+    MAKE_HANDLER_PTR(EventHandler_419E80),
+    MAKE_HANDLER_PTR(entity_machineshop_on_upgrade_complete),
+    MAKE_HANDLER_PTR(EventHandler_MachineShop),
+    MAKE_HANDLER_PTR(entity_4220B0_machineshop),
+    MAKE_HANDLER_PTR(UNIT_Handler_MachineShop),
+    MAKE_HANDLER_PTR(entity_mode_machineshop_set_default_production),
+    MAKE_HANDLER_PTR(entity_mode_machineshop_on_death_no_default),
+    MAKE_HANDLER_PTR(entity_mode_4223A0_machineshop),
+    MAKE_HANDLER_PTR(entity_mode_machineshop_on_death),
+    MAKE_HANDLER_PTR(script_424BF0_mobd_20_handler),
+    MAKE_HANDLER_PTR(_424CA0_script_47A3CC_evttrigger),
+    MAKE_HANDLER_PTR(_424CC0_script_47A3CC_evttrigger),
+    MAKE_HANDLER_PTR(script_424CE0_mission_outcome_modal),
+    MAKE_HANDLER_PTR(sub_4250E0),
+    MAKE_HANDLER_PTR(sub_4251B0),
+    MAKE_HANDLER_PTR(script_4252C0),
+    MAKE_HANDLER_PTR(script_425400),
+    MAKE_HANDLER_PTR(entity_check_special_mission_death_conditions),
+    MAKE_HANDLER_PTR(entity_find_player_entity_in_radius),
+    MAKE_HANDLER_PTR(entity_4258C0_init_palettes_inc_unit_counter),
+    MAKE_HANDLER_PTR(entity_mode_425920_scout),
+    MAKE_HANDLER_PTR(entity_425A50_setup_spawn),
+    MAKE_HANDLER_PTR(UNIT_Handler_General),
+    MAKE_HANDLER_PTR(UNIT_Handler_Scout),
+    MAKE_HANDLER_PTR(_425EC0_entities_check_modes),
+    MAKE_HANDLER_PTR(FindEntityBySideAndType),
+    MAKE_HANDLER_PTR(script_425F50_stru48_stru51_tech_bunkers),
+    MAKE_HANDLER_PTR(script_425BE0_check_special_victory_conditions),
+    MAKE_HANDLER_PTR(handler_4267F0),
+    MAKE_HANDLER_PTR(nullsub_1),
+    MAKE_HANDLER_PTR(script_426710_mission_objectives_draw_x_mark),
+    MAKE_HANDLER_PTR(_4268B0_4269B0_task_attachment_handler),
+    MAKE_HANDLER_PTR(_426860_4269B0_task_attachment_handler),
+    MAKE_HANDLER_PTR(task_4269B0_mobd_20_handler),
+    MAKE_HANDLER_PTR(UNIT_Handler_MobileOutpost),
+    MAKE_HANDLER_PTR(entity_mode_4278C0_mobile_outpost),
+    MAKE_HANDLER_PTR(MessageHandler_MobileOutpost),
+    MAKE_HANDLER_PTR(nullsub_2),
+    MAKE_HANDLER_PTR(entity_427BB0_mobile_outpost_clanhall_planting),
+    MAKE_HANDLER_PTR(entity_mode_427BF0_mobile_outpost_clanhall_planting),
+    MAKE_HANDLER_PTR(entity_427C30_after_mobile_outpost_clanhall_wagon_plant),
+    MAKE_HANDLER_PTR(entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant),
+    MAKE_HANDLER_PTR(EventHandler_4089B0_generic_ai),
+    MAKE_HANDLER_PTR(script_409770_ai),
+    MAKE_HANDLER_PTR(script_40B700_ai),
+    MAKE_HANDLER_PTR(EventHandler_42D6B0_evolved_mission8_ai),
+    MAKE_HANDLER_PTR(script_42DA90_ai),
+    MAKE_HANDLER_PTR(script_42DC70_ai),
+    MAKE_HANDLER_PTR(EventHandler_42DC90_evolved_mission5_ai),
+    MAKE_HANDLER_PTR(script_42DE80),
+    MAKE_HANDLER_PTR(script_42DF20),
+    MAKE_HANDLER_PTR(stru24_42DF40),
+    MAKE_HANDLER_PTR(stru24_42E030),
+    MAKE_HANDLER_PTR(stru24_42E070),
+    MAKE_HANDLER_PTR(entity_outpost_on_upgrade_complete),
+    MAKE_HANDLER_PTR(EventHandler_Outpost),
+    MAKE_HANDLER_PTR(entity_mode_outpost_enable_basic_construction),
+    MAKE_HANDLER_PTR(UNIT_Handler_Outpost),
+    MAKE_HANDLER_PTR(entity_mode_outpost_set_default_production),
+    MAKE_HANDLER_PTR(entity_mode_431680_outpost_arrive),
+    MAKE_HANDLER_PTR(entity_mode_outpost_on_death_update_production),
+    MAKE_HANDLER_PTR(_4318E0_free_building_production),
+    MAKE_HANDLER_PTR(entity_mode_outpost_on_death),
+    MAKE_HANDLER_PTR(EventHandler_PowerStation),
+    MAKE_HANDLER_PTR(UNIT_Handler_PowerStation),
+    MAKE_HANDLER_PTR(entity_mode_powerstation_spawn_tanker),
+    MAKE_HANDLER_PTR(entity_mode_powerstation_completed),
+    MAKE_HANDLER_PTR(entity_mode_powerstation_on_death),
+    MAKE_HANDLER_PTR(UNIT_DmgHandler_Sapper),
+    MAKE_HANDLER_PTR(script_435CF0_rocket_dmg_handler),
+    MAKE_HANDLER_PTR(script_435D40_bombers_dmg),
+    MAKE_HANDLER_PTR(UNIT_DmgHandler_Rocket),
+    MAKE_HANDLER_PTR(script_436140_flamethrower_dmg_handler),
+    MAKE_HANDLER_PTR(UNIT_DmgHandler_Flamethrower),
+    MAKE_HANDLER_PTR(script_4363C0_giant_bettle_dmg),
+    MAKE_HANDLER_PTR(UNIT_DmgHandler_Beetle),
+    MAKE_HANDLER_PTR(script_4368B0_plasma_tank_dmg_handler),
+    MAKE_HANDLER_PTR(UNIT_DmgHandler_Mech),
+    MAKE_HANDLER_PTR(script_436FB0_dmg_handler),
+    MAKE_HANDLER_PTR(script_436FF0_rifle_dmg_handler),
+    MAKE_HANDLER_PTR(script_4370D0_gort_dmg_handler),
+    MAKE_HANDLER_PTR(UNIT_DmgHandler_GORT),
+    MAKE_HANDLER_PTR(UNIT_DmgHandler_Rifle),
+    MAKE_HANDLER_PTR(sub_437690),
+    MAKE_HANDLER_PTR(UNIT_DmgHandler_Bow),
+    MAKE_HANDLER_PTR(UNIT_DmgHandler_Projectile),
+    MAKE_HANDLER_PTR(EventHandler_RepairStation),
+    MAKE_HANDLER_PTR(UNIT_Handler_RepairStation),
+    MAKE_HANDLER_PTR(UNIT_Handler_RepairStation),
+    MAKE_HANDLER_PTR(entity_mode_437F30_repairstation),
+    MAKE_HANDLER_PTR(EventHandler_UpgradeProcess),
+    MAKE_HANDLER_PTR(EntityUpgradeAttachment_438000),
+    MAKE_HANDLER_PTR(EntityUpgradeAttachment_438030),
+    MAKE_HANDLER_PTR(EntityUpgradeAttachment_438160_handler),
+    MAKE_HANDLER_PTR(script_4381A0_upgrade_process),
+    MAKE_HANDLER_PTR(EventHandler_ResearchBuilding),
+    MAKE_HANDLER_PTR(UNIT_Handler_ResearchBuilding),
+    MAKE_HANDLER_PTR(UNIT_Handler_ResearchBuilding),
+    MAKE_HANDLER_PTR(entity_mode_researchlab_completed),
+    MAKE_HANDLER_PTR(entity_mode_researchlab_on_death),
+    MAKE_HANDLER_PTR(script_438B80_on_death_infantry_gore),
+    MAKE_HANDLER_PTR(script_438C20_on_death_explosion),
+    MAKE_HANDLER_PTR(entity_mode_4444D0_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_4444F0_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_444590_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_444630_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_4446B0_oiltanker_load_oil),
+    MAKE_HANDLER_PTR(entity_mode_4447C0_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_4448C0_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_4449D0_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_444A40_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_444AB0_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_444B40_oiltanker_unload_oil),
+    MAKE_HANDLER_PTR(entity_mode_444CC0_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_444D10_oiltanker),
+    MAKE_HANDLER_PTR(entity_mode_4446A0_oiltanker),
+    MAKE_HANDLER_PTR(EventHandler_OilTanker),
+    MAKE_HANDLER_PTR(script_401C30_sidebar),
+    MAKE_HANDLER_PTR(Task_context_0_4019A0),
+    MAKE_HANDLER_PTR(Task_context_0_401A40),
+    MAKE_HANDLER_PTR(Task_context_0_401A80),
+    MAKE_HANDLER_PTR(Task_context_0_401AF0),
+    MAKE_HANDLER_PTR(EventHandler_401B80),
+    MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
+    MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
+    MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
+    MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
+    MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
+    MAKE_HANDLER_PTR(UNIT_Handler_Towers),
+    MAKE_HANDLER_PTR(entity_mode_4474D0_towers),
+    MAKE_HANDLER_PTR(entity_mode_4474E0_towers),
+    MAKE_HANDLER_PTR(entity_mode_tower_on_death),
+    MAKE_HANDLER_PTR(entity_mode_tower_dead),
+    MAKE_HANDLER_PTR(EventHandler_Towers),
+    MAKE_HANDLER_PTR(UNIT_AttachHandler_Turret),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_447C40),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_447CA0),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_447DD0),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_447E20),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_447F50),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_447FA0),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_448110),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_448160),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_448230),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_448290),
+    MAKE_HANDLER_PTR(EntityTowerAttachment_handler_4482D0_missile_battery),
+    MAKE_HANDLER_PTR(nullsub_1),
+    MAKE_HANDLER_PTR(MessageHandler_TowersAttachment),
+    MAKE_HANDLER_PTR(UNIT_AttachHandler_Turret),
+    MAKE_HANDLER_PTR(tower_attachment_handler_448980),
+    MAKE_HANDLER_PTR(tower_attachment_handler_4489B0),
+    MAKE_HANDLER_PTR(tower_attachment_handler_448B40),
+    MAKE_HANDLER_PTR(tower_attachment_handler_448BF0),
+    MAKE_HANDLER_PTR(tower_attachment_handler_448C40),
+    MAKE_HANDLER_PTR(tower_attachment_handler_448E90),
+    MAKE_HANDLER_PTR(MessageHandler_448EC0),
+    MAKE_HANDLER_PTR(script_44BE60_explosions),
+    MAKE_HANDLER_PTR(UNIT_AttachHandler_DockPoint),
+    MAKE_HANDLER_PTR(EntityTurret_44BF00_handler),
+    MAKE_HANDLER_PTR(EntityTurret_44BF70),
+    MAKE_HANDLER_PTR(sub_44BFC0),
+    MAKE_HANDLER_PTR(MessageHandler_EntityScript),
 };
-int num_script_handlers = 353; // weak
+
+int get_num_handlers() {
+    return sizeof(script_handlers) / sizeof(script_handlers[0]);
+}
 
 
 void *get_handler(int handler_id) {
@@ -917,7 +940,7 @@ const char *get_handler_name(int handler_id) {
 }
 
 int get_handler_id(void *function) {
-    for (int i = 0; i < num_script_handlers; ++i) {
+    for (int i = 0; i < get_num_handlers(); ++i) {
         if (script_handlers[i].function == function) {
             return i;
         }
@@ -925,49 +948,74 @@ int get_handler_id(void *function) {
     return -1;
 }
 
+ScriptHandler other_unsorted_handlers[] = {
+    MAKE_HANDLER_PTR(script_mobd79_evt1__main_menu_play_mission),
+    MAKE_HANDLER_PTR(script_mobd79_evt1__main_menu_new_missions),
+    MAKE_HANDLER_PTR(script_mobd79_evt1__main_menu_kaos_mode),
+    MAKE_HANDLER_PTR(script_mobd79__main_menu_mouse_handler),
+    MAKE_HANDLER_PTR(script_sidebar),
+    MAKE_HANDLER_PTR(script_40F5D0_sidebar_button_1_2),
+    MAKE_HANDLER_PTR(script_40F8F0_sidebar_button_3),
+    MAKE_HANDLER_PTR(script_show_message_ex),
+    MAKE_HANDLER_PTR(script_show_message),
+    MAKE_HANDLER_PTR(script_evt39030_handler),
+    MAKE_HANDLER_PTR(script_44A500_fog_of_war),
+    MAKE_HANDLER_PTR(script_4280A0_stru38_list__production_loop),
+};
+
+
+const char *get_handler_name(void *function) {
+    int unit_handler_id = get_handler_id(function);
+    if (unit_handler_id >= 0) {
+        return script_handlers[unit_handler_id].function_name;
+    }
+
+    auto script_name = get_script_name(function);
+    if (script_name) {
+        return script_name;
+    }
+
+    for (int i = 0; i < sizeof(other_unsorted_handlers) / sizeof(*other_unsorted_handlers); ++i) {
+        if (other_unsorted_handlers[i].function == function) {
+            return other_unsorted_handlers[i].function_name;
+        }
+    }
+
+    __debugbreak();
+    return nullptr;
+}
+
+
+const int script_pool_size = 2000;
 //----- (00445170) --------------------------------------------------------
 bool script_list_alloc(int coroutine_stack_size)
 {
-    int v1; // esi@1
-    Script *result; // eax@3
-    int v3; // ecx@5
+    if (script_event_list_alloc()) {
+        script_list = new Script[script_pool_size];
+        for (int i = 0; i < script_pool_size - 1; ++i) {
+            script_list[i].next = &script_list[i + 1];
+        }
+        script_list[script_pool_size - 1].next = nullptr;
+        script_list_free_pool = script_list;
+        script_execute_list = (Script *)&script_execute_list;
 
-    v1 = coroutine_stack_size;
-    if (!coroutine_stack_size)
-        v1 = 1048576;
-    result = (Script *)script_event_list_alloc();
-    if (result)
-    {
-        result = (Script *)malloc(0x21340u);
-        script_list = result;
-        if (result)
-        {
-            v3 = 0;
-            do
-            {
-                result[v3].next = &result[v3 + 1];
-                result = script_list;
-                ++v3;
-            } while (v3 < 1999);
-            script_list[1999].next = 0;
-            script_list_free_pool = script_list;
-            script_execute_list = (Script *)&script_execute_list;
-            script_list_47C714 = (Script *)&script_execute_list;
-            result = (Script *)coroutine_list_alloc();
-            if (result)
-            {
-                coroutine_default_stack_size = v1;
-                coroutine_current = coroutine_list_head;
-                is_coroutine_list_initialization_failed = 0;
-                result = (Script *)1;
+        if (coroutine_list_alloc()) {
+            if (coroutine_stack_size <= 0) {
+                coroutine_stack_size = 1 * 1024 * 1024; // 1M
             }
+
+            coroutine_default_stack_size = coroutine_stack_size;
+            coroutine_current = coroutine_list_head;
+            is_coroutine_list_initialization_failed = 0;
+
+            return true;
         }
     }
-    return (BOOL)result;
+    return false;
 }
 
 //----- (00445210) --------------------------------------------------------
-Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size, const char *debug_handler_name)
+Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size)
 {
     Script *v3; // esi@1
 
@@ -980,9 +1028,9 @@ Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *),
         v3->script_type = type;
         v3->routine_type = SCRIPT_COROUTINE;
 
-        auto coroutine = couroutine_create(coroutine_main, debug_handler_name);
+        auto coroutine = couroutine_create(coroutine_main, get_handler_name(handler));
         v3->handler = (void(*)(Script *))coroutine;
-        v3->debug_handler_name = debug_handler_name;
+        v3->debug_handler_name = get_handler_name(handler);
 
         if (coroutine)
         {
@@ -1002,7 +1050,7 @@ Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *),
 }
 
 //----- (004452B0) --------------------------------------------------------
-Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *), const char *function_name)
+Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *))
 {
     Script *v2; // esi@1
     Script *result; // eax@2
@@ -1016,7 +1064,7 @@ Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *),
         v2->script_type = type;
         v2->routine_type = SCRIPT_FUNCTION;
         v2->handler = function;
-        v2->debug_handler_name = function_name;
+        v2->debug_handler_name = get_handler_name(function);
         if (function)
         {
             script_execute_list_prepend(v2);

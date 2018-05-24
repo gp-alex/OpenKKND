@@ -2127,7 +2127,7 @@ void script_game_cursor_handler(Script *a1)
             }
             if (!_47A730_render_string)
             {
-                script_create_coroutine(SCRIPT_TYPE_INVALID, script_42D390_cursors, 0, "script_42D390_cursors");
+                script_create_coroutine(SCRIPT_TYPE_INVALID, script_42D390_cursors, 0);
                 v8 = _47A700_input._10_wndproc_mapped_key;
             }
             cursor_load_mobd(&v62, CURSOR_MOBD_OFFSET_DEFAULT);

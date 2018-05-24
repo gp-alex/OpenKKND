@@ -585,7 +585,7 @@ void script_425400(Script *a1)
     char v13; // al@49
 
     dword_47A180 = 0;
-    script_create_coroutine(SCRIPT_TYPE_INVALID, script_425BE0_check_special_victory_conditions, 0, "script_425BE0_check_special_victory_conditions");
+    script_create_coroutine(SCRIPT_TYPE_INVALID, script_425BE0_check_special_victory_conditions, 0);
     if (_47C6D8_use__466098_cost_multipliers)
     {
         v1 = a1;

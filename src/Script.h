@@ -104,10 +104,10 @@ Script *script_execute_list_first();
 Script *script_execute_list_end();
 bool script_execute_list_prepend(Script *script);
 
-Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size, const char *debug_handler_name);
+Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size);
 
 bool script_list_alloc(int coroutine_stack_size = 0);
-Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *), const char *function_name);
+Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *));
 void script_deinit(Script *a1);
 int script_445370_yield_to_main_thread(Script *a1, int flags, int a3);
 void *script_create_local_object(Script *a1, int size);
@@ -121,7 +121,10 @@ Script *create_script(int script_id);
 int get_script_type(int script_id);
 enum UNIT_ID get_script_unit_id(int script_id);
 enum MOBD_ID get_script_mobd(int script_id);
+const char *get_script_name(int script_id);
 
 void *get_handler(int handler_id);
-const char *get_handler_name(int handler_id);
 int get_handler_id(void *function);
+
+const char *get_handler_name(int handler_id);
+const char *get_handler_name(void *function);

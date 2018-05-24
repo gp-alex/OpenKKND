@@ -252,7 +252,7 @@ SidebarButton *sidebar_add_button_1(Sidebar *sidebar, int mobd_lookup_table_offs
 SidebarButton *sidebar_add_button_2(Sidebar *sidebar, int mobd_lookup_table_offset, void(*button_open_handler)(SidebarButton *), void(*button_close_handler)(SidebarButton *), void *task_context); // idb
 SidebarButton *sidebar_add_button_3(Sidebar *sidebar, int mobd_lookup_table_offset, void(*button_open_handler)(SidebarButton *), void(*button_close_handler)(SidebarButton *), void *task_context); // idb
 SidebarButton *sidebar_add_button_4(Sidebar *sidebar, int mobd_lookup_table_offset, void(*button_open_handler)(SidebarButton *), int a4, int a5, void *param, enum UNIT_ID a7); // idb
-SidebarButton *sidebar_add_buttton_internal(Sidebar *a1, int mobd_lookup_table_offset, void(*task_routine)(Script *), void(*open_handler)(SidebarButton *), void(*close_handler)(SidebarButton *), void *param, void *task_context, enum SCRIPT_TYPE event, const char *task_routine_name); // idb
+SidebarButton *sidebar_add_buttton_internal(Sidebar *a1, int mobd_lookup_table_offset, void(*task_routine)(Script *), void(*open_handler)(SidebarButton *), void(*close_handler)(SidebarButton *), void *param, void *task_context, enum SCRIPT_TYPE event); // idb
 void sidebar_remove_button(Sidebar *a1, SidebarButton *a2); // idb
 void sidebar_list_remove(Sidebar *a1);
 void sidebar_list_free();
@@ -473,7 +473,7 @@ void drawjob_update_handler_426C40_mobd(Sprite *a1, DrawJob *a2);
 bool sprite_list_alloc();
 void sprite_init_47A400();
 Sprite *sprite_create(enum MOBD_ID mobd_item_idx, Script *script, Sprite *parent);
-Sprite *sprite_create_scripted(enum MOBD_ID mobd_item_idx, Sprite *parent, void(*script)(Script *), enum SCRIPT_ROUTINE_TYPE task_type, Entity_stru_dmg_related *a5, const char *script_name);
+Sprite *sprite_create_scripted(enum MOBD_ID mobd_item_idx, Sprite *parent, void(*script)(Script *), enum SCRIPT_ROUTINE_TYPE task_type, Entity_stru_dmg_related *a5);
 void sprite_list_remove(Sprite *a1);
 void sprite_list_remove_scripted(Sprite *a1);
 Sprite *sprite_list_find_by_mobd_id(enum MOBD_ID mobd_id);
@@ -675,15 +675,6 @@ int nullsub_3(void);
 Script *netz_43BA90_create_script_43BA70();
 void sub_43BAA0();
 void _43BAB0_move_cursor(Sprite *a1);
-void script_mobd79__main_menu_mouse_handler(Script *a1); // idb
-void script_43C040_cursors_handler(Script *a1);
-void script_mobd79_evt1__main_menu_new_game(Script *a1);
-void script_mobd79_evt19__main_menu_load(Script *a1); // idb
-void script_mobd79_evt1__main_menu_play_mission(Script *a1); // idb
-void script_mobd79_evt1__main_menu_new_missions(Script *a1); // idb
-void script_mobd79_evt1__main_menu_kaos_mode(Script *a1); // idb
-void script_mobd79_evt1__main_menu_multiplayer(Script *a1); // idb
-void script_mobd79_evt1__main_menu_quit(Script *a1); // idb
 void script_43CD20_mobd45_begin_surv_campaign(Script *a1);
 void script_43CE30_mobd45_begin_mute_campaign(Script *a1);
 void script_43CF50_mobd45(Script *a1);
@@ -917,7 +908,6 @@ int entity_44D000_boxd(Entity *a1);
 _DWORD *boxd_44D250(_DWORD *a1, _DWORD *a2, int a3, Entity *a4, int *a5);
 bool boxd_44D340(int *out_x, int *out_y, int a3, Entity *a1, int *out_idx);
 void message_pump();
-int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
 int nullsub_4();
 VideoFile *VIDEO_ReadFile(const char *video_name);
 void VIDEO_Clean(VideoFile *video); // idb
@@ -926,7 +916,15 @@ __int16 video_45A110(VideoFile *a1, VideoFileFrame *frame); // idb
 FILE *j_fopen_weirdmode_3(const char *a1);
 _BYTE *sub_45A48E(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8);
 _BYTE *sub_45D3B8(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8, int a9);
-
+void script_mobd79__main_menu_mouse_handler(Script *a1); // idb
+void script_43C040_cursors_handler(Script *a1);
+void script_mobd79_evt1__main_menu_new_game(Script *a1);
+void script_mobd79_evt19__main_menu_load(Script *a1); // idb
+void script_mobd79_evt1__main_menu_play_mission(Script *a1); // idb
+void script_mobd79_evt1__main_menu_new_missions(Script *a1); // idb
+void script_mobd79_evt1__main_menu_kaos_mode(Script *a1); // idb
+void script_mobd79_evt1__main_menu_multiplayer(Script *a1); // idb
+void script_mobd79_evt1__main_menu_quit(Script *a1); // idb
 
 SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id);
 SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced);

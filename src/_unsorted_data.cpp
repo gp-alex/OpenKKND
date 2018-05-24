@@ -2349,7 +2349,6 @@ LevelDesc levels[68] =
 const char *errmsg_save[2] = { "unknown error", "non-specific" };
 char aMemory[7] = "memory"; // weak
 char aUnitDS[] = "unit %d %s"; // idb
-char aBadUpgradeTask[17] = "bad upgrade task"; // weak
 char aTaskIsWrongTyp[19] = "task is wrong type"; // weak
 char aBadConstructs[15] = "bad constructs"; // weak
 char aBadMode[9] = "bad mode"; // weak

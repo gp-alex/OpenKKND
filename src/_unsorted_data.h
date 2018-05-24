@@ -78,7 +78,6 @@ extern LevelDesc levels[68];
 extern const char *errmsg_save[2];
 extern char aMemory[7]; // weak
 extern char aUnitDS[]; // idb
-extern char aBadUpgradeTask[17]; // weak
 extern char aTaskIsWrongTyp[19]; // weak
 extern char aBadConstructs[15]; // weak
 extern char aBadMode[9]; // weak

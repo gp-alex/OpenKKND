@@ -4687,11 +4687,11 @@ void entity_mode_418B30(Entity *a1)
                     v12 = 1;
                 if (!v12)
                 {
-                    v15 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_418A10, 0, "script_418A10");
+                    v15 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_418A10, 0);
                 }
                 else
                 {
-                    v15 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_4188F0, 0, "script_4188F0");
+                    v15 = script_create_coroutine(SCRIPT_TYPE_INVALID, script_4188F0, 0);
                 }
                 if (v1->player_side == player_side)
                 {

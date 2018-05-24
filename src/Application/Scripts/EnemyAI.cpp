@@ -2772,7 +2772,7 @@ int UNIT_InitAiPlayers()
         {
             if (dword_470510[v83+1] == 1 && dword_464DCC)
             {
-                v61 = script_create_function(SCRIPT_TYPE_INVALID, script_42DF20, "script_42DF20");
+                v61 = script_create_function(SCRIPT_TYPE_INVALID, script_42DF20);
                 *v60 = v61;
                 v61->script_type = SCRIPT_TYPE_39030;
                 (*v60)->event_handler = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))EventHandler_42DC90_evolved_mission5_ai;
