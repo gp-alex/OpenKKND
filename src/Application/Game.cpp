@@ -145,6 +145,7 @@ void Game::Run() {
                         break;
                 }
                 GAME_PrepareLevel();
+                //create_script(196);
                 game_state = 0;
                 do
                 {

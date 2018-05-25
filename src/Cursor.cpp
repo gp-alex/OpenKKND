@@ -138,6 +138,8 @@ void cursor_classify_selected_unit(_428940_local *a1, Entity *v19)
     }
 }
 
+
+
 //----- (0042C9E0) --------------------------------------------------------
 void cursor_drag_selection(_428940_local *a1, int x, int y)
 {

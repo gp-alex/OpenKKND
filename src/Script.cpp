@@ -270,8 +270,7 @@ ScriptDescType4 stru_46FCB8 = { MOBD_79,                        SCRIPT_DESC_HAND
 ScriptDescType4 stru_46FCD0 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_mobd79_evt1__main_menu_multiplayer), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FCE8 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_mobd79_evt1__main_menu_new_game), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 
-ScriptDescType4 *scripts[196] =
-{
+ScriptDescType4 *scripts[] = {
     (ScriptDescType4 *)&stru_46E5B0,
     (ScriptDescType4 *)&stru_46E5D8,
     (ScriptDescType4 *)&stru_46E5F8,
@@ -352,7 +351,7 @@ ScriptDescType4 *scripts[196] =
     &stru_46ED60,
     &stru_46ED78,
     &stru_46ED90,
-    &stru_46EDA8,
+    &stru_46EDA8, // 80
     &stru_46EDC0,
     &stru_46EDD8,
     &stru_46EDF0,
@@ -467,7 +466,7 @@ ScriptDescType4 *scripts[196] =
     &stru_46FCA0,
     &stru_46FCB8,
     &stru_46FCD0,
-    &stru_46FCE8
+    &stru_46FCE8,
 };
 
 
@@ -1213,7 +1212,7 @@ void script_terminate(Script *a1)
     }
 }
 
-Script *script_terminate_internal(Script *i) {
+void script_terminate_internal(Script *i) {
     Script *v1;
     ScriptLocalObject *v2; // eax@3
     ScriptLocalObject *v3; // ebx@4
@@ -1238,8 +1237,6 @@ Script *script_terminate_internal(Script *i) {
     if (v1->routine_type == SCRIPT_COROUTINE)
         coroutine_list_remove((Coroutine *)v1->handler);
     v1->handler = 0;
-
-    return i;
 }
 
 //----- (00402A30) --------------------------------------------------------
@@ -1262,7 +1259,8 @@ void script_list_update()
     for (i = script_execute_list_first(); i != script_execute_list_end(); i = i->next)
     {
         if (i->flags_20 & SCRIPT_FLAGS_20_TERMINATE) {
-            i = script_terminate_internal(i);
+            i = i->prev;
+            script_terminate_internal(i->next);
         }
         else {
             if (i->num_runs_to_skip > 0)
