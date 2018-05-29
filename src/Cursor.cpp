@@ -732,9 +732,11 @@ LABEL_82:
     {
         v41 = 0;
     }
-    v42 = _478AA8_boxd_stru0_array[v40 + _4793F8_map_width * v41].flags;
+
+    auto tile = &_478AA8_boxd_stru0_array[v40 + _4793F8_map_width * v41];
+    v42 = tile->flags;
     v43 = v2->_14_task;
-    v2->_34_is_cursor_over_impassible_terrain = v42 & DataBoxd_stru0_per_map_unit__flags__impassible_terrain;
+    v2->_34_is_cursor_over_impassible_terrain = tile->IsImpassibleTerrain();
     for (j = script_get_next_event(v43); j; j = script_get_next_event(v2->_14_task))
     {
         v45 = j->event;

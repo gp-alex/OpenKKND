@@ -78,8 +78,8 @@ bool is_bomber(UNIT_ID unitId) {
 
 int entity_get_dx(Entity *entity)
 {
-    if (entity->stats->is_infantry)
-        return entity_40F0A0_get_dx(entity, entity->field_A4);
+    if (entity->IsInfantry())
+        return entity_40F0A0_get_dx(entity, entity->_A4_idx_in_tile);
     else
         return entity->stats->field_4C != 128 ? 7424 : 4096;
 }
@@ -87,20 +87,24 @@ int entity_get_dx(Entity *entity)
 int entity_get_dy(Entity *entity)
 {
     if (entity->stats->is_infantry)
-        return entity_40F100_get_dy(entity, entity->field_A4);
+        return entity_40F100_get_dy(entity, entity->_A4_idx_in_tile);
     else
         return entity->stats->field_4C != 128 ? 7424 : 4096;
 }
 
+int tile_global_coord(int coordinate) {
+    // global coordinates are << 13
+    return coordinate & 0xFFFFE000;
+}
 
 int entity_transform_x(Entity *entity, int x)
 {
-    return entity_get_dx(entity) + (x & 0xFFFFE000);
+    return entity_get_dx(entity) + tile_global_coord(x);
 }
 
 int entity_transform_y(Entity *entity, int y)
 {
-    return entity_get_dy(entity) + (y & 0xFFFFE000);
+    return entity_get_dy(entity) + tile_global_coord(y);
 }
 
 

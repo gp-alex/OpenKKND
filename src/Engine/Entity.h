@@ -69,6 +69,14 @@ enum ENTITY_ORDER : int
 /* 307 */
 struct Entity
 {
+    bool IsTanker() const {
+        return unit_id == UNIT_STATS_SURV_TANKER || unit_id == UNIT_STATS_MUTE_TANKER;
+    }
+
+    bool IsInfantry() const {
+        return stats->is_infantry;
+    }
+
     Entity *next;
     Entity *prev;
     Entity *entity_8;
@@ -103,7 +111,7 @@ struct Entity
     int _98_465610_accuracy_dmg_bonus_idx;
     int _9C_hp_regen_condition;
     int _A0_hp_regen_condition;
-    int field_A4;
+    int _A4_idx_in_tile;
     int sprite_map_x;
     int sprite_map_y;
     int sprite_x;

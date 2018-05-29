@@ -75,6 +75,14 @@ struct UnitNameId
 	int id;
 };
 
+enum class GAME_STATE : int {
+    MainMenu = 0,
+    Mission = 1,
+    GAME_2 = 2,
+    GAME_3 = 3,
+};
+extern GAME_STATE game_state; // weak
+
 /* 392 */
 enum MOBD_ID : __int32
 {
@@ -278,7 +286,22 @@ struct UnitStat
 	int mobd_lookup_offset_4; // damaged_buildings?
 	UnitAttachmentPoint *attach;
 	UnitDamageSource *dmg_source;
-	int field_4C;
+	int field_4C;   // 4096
+                    // xl vehicles : autocannon, missile crab, mobile outposts
+                    // gort
+                    // plasma tank
+                    //
+                    // 512
+                    // infantry
+                    //
+                    // 128
+                    // vehicles
+                    // buildings
+                    // tech bunker
+                    // sentinel droid
+                    // gorn
+                    // tree
+                    // hut
 	enum PLAYER_SIDE player_side;
 	int field_54;
 	int field_58;
@@ -1631,17 +1654,6 @@ struct DetailedDrawHandler_VideoPlayer
 	void *_18_img_data;
 };
 
-/* 382 */
-enum GAME_STATE : __int32
-{
-	GAME_MAIN_MENU = 0,
-	GAME_STATE_1 = 1,
-	GAME_STATE_4 = 4,
-	GAME_STATE_7 = 7,
-	GAME_STATE_8 = 8,
-	GAME_STATE_13 = 13,
-};
-
 /* 383 */
 struct stru32
 {
@@ -1707,13 +1719,25 @@ struct DataMobdItem_stru0
 	DataMobdItem_stru1 *field_18;
 };
 
-
-#define DataBoxd_stru0_per_map_unit__flags__impassible_terrain 0x60
-#define DataBoxd_stru0_per_map_unit__flags__80                 0x80
+#define BOXD_STRU0_TILE_SLOT0   (1 << 0)
+#define BOXD_STRU0_TILE_SLOT1   (1 << 1)
+#define BOXD_STRU0_TILE_SLOT2   (1 << 2)
+#define BOXD_STRU0_TILE_SLOT3   (1 << 3)
+#define BOXD_STRU0_TILE_SLOT4   (1 << 4)
+#define BOXD_STRU0_ALL_SLOTS    (BOXD_STRU0_TILE_SLOT0 | BOXD_STRU0_TILE_SLOT1 | BOXD_STRU0_TILE_SLOT2 | BOXD_STRU0_TILE_SLOT3 | BOXD_STRU0_TILE_SLOT4)
+#define BOXD_STRU0_IMPASSIBLE   0x60
+#define BOXD_STRU0_80           0x80
 /* 389 */
 struct DataBoxd_stru0_per_map_unit
 {
-	char flags; // DataBoxd_stru0_per_map_unit__flags__impassible_terrain
+    bool IsImpassibleTerrain() const {
+        return flags & BOXD_STRU0_IMPASSIBLE;
+    }
+    bool IsAnySlotOccupied() const {
+        return flags & BOXD_STRU0_ALL_SLOTS;
+    }
+
+	char flags;
 	char flags2;
 	char field_2;
 	char field_3;

@@ -557,7 +557,6 @@ extern int dword_478FF4; // weak
 extern int _4793F8_map_width; // weak
 extern int dword_47952C; // weak
 extern int dword_47953C; // weak
-extern int dword_479540; // weak
 extern Sidebar *stru22_list_479548;
 extern Sidebar *stru22_list_47954C;
 extern Sidebar *sidebar_list;
@@ -655,7 +654,6 @@ extern int _47A1B0_custom_mission_briefing_ui; // weak
 extern char global_console_argv[260];
 extern int dword_47A2BC; // weak
 extern char *global_cmd_line;
-extern int game_state; // weak
 extern int netz_47A2C8; // weak
 extern enum LEVEL_ID current_level_idx;
 extern __int16 current_mute_level; // weak
@@ -845,15 +843,12 @@ extern RenderString *render_string_list;
 extern RenderString *render_string_list_free_pool;
 extern RenderString *render_string_list_47C784;
 extern BuildingPlanner _47C788_building_planner; // weak
-extern ProductionGroup *_47C798_infantry_production_group_first;
-extern ProductionGroup *_47C79C_infantry_production_group_last;
-extern ProductionGroup *_47C7E4_vehicles_production_group;
-extern ProductionGroup *stru21prod_buildings_first;
-extern ProductionGroup *stru21prod_buildings_last;
-extern ProductionGroup *_47C87C_stru21prod_towers_first;
-extern ProductionGroup *_47C880_stru21prod_towers_last;
-extern ProductionGroup *_47C8C8_stru21prod_airstrike_first;
-extern ProductionGroup *_47C8CC_stru21prod_airstrike_last;
+extern ProductionGroup _47C798_infantry_pg;     // 47C798
+extern ProductionGroup _47C7E4_vehicles_pg;     // 47C7E4
+extern ProductionGroup _47C830_buildings_pg;    // 47C830
+extern ProductionGroup _47C87C_towers_pg;       // 47C87C
+extern ProductionGroup _47C8C8_aircraft_pg;     // 47C8C8
+ProductionGroup *ProductionGroupAccessor(PRODUCTION_GROUP_ID group);
 extern Sidebar *_47C914_sidebar;
 extern ProductionGroup *production_group_list_47C918;
 extern ProductionGroup *production_group_list_47C91C;

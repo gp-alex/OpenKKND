@@ -998,7 +998,7 @@ void UNIT_Handler_Clanhall(Script *task)
 				entity_register_player_main_building(v1);
 			v1->script->event_handler = EventHandler_Clanhall;
 			v1->script->script_type = SCRIPT_MUTE_CLANHALL_HANDLER;
-			entity_44B100_buildings__mess_with_fog_of_war(v1);
+			map_reveal_fog_around_entity(v1);
 			entity_initialize_building(
 				v1,
 				3,
@@ -2222,14 +2222,14 @@ void entity_4054D0_tanker_convoy(Entity *a1)
 		v1->_134_param__unitstats_after_mobile_outpost_plant = 5;
 		v3 = (int)v1->state;
 		if (v2->is_infantry)
-			v4 = entity_40F0A0_get_dx(v1, v1->field_A4);
+			v4 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
 		else
 			v4 = v2->field_4C != 128 ? 7424 : 4096;
 		v5 = v4 + (*(_DWORD *)v3 & 0xFFFFE000);
 		v6 = v1->stats;
 		v1->sprite_x_2 = v5;
 		if (v6->is_infantry)
-			v7 = entity_40F100_get_dy(v1, v1->field_A4);
+			v7 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
 		else
 			v7 = v6->field_4C != 128 ? 7424 : 4096;
 		v8 = *(_DWORD *)(v3 + 4) & 0xFFFFE000;
@@ -2297,7 +2297,7 @@ void entity_mode_405690(Entity *a1)
 	v1 = a1;
 	if (!a1->_134_param__unitstats_after_mobile_outpost_plant)
 	{
-		entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->field_A4);
+		entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->_A4_idx_in_tile);
 		v1->sprite->x_speed = 0;
 		v1->sprite->y_speed = 0;
 		v1->mode = entity_mode_405680_tanker_convoy;
@@ -3572,279 +3572,6 @@ void cplc_free()
 	}
 	currently_running_lvl_cplc_valid = 0;
 }
-// 477418: using guessed type int currently_running_lvl_cplc_valid;
-
-//----- (004069F0) --------------------------------------------------------
-void UNIT_Handler_MobileDerrick(Script *a1)
-{
-	Entity *v1; // esi@2
-	int v2; // eax@4
-
-	if (!_47C6DC_dont_execute_unit_handlers)
-	{
-		v1 = (Entity *)a1->param;
-		if (!v1)
-		{
-			v1 = EntityFactory().Create(a1);
-			entity_initialize_mobile_derrick(v1);
-			entity_set_draw_handlers(v1);
-		}
-		(v1->mode)(v1);
-		v2 = v1->_134_param__unitstats_after_mobile_outpost_plant;
-		if (v2)
-			v1->_134_param__unitstats_after_mobile_outpost_plant = v2 - 1;
-	}
-}
-// 47C6DC: using guessed type int _47C6DC_dont_execute_unit_handlers;
-
-//----- (00406A40) --------------------------------------------------------
-void entity_initialize_mobile_derrick(Entity *a1)
-{
-	Entity *v1; // esi@1
-	Script *v2; // eax@1
-	UnitStat *v3; // eax@2
-	int v4; // eax@3
-	UnitStat *v5; // eax@5
-	int v6; // eax@6
-	UnitStat *v7; // eax@8
-	int v8; // edi@9
-	UnitStat *v9; // eax@11
-	int v10; // eax@12
-	int v11; // eax@14
-	Sprite *v12; // ecx@15
-	int v13; // edx@15
-	Script *v14; // edx@15
-	UnitStat *v15; // eax@18
-	int v16; // eax@19
-	int v17; // ecx@21
-	UnitStat *v18; // eax@21
-	int v19; // eax@22
-	int v20; // ecx@24
-	int v21; // eax@24
-	Script *v22; // edx@24
-
-	v1 = a1;
-	v2 = a1->script;
-	a1->mode_arrive = entity_mode_406DC0_mobilederrick;
-	v2->script_type = SCRIPT_MOBILE_DERRICK_HANDLER;
-	if (a1->sprite->cplc_ptr1)
-	{
-		v3 = a1->stats;
-		if (v3->is_infantry)
-			v4 = entity_40F0A0_get_dx(a1, a1->field_A4);
-		else
-			v4 = v3->field_4C != 128 ? 7424 : 4096;
-		v1->sprite->x = v4 + (v1->sprite->x & 0xFFFFE000);
-		v5 = v1->stats;
-		if (v5->is_infantry)
-			v6 = entity_40F100_get_dy(v1, v1->field_A4);
-		else
-			v6 = v5->field_4C != 128 ? 7424 : 4096;
-		v1->sprite->y = v6 + (v1->sprite->y & 0xFFFFE000);
-		v7 = v1->stats;
-		v1->field_A4 = 0;
-		if (v7->is_infantry)
-			v8 = entity_40F100_get_dy(v1, 0);
-		else
-			v8 = v7->field_4C != 128 ? 7424 : 4096;
-		v9 = v1->stats;
-		if (v9->is_infantry)
-			v10 = entity_40F0A0_get_dx(v1, v1->field_A4);
-		else
-			v10 = v9->field_4C != 128 ? 7424 : 4096;
-		v11 = entity_40DE80_boxd(v1, v10 + (v1->sprite->x & 0xFFFFE000), v8 + (v1->sprite->y & 0xFFFFE000), 0);
-		if (v11 != 5)
-		{
-			v12 = v1->sprite;
-			v1->sprite_x = v12->x;
-			v1->sprite_y = v12->y;
-			v1->sprite_x_2 = v1->sprite_x;
-			v13 = v1->sprite_y;
-			v1->_DC_order = ENTITY_ORDER_MOVE;
-			v1->sprite_y_2 = v13;
-			v1->field_A4 = v11;
-			v14 = v1->script;
-			v1->sprite_map_x = v12->x >> 13;
-			v1->sprite_map_y = v12->y >> 13;
-			v14->event_handler = EventHandler_MobileDerrick;
-			entity_mode_415540_infantry(v1);
-			return;
-		}
-		goto LABEL_17;
-	}
-	if (!entity_413860_boxd(a1))
-	{
-	LABEL_17:
-		entity_mode_419760_infantry_destroyed(v1);
-		return;
-	}
-	v15 = v1->stats;
-	if (v15->is_infantry)
-		v16 = entity_40F0A0_get_dx(v1, v1->field_A4);
-	else
-		v16 = v15->field_4C != 128 ? 7424 : 4096;
-	v17 = v16 + (v1->sprite_map_x << 13);
-	v18 = v1->stats;
-	v1->sprite_x = v17;
-	if (v18->is_infantry)
-		v19 = entity_40F100_get_dy(v1, v1->field_A4);
-	else
-		v19 = v18->field_4C != 128 ? 7424 : 4096;
-	v20 = v1->sprite_x;
-	v21 = (v1->sprite_map_y << 13) + v19;
-	v22 = v1->script;
-	v1->sprite_y = v21;
-	v1->_DC_order = ENTITY_ORDER_MOVE;
-	v1->sprite_x_2 = v20;
-	v1->sprite_y_2 = v21;
-	v1->_134_param__unitstats_after_mobile_outpost_plant = 0;
-	v1->_98_465610_accuracy_dmg_bonus_idx = 0;
-	v22->event_handler = EventHandler_General_Scout;
-	v1->mode_return = entity_mode_406CC0_mobilederrick;
-	entity_4172D0(v1);
-}
-
-//----- (00406CC0) --------------------------------------------------------
-void entity_mode_406CC0_mobilederrick(Entity *a1)
-{
-	a1->script->event_handler = EventHandler_MobileDerrick;
-	entity_mode_415540_infantry(a1);
-}
-
-//----- (00406CD0) --------------------------------------------------------
-void EventHandler_MobileDerrick(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
-{
-	Entity *v4; // esi@1
-
-	v4 = (Entity *)receiver->param;
-	if (!v4->destroyed)
-	{
-		switch (event)
-		{
-		case EVT_MSG_1511_sidebar_click_category:
-			entity_410CB0_event1511(v4);
-			break;
-		case EVT_SHOW_UI_CONTROL:
-			entity_410CD0_eventTextString(v4);
-			break;
-		case EVT_MSG_SHOW_UNIT_HINT:
-			entity_show_hint(v4);
-			break;
-		case EVT_ENTITY_MOVE:
-			entity_move(v4, (_47CAF0_task_attachment1_move_task *)param);
-			break;
-
-		case EVT_MSG_1507_stru11:
-			entity_41A850_evt1507_mess_with_stru11(v4, param);
-			break;
-		case EVT_MSG_1509_stru11:
-			entity_41A980_evt1509_unset_stru11(v4, param);
-			break;
-		case EVT_MSG_DAMAGE:
-			entity_41A610_evt1503(v4, param);
-			entity_410710_status_bar(v4);
-			break;
-		case EVT_MSG_1497:
-			entity_41A6D0_evt1497(v4, (Entity *)param);
-			break;
-		default:
-			return;
-		}
-	}
-}
-
-//----- (00406DC0) --------------------------------------------------------
-void entity_mode_406DC0_mobilederrick(Entity *a1)
-{
-	Entity *v1; // esi@1
-	OilDeposit *v2; // ecx@1
-	Sprite *v3; // edi@2
-	Sprite *v4; // eax@3
-
-	v1 = a1;
-	a1->sprite->field_88_unused = 1;
-	v2 = oilspot_list_head;
-	if ((OilDeposit **)oilspot_list_head == &oilspot_list_head)
-	{
-	LABEL_7:
-		v2 = 0;
-	}
-	else
-	{
-		v3 = v1->sprite;
-		while (1)
-		{
-			v4 = v2->sprite;
-			if (!((v3->x ^ v4->x) & 0xFFFFE000) && !((v3->y ^ v4->y) & 0xFFFFE000) && !(v4->drawjob->flags & 0x40000000))
-				break;
-			v2 = v2->next;
-			if ((OilDeposit **)v2 == &oilspot_list_head)
-				goto LABEL_7;
-		}
-	}
-	v1->state = v2;
-	if (v2)
-	{
-		v1->sprite->x_speed = 0;
-		v1->sprite->y_speed = 0;
-        entity_load_idle_mobd(v1);
-		if (!entity_advance_mobd_rotation(&v1->current_mobd_lookup_idx, 160, v1->stats->turning_speed))
-			v1->mode = entity_mode_plant_mobile_derrick;
-        script_yield_any_trigger(v1->script, 1);
-	}
-	else
-	{
-		entity_mode_415540_infantry(v1);
-        script_yield_any_trigger(v1->script, 1);
-	}
-}
-
-//----- (00406EB0) --------------------------------------------------------
-void entity_mode_plant_mobile_derrick(Entity *a1)
-{
-	Entity *v1; // esi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // eax@2
-	Script *v4; // ST00_4@6
-	enum PLAYER_SIDE v5; // [sp-4h] [bp-8h]@1
-
-	v1 = a1;
-	a1->script->event_handler = EventHandler_General_Scout;
-	entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->field_A4);
-	v2 = v1->sprite;
-	v5 = v1->player_side;
-	if (v1->unit_id == UNIT_STATS_SURV_MOBILE_DERRICK)
-		v3 = spawn_unit(UNIT_STATS_SURV_DRILL_RIG, v2->x, v2->y - 4096, v5);
-	else
-		v3 = spawn_unit(UNIT_STATS_MUTE_DRILL_RIG, v2->x, v2->y, v5);
-	if (v3)
-		v3->_80_entity__stru29__sprite__initial_hitpoints = (void *)v1->hitpoints;
-	v4 = v1->script;
-	v1->mode = entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant;
-    script_sleep(v4, 5);
-}
-
-//----- (00406F40) --------------------------------------------------------
-void entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant(Entity *a1)
-{
-	Entity *v1; // esi@1
-	Script *v2; // eax@1
-	Sprite *v3; // ecx@1
-
-	v1 = a1;
-	v2 = a1->script;
-	a1->destroyed = 1;
-	v2->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
-	script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-	script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
-	entity_40DEC0_boxd(v1, v1->sprite_map_x, v1->sprite_map_y, v1->field_A4);
-	v1->script->script_type = SCRIPT_TYPE_INVALID;
-	v3 = v1->sprite;
-	v1->entity_id = 0;
-	sprite_list_remove(v3);
-	script_terminate(v1->script);
-	entityRepo->Delete(v1);
-}
 
 //----- (00406FD0) --------------------------------------------------------
 bool oilspot_list_alloc()
@@ -4095,7 +3822,7 @@ void UNIT_Handler_DrillRig(Script *a1)
 			v2 = EntityFactory().Create(a1);
 			v1 = v2;
 			v2->script->event_handler = EventHandler_DrillRig;
-			entity_44B100_buildings__mess_with_fog_of_war(v2);
+			map_reveal_fog_around_entity(v2);
 			v1->script->script_type = SCRIPT_DRILLRIG_HANDLER;
 			entity_initialize_building(v1, 2, 0, 0);
 			v1->sprite->field_88_unused = 1;
@@ -5420,7 +5147,7 @@ int sprite_40D8B0_dmg(Sprite *a1, int a2)
 }
 
 //----- (0040DA90) --------------------------------------------------------
-int entity_40DA90_update_tile_info(Entity *a1)
+int map_40DA90_move_entity(Entity *a1)
 {
 	Entity *v1; // edi@1
 	Sprite *v2; // eax@1
@@ -5458,7 +5185,7 @@ int entity_40DA90_update_tile_info(Entity *a1)
                 v9 = v17;
             }
         }
-        result = entity_40E1B0_boxd(
+        result = Map_40E1B0_place_xl_entity(
             v1,
             v1->sprite->x_speed + v1->sprite->x,
             v1->sprite->y + v1->sprite->y_speed,
@@ -5466,7 +5193,7 @@ int entity_40DA90_update_tile_info(Entity *a1)
         v12 = result;
         if (result != 4)
         {
-            entity_40E1B0_boxd(v1, v1->sprite->x, v1->sprite->y, 1);
+            Map_40E1B0_place_xl_entity(v1, v1->sprite->x, v1->sprite->y, 1);
             result = v12;
         }
         return result;
@@ -5477,11 +5204,11 @@ int entity_40DA90_update_tile_info(Entity *a1)
         int new_map_y = global2map(v2->y + v2->y_speed);
 		if (new_map_x != a1->sprite_map_x || new_map_y != a1->sprite_map_y)
 		{
-			v15 = boxd_40EEB0(a1, new_map_x, new_map_y, 1);
+			v15 = Map_40EEB0_place_entity(a1, new_map_x, new_map_y, 1);
 			if (v15 == 5)
 				return boxd_40EA50(v1, new_map_x, new_map_y, &_478AA8_boxd_stru0_array[new_map_x + _4793F8_map_width * new_map_y]);
-			boxd_40F160(v1, v1->sprite_map_x, v1->sprite_map_y, v1->field_A4);
-			v1->field_A4 = v15;
+			boxd_40F160(v1, v1->sprite_map_x, v1->sprite_map_y, v1->_A4_idx_in_tile);
+			v1->_A4_idx_in_tile = v15;
 			v1->sprite_map_x = new_map_x;
 			v1->sprite_map_y = new_map_y;
 		}
@@ -5625,9 +5352,9 @@ bool entity_40DD00_boxd(Entity *a1)
 				do
 				{
 					if (v14 & v3->field_14)
-						v8 = boxd_40EEB0(a1a, v12, v10, 0);
+						v8 = Map_40EEB0_place_entity(a1a, v12, v10, 0);
 					else
-						v8 = boxd_40EEB0(a1a, v12, v10, 64);
+						v8 = Map_40EEB0_place_entity(a1a, v12, v10, 64);
 					v14 >>= 1;
 					++v12;
 				} while (v12 < v3->_4_x + i);
@@ -5710,15 +5437,12 @@ int entity_40DDD0_boxd(Entity *a1)
 }
 
 //----- (0040DE80) --------------------------------------------------------
-int entity_40DE80_boxd(Entity *a1, int x, int y, int a3)
+int map_place_entity(Entity *a1, int x, int y, int a3)
 {
-	int result; // eax@2
-
 	if (entity_is_xl_vehicle(a1))
-		result = entity_40E1B0_boxd(a1, x, y, a3) != 4 ? 5 : 0;
+		return Map_40E1B0_place_xl_entity(a1, x, y, a3) != 4 ? 5 : 0;
 	else
-		result = boxd_40EEB0(a1, x >> 13, y >> 13, a3);
-	return result;
+		return Map_40EEB0_place_entity(a1, global2map(x), global2map(y), a3);
 }
 
 //----- (0040DEC0) --------------------------------------------------------
@@ -5796,7 +5520,7 @@ void entity_40DF50_boxd_update_map_tile(Entity *a1, int a2)
 	}
 	else
 	{
-		boxd_40F230_update_map_tile(a1, a1->sprite_map_x, a1->sprite_map_y, a1->field_A4, a2);
+		boxd_40F230_update_map_tile(a1, a1->sprite_map_x, a1->sprite_map_y, a1->_A4_idx_in_tile, a2);
 	}
 }
 
@@ -5932,7 +5656,7 @@ int entity_40E000_boxd(Entity *a1, int a2, int a3)
 // 4793F8: using guessed type int _4793F8_map_width;
 
 //----- (0040E1B0) --------------------------------------------------------
-int entity_40E1B0_boxd(Entity *a1, int x, int y, int a4)
+int Map_40E1B0_place_xl_entity(Entity *a1, int x, int y, int a4)
 {
 	Entity *v4; // edi@1
 	int v5; // esi@1
@@ -5962,7 +5686,7 @@ int entity_40E1B0_boxd(Entity *a1, int x, int y, int a4)
 	LABEL_7:
 		if (v6 != 5)
 		{
-			v4->field_A4 = 0;
+			v4->_A4_idx_in_tile = 0;
 			return 4;
 		}
 	}
@@ -5981,7 +5705,7 @@ int entity_40E1B0_boxd(Entity *a1, int x, int y, int a4)
 		}
 		while (1)
 		{
-			v6 = boxd_40EEB0(v4, v5, v8, a4);
+			v6 = Map_40EEB0_place_entity(v4, v5, v8, a4);
 			if (v6 == 5)
 				break;
 			if (++v5 > v9)
@@ -6730,19 +6454,33 @@ int boxd_40EE70(int map_x, int map_y)
 	}
 	return result;
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
+
+int Map_40EEB0_place_entity_infantry(Entity *a1, DataBoxd_stru0_per_map_unit *v5, int a4) {
+    int v8 = v5->flags & 0x1F;
+    if (v8 < 31)
+    {
+        int v9 = a1->_A4_idx_in_tile;
+        if ((1 << a1->_A4_idx_in_tile) & v8)
+            v9 = dword_465688[v8];
+        if (v9 != 5)
+        {
+            int v10 = v5->flags2;
+            v5->flags |= (1 << v9);
+            v5->flags2 = ((_BYTE)a4 << v9) | v10;
+            v5->_4_entities[v9] = a1;
+            map_reveal_fog_around_entity(a1);
+            return v9;
+        }
+    }
+    return 5;
+}
 
 //----- (0040EEB0) --------------------------------------------------------
-int boxd_40EEB0(Entity *a1, int map_x, int map_y, int a4)
+int Map_40EEB0_place_entity(Entity *a1, int map_x, int map_y, int a4)
 {
 	Entity *v4; // ebx@1
 	DataBoxd_stru0_per_map_unit *v5; // ebp@5
-	UnitStat *v6; // ecx@5
 	char v7; // al@5
-	int v8; // edx@5
-	int v9; // esi@7
-	char v10; // cl@10
 	int result; // eax@10
 	char v12; // cl@19
 	char v13; // cl@20
@@ -6758,34 +6496,17 @@ int boxd_40EEB0(Entity *a1, int map_x, int map_y, int a4)
 	if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
 		return 5;
 	v5 = &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
-	v6 = a1->stats;
 	v7 = v5->flags;
-	v8 = v5->flags & 0x1F;
-	if (v6->is_infantry)
+	if (a1->IsInfantry())
 	{
-		if (v8 < 31)
-		{
-			v9 = v4->field_A4;
-			if ((1 << v4->field_A4) & v8)
-				v9 = dword_465688[v8];
-			if (v9 != 5)
-			{
-				v10 = v5->flags2;
-				v5->flags = v7 | (1 << v9);
-				v5->flags2 = ((_BYTE)a4 << v9) | v10;
-				v5->_4_entities[v9] = v4;
-				entity_44B100_buildings__mess_with_fog_of_war(v4);
-				return v9;
-			}
-		}
-		return 5;
+        return Map_40EEB0_place_entity_infantry(a1, v5, a4);
 	}
-	if (v5->flags & 0x1F)
+	if (v5->IsAnySlotOccupied())
 	{
 		v14 = v5->_4_entities;
 		if (v5->_4_entities[0] == v4)
 			return 0;
-		if (!(v7 & 0x60) && !(v7 & 0x80) && v6->field_2C)
+		if (!v5->IsImpassibleTerrain() && !(v7 & 0x80) && a1->stats->field_2C)
 		{
 			v15 = 0;
 			player_side = v4->player_side;
@@ -6821,7 +6542,7 @@ int boxd_40EEB0(Entity *a1, int map_x, int map_y, int a4)
 		}
 		return 5;
 	}
-	if (!v6->speed)
+	if (!a1->stats->speed)
 	{
 		if (!(v5->flags2 & 0x40))
 		{
@@ -6833,8 +6554,9 @@ int boxd_40EEB0(Entity *a1, int map_x, int map_y, int a4)
 LABEL_15:
 	if (a4 == 64)
 		v5->flags = 0;
-	else
-		v5->flags |= 0x9Fu;
+    else {
+        v5->flags |= BOXD_STRU0_ALL_SLOTS | BOXD_STRU0_80;
+    }
 	if (a4)
 	{
 		v12 = v5->flags2;
@@ -6851,13 +6573,13 @@ LABEL_15:
 	if (a4 == 64)
 	{
 	LABEL_43:
-		entity_44B100_buildings__mess_with_fog_of_war(v4);
+		map_reveal_fog_around_entity(v4);
 		result = 0;
 	}
 	else
 	{
 		v5->_4_entities[0] = v4;
-		entity_44B100_buildings__mess_with_fog_of_war(v4);
+		map_reveal_fog_around_entity(v4);
 		result = 0;
 	}
 	return result;
@@ -6974,7 +6696,7 @@ void boxd_40F230_update_map_tile(Entity *a1, int map_x, int map_y, int a4, int a
 
 	if (map_x >= 0 && map_x < _4793F8_map_width && map_y >= 0 && map_y < _478AAC_map_height)
 	{
-		if (tile->flags & DataBoxd_stru0_per_map_unit__flags__80)
+		if (tile->flags & BOXD_STRU0_80)
 		{
 			if (!a4 && tile->_4_entities[0] == a1)
 			{
@@ -6993,20 +6715,6 @@ void boxd_40F230_update_map_tile(Entity *a1, int map_x, int map_y, int a4, int a
 		}
 	}
 }
-
-//----- (0040F380) --------------------------------------------------------
-void sub_40F380_incdec(int inc_dec)
-{
-	if (inc_dec)
-	{
-		++dword_479540;
-	}
-	else if (dword_479540)
-	{
-		--dword_479540;
-	}
-}
-// 479540: using guessed type int dword_479540;
 
 //----- (0040F3A0) --------------------------------------------------------
 bool sidebar_button_list_alloc()
@@ -7967,18 +7675,18 @@ void sidebar_list_remove(Sidebar *a1)
 {
 	Sidebar *v1; // edi@1
 	SidebarButton *v2; // edx@1
-	Sidebar *v3; // esi@1
+    SidebarButton *v3; // edx@1
 	Script *v4; // ecx@3
 
 	v1 = a1;
 	v2 = a1->button_list_free_pool;
-	v3 = (Sidebar *)((char *)a1 + 36);
-	if ((SidebarButton **)v2 != &a1->button_list_free_pool)
+    v3 = (SidebarButton *)&a1->button_list_free_pool;
+	if (v2 != (SidebarButton *)&a1->button_list_free_pool)
 	{
 		do
 		{
 			sidebar_remove_button(v1, v2);
-			v2 = (SidebarButton *)v3->next;
+			v2 = v3->next;
 		} while (v3->next != v3);
 	}
 	sprite_list_remove(v1->sprite);
@@ -9350,14 +9058,14 @@ void entity_41A060_evt1525(Entity *a1, void *a2)
 		v3->_E0_current_attack_target = 0;
 		v3->_E4_prev_attack_target = 0;
 		if (v4->is_infantry)
-			v5 = entity_40F0A0_get_dx(v3, v3->field_A4);
+			v5 = entity_40F0A0_get_dx(v3, v3->_A4_idx_in_tile);
 		else
 			v5 = v4->field_4C != 128 ? 7424 : 4096;
 		v6 = v5 + (v2[1] & 0xFFFFE000);
 		v7 = v3->stats;
 		v3->sprite_x_2 = v6;
 		if (v7->is_infantry)
-			v8 = entity_40F100_get_dy(v3, v3->field_A4);
+			v8 = entity_40F100_get_dy(v3, v3->_A4_idx_in_tile);
 		else
 			v8 = v7->field_4C != 128 ? 7424 : 4096;
 		v9 = v2[2] & 0xFFFFE000;
@@ -9390,14 +9098,14 @@ void entity_41A170_evt1524(Entity *a1, int a2)
 		v4 = v3->stats;
 		v3->_DC_order = ENTITY_ORDER_MOVE;
 		if (v4->is_infantry)
-			v5 = entity_40F0A0_get_dx(v3, v3->field_A4);
+			v5 = entity_40F0A0_get_dx(v3, v3->_A4_idx_in_tile);
 		else
 			v5 = v4->field_4C != 128 ? 7424 : 4096;
 		v6 = v5 + (*(_DWORD *)(v2 + 4) & 0xFFFFE000);
 		v7 = v3->stats;
 		v3->sprite_x_2 = v6;
 		if (v7->is_infantry)
-			v8 = entity_40F100_get_dy(v3, v3->field_A4);
+			v8 = entity_40F100_get_dy(v3, v3->_A4_idx_in_tile);
 		else
 			v8 = v7->field_4C != 128 ? 7424 : 4096;
 		v9 = *(_DWORD *)(v2 + 8);
@@ -9578,11 +9286,11 @@ void entity_41A6D0_evt1497(Entity *a1, Entity *a2)
 		|| v3 == UNIT_STATS_MUTE_CLANHALL_WAGON
 		|| v3 == UNIT_STATS_SURV_MOBILE_DERRICK
 		|| v3 == UNIT_STATS_MUTE_MOBILE_DERRICK
-		|| v3 == UNIT_STATS_SURV_SABOTEUR && a1->_DC_order == 3
-		|| v3 == UNIT_STATS_MUTE_VANDAL && a1->_DC_order == 3
-		|| v3 == UNIT_STATS_SURV_TECHNICIAN && a1->_DC_order == 3
-		|| v3 == UNIT_STATS_MUTE_MEKANIK && a1->_DC_order == 3
-		|| (v4 = a1->_DC_order, v4 != 1) && v4
+		|| v3 == UNIT_STATS_SURV_SABOTEUR && a1->_DC_order == ENTITY_ORDER_3
+		|| v3 == UNIT_STATS_MUTE_VANDAL && a1->_DC_order == ENTITY_ORDER_3
+		|| v3 == UNIT_STATS_SURV_TECHNICIAN && a1->_DC_order == ENTITY_ORDER_3
+		|| v3 == UNIT_STATS_MUTE_MEKANIK && a1->_DC_order == ENTITY_ORDER_3
+		|| (v4 = a1->_DC_order, v4 != ENTITY_ORDER_MOVE) && v4 != ENTITY_ORDER_0
 		|| (v5 = a1->sprite, (v5->x ^ a1->sprite_x_2) & 0xFFFFE000)
 		|| (v5->y ^ a1->sprite_y_2) & 0xFFFFE000)
 	{
@@ -9679,14 +9387,14 @@ void entity_41A890_evt1528(Entity *a1)
 	{
 		v3 = v1->stats;
 		if (v3->is_infantry)
-			v4 = entity_40F0A0_get_dx(v1, v1->field_A4);
+			v4 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
 		else
 			v4 = v3->field_4C != 128 ? 7424 : 4096;
 		v5 = v4 + (v1->sprite->x & 0xFFFFE000);
 		v6 = v1->stats;
 		v1->sprite_x = v5;
 		if (v6->is_infantry)
-			v7 = entity_40F100_get_dy(v1, v1->field_A4);
+			v7 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
 		else
 			v7 = v6->field_4C != 128 ? 7424 : 4096;
 		v8 = v1->sprite->y & 0xFFFFE000;
@@ -9742,14 +9450,14 @@ void entity_41A9B0_unit(Entity *a1, int a2)
 				v6 = a1->stats;
 				LOWORD_HEXRAYS(a1->field_2A4) = 1;
 				if (v6->is_infantry)
-					v7 = entity_40F0A0_get_dx(a1, a1->field_A4);
+					v7 = entity_40F0A0_get_dx(a1, a1->_A4_idx_in_tile);
 				else
 					v7 = v6->field_4C != 128 ? 7424 : 4096;
 				v8 = v7 + (*(_DWORD *)(v2 + 4) & 0xFFFFE000);
 				v9 = v3->stats;
 				v3->sprite_width_3 = v8;
 				if (v9->is_infantry)
-					v10 = entity_40F100_get_dy(v3, v3->field_A4);
+					v10 = entity_40F100_get_dy(v3, v3->_A4_idx_in_tile);
 				else
 					v10 = v9->field_4C != 128 ? 7424 : 4096;
 				v3->sprite_height_3 = v10 + (*(_DWORD *)(v2 + 8) & 0xFFFFE000);
@@ -11929,7 +11637,7 @@ LABEL_9:
 	v4->entity_98__465610_damage_multipliers_idx = v3->_98_465610_accuracy_dmg_bonus_idx;
 	v4->entity_9C_hp_regen_condition = v3->_9C_hp_regen_condition;
 	v4->entity_A0_hp_regen_condition = v3->_A0_hp_regen_condition;
-	v4->field_A4 = v3->field_A4;
+	v4->field_A4 = v3->_A4_idx_in_tile;
 	v4->entity_sprite_width_shr13 = v3->sprite_map_x;
 	v4->entity_sprite_height_shr13 = v3->sprite_map_y;
 	v4->entity_sprite_width = v3->sprite_x;
@@ -12353,52 +12061,57 @@ Sprite *GAME_Load_UnpackSprite(SpriteSerialized *serialized)
 char *GAME_Save_PackProductionInfo(size_t *size)
 {
 	size_t *v1; // ebx@1
-	ProductionGroup **v2; // esi@1
+	ProductionGroup *v2; // esi@1
 	ProductionGroup *i; // edx@2
-	ProductionGroup *v4; // eax@3
+    ProductionOption *v4; // eax@3
 	char *result; // eax@7
-	ProductionGroup **v6; // ecx@9
+	//ProductionGroup *v6; // ecx@9
 	ProductionGroup *v7; // edx@10
 	char *v8; // ebp@10
-	ProductionGroup *v9; // ecx@11
+    ProductionOption *v9; // ecx@11
 	Entity *v10; // esi@11
 	int v11; // esi@12
 	char *v12; // esi@14
-	ProductionGroup **v13; // [sp+10h] [bp-Ch]@9
+	//ProductionGroup *v13; // [sp+10h] [bp-Ch]@9
 	char *v14; // [sp+14h] [bp-8h]@10
 	char *v15; // [sp+18h] [bp-4h]@7
 
 	v1 = size;
 	*size = 20;
-	v2 = &_47C798_infantry_production_group_first;
-	do
+	for (int j = PRODUCTION_GROUP_INFANTRY; j <= PRODUCTION_GROUP_AIRCRAFT; ++j)
 	{
-		for (i = v2[1]; (ProductionGroup **)i != v2; i = i->prev)
+        v2 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)j);
+		for (i = v2->prev; i != v2; i = i->prev)
 		{
-			v4 = (ProductionGroup *)i->prev_option;
-			for (*size += 16; (ProductionOption **)v4 != &i->next_option; v4 = v4->prev)
+            *size += 16;
+			for (v4 = i->prev_option; v4 != (ProductionOption *)&i->next_option; v4 = v4->prev) {
 				*size += 24;
+            }
 		}
-		v2 += 19;
-	} while ((int)v2 < (int) & _47C914_sidebar);
+	//	v2 += 19;
+	}
+    //while ((int)v2 < (int) & _47C914_sidebar);
+
 	result = (char *)malloc(*size);
 	v15 = result;
 	if (result)
 	{
-		v6 = &_47C798_infantry_production_group_first;
-		v13 = &_47C798_infantry_production_group_first;
-		do
+		//v6 = &_47C798_infantry_pg;
+		//v13 = &_47C798_infantry_pg;
+        for (int i = PRODUCTION_GROUP_INFANTRY; i <= PRODUCTION_GROUP_AIRCRAFT; ++i)
 		{
-			v7 = v6[1];
+            auto v6 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)i);
+            auto v13 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)i);
+			v7 = v6->prev;
 			v8 = result;
 			*(_DWORD *)result = 0;
 			result += 4;
 			v14 = v8;
-			if ((ProductionGroup **)v7 != v6)
+			if (v7 != v6)
 			{
 				do
 				{
-					v9 = (ProductionGroup *)v7->prev_option;
+					v9 = v7->prev_option;
 					++*(_DWORD *)v8;
 					v10 = v7->_C_entity;
 					if (v10)
@@ -12417,23 +12130,24 @@ char *GAME_Save_PackProductionInfo(size_t *size)
 						{
 							result += 24;
 							++*(_DWORD *)v12;
-							*((_DWORD *)result - 6) = (int)v9->_C_entity;
-							*((_DWORD *)result - 5) = (int)v9->sidebar;
-							*((_DWORD *)result - 4) = (int)v9->next_option;
-							*((_DWORD *)result - 3) = (int)v9->prev_option;
-							*((_DWORD *)result - 2) = v9->field_24;
-							*((_DWORD *)result - 1) = v9->field_28;
+							*((_DWORD *)result - 6) = v9->unit_id;
+							*((_DWORD *)result - 5) = v9->mobd_lookup_table_offset;
+							*((_DWORD *)result - 4) = v9->_14_pcost;
+							*((_DWORD *)result - 3) = v9->field_18;
+							*((_DWORD *)result - 2) = v9->cost;
+							*((_DWORD *)result - 1) = v9->production_time_x60;
 							v9 = v9->prev;
-						} while ((ProductionOption **)v9 != &v7->next_option);
+						} while (v9 != (ProductionOption *)&v7->next_option);
 						v8 = v14;
 					}
 					v7 = v7->prev;
 					v6 = v13;
-				} while ((ProductionGroup **)v7 != v13);
+				} while (v7 != v13);
 			}
-			v6 += 19;
-			v13 = v6;
-		} while ((int)v6 < (int) & _47C914_sidebar);
+			//v6 += 19;
+			//v13 = v6;
+		}
+        //while ((int)v6 < (int) & _47C914_sidebar);
 		result = (char *)(&v15[4 * *v1] >= result ? (unsigned int)v15 : 0);
 	}
 	else
@@ -12459,7 +12173,7 @@ bool GAME_Load_UnpackProductionInfo(void *a1)
 	ProductionGroup **v12; // ecx@22
 	ProductionGroup *v13; // eax@22
 	ProductionGroup *v14; // edx@23
-	ProductionGroup **v15; // eax@28
+	ProductionGroup *v15; // eax@28
 	ProductionGroup *v16; // edx@28
 	Entity *v17; // ecx@29
 	enum UNIT_ID v18; // eax@29
@@ -12533,21 +12247,21 @@ bool GAME_Load_UnpackProductionInfo(void *a1)
 		v8->next = v8;
 		v4->field_20 = -1;
 		v4->field_40 = v10;
-		if (entity_check_type(v11, v9)
-			&& (v12 = &(&_47C798_infantry_production_group_first)[v4->group_id],
-				v13 = (&_47C798_infantry_production_group_first)[v4->group_id],
-				(ProductionGroup **)v13 != v12))
+
+        v12 = (ProductionGroup **)ProductionGroupAccessor(v4->group_id);
+        v13 = ProductionGroupAccessor(v4->group_id)->next;
+		if (entity_check_type(v11, v9) && v13 != (ProductionGroup *)v12)
 		{
-			v14 = (&_47C798_infantry_production_group_first)[v4->group_id];
+			v14 = ProductionGroupAccessor(v4->group_id)->next;
 			if ((ProductionGroup **)v13 != v12)
 			{
 				do
 				{
-					if (v13->_C_entity->unit_id == 61)
+					if (v13->_C_entity->unit_id == UNIT_STATS_MUTE_BLACKSMITH)
 						break;
 					v14 = v13;
 					v13 = v13->next;
-				} while ((ProductionGroup **)v13 != v12);
+				} while (v13 != (ProductionGroup *)v12);
 				v1 = v24;
 			}
 			v14->next = v4;
@@ -12557,12 +12271,12 @@ bool GAME_Load_UnpackProductionInfo(void *a1)
 		}
 		else
 		{
-			v15 = &(&_47C798_infantry_production_group_first)[v1];
-			v16 = (&_47C798_infantry_production_group_first)[v1];
+			v15 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)v1);
+			v16 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)v1)->next;
 			v4->next = v16;
-			v4->prev = (ProductionGroup *)v15;
+			v4->prev = v15;
 			v16->prev = v4;
-			*v15 = v4;
+            v15->next = v4;
 		}
 		v17 = v4->_C_entity;
 		v18 = v17->unit_id;
@@ -15187,7 +14901,7 @@ void UNIT_Handler_MachineShop(Script *a1)
 		{
 			v1 = EntityFactory().Create(a1);
 			v1->script->event_handler = EventHandler_MachineShop;
-			entity_44B100_buildings__mess_with_fog_of_war(v1);
+			map_reveal_fog_around_entity(v1);
 			v1->script->script_type = SCRIPT_SURV_MACHINESHOP_HANDLER;
 			entity_initialize_building(
 				v1,
@@ -15856,7 +15570,7 @@ void GAME_PrepareLevel()
 				printf((const char *)aS, aLoadgamestateF);
 			exit(0);
 		}
-		game_state = 0;
+		game_state = GAME_STATE::MainMenu;
 	}
 	else
 	{
@@ -15888,7 +15602,7 @@ bool on_level_finished()
 	per_player_sprite_palettes_47DC88_free();
 	boxd_40EA30_cleanup();
 	sidebar_list_free();
-	if (game_state != 2 || current_level_idx >= LEVEL_SURV_16 && current_level_idx <= LEVEL_MUTE_25)
+	if (game_state != GAME_STATE::GAME_2 || current_level_idx >= LEVEL_SURV_16 && current_level_idx <= LEVEL_MUTE_25)
 	{
 		LVL_Deinit();
 		sound_free_sounds();
@@ -15910,9 +15624,9 @@ bool on_level_finished()
 		netz_42F650(v1);
 		netz_42F8E0(0);
 	}
-	if (game_state != 1)
+	if (game_state != GAME_STATE::Mission)
 	{
-		if (game_state != 2)
+		if (game_state != GAME_STATE::GAME_2)
 			return 0;
 		return 1;
 	}
@@ -16004,7 +15718,7 @@ void script_custom_mission_briefing_loop(Script *a1)
 LABEL_12:
 	sprite_list_remove(a1->sprite);
 	script_408500_anim(a1);
-	game_state = 3;
+	game_state = GAME_STATE::GAME_3;
 }
 
 //----- (00423C60) --------------------------------------------------------
@@ -17599,10 +17313,8 @@ void sprite_4272E0_load_mobd_item(Sprite *a1, int lookup_table_offset, int looku
 
     DataMobdItem_stru0 **v3; // eax@1
 	v3 = *(DataMobdItem_stru0 ***)(
-        (char *)&currently_running_lvl_mobd[a1->mobd_id].items->_
-            + lookup_table_offset
-            + 4 * lookup_idx
-        );
+        (char *)&currently_running_lvl_mobd[a1->mobd_id].items->_ + lookup_table_offset + 4 * lookup_idx
+    );
 
 	a1->_inside_mobd_item = (DataMobdItem_stru0 **)v;
 	if (v)
@@ -17894,28 +17606,28 @@ void entity_mobile_outpost_init(Entity *a1)
 	{
 		v2 = a1->stats;
 		if (v2->is_infantry)
-			v3 = entity_40F0A0_get_dx(a1, a1->field_A4);
+			v3 = entity_40F0A0_get_dx(a1, a1->_A4_idx_in_tile);
 		else
 			v3 = v2->field_4C != 128 ? 7424 : 4096;
 		v1->sprite->x = v3 + (v1->sprite->x & 0xFFFFE000);
 		v4 = v1->stats;
 		if (v4->is_infantry)
-			v5 = entity_40F100_get_dy(v1, v1->field_A4);
+			v5 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
 		else
 			v5 = v4->field_4C != 128 ? 7424 : 4096;
 		v1->sprite->y = v5 + (v1->sprite->y & 0xFFFFE000);
 		v6 = v1->stats;
-		v1->field_A4 = 0;
+		v1->_A4_idx_in_tile = 0;
 		if (v6->is_infantry)
 			v7 = entity_40F100_get_dy(v1, 0);
 		else
 			v7 = v6->field_4C != 128 ? 7424 : 4096;
 		v8 = v1->stats;
 		if (v8->is_infantry)
-			v9 = entity_40F0A0_get_dx(v1, v1->field_A4);
+			v9 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
 		else
 			v9 = v8->field_4C != 128 ? 7424 : 4096;
-		v10 = entity_40DE80_boxd(v1, v9 + (v1->sprite->x & 0xFFFFE000), v7 + (v1->sprite->y & 0xFFFFE000), 0);
+		v10 = map_place_entity(v1, v9 + (v1->sprite->x & 0xFFFFE000), v7 + (v1->sprite->y & 0xFFFFE000), 0);
 		if (v10 != 5)
 		{
 			v11 = v1->sprite;
@@ -17925,12 +17637,12 @@ void entity_mobile_outpost_init(Entity *a1)
 			v12 = v1->sprite_y;
 			v1->_DC_order = ENTITY_ORDER_MOVE;
 			v1->sprite_y_2 = v12;
-			v1->field_A4 = v10;
+			v1->_A4_idx_in_tile = v10;
 			v13 = v1->script;
 			v1->sprite_map_x = v11->x >> 13;
 			v1->sprite_map_y = v11->y >> 13;
 			v13->event_handler = MessageHandler_MobileOutpost;
-			entity_mode_415540_infantry(v1);
+			entity_mode_415540_infantry_adjust_placement_inside_tile(v1);
 			return;
 		}
 		goto LABEL_17;
@@ -17943,14 +17655,14 @@ void entity_mobile_outpost_init(Entity *a1)
 	}
 	v14 = v1->stats;
 	if (v14->is_infantry)
-		v15 = entity_40F0A0_get_dx(v1, v1->field_A4);
+		v15 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
 	else
 		v15 = v14->field_4C != 128 ? 7424 : 4096;
 	v16 = v15 + (v1->sprite_map_x << 13);
 	v17 = v1->stats;
 	v1->sprite_x = v16;
 	if (v17->is_infantry)
-		v18 = entity_40F100_get_dy(v1, v1->field_A4);
+		v18 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
 	else
 		v18 = v17->field_4C != 128 ? 7424 : 4096;
 	v19 = v1->sprite_x;
@@ -17971,7 +17683,7 @@ void entity_mobile_outpost_init(Entity *a1)
 void entity_mode_4278C0_mobile_outpost(Entity *a1)
 {
 	a1->script->event_handler = MessageHandler_MobileOutpost;
-	entity_mode_415540_infantry(a1);
+	entity_mode_415540_infantry_adjust_placement_inside_tile(a1);
 }
 
 //----- (004278D0) --------------------------------------------------------
@@ -18045,7 +17757,7 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 	v4 = v2->y_speed;
 	v2->x_speed = 0;
 	a1->sprite->y_speed = 0;
-	entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->field_A4);
+	entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->_A4_idx_in_tile);
 	v5 = v1->unit_id;
 	v6 = (int)&v1->stru60.ptr_C->field_0;
 	v1->_134_param__unitstats_after_mobile_outpost_plant = v5;
@@ -18099,7 +17811,7 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 	{
 		v8 = v1->sprite;
 		v1->unit_id = (UNIT_ID)v1->_134_param__unitstats_after_mobile_outpost_plant;
-		entity_40DE80_boxd(v1, v8->x, v8->y, 0);
+		map_place_entity(v1, v8->x, v8->y, 0);
 		v1->sprite->x_speed = v3;
 		v1->sprite->y_speed = v4;
 	}
@@ -19299,571 +19011,6 @@ unsigned int math_42D669_prolly_vec_length(unsigned int a1)
 	return result;
 }
 
-//----- (0042D6B0) --------------------------------------------------------
-void EventHandler_42D6B0_evolved_mission8_ai(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
-{
-	stru24 *v4; // esi@1
-	stru24_EnemyNode *v5; // eax@4
-	stru24_EnemyNode *v6; // edx@8
-	stru24_stru10_convoy *v7; // eax@11
-	int v8; // eax@16
-	stru24_WandererNode *v9; // eax@17
-	stru24_WandererNode *v10; // edx@21
-	int v11; // eax@24
-	stru24_AttackerNode *v12; // eax@24
-	enum PLAYER_SIDE v13; // edx@28
-	stru24_AttackerNode *v14; // esi@28
-	stru24_AttackerNode *v15; // eax@30
-	enum PLAYER_SIDE v16; // edx@34
-	stru24_AttackerNode *v17; // esi@34
-	int v18; // edx@36
-	enum PLAYER_SIDE v19; // ecx@37
-	stru24_EnemyNode *v20; // eax@38
-	stru24_stru10_convoy *v21; // ecx@42
-	stru24_stru160 *v22; // edi@42
-	stru24_stru160 *v23; // eax@43
-	stru24_stru40 *v24; // edx@44
-	stru24_stru160 *v25; // edi@45
-	void *v26; // ecx@45
-	int v27; // ecx@49
-	stru24_stru40 *v28; // eax@50
-	bool v29; // zf@53
-	enum PLAYER_SIDE v30; // ecx@53
-	stru24_AttackerNode *v31; // ecx@54
-	stru24_stru160 *v32; // edi@54
-	int v33; // eax@55
-	Sprite *v34; // ecx@56
-	stru24_AttackerNode *v35; // eax@62
-	stru24_stru10_convoy *v36; // [sp+14h] [bp+4h]@42
-	int v37; // [sp+18h] [bp+8h]@42
-			 // context -> stru24
-	v4 = (stru24 *)receiver->param;
-	if (event == EVT_SHOW_UI_CONTROL)
-	{
-		v18 = *((_DWORD *)param + 5);
-		if (v18 && (v19 = v4->_2A0_player_side, v18 != v19))
-		{
-			v20 = (stru24_EnemyNode *)*((_DWORD *)param + v19 + 9);
-			if (v20)
-			{
-				v20->next->prev = v20->prev;
-				v20->prev->next = v20->next;
-				v20->next = v4->enemy_list_free_pool;
-				v4->enemy_list_free_pool = v20;
-			}
-			else
-			{
-				show_message_ex(0, aWarningUnreg_0);
-			}
-		}
-		else if (*((_DWORD *)param + 4) == 25)
-		{
-			v21 = (stru24_stru10_convoy *)*((_DWORD *)param + v4->_2A0_player_side + 9);
-			v36 = v21;
-			v22 = (stru24_stru160 *)v21->field_C;
-			v37 = v21->field_C;
-			if (v22)
-			{
-				v23 = (stru24_stru160 *)v22->_C_next;
-				if ((void **)v23 != &v22->_C_next)
-				{
-					v24 = (stru24_stru40 *)&v4->list_40_30;
-					do
-					{
-						v25 = v23->prev;
-						v26 = v23->_C_next;
-						v23->next->prev = v25;
-						v23->prev->next = v23->next;
-						*((_DWORD *)v26 + 73) |= 0x80u;
-						*((_DWORD *)v26 + 55) = 0;
-						*((_DWORD *)v26 + 2) = 0;
-						*((_DWORD *)v26 + 56) = 0;
-						v23->field_8 = 0;
-						v23->next = (stru24_stru160 *)v24->next;
-						v23->prev = (stru24_stru160 *)v24;
-						v24->next->prev = (stru24_stru40 *)v23;
-						v24->next = (stru24_stru40 *)v23;
-						v23 = v25->next;
-						v22 = (stru24_stru160 *)v37;
-					} while (v23 != (stru24_stru160 *)(v37 + 12));
-					v21 = v36;
-				}
-				v22->next->prev = v22->prev;
-				v22->prev->next = v22->next;
-				v22->next = v4->list_160_head;
-				v4->list_160_head = v22;
-			}
-			v21->next->prev = v21->prev;
-			v21->prev->next = v21->next;
-			v21->next = v4->list_10_convoy_head;
-			v4->list_10_convoy_head = v21;
-		}
-		else
-		{
-			v27 = *((_DWORD *)param + 73);
-			if (v27 & 0x80)
-			{
-				v28 = (stru24_stru40 *)*((_DWORD *)param + v4->_2A0_player_side + 9);
-				if (v28)
-				{
-					v28->next->prev = v28->prev;
-					v28->prev->next = v28->next;
-					v28->next = v4->list_40_head;
-					v4->list_40_head = v28;
-				}
-				else
-				{
-					show_message_ex(0, aWarningUnregis);
-				}
-			}
-			else
-			{
-				v29 = (BYTE1(v27) & 2) == 0;
-				v30 = v4->_2A0_player_side;
-				if (v29)
-				{
-					v35 = (stru24_AttackerNode *)*((_DWORD *)param + v30 + 9);
-					v35->next->prev = v35->prev;
-					v35->prev->next = v35->next;
-					v35->next = v4->attacker_list_free_pool;
-					v4->attacker_list_free_pool = v35;
-				}
-				else
-				{
-					v31 = (stru24_AttackerNode *)*((_DWORD *)param + v30 + 9);
-					v32 = v31->list_8;
-					if (v32)
-					{
-						v33 = (int)v32->_C_next;
-						if ((void **)v33 != &v32->_C_next)
-						{
-							v34 = v31->entity->sprite;
-							while (v34 != *(Sprite **)(*(_DWORD *)(v33 + 12) + 92))
-							{
-								v33 = *(_DWORD *)v33;
-								if ((void **)v33 == &v32->_C_next)
-									return;
-							}
-							*(_DWORD *)(*(_DWORD *)v33 + 4) = *(_DWORD *)(v33 + 4);
-							**(_DWORD **)(v33 + 4) = *(_DWORD *)v33;
-							*(_DWORD *)v33 = v32->field_20;
-							v32->field_20 = v33;
-						}
-					}
-					else
-					{
-						v31->next->prev = v31->prev;
-						v31->prev->next = v31->next;
-						v31->next = v4->marshalling_nodes_list__evmission8_only_free_pool;
-						v4->marshalling_nodes_list__evmission8_only_free_pool = v31;
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		if (event != EVT_MSG_1521_entity_created)
-			return;
-		if (is_enemy(v4->_2A0_player_side, (Entity *)param))
-		{
-			v5 = v4->enemy_list_free_pool;
-			if (v5)
-				v4->enemy_list_free_pool = v5->next;
-			else
-				v5 = 0;
-			if (v5)
-			{
-				*((_DWORD *)param + v4->_2A0_player_side + 9) = (int)v5;
-				v5->entity = (Entity *)param;
-				v6 = v4->enemy_list_108;
-				v5->prev = (stru24_EnemyNode *)&v4->enemy_list_108;
-				v5->next = v6;
-				v4->enemy_list_108->prev = v5;
-				v4->enemy_list_108 = v5;
-			}
-			else
-			{
-				show_message_ex(0, aWarningOutOfEnemyNodes);
-			}
-			return;
-		}
-		if (*((_DWORD *)param + 4) == 25)
-		{
-			v7 = v4->list_10_convoy_head;
-			if (v7)
-				v4->list_10_convoy_head = v7->next;
-			else
-				v7 = 0;
-			if (v7)
-			{
-				*((_DWORD *)param + v4->_2A0_player_side + 9) = (int)v7;
-				v7->_8_entity = (Entity *)param;
-				v7->field_C = 0;
-				v7->next = (stru24_stru10_convoy *)v4->next;
-				v7->prev = (stru24_stru10_convoy *)v4;
-				v4->next->prev = (stru24 *)v7;
-				v4->next = (stru24 *)v7;
-				return;
-			}
-		LABEL_22:
-			show_message_ex(0, aWarningOutOfWa);
-			return;
-		}
-		v8 = *((_DWORD *)param + 75);
-		if (v8 > 1)
-		{
-			v9 = v4->wanderer_list_free_pool;
-			if (v9)
-				v4->wanderer_list_free_pool = v9->next;
-			else
-				v9 = 0;
-			if (v9)
-			{
-				*((_DWORD *)param + v4->_2A0_player_side + 9) = (int)v9;
-				v9->entity = (Entity *)param;
-				v10 = v4->wanderer_list_18;
-				v9->prev = (stru24_WandererNode *)&v4->wanderer_list_18;
-				v9->next = v10;
-				v4->wanderer_list_18->prev = v9;
-				v4->wanderer_list_18 = v9;
-				return;
-			}
-			goto LABEL_22;
-		}
-		if (v8 == 1)
-		{
-			v11 = *((_DWORD *)param + 73);
-			LOBYTE_HEXRAYS(v11) = v11 & 0x7F;
-			BYTE1(v11) |= 2u;
-			*((_DWORD *)param + 73) = v11;
-			v12 = v4->marshalling_nodes_list__evmission8_only_free_pool;
-			if (v12)
-				v4->marshalling_nodes_list__evmission8_only_free_pool = v12->next;
-			else
-				v12 = 0;
-			if (v12)
-			{
-				v13 = v4->_2A0_player_side;
-				v14 = (stru24_AttackerNode *)&v4->marshalling_nodes_list__evmission8_only_60;
-				*((_DWORD *)param + v13 + 9) = (int)v12;
-				v12->entity = (Entity *)param;
-				v12->list_8 = 0;
-				v12->next = v14->next;
-				v12->prev = v14;
-				v14->next->prev = v12;
-				v14->next = v12;
-			}
-			else
-			{
-				show_message_ex(0, aWarningOutOfMa);
-			}
-		}
-		else
-		{
-			v15 = v4->attacker_list_free_pool;
-			if (v15)
-				v4->attacker_list_free_pool = v15->next;
-			else
-				v15 = 0;
-			if (v15)
-			{
-				v16 = v4->_2A0_player_side;
-				v17 = (stru24_AttackerNode *)&v4->attacker_list_48;
-				*((_DWORD *)param + v16 + 9) = (int)v15;
-				v15->entity = (Entity *)param;
-				v15->list_8 = 0;
-				v15->next = v17->next;
-				v15->prev = v17;
-				v17->next->prev = v15;
-				v17->next = v15;
-			}
-			else
-			{
-				show_message_ex(0, aWarningOutOfAt);
-			}
-		}
-	}
-}
-
-//----- (0042DA90) --------------------------------------------------------
-void script_42DA90_ai(Script *a2)
-{
-	stru24 *v1; // ebx@1
-	stru24_AttackerNode *v2; // edi@2
-	Entity *v3; // eax@3
-	stru24 *v4; // esi@3
-	Sprite *v5; // eax@3
-	int v6; // ebp@3
-	stru24 *i; // eax@3
-	Entity *v8; // ecx@4
-	Sprite *v9; // ecx@5
-	int v10; // ebx@5
-	Sprite *v11; // edx@6
-	int v12; // ecx@6
-	int v13; // edx@8
-	int v14; // ebx@8
-	int v15; // ecx@10
-	stru24_stru160 *v16; // edx@15
-	stru24_stru160 *v17; // eax@16
-	stru24_stru160 **v18; // ecx@19
-	Entity *v19; // eax@21
-	Entity *v20; // edx@21
-	int v21; // [sp+8h] [bp-18h]@3
-	int v22; // [sp+Ch] [bp-14h]@3
-	stru24_AttackerNode *v23; // [sp+Ch] [bp-14h]@15
-	stru24 *v24; // [sp+10h] [bp-10h]@1
-	char *v25; // [sp+14h] [bp-Ch]@2
-	enum PLAYER_SIDE v26; // [sp+18h] [bp-8h]@21
-	Entity *v27; // [sp+1Ch] [bp-4h]@21
-
-	v1 = (stru24 *)a2->param;
-	v24 = v1;
-	if (v1->next != v1)
-	{
-		v2 = v1->marshalling_nodes_list__evmission8_only_60;
-		v25 = (char *)&v1->marshalling_nodes_list__evmission8_only_60;
-		if ((stru24_AttackerNode **)v2 != &v1->marshalling_nodes_list__evmission8_only_60)
-		{
-			do
-			{
-				v3 = v2->entity;
-				v4 = 0;
-				v22 = 0x7FFFFFFF;
-				v3->sprite->field_88_unused = 1;
-				v5 = v3->sprite;
-				v6 = v5->x;
-				v21 = v5->y;
-				for (i = v1->next; i != v1; i = i->next)
-				{
-					v8 = i->_8_entity;
-					if (!v8->destroyed)
-					{
-						v8->sprite->field_88_unused = 1;
-						v9 = i->_8_entity->sprite;
-						v10 = v9->x;
-						v9->field_88_unused = 1;
-						if (v10 - v6 <= 0)
-						{
-							v11 = i->_8_entity->sprite;
-							v12 = v6 - v11->x;
-						}
-						else
-						{
-							v11 = i->_8_entity->sprite;
-							v12 = v11->x - v6;
-						}
-						v13 = v11->y;
-						v14 = v13 - v21;
-						if (v13 - v21 <= 0)
-							v14 = v21 - v13;
-						v15 = v14 + v12;
-						if (v15 < v22)
-						{
-							v22 = v15;
-							v4 = i;
-						}
-						v1 = v24;
-					}
-				}
-				if (v4)
-				{
-					v23 = v2->prev;
-					v16 = (stru24_stru160 *)v4->struC;
-					if (!v16)
-					{
-						v17 = v1->list_160_head;
-						if (v17)
-						{
-							v4->struC = (stru24_struC *)v17;
-							v1->list_160_head = v1->list_160_head->next;
-						}
-						else
-						{
-							v4->struC = 0;
-						}
-						v18 = (stru24_stru160 **)v4->struC;
-						if (v18)
-						{
-							*v18 = v1->list_11C;
-							v4->struC->field_4 = (int)&v1->list_11C;
-							v1->list_11C->prev = (stru24_stru160 *)v4->struC;
-							v1->list_11C = (stru24_stru160 *)v4->struC;
-							v4->struC->_C_param = &v4->struC->_C_param;
-							v4->struC->field_10 = (int)&v4->struC->_C_param;
-							v4->struC->field_1C = 0;
-						}
-					}
-					v2->list_8 = v16;
-					v19 = v4->_8_entity;
-					v20 = v2->entity;
-					v26 = v1->_2A0_player_side;
-					v27 = v19;
-					script_trigger_event(v19->script, EVT_MSG_1527, &v26, v20->script);
-					v2->next->prev = v2->prev;
-					v2->prev->next = v2->next;
-					v2->next = (stru24_AttackerNode *)v4->struC->_C_param;
-					v2->prev = (stru24_AttackerNode *)&v4->struC->_C_param;
-					*((_DWORD *)v4->struC->_C_param + 1) = (int)v2;
-					v4->struC->_C_param = v2;
-					v2 = v23;
-				}
-				v2 = v2->next;
-			} while ((char *)v2 != v25);
-		}
-	}
-	stru24_42E070(v1);
-    script_sleep(a2, 60);
-}
-
-//----- (0042DC70) --------------------------------------------------------
-void script_42DC70_ai(Script *a1)
-{
-	a1->handler = script_42DA90_ai;
-    script_sleep(a1, 60);
-}
-
-//----- (0042DC90) --------------------------------------------------------
-void EventHandler_42DC90_evolved_mission5_ai(Script *a1, Script *a2, enum SCRIPT_EVENT event, Entity *param)
-{
-	stru24 *v4; // esi@1
-	stru24_EnemyNode *v5; // eax@4
-	stru24_EnemyNode *v6; // edx@8
-	stru24_AttackerNode *v7; // eax@11
-	stru24_AttackerNode *v8; // edx@15
-	stru24_WandererNode *v9; // eax@17
-	enum PLAYER_SIDE v10; // ecx@23
-	enum PLAYER_SIDE v11; // edx@24
-	stru24_EnemyNode *v12; // eax@25
-	stru24_AttackerNode *v13; // eax@29
-	stru24_stru40 *v14; // eax@32
-						// 40B720: context -> stru24
-	v4 = (stru24 *)a1->param;
-	if (event == EVT_SHOW_UI_CONTROL)
-	{
-		v10 = param->player_side;
-		if (v10 == 0)
-			goto LABEL_37;
-		v11 = v4->_2A0_player_side;
-		if (v10 != v11)
-		{
-			v12 = (stru24_EnemyNode *)param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v11];
-			if (v12)
-			{
-				v12->next->prev = v12->prev;
-				v12->prev->next = v12->next;
-				v12->next = v4->enemy_list_free_pool;
-				v4->enemy_list_free_pool = v12;
-			}
-			else
-			{
-				show_message_ex(0, aWarningUnreg_0);
-			}
-			return;
-		}
-		if (v10)
-		{
-			v14 = (stru24_stru40 *)param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side];
-			if (v14)
-			{
-				v14->next->prev = v14->prev;
-				v14->prev->next = v14->next;
-				v14->next = v4->list_40_head;
-				v4->list_40_head = v14;
-			}
-			else
-			{
-				show_message_ex(0, aWarningUnreg_2);
-			}
-		}
-		else
-		{
-		LABEL_37:
-			v13 = (stru24_AttackerNode *)param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side];
-			if (v13)
-			{
-				v13->next->prev = v13->prev;
-				v13->prev->next = v13->next;
-				v13->next = v4->attacker_list_free_pool;
-				v4->attacker_list_free_pool = v13;
-			}
-			else
-			{
-				show_message_ex(0, aWarningUnreg_1);
-			}
-		}
-	}
-	else if (event == EVT_MSG_1521_entity_created)
-	{
-		if (is_enemy(v4->_2A0_player_side, param))
-		{
-			v5 = v4->enemy_list_free_pool;
-			if (v5)
-				v4->enemy_list_free_pool = v5->next;
-			else
-				v5 = 0;
-			if (v5)
-			{
-				param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v5;
-				v5->entity = param;
-				v6 = v4->enemy_list_108;
-				v5->prev = (stru24_EnemyNode *)&v4->enemy_list_108;
-				v5->next = v6;
-				v4->enemy_list_108->prev = v5;
-				v4->enemy_list_108 = v5;
-			}
-			else
-			{
-				show_message_ex(0, aWarningOutOfEnemyNodes);
-			}
-		}
-		else if (param->player_side)
-		{
-			v9 = v4->wanderer_list_free_pool;
-			if (v9)
-				v4->wanderer_list_free_pool = v9->next;
-			else
-				v9 = 0;
-			if (v9)
-			{
-				param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v9;
-				v9->entity = param;
-				param->_12C_prison_bunker_spawn_type = 2;
-				v9->next = v4->wanderer_list_18;
-				v9->prev = (stru24_WandererNode *)&v4->wanderer_list_18;
-				v4->wanderer_list_18->prev = v9;
-				v4->wanderer_list_18 = v9;
-			}
-			else
-			{
-				show_message_ex(0, aWarningOutOfWa);
-			}
-		}
-		else
-		{
-			v7 = v4->attacker_list_free_pool;
-			if (v7)
-				v4->attacker_list_free_pool = v7->next;
-			else
-				v7 = 0;
-			if (v7)
-			{
-				param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v7;
-				v7->entity = param;
-				v8 = v4->attacker_list_48;
-				v7->prev = (stru24_AttackerNode *)&v4->attacker_list_48;
-				v7->next = v8;
-				v4->attacker_list_48->prev = v7;
-				v4->attacker_list_48 = v7;
-			}
-			else
-			{
-				show_message_ex(0, aWarningOutOfNe);
-			}
-		}
-	}
-}
-
 //----- (0042DE80) --------------------------------------------------------
 void script_42DE80(Script *a1)
 {
@@ -19890,7 +19037,7 @@ void script_42DE80(Script *a1)
 					v6 = &v4->prev->next;
 					entity_4258C0_init_palettes_inc_unit_counter(v4->entity, player_side);
 					script_trigger_event_group(v5->script, EVT_MSG_1521_entity_created, v5, SCRIPT_TYPE_39030);
-					entity_mode_415540_infantry(v5);
+					entity_mode_415540_infantry_adjust_placement_inside_tile(v5);
 					v4->next->prev = v4->prev;
 					v4->prev->next = v4->next;
 					v4->next = v1->attacker_list_free_pool;
@@ -20388,7 +19535,7 @@ void UNIT_Handler_Outpost(Script *a1)
 			}                                         // -- END OF INLINED
 		LABEL_9:
 			v1->script->event_handler = EventHandler_Outpost;
-			entity_44B100_buildings__mess_with_fog_of_war(v1);
+			map_reveal_fog_around_entity(v1);
 			entity_initialize_building(
 				v1,
 				3,
@@ -20895,7 +20042,7 @@ void script_431E60_mobd_20_input(Script *a1)
 	a1->field_1C = 1;
     script_sleep(a1, 2);
 	if (!script_create_coroutine(SCRIPT_TYPE_INVALID, script_425400, 0))
-		game_state = 3;
+		game_state = GAME_STATE::GAME_3;
 	while (1)
 	{
         script_sleep(a1, 1);
@@ -21111,11 +20258,9 @@ void script_4321A0_ingame_menu(Script *a1)
 	}
 	else
 	{
-		game_state = 3;
+		game_state = GAME_STATE::GAME_3;
 	}
 }
-// 47A2C4: using guessed type int game_state;
-// 47C6C4: using guessed type int dword_47C6C4;
 
 //----- (004322D0) --------------------------------------------------------
 void script_4322D0_ingame_menu(Script *a1)
@@ -21229,7 +20374,6 @@ void script_432400_ingame_menu_create_sprites(Script *a1)
 	}
 	sprite_load_mobd(v1, 0);
 }
-// 468B5C: using guessed type int single_player_game;
 
 //----- (00432510) --------------------------------------------------------
 void script_432510_ingame_menu_create_sprites(Script *a1)
@@ -22266,7 +21410,7 @@ void script_433AF0_ingame_menu(Script *a1)
 		}
 		script_408500_anim(a1);
 		script_47A3CC_die();
-		game_state = 3;
+		game_state = GAME_STATE::GAME_3;
 	}
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -22304,13 +21448,12 @@ void script_433C30_ingame_menu(Script *a1)
 
 	script_433640(a1, SCRIPT_TYPE_DA000003, -90, 120, 1);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_780, 1, 0))
-		game_state = 2;
+		game_state = GAME_STATE::GAME_2;
 	v1 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
 	sprite_list_remove(v1);
 	script_terminate(a1);
 }
-// 47A2C4: using guessed type int game_state;
 
 //----- (00433C90) --------------------------------------------------------
 void script_433C90_ingame_menu(Script *a1)
@@ -22815,7 +21958,7 @@ void UNIT_Handler_PowerStation(Script *a1)
 		{
 			v1 = EntityFactory().Create(a1);
 			v1->script->event_handler = EventHandler_PowerStation;
-			entity_44B100_buildings__mess_with_fog_of_war(v1);
+			map_reveal_fog_around_entity(v1);
 			v1->script->script_type = SCRIPT_POWER_STATION_HANDLER;
 			entity_initialize_building(v1, 2, 0, 0);
 			if (!v1->sprite->cplc_ptr1_pstru20)
@@ -23029,10 +22172,10 @@ bool _438740_save_lst()
 	if (_47C050_array[_47C050_array_idx].str_0[0]
 		&& (sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_array_idx),
 			_41CAE0_prepare_to_load_level(byte_47C230, _47C050_array[v0].level_id))
-		&& (game_state = 1,
+		&& (game_state = GAME_STATE::Mission,
 			sprintf(byte_47C230, aSSave_lst, game_data_installation_dir),
 			SetFileAttributesA(byte_47C230, 0x80u),
-			v1 = fopen(byte_47C230, (const char *)aW),
+			v1 = fopen(byte_47C230, "w"),
 			(v2 = v1) != 0))
 	{
 		fprintf(v1, aActiveslotD, _47C050_array_idx);
@@ -24595,12 +23738,10 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 	single_player_game = 1;
 	netz_42E7F0();
 	stru29_list_remove_all(a1);
-	game_state = 1;
+	game_state = GAME_STATE::Mission;
 	script_deinit(_47C6E0_task);
 	_47C6E0_task = 0;
 }
-// 468B5C: using guessed type int single_player_game;
-// 47A2C4: using guessed type int game_state;
 
 //----- (0043CE30) --------------------------------------------------------
 void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
@@ -24647,7 +23788,7 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 	single_player_game = 1;
 	netz_42E7F0();
 	stru29_list_remove_all(a1);
-	game_state = 1;
+	game_state = GAME_STATE::Mission;
 	script_deinit(_47C6E0_task);
 	_47C6E0_task = 0;
 }
@@ -26472,7 +25613,7 @@ __debugbreak();
 	stru29_list_4439F0(v1, 0, 0, 1, 0);
 	dword_47C5F8 = -1;
 	if (!script_create_coroutine(SCRIPT_TYPE_5, script_43FAD0_mobd45_evt5, 0))
-		game_state = 3;
+		game_state = GAME_STATE::GAME_3;
 	while (1)
 	{
 		dword_46E3F0 = -2;
@@ -26648,7 +25789,7 @@ void script_4404D0_mobd45_evt8(Script *a1)
 	}
 	else
 	{
-		game_state = 3;
+		game_state = GAME_STATE::GAME_3;
 	}
 	v11 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441470_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v11)
@@ -26702,10 +25843,6 @@ void script_4404D0_mobd45_evt8(Script *a1)
 	sprite_list_remove(v2);
 	script_terminate(v1);
 }
-// 477344: using guessed type int _477344_esp;
-// 47734C: using guessed type int _47734C_coroutine_int;
-// 47A2C4: using guessed type int game_state;
-// 47C5FC: using guessed type int _46E420_starting_cash_idx;
 
 //----- (00440770) --------------------------------------------------------
 void input_get_string_440770_handler(const char *a1, int a2)
@@ -27591,7 +26728,7 @@ void script_441CE0_mobd45_evt8(Script *a1)
 	else
 	{
 		if (!script_create_coroutine(SCRIPT_TYPE_8, script_43F7C0, 0))
-			game_state = 3;
+			game_state = GAME_STATE::GAME_3;
 		do
 		{
 			while (!script_443780(v1, 1872, dword_47C6B8, 0))
@@ -27615,7 +26752,7 @@ void script_441CE0_mobd45_evt8(Script *a1)
 		if (!_47C658_faction_index)
 			player_side = (PLAYER_SIDE)(2 * (v10 % 3) + 1);
 		current_level_idx = (LEVEL_ID)(SBYTE3(_46E420_starting_cash_idx) + 30);
-		game_state = 1;
+		game_state = GAME_STATE::Mission;
 		if (_47C6E0_task)
 			script_deinit(_47C6E0_task);
 	}
@@ -27629,7 +26766,7 @@ void script_441CE0_mobd45_evt8(Script *a1)
 		_47C6DC_dont_execute_unit_handlers = 1;
 		netz_42E7F0();
 		current_level_idx = (LEVEL_ID)(SBYTE3(_46E420_starting_cash_idx) + 30);
-		game_state = 1;
+		game_state = GAME_STATE::Mission;
 		if (_47C6E0_task)
 		{
 			script_deinit(_47C6E0_task);
@@ -27664,7 +26801,7 @@ void script_441F10(Script *a1)
 			_47C6DC_dont_execute_unit_handlers = 1;
 			netz_42E7F0();
 			current_level_idx = (LEVEL_ID)(SBYTE3(_46E420_starting_cash_idx) + 30);
-			game_state = 1;
+			game_state = GAME_STATE::Mission;
 			if (_47C6E0_task)
 				script_deinit(_47C6E0_task);
 			_47C6E0_task = 0;
@@ -27680,11 +26817,6 @@ void script_441F10(Script *a1)
 		}
 	}
 }
-// 468B5C: using guessed type int single_player_game;
-// 47A2C4: using guessed type int game_state;
-// 47A828: using guessed type int netz_47A828;
-// 47C5FC: using guessed type int _46E420_starting_cash_idx;
-// 47C6DC: using guessed type int _47C6DC_dont_execute_unit_handlers;
 
 //----- (00441FC0) --------------------------------------------------------
 void script_441FC0_mobd45_evt8(Script *a1)
@@ -27747,7 +26879,7 @@ void script_441FC0_mobd45_evt8(Script *a1)
 	else
 	{
 		stru29_list_remove_all(a1);
-		game_state = 3;
+		game_state = GAME_STATE::GAME_3;
 	}
 	v9 = sprite_create_scripted(MOBD_45, v5, (void(*)(Script *))script_440CA0_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v9)
@@ -27851,9 +26983,9 @@ void script_4421F0_mobd45_evt8(Script *a1)
 	a1->script_type = SCRIPT_TYPE_17;
 	stru29_list_4439F0(v5, 0, 1, 1, 0);
 	if (!script_create_coroutine(SCRIPT_TYPE_9, script_43F7C0, 0))
-		game_state = 3;
+		game_state = GAME_STATE::GAME_3;
 	if (!script_create_coroutine(SCRIPT_TYPE_9, script_441F10, 0))
-		game_state = 3;
+		game_state = GAME_STATE::GAME_3;
 	while (!script_443780(a1, 2044, 1, 0))
 		;
 	netz_44A220(68, 0, 0);
@@ -28346,7 +27478,7 @@ void script_443140_mobd45(Script *a1)
 	if (v2)
 		sprite_load_mobd(v2, 1048);
 	else
-		game_state = 3;
+		game_state = GAME_STATE::GAME_3;
 	v3 = a1->sprite;
 	v4 = sprite_create(MOBD_45, 0, a1->sprite);
 	v3->mobd_id = MOBD_45;
@@ -28397,7 +27529,7 @@ void script_443140_mobd45(Script *a1)
 	_47C6E0_task = 0;
 	stru29_list_remove_all(a1);
 	script_408500_anim(a1);
-	game_state = 1;
+	game_state = GAME_STATE::Mission;
 }
 
 //----- (00443290) --------------------------------------------------------
@@ -29534,31 +28666,36 @@ bool entity_check_type(Entity *a1, int a2)
 	v2 = _47C658_faction_index;
 	return v2 && a2 == 1 && a1->unit_id == UNIT_STATS_MUTE_BLACKSMITH;
 }
-// 468B5C: using guessed type int single_player_game;
-// 47C658: using guessed type char _47C658_faction_index;
+
+void sidebar_close_all() {
+    //v2 = 0;
+    //do
+    for (int v2 = PRODUCTION_GROUP_INFANTRY; v2 <= PRODUCTION_GROUP_AIRCRAFT; ++v2)
+    {
+        if (_47C990_production.sidebar_open_mask[v2])
+        {
+            script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
+            script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
+        }
+        //++v2;
+    }
+    //while (v2 < 5);
+}
 
 //----- (00445DA0) --------------------------------------------------------
 void sidebar_button_handler_infantry_open(SidebarButton *a1)
 {
 	ProductionGroup *v1; // edi@1
-	int v2; // esi@1
 	int v3; // ebp@6
 	Sprite *v4; // eax@8
 	int v5; // ecx@9
 	ProductionOption *i; // esi@10
 
-	v1 = _47C79C_infantry_production_group_last;
-	v2 = 0;
-	do
-	{
-		if (_47C990_production.sidebar_open_mask[v2])
-		{
-			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
-		}
-		++v2;
-	} while (v2 < 5);
-	if ((ProductionGroup **)v1 != &_47C798_infantry_production_group_first)
+    sidebar_close_all();
+
+    //v1 = _47C79C_infantry_production_group_last;
+    v1 = ProductionGroupAccessor(PRODUCTION_GROUP_INFANTRY)->prev;
+	if (v1 != (ProductionGroup *)&_47C798_infantry_pg)
 	{
 		v3 = 256;
 		do
@@ -29591,9 +28728,9 @@ void sidebar_button_handler_infantry_open(SidebarButton *a1)
 					i->unit_id);
 			v1 = v1->prev;
 			v3 -= 32;
-		} while ((ProductionGroup **)v1 != &_47C798_infantry_production_group_first);
+		} while (v1 != (ProductionGroup *)&_47C798_infantry_pg);
 	}
-	_47C990_production.sidebar_open_mask[0] = 1;
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 1;
 }
 
 //----- (00445EC0) --------------------------------------------------------
@@ -29618,8 +28755,8 @@ void sidebar_button_handler_infantry_close(SidebarButton *a1)
 	ProductionGroup *i; // esi@1
 	Sprite *v2; // ecx@3
 
-	for (i = _47C798_infantry_production_group_first;
-		(ProductionGroup **)i != &_47C798_infantry_production_group_first;
+	for (i = &_47C798_infantry_pg;
+		i->next != (ProductionGroup *)&_47C798_infantry_pg;
 		i = i->next)
 	{
 		if (i->sidebar)
@@ -29634,31 +28771,22 @@ void sidebar_button_handler_infantry_close(SidebarButton *a1)
 			i->sidebar = 0;
 		}
 	}
-	_47C990_production.sidebar_open_mask[0] = 0;
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 0;
 }
 
 //----- (00445F50) --------------------------------------------------------
 void sidebar_button_handler_vehicles_open(SidebarButton *a1)
 {
 	ProductionGroup *v1; // edi@1
-	int v2; // esi@1
 	int v3; // ebp@6
 	Sprite *v4; // eax@8
 	int v5; // ecx@9
 	ProductionOption *i; // esi@10
 
-	v1 = _47C7E4_vehicles_production_group;
-	v2 = 0;
-	do
-	{
-		if (_47C990_production.sidebar_open_mask[v2])
-		{
-			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
-		}
-		++v2;
-	} while (v2 < 5);
-	if ((ProductionGroup **)v1 != &_47C7E4_vehicles_production_group)
+    sidebar_close_all();
+
+    v1 = ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES)->next;
+	if (v1 != ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES))
 	{
 		v3 = 256;
 		do
@@ -29691,18 +28819,21 @@ void sidebar_button_handler_vehicles_open(SidebarButton *a1)
 					i->unit_id);
 			v1 = v1->next;
 			v3 -= 32;
-		} while ((ProductionGroup **)v1 != &_47C7E4_vehicles_production_group);
+		} while (v1->next != ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES));
 	}
-	_47C990_production.sidebar_open_mask[1] = 1;
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_VEHICLES] = 1;
 }
 
 //----- (00446070) --------------------------------------------------------
 void sidebar_button_handler_vehicles_close(SidebarButton *a1)
 {
-	ProductionGroup *i; // esi@1
 	Sprite *v2; // ecx@3
 
-	for (i = _47C7E4_vehicles_production_group; (ProductionGroup **)i != &_47C7E4_vehicles_production_group; i = i->next)
+	for (
+        auto i = ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES);
+        i != ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES);
+        i = i->next
+    )
 	{
 		if (i->sidebar)
 		{
@@ -29716,29 +28847,20 @@ void sidebar_button_handler_vehicles_close(SidebarButton *a1)
 			i->sidebar = 0;
 		}
 	}
-	_47C990_production.sidebar_open_mask[1] = 0;
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_VEHICLES] = 0;
 }
 
 //----- (004460C0) --------------------------------------------------------
 void sidebar_button_handler_airstrike_open(SidebarButton *a1)
 {
 	ProductionGroup *v1; // ebx@1
-	int v2; // esi@1
 	Sidebar *v3; // eax@6
 	ProductionOption *v4; // esi@6
 
-	v1 = _47C8CC_stru21prod_airstrike_last;
-	v2 = 0;
-	do
-	{
-		if (_47C990_production.sidebar_open_mask[v2])
-		{
-			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
-		}
-		++v2;
-	} while (v2 < 5);
-	if ((ProductionGroup **)v1 != &_47C8C8_stru21prod_airstrike_first)
+    sidebar_close_all();
+
+    v1 = ProductionGroupAccessor(PRODUCTION_GROUP_AIRCRAFT)->prev;
+	if (v1 != ProductionGroupAccessor(PRODUCTION_GROUP_AIRCRAFT))
 	{
 		v3 = sidebar_list_create(0, 0, 256, 256, 0);
 		v4 = v1->prev_option;
@@ -29752,15 +28874,16 @@ void sidebar_button_handler_airstrike_open(SidebarButton *a1)
 				v4,
 				v4->unit_id);
 	}
-	_47C990_production.sidebar_open_mask[4] = 1;
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_AIRCRAFT] = 1;
 }
 
 //----- (00446170) --------------------------------------------------------
 void sidebar_button_handler_airstrike_close(SidebarButton *a1)
 {
-	if ((ProductionGroup **)_47C8C8_stru21prod_airstrike_first != &_47C8C8_stru21prod_airstrike_first)
-		sidebar_list_remove(_47C8C8_stru21prod_airstrike_first->sidebar);
-	_47C990_production.sidebar_open_mask[4] = 0;
+    auto p = ProductionGroupAccessor(PRODUCTION_GROUP_AIRCRAFT);
+	if (p->next != p)
+		sidebar_list_remove(p->next->sidebar);
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_AIRCRAFT] = 0;
 }
 
 //----- (00446190) --------------------------------------------------------
@@ -29775,7 +28898,7 @@ void sidebar_button_handler_446190_open(SidebarButton *a1)
 		if (v1 != &_47CA08_sidebar_buttons[1])
 			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, (*v1)->task);
 		++v1;
-	} while ((int)v1 < (int) & _47CA10_sidebar_button_minimap);
+	} while (v1 <= &_47CA08_sidebar_buttons[1]);
 }
 
 //----- (004461E0) --------------------------------------------------------
@@ -29788,22 +28911,13 @@ void sidebar_button_handler_4461E0_close(SidebarButton *a1)
 void sidebar_button_handler_buildings_open(SidebarButton *a1)
 {
 	ProductionGroup *v1; // ebx@1
-	int v2; // esi@1
 	Sidebar *v3; // eax@6
 	ProductionOption *v4; // esi@6
 
-	v1 = stru21prod_buildings_last;
-	v2 = 0;
-	do
-	{
-		if (_47C990_production.sidebar_open_mask[v2])
-		{
-			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
-		}
-		++v2;
-	} while (v2 < 5);
-	if ((ProductionGroup **)v1 != &stru21prod_buildings_first)
+    sidebar_close_all();
+
+    v1 = _47C830_buildings_pg.next;
+	if (v1 != (ProductionGroup *)&_47C830_buildings_pg)
 	{
 		v3 = sidebar_list_create(0, 0, 256, 192, 0);
 		v4 = v1->prev_option;
@@ -29815,7 +28929,7 @@ void sidebar_button_handler_buildings_open(SidebarButton *a1)
 				(void *)v4->unit_id,
 				(void *)v4->unit_id);
 	}
-	_47C990_production.sidebar_open_mask[2] = 1;
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_BUILDINGS] = 1;
 }
 
 //----- (004462B0) --------------------------------------------------------
@@ -29861,36 +28975,26 @@ void sidebar_button_handler_order_building_click(SidebarButton *a1)
 		}
 	}
 }
-// 47C788: using guessed type BuildingPlanner _47C788_building_planner;
 
 //----- (00446330) --------------------------------------------------------
 void sidebar_button_handler_buildings_close(SidebarButton *a1)
 {
-	if ((ProductionGroup **)stru21prod_buildings_first != &stru21prod_buildings_first)
-		sidebar_list_remove(stru21prod_buildings_first->sidebar);
-	_47C990_production.sidebar_open_mask[2] = 0;
+	if (_47C830_buildings_pg.next != (ProductionGroup *)&_47C830_buildings_pg)
+		sidebar_list_remove(_47C830_buildings_pg.next->sidebar);
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_BUILDINGS] = 0;
 }
 
 //----- (00446350) --------------------------------------------------------
 void sidebar_button_handler_towers_open(SidebarButton *a1)
 {
-	ProductionGroup *v1; // ebx@1
-	int v2; // esi@1
+	ProductionGroup *v1; // ebx@1	int v2; // esi@1
 	Sidebar *v3; // eax@6
 	ProductionOption *v4; // esi@6
 
-	v1 = _47C880_stru21prod_towers_last;
-	v2 = 0;
-	do
-	{
-		if (_47C990_production.sidebar_open_mask[v2])
-		{
-			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
-		}
-		++v2;
-	} while (v2 < 5);
-	if ((ProductionGroup **)v1 != &_47C87C_stru21prod_towers_first)
+    sidebar_close_all();
+
+    v1 = ProductionGroupAccessor(PRODUCTION_GROUP_TOWERS)->prev;
+	if (v1 != ProductionGroupAccessor(PRODUCTION_GROUP_TOWERS))
 	{
 		v3 = sidebar_list_create(0, 0, 256, 224, 0);
 		v4 = v1->prev_option;
@@ -29902,15 +29006,16 @@ void sidebar_button_handler_towers_open(SidebarButton *a1)
 				(void *)v4->unit_id,
 				(void *)v4->unit_id);
 	}
-	_47C990_production.sidebar_open_mask[3] = 1;
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_TOWERS] = 1;
 }
 
 //----- (00446400) --------------------------------------------------------
 void sidebar_button_handler_towers_close(SidebarButton *a1)
 {
-	if ((ProductionGroup **)_47C87C_stru21prod_towers_first != &_47C87C_stru21prod_towers_first)
-		sidebar_list_remove(_47C87C_stru21prod_towers_first->sidebar);
-	_47C990_production.sidebar_open_mask[3] = 0;
+    auto p = ProductionGroupAccessor(PRODUCTION_GROUP_TOWERS);
+	if (p->next != p)
+		sidebar_list_remove(p->next->sidebar);
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_TOWERS] = 0;
 }
 
 //----- (00446420) --------------------------------------------------------
@@ -30012,19 +29117,19 @@ LABEL_33:
 	if (v10
 		&& v2 == 1
 		&& a1a->unit_id == UNIT_STATS_MUTE_BLACKSMITH
-		&& (v11 = _47C7E4_vehicles_production_group,
-		(ProductionGroup **)_47C7E4_vehicles_production_group != &_47C7E4_vehicles_production_group))
+		&& (v11 = ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES)->next,
+            v11 != ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES)))
 	{
-		v12 = _47C7E4_vehicles_production_group;
-		if ((ProductionGroup **)_47C7E4_vehicles_production_group != &_47C7E4_vehicles_production_group)
+		v12 = v11;
+		if (v12 != ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES))
 		{
 			do
 			{
 				if (v11->_C_entity->unit_id == UNIT_STATS_MUTE_BLACKSMITH)
 					break;
-				v12 = v11;
+                v12 = v11;
 				v11 = v11->next;
-			} while ((ProductionGroup **)v11 != &_47C7E4_vehicles_production_group);
+			} while (v11 != &_47C7E4_vehicles_pg);
 		}
 		if (v11 != v12)
 		{
@@ -30042,8 +29147,10 @@ LABEL_33:
 	}
 	else
 	{
-		v11 = (ProductionGroup *)&(&_47C798_infantry_production_group_first)[v2];
-		v14 = (&_47C798_infantry_production_group_first)[v2];
+		//v11 = (ProductionGroup *)&(&_47C798_infantry_production_group_first)[v2];
+		//v14 = (&_47C798_infantry_production_group_first)[v2];
+        v11 = ProductionGroupAccessor(v2);
+        v14 = ProductionGroupAccessor(v2)->next;
 		v3->next = v14;
 		v3->prev = v11;
 		v14->prev = v3;
@@ -30058,8 +29165,6 @@ LABEL_46:
 		_470490_sidebar_button_close_handlers[v2](0);
 	return v3;
 }
-// 468B5C: using guessed type int single_player_game;
-// 47C658: using guessed type char _47C658_faction_index;
 
 //----- (00446630) --------------------------------------------------------
 void production_group_enable(ProductionGroup *a1, enum UNIT_ID unit_id, int mobd_lookup_table_offset)
@@ -30278,7 +29383,7 @@ void production_group_446860(ProductionGroup *a1)
 	v1->next = production_group_free_pool;
 	production_group_free_pool = v1;
 	v7 = v1->group_id;
-	if ((ProductionGroup **)(&_47C798_infantry_production_group_first)[v7] == &(&_47C798_infantry_production_group_first)[v7])
+    if (ProductionGroupAccessor(v7)->next == ProductionGroupAccessor(v7))
 	{
 		_47C990_production.sidebar_open_mask[v7] = 0;
 		script_trigger_event(0, EVT_MSG_1548_sidebar, 0, _47CA18_sidebar_production_buttons[v1->group_id]->task);
@@ -30364,29 +29469,34 @@ bool sidebar_initialize()
 		++v3;
 	} while (v3 < 31);
 	production_group_list[31].next = 0;
-	_47C990_production.sidebar_open_mask[0] = 0;
-	_47C978_production.sidebar_open_mask[0] = 0;
-	_47C990_production.sidebar_open_mask[1] = 0;
-	_47C978_production.sidebar_open_mask[1] = 0;
-	_47C990_production.sidebar_open_mask[2] = 0;
-	_47C978_production.sidebar_open_mask[2] = 0;
-	_47C990_production.sidebar_open_mask[3] = 0;
-	_47C978_production.sidebar_open_mask[3] = 0;
+	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 0;
+    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_VEHICLES] = 0;
+    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_BUILDINGS] = 0;
+    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_TOWERS] = 0;
+    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_AIRCRAFT] = 0;
+
+	_47C978_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 0;
+	_47C978_production.sidebar_open_mask[PRODUCTION_GROUP_VEHICLES] = 0;
+	_47C978_production.sidebar_open_mask[PRODUCTION_GROUP_BUILDINGS] = 0;
+	_47C978_production.sidebar_open_mask[PRODUCTION_GROUP_TOWERS] = 0;
+    _47C978_production.sidebar_open_mask[PRODUCTION_GROUP_AIRCRAFT] = 0;
+    _47C978_production.sidebar_open_mask[PRODUCTION_GROUP_BLACKSMITH] = 0;
+
 	production_group_list_47C918 = (ProductionGroup *)&production_group_list_47C918;
 	production_group_list_47C91C = (ProductionGroup *)&production_group_list_47C918;
-	v4 = (ProductionGroup *) & _47C798_infantry_production_group_first;
-	_47C990_production.sidebar_open_mask[4] = 0;
-	_47C978_production.sidebar_open_mask[4] = 0;
-	do
+
+	//v4 = (ProductionGroup *) & _47C798_infantry_production_group_first;
+	//do
+    for (int i = PRODUCTION_GROUP_INFANTRY; i <= PRODUCTION_GROUP_AIRCRAFT; ++i)
 	{
+        v4 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)i);
 		v4->prev = v4;
 		v5 = (ProductionOption *)&v4->next_option;
 		v4->next = v4;
 		v4->prev_option = (ProductionOption *)&v4->next_option;
-		++v4;
 		v5->next = v5;
-	} while ((int)v4 < (int) & _47C914_sidebar);
-	_47C978_production.sidebar_open_mask[5] = 0;
+	}
+    //while ((int)v4 < (int) & _47C914_sidebar);
 	v6 = sidebar_list_create(0, 0, 288, 0, 0);
 	v7 = 0;
 	_47C914_sidebar = v6;
@@ -30499,9 +29609,6 @@ LABEL_17:
 	}
 	return 1;
 }
-// 468B5C: using guessed type int single_player_game;
-// 47C658: using guessed type char _47C658_faction_index;
-// 47CA2C: using guessed type int _47CA2C_should_airstrike_mess_with_sidebar;
 
 //----- (00446D60) --------------------------------------------------------
 void sidebar_button_handler_cash_open(SidebarButton *a1)
@@ -31135,7 +30242,7 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 
 	v1 = a1;
 	v2 = a1->entity;
-	if ((v2->_DC_order == 2 || v2->_DC_order == 8)
+	if ((v2->_DC_order == ENTITY_ORDER_ATTACK || v2->_DC_order == ENTITY_ORDER_8)
 		&& entity_4488F0_is_in_firing_range(v2, v2->_E0_current_attack_target, v2->_E0_current_attack_target_entity_id)
 		&& sub_44CE40(v1->entity->player_side, v1->entity->_E0_current_attack_target))
 	{
@@ -31499,7 +30606,6 @@ void script_evt39030_handler(Script *a1)
 			v5 = 0;
         if (v5)
         {
-
             v6 = entityRepo->FindById(v2->param);
             if (v6)
             {
@@ -32536,7 +31642,7 @@ bool is_map_revealed_at(int x, int y)
 }
 
 //----- (0044B100) --------------------------------------------------------
-void entity_44B100_buildings__mess_with_fog_of_war(Entity *a1)
+void map_reveal_fog_around_entity(Entity *a1)
 {
 	Sprite *v1; // edx@2
 	int v2; // ecx@2
@@ -33183,11 +32289,6 @@ void entity_44B100_buildings__mess_with_fog_of_war(Entity *a1)
 		goto LABEL_230;
 	}
 }
-// 47CB2C: using guessed type int __478AAC_map_height_plus4;
-// 47CB34: using guessed type int __478AAC_map_height_x2;
-// 47CB7C: using guessed type int __4793F8_map_width_x2;
-// 47CB80: using guessed type int __4793F8_map_width_plus4;
-// 47CFC0: using guessed type int dword_47CFC0;
 
 //----- (0044BC00) --------------------------------------------------------
 void minimap_free()
@@ -34331,14 +33432,14 @@ LABEL_30:
 		v1->field_C4 = v18;
 		v19 = v1->stats;
 		if (v19->is_infantry)
-			v20 = entity_40F0A0_get_dx(v1, v1->field_A4);
+			v20 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
 		else
 			v20 = v19->field_4C != 128 ? 7424 : 4096;
 		v21 = v20 + (v1->field_C4 << 13);
 		v22 = v1->stats;
 		v1->sprite_x = v21;
 		if (v22->is_infantry)
-			v23 = entity_40F100_get_dy(v1, v1->field_A4);
+			v23 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
 		else
 			v23 = v22->field_4C != 128 ? 7424 : 4096;
 		v24 = v23 + (v1->field_C8 << 13);

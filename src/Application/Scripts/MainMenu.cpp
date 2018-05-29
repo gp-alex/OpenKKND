@@ -324,7 +324,7 @@ void script_mobd79_evt1__main_menu_quit(Script *a1)
     }
     script_408500_anim(a1);
     stru29_list_remove_all(a1);
-    game_state = 3;
+    game_state = GAME_STATE::GAME_3;
 }
 
 
@@ -429,7 +429,7 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
                         {
                             script_408500_anim(v1);
                             stru29_list_remove_all(v1);
-                            game_state = 3;
+                            game_state = GAME_STATE::GAME_3;
                             sprite_list_remove(v1->sprite);
                             script_terminate(v1);
                         }

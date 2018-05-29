@@ -120,7 +120,7 @@ stru29 *stru29_list_4439F0(Sprite *a1, void *param, int a3, int a4, int a5)
         }
         else
         {
-            game_state = 3;
+            game_state = GAME_STATE::GAME_3;
         }
     }
     else
@@ -142,7 +142,7 @@ stru29 *stru29_list_4439F0(Sprite *a1, void *param, int a3, int a4, int a5)
         }
         else
         {
-            game_state = 3;
+            game_state = GAME_STATE::GAME_3;
         }
     }
     if (a3)

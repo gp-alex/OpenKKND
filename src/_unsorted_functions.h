@@ -4,6 +4,12 @@
 void log_init();
 void log(const char *, ...);
 
+int map_place_entity(Entity *a1, int x, int y, int a3); // idb
+int Map_40EEB0_place_entity(Entity *a1, int map_x, int map_y, int a4);
+int Map_40E1B0_place_xl_entity(Entity *a1, int x, int y, int a4); // idb
+int map_40DA90_move_entity(Entity *a1);
+int boxd_40EA50(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a4);
+
 void stru28_list_free();
 void UNIT_AttachHandler_DockPoint(Script *self);
 void EntityTowerAttachment_handler_4010C0(EntityTurret *a1);
@@ -210,15 +216,12 @@ int entity_40D600_infantry_get_new_movement_orientation(Entity *a1, int sprite_w
 int entity_40D6F0_vehicle_get_new_movement_orientation(Entity *a1, int sprite_width, int sprite_height, int a4);
 bool _40D860_prolly_sprite_distance(Sprite *a1, Sprite *a2, int a3); // idb
 int sprite_40D8B0_dmg(Sprite *a1, int a2); // idb
-int entity_40DA90_update_tile_info(Entity *a1);
 bool entity_40DBF0_boxd_does_unit_fit(Entity *a1);
 bool entity_40DD00_boxd(Entity *a1);
 int entity_40DDD0_boxd(Entity *a1);
-int entity_40DE80_boxd(Entity *a1, int x, int y, int a3); // idb
 char *entity_40DEC0_boxd(Entity *a1, int a2, int a3, int a4);
 void entity_40DF50_boxd_update_map_tile(Entity *a1, int a2);
 int entity_40E000_boxd(Entity *a1, int a2, int a3);
-int entity_40E1B0_boxd(Entity *a1, int x, int y, int a4); // idb
 int REND_SetRoutines();
 char *get_resource_res_subfolder();
 void _40E400_set_palette(PALETTEENTRY *palette);
@@ -230,17 +233,14 @@ void _40E6B0_set_sys_colors();
 bool boxd_40E6E0();
 void boxd_40EA20();
 void boxd_40EA30_cleanup();
-int boxd_40EA50(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a4);
 int boxd_40ED00(Entity *a1, DataBoxd_stru0_per_map_unit *a2);
 bool boxd_40EDF0(DataBoxd_stru0_per_map_unit *a1, Entity *a2, Entity *a3);
 Entity *boxd_40EE10_prolly_get_building(int map_x, int map_y); // idb
 int boxd_40EE70(int map_x, int map_y); // idb
-int boxd_40EEB0(Entity *a1, int map_x, int map_y, int a4);
 int entity_40F0A0_get_dx(Entity *a1, int a2); // idb
 int entity_40F100_get_dy(Entity *a1, int a2); // idb
 int boxd_40F160(Entity *a1, int map_x, int map_y, int a4);
 void boxd_40F230_update_map_tile(Entity *a1, int map_x, int map_y, int a4, int a5);
-void sub_40F380_incdec(int inc_dec);
 bool sidebar_button_list_alloc();
 void script_sidebar(Script *a1); // idb
 Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int height, int sidebar_horizontal); // idb
@@ -299,7 +299,7 @@ bool entity_414AD0_vehicle_collide_vehicle(Entity *a1);
 void entity_414C30_boxd(Entity *a1);
 void entity_414E80(Entity *a1);
 bool entity_415400_tanker(Entity *a1);
-void entity_mode_415540_infantry(Entity *a1);
+void entity_mode_415540_infantry_adjust_placement_inside_tile(Entity *a1);
 void entity_mode_415690(Entity *a1);
 void entity_mode_4157F0(Entity *a1);
 void entity_4158B0(Entity *a1);
@@ -876,7 +876,7 @@ _BYTE *_44A780_gof_of_war();
 bool mapd_init_fog_of_war();
 void mapd_44AE30_fog_of_war();
 bool is_map_revealed_at(int x, int y); // idb
-void entity_44B100_buildings__mess_with_fog_of_war(Entity *a1);
+void map_reveal_fog_around_entity(Entity *a1);
 void minimap_free();
 int sub_44BC80(int a1, int a2, int a3, int a4);
 int MAPD_44BD50_alter_tile_flags();

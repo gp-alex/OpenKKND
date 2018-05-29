@@ -707,7 +707,7 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(entity_mode_drillrig_on_death),
     MAKE_HANDLER_PTR(UNIT_Handler_Vehicle),
     MAKE_HANDLER_PTR(UNIT_Handler_Infantry),
-    MAKE_HANDLER_PTR(entity_mode_415540_infantry),
+    MAKE_HANDLER_PTR(entity_mode_415540_infantry_adjust_placement_inside_tile),
     MAKE_HANDLER_PTR(entity_mode_415690),
     MAKE_HANDLER_PTR(entity_mode_4157F0),
     MAKE_HANDLER_PTR(entity_4158B0),
@@ -960,6 +960,25 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_evt39030_handler),
     MAKE_HANDLER_PTR(script_44A500_fog_of_war),
     MAKE_HANDLER_PTR(script_4280A0_stru38_list__production_loop),
+
+    // load game menu
+    MAKE_HANDLER_PTR(script_432F00_ingame_menu),
+    MAKE_HANDLER_PTR(script_434390_ingame_menu),
+    MAKE_HANDLER_PTR(script_434220_ingame_menu),
+    MAKE_HANDLER_PTR(script_434310_ingame_menu),
+    MAKE_HANDLER_PTR(script_4342A0_ingame_menu),
+    MAKE_HANDLER_PTR(script_434460_DA000007),
+    MAKE_HANDLER_PTR(script_432800_ingame_menu),
+    MAKE_HANDLER_PTR(script_432730_ingame_menu),
+
+    // menu in game (esc)
+    MAKE_HANDLER_PTR(script_433780_ingame_menu),
+    MAKE_HANDLER_PTR(script_433A60_ingame_menu),
+    MAKE_HANDLER_PTR(script_433960_ingame_menu),
+    MAKE_HANDLER_PTR(script_433880_ingame_menu),
+    MAKE_HANDLER_PTR(script_433810_ingame_menu),
+    MAKE_HANDLER_PTR(script_4339F0_ingame_menu),
+    MAKE_HANDLER_PTR(script_4338F0_ingame_menu),
 };
 
 
@@ -1259,6 +1278,13 @@ void script_list_update()
     for (i = script_execute_list_first(); i != script_execute_list_end(); i = i->next)
     {
         if (i->flags_20 & SCRIPT_FLAGS_20_TERMINATE) {
+            log(
+                "Script[%s] %s(%08X) terminated",
+                i->routine_type == SCRIPT_COROUTINE ? "Coroutine" : "Function",
+                i->debug_handler_name,
+                i->handler
+            );
+
             i = i->prev;
             script_terminate_internal(i->next);
         }

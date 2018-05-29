@@ -24,8 +24,6 @@ Entity *EntityFactory::Create(Script *a1)
     if (!v1)
         return 0;
 
-    entityRepo->Save(v1);
-
     memset(v1, 0, sizeof(Entity));
     v2 = a1->sprite;
     if (v2->cplc_ptr1)
@@ -93,6 +91,7 @@ Entity *EntityFactory::Create(Script *a1)
 
     script_trigger_event_group(a1, EVT_MSG_1521_entity_created, v1, SCRIPT_TYPE_39030);
 
+    entityRepo->Save(v1);
     return v1;
 }
 
@@ -296,7 +295,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             v3->_98_465610_accuracy_dmg_bonus_idx = v2->entity_98__465610_damage_multipliers_idx;
             v3->_9C_hp_regen_condition = v2->entity_9C_hp_regen_condition;
             v3->_A0_hp_regen_condition = v2->entity_A0_hp_regen_condition;
-            v3->field_A4 = v2->field_A4;
+            v3->_A4_idx_in_tile = v2->field_A4;
             v3->sprite_map_x = v2->entity_sprite_width_shr13;
             v3->sprite_map_y = v2->entity_sprite_height_shr13;
             v3->sprite_x = v2->entity_sprite_width;
@@ -374,7 +373,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                     v55 = v3->sprite;
                     v86 = v55->y;
                 LABEL_207:
-                    entity_40DE80_boxd(v3, v55->x, v86, 0);
+                    map_place_entity(v3, v55->x, v86, 0);
                     goto LABEL_208;
                 }
                 result = (BOOL)script_create_local_object(v3->script, 116);

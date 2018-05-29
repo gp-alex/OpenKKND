@@ -11,6 +11,7 @@ namespace Application {
 
     private:
         void WaitScreen();
+        void MainMenu();
         void Terminate();
 
         std::shared_ptr<const GameConfig> config;

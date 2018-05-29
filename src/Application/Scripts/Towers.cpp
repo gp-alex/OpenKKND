@@ -54,7 +54,7 @@ void UNIT_Handler_Towers(Script *a1)
     entity_40DD00_boxd(v1);
     v1->sprite->x = ((v1->sprite->x + v1->stru60.ptr_C->x_offset) & 0xFFFFE000) - v1->stru60.ptr_C->x_offset + 4096;
     v1->sprite->y = ((v1->sprite->y + v1->stru60.ptr_C->y_offset) & 0xFFFFE000) - v1->stru60.ptr_C->y_offset + 4096;
-    entity_44B100_buildings__mess_with_fog_of_war(v1);
+    map_reveal_fog_around_entity(v1);
     entity_set_draw_handlers(v1);
     if (v1->player_side == player_side)
         ++num_players_towers;
@@ -914,7 +914,8 @@ void MessageHandler_TowersAttachment(Script *receiver, Script *sender, enum SCRI
 //----- (004010B0) --------------------------------------------------------
 void UNIT_AttachHandler_DockPoint(Script *self)
 {
-    (*((void(**)(void))self->param + 4))();
+    auto turret = (EntityTurret *)self->param;
+    (turret->handler)(turret);
 }
 
 //----- (004010C0) --------------------------------------------------------

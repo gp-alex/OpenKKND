@@ -274,7 +274,7 @@ void UNIT_Handler_ResearchBuilding(Script *a1)
         {
             v1 = EntityFactory().Create(a1);
             v1->script->event_handler = EventHandler_DefaultBuildingsHandler;
-            entity_44B100_buildings__mess_with_fog_of_war(v1);
+            map_reveal_fog_around_entity(v1);
             entity_initialize_building(v1, 1, 0, 0);
             *((_DWORD *)v1->state + 2) = 0;
             *(_DWORD *)v1->state = 0;

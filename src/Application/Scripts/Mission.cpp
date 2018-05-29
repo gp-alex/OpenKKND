@@ -139,28 +139,28 @@ void script_424CE0_mission_outcome_modal(Script *a1)
                 if (_47C6D8_use__466098_cost_multipliers)
                 {
                     _47C6D8_use__466098_cost_multipliers = 0;
-                    game_state = 3;
+                    game_state = GAME_STATE::GAME_3;
                 }
                 else if (v9 == (void *)2)
                 {
-                    game_state = 2;
+                    game_state = GAME_STATE::GAME_2;
                 }
                 else if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
                 {
                     if (current_level_idx == LEVEL_SURV_15 || current_level_idx == LEVEL_MUTE_15)
                     {
                         dword_47A3DC = 1;
-                        game_state = 1;
+                        game_state = GAME_STATE::Mission;
                     }
                     else
                     {
                         _4224B0_update_last_level();
-                        game_state = 1;
+                        game_state = GAME_STATE::Mission;
                     }
                 }
                 else
                 {
-                    game_state = 3;
+                    game_state = GAME_STATE::GAME_3;
                 }
             }
             else
@@ -822,7 +822,7 @@ void entity_4258C0_init_palettes_inc_unit_counter(Entity *a1, enum PLAYER_SIDE s
     v3 = a1->turret;
     if (v3)
         v3->turret_sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[side]];
-    entity_44B100_buildings__mess_with_fog_of_war(a1);
+    map_reveal_fog_around_entity(a1);
 }
 
 //----- (00425920) --------------------------------------------------------
@@ -849,9 +849,9 @@ void entity_mode_425920_scout(Entity *a1)
             v5 = v1->turret;
             if (v5)
                 v5->turret_sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[v3]];
-            entity_44B100_buildings__mess_with_fog_of_war(v1);
+            map_reveal_fog_around_entity(v1);
             script_trigger_event_group(v1->script, EVT_MSG_1521_entity_created, v1, SCRIPT_TYPE_39030);
-            entity_mode_415540_infantry(v1);
+            entity_mode_415540_infantry_adjust_placement_inside_tile(v1);
             if (v1->unit_id == UNIT_STATS_SURV_SCOUT)
             {
                 entity_scout = v1;
@@ -903,7 +903,7 @@ void UNIT_Handler_General(Script *a1)
         v1->sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
         script_trigger_event_group(v1->script, EVT_MSG_1521_entity_created, v1, SCRIPT_TYPE_39030);
         v1->script->event_handler = EventHandler_Infantry;
-        entity_mode_415540_infantry(v1);
+        entity_mode_415540_infantry_adjust_placement_inside_tile(v1);
     }
     (v1->mode)(v1);
     v2 = v1->_134_param__unitstats_after_mobile_outpost_plant;

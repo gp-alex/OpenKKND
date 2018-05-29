@@ -1079,7 +1079,7 @@ int REND_SetRoutines()
     j_render_434BD0 = (decltype(j_render_434BD0))render_434BD0;
     j_render_434C60 = (decltype(j_render_434C60))render_434C60;
     j_render_4349A0_draw_tile_32x32 = (decltype(j_render_4349A0_draw_tile_32x32))render_draw_tile_32x32;
-    j_render_4349D0_draw_tile_32x32 = (decltype(j_render_4349D0_draw_tile_32x32))render_4349D0_draw_tile_32x32;
+    j_render_4349D0_draw_tile_32x32 = (decltype(j_render_4349D0_draw_tile_32x32))render_draw_tile_transparent_edges_32x32;
     j_render_nullsub_2 = (int)nullsub_1;
     return 1;
 }
@@ -1146,16 +1146,57 @@ int render_clip(_DWORD *clipped_x, _DWORD *clipped_y, _DWORD *width, _DWORD *hei
     return result;
 }
 
+
+const bool debug_outline_tiles = true;
+
+void render_draw_tile_outlines(int x, int y, int w, int h) {
+    //for (int _y = y; _y < y + h; ++_y) {
+    //    for (int _x = x; _x < x + w; ++_x) {
+    //        auto dst
+    //    }
+    //}
+    for (int _y = y, _x = x; _x < x + w; ++_x) {
+        if (_x < 0)
+            continue;
+        if (_x >= 640)
+            break;
+        if (_y < 0 || y >= 480)
+            break;
+        int y_off = render_locked_surface_width_px * (render_clip_y + _y);
+        int x_off = _x + render_clip_x;
+        auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
+        *dst = 123;
+    }
+    for (int _y = y, _x = x; _y < y + h; ++_y) {
+        if (_x < 0 || _x >= 640)
+            break;
+        if (_y < 0)
+            continue;
+        if (_y >= 480)
+            break;
+        int y_off = render_locked_surface_width_px * (render_clip_y + _y);
+        int x_off = _x + render_clip_x;
+        auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
+        *dst = 123;
+    }
+}
+
+extern bool is_mission_running;
 //----- (004349A0) --------------------------------------------------------
 void render_draw_tile_32x32(void *tile, int x_arg, int y_arg)
 {
     render_draw_tile(tile, x_arg, y_arg, 32, 32);
+    if (debug_outline_tiles) {
+        if (is_mission_running) {
+            render_draw_tile_outlines(x_arg, y_arg, 32, 32);
+        }
+    }
 }
 
 //----- (004349D0) --------------------------------------------------------
-void render_4349D0_draw_tile_32x32(unsigned __int8 *tile, int a2, int a3)
+void render_draw_tile_transparent_edges_32x32(unsigned __int8 *tile, int a2, int a3)
 {
-    render_4354A0_draw_tile(tile, a2, a3, 32, 32);
+    render_draw_tile_transparent_edges(tile, a2, a3, 32, 32);
 }
 
 //----- (00434A00) --------------------------------------------------------
@@ -1704,7 +1745,7 @@ int render_435320(void *pxiels, int x, int y, int w, int h)
 }
 
 //----- (004354A0) --------------------------------------------------------
-void render_4354A0_draw_tile(unsigned __int8 *tile, int a2, int a3, int a4, int a5)
+void render_draw_tile_transparent_edges(unsigned __int8 *tile, int a2, int a3, int a4, int a5)
 {
     char *result; // eax@2
     unsigned __int8 *t1le; // [sp+4h] [bp-28h]@1

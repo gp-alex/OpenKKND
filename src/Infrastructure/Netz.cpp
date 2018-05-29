@@ -736,7 +736,7 @@ int netz_42E820(netz_stru_3 *a1)
             if (v88 == netz_468B50_available_units_denom)
                 goto LABEL_183;
             netz_430D70(dword_468B54);
-            game_state = 3;
+            game_state = GAME_STATE::GAME_3;
             return 0;
         case 73:
             memset(netz_47A740, 0, 0x38u);
@@ -1005,7 +1005,7 @@ int netz_42E820(netz_stru_3 *a1)
             is_coroutine_list_initialization_failed = 0;
             dword_47CB1C = 0;
             dword_47A180 = 2;
-            game_state = 3;
+            game_state = GAME_STATE::GAME_3;
             dword_47CB14 = -1;
             return 0;
         case 62:
@@ -1018,7 +1018,7 @@ int netz_42E820(netz_stru_3 *a1)
                 dword_47CB1C = 0;
                 dword_47CB14 = -1;
                 dword_47A180 = 2;
-                game_state = 3;
+                game_state = GAME_STATE::GAME_3;
                 return 0;
             }
             v71 = 0;
@@ -1199,7 +1199,7 @@ void netz_42F620()
     dword_47CB1C = 0;
     dword_47CB14 = -1;
     dword_47A180 = 2;
-    game_state = 3;
+    game_state = GAME_STATE::GAME_3;
 }
 
 //----- (0042F650) --------------------------------------------------------

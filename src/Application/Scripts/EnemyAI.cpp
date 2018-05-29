@@ -3433,3 +3433,568 @@ void UNIT_FreeAiPlayers()
         ++v0;
     } while ((int)v0 < (int)&unk_4778EC);
 }
+
+//----- (0042D6B0) --------------------------------------------------------
+void EventHandler_42D6B0_evolved_mission8_ai(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
+{
+    stru24 *v4; // esi@1
+    stru24_EnemyNode *v5; // eax@4
+    stru24_EnemyNode *v6; // edx@8
+    stru24_stru10_convoy *v7; // eax@11
+    int v8; // eax@16
+    stru24_WandererNode *v9; // eax@17
+    stru24_WandererNode *v10; // edx@21
+    int v11; // eax@24
+    stru24_AttackerNode *v12; // eax@24
+    enum PLAYER_SIDE v13; // edx@28
+    stru24_AttackerNode *v14; // esi@28
+    stru24_AttackerNode *v15; // eax@30
+    enum PLAYER_SIDE v16; // edx@34
+    stru24_AttackerNode *v17; // esi@34
+    int v18; // edx@36
+    enum PLAYER_SIDE v19; // ecx@37
+    stru24_EnemyNode *v20; // eax@38
+    stru24_stru10_convoy *v21; // ecx@42
+    stru24_stru160 *v22; // edi@42
+    stru24_stru160 *v23; // eax@43
+    stru24_stru40 *v24; // edx@44
+    stru24_stru160 *v25; // edi@45
+    void *v26; // ecx@45
+    int v27; // ecx@49
+    stru24_stru40 *v28; // eax@50
+    bool v29; // zf@53
+    enum PLAYER_SIDE v30; // ecx@53
+    stru24_AttackerNode *v31; // ecx@54
+    stru24_stru160 *v32; // edi@54
+    int v33; // eax@55
+    Sprite *v34; // ecx@56
+    stru24_AttackerNode *v35; // eax@62
+    stru24_stru10_convoy *v36; // [sp+14h] [bp+4h]@42
+    int v37; // [sp+18h] [bp+8h]@42
+             // context -> stru24
+    v4 = (stru24 *)receiver->param;
+    if (event == EVT_SHOW_UI_CONTROL)
+    {
+        v18 = *((_DWORD *)param + 5);
+        if (v18 && (v19 = v4->_2A0_player_side, v18 != v19))
+        {
+            v20 = (stru24_EnemyNode *)*((_DWORD *)param + v19 + 9);
+            if (v20)
+            {
+                v20->next->prev = v20->prev;
+                v20->prev->next = v20->next;
+                v20->next = v4->enemy_list_free_pool;
+                v4->enemy_list_free_pool = v20;
+            }
+            else
+            {
+                show_message_ex(0, aWarningUnreg_0);
+            }
+        }
+        else if (*((_DWORD *)param + 4) == 25)
+        {
+            v21 = (stru24_stru10_convoy *)*((_DWORD *)param + v4->_2A0_player_side + 9);
+            v36 = v21;
+            v22 = (stru24_stru160 *)v21->field_C;
+            v37 = v21->field_C;
+            if (v22)
+            {
+                v23 = (stru24_stru160 *)v22->_C_next;
+                if ((void **)v23 != &v22->_C_next)
+                {
+                    v24 = (stru24_stru40 *)&v4->list_40_30;
+                    do
+                    {
+                        v25 = v23->prev;
+                        v26 = v23->_C_next;
+                        v23->next->prev = v25;
+                        v23->prev->next = v23->next;
+                        *((_DWORD *)v26 + 73) |= 0x80u;
+                        *((_DWORD *)v26 + 55) = 0;
+                        *((_DWORD *)v26 + 2) = 0;
+                        *((_DWORD *)v26 + 56) = 0;
+                        v23->field_8 = 0;
+                        v23->next = (stru24_stru160 *)v24->next;
+                        v23->prev = (stru24_stru160 *)v24;
+                        v24->next->prev = (stru24_stru40 *)v23;
+                        v24->next = (stru24_stru40 *)v23;
+                        v23 = v25->next;
+                        v22 = (stru24_stru160 *)v37;
+                    } while (v23 != (stru24_stru160 *)(v37 + 12));
+                    v21 = v36;
+                }
+                v22->next->prev = v22->prev;
+                v22->prev->next = v22->next;
+                v22->next = v4->list_160_head;
+                v4->list_160_head = v22;
+            }
+            v21->next->prev = v21->prev;
+            v21->prev->next = v21->next;
+            v21->next = v4->list_10_convoy_head;
+            v4->list_10_convoy_head = v21;
+        }
+        else
+        {
+            v27 = *((_DWORD *)param + 73);
+            if (v27 & 0x80)
+            {
+                v28 = (stru24_stru40 *)*((_DWORD *)param + v4->_2A0_player_side + 9);
+                if (v28)
+                {
+                    v28->next->prev = v28->prev;
+                    v28->prev->next = v28->next;
+                    v28->next = v4->list_40_head;
+                    v4->list_40_head = v28;
+                }
+                else
+                {
+                    show_message_ex(0, aWarningUnregis);
+                }
+            }
+            else
+            {
+                v29 = (BYTE1(v27) & 2) == 0;
+                v30 = v4->_2A0_player_side;
+                if (v29)
+                {
+                    v35 = (stru24_AttackerNode *)*((_DWORD *)param + v30 + 9);
+                    v35->next->prev = v35->prev;
+                    v35->prev->next = v35->next;
+                    v35->next = v4->attacker_list_free_pool;
+                    v4->attacker_list_free_pool = v35;
+                }
+                else
+                {
+                    v31 = (stru24_AttackerNode *)*((_DWORD *)param + v30 + 9);
+                    v32 = v31->list_8;
+                    if (v32)
+                    {
+                        v33 = (int)v32->_C_next;
+                        if ((void **)v33 != &v32->_C_next)
+                        {
+                            v34 = v31->entity->sprite;
+                            while (v34 != *(Sprite **)(*(_DWORD *)(v33 + 12) + 92))
+                            {
+                                v33 = *(_DWORD *)v33;
+                                if ((void **)v33 == &v32->_C_next)
+                                    return;
+                            }
+                            *(_DWORD *)(*(_DWORD *)v33 + 4) = *(_DWORD *)(v33 + 4);
+                            **(_DWORD **)(v33 + 4) = *(_DWORD *)v33;
+                            *(_DWORD *)v33 = v32->field_20;
+                            v32->field_20 = v33;
+                        }
+                    }
+                    else
+                    {
+                        v31->next->prev = v31->prev;
+                        v31->prev->next = v31->next;
+                        v31->next = v4->marshalling_nodes_list__evmission8_only_free_pool;
+                        v4->marshalling_nodes_list__evmission8_only_free_pool = v31;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        if (event != EVT_MSG_1521_entity_created)
+            return;
+        if (is_enemy(v4->_2A0_player_side, (Entity *)param))
+        {
+            v5 = v4->enemy_list_free_pool;
+            if (v5)
+                v4->enemy_list_free_pool = v5->next;
+            else
+                v5 = 0;
+            if (v5)
+            {
+                *((_DWORD *)param + v4->_2A0_player_side + 9) = (int)v5;
+                v5->entity = (Entity *)param;
+                v6 = v4->enemy_list_108;
+                v5->prev = (stru24_EnemyNode *)&v4->enemy_list_108;
+                v5->next = v6;
+                v4->enemy_list_108->prev = v5;
+                v4->enemy_list_108 = v5;
+            }
+            else
+            {
+                show_message_ex(0, aWarningOutOfEnemyNodes);
+            }
+            return;
+        }
+        if (*((_DWORD *)param + 4) == 25)
+        {
+            v7 = v4->list_10_convoy_head;
+            if (v7)
+                v4->list_10_convoy_head = v7->next;
+            else
+                v7 = 0;
+            if (v7)
+            {
+                *((_DWORD *)param + v4->_2A0_player_side + 9) = (int)v7;
+                v7->_8_entity = (Entity *)param;
+                v7->field_C = 0;
+                v7->next = (stru24_stru10_convoy *)v4->next;
+                v7->prev = (stru24_stru10_convoy *)v4;
+                v4->next->prev = (stru24 *)v7;
+                v4->next = (stru24 *)v7;
+                return;
+            }
+        LABEL_22:
+            show_message_ex(0, aWarningOutOfWa);
+            return;
+        }
+        v8 = *((_DWORD *)param + 75);
+        if (v8 > 1)
+        {
+            v9 = v4->wanderer_list_free_pool;
+            if (v9)
+                v4->wanderer_list_free_pool = v9->next;
+            else
+                v9 = 0;
+            if (v9)
+            {
+                *((_DWORD *)param + v4->_2A0_player_side + 9) = (int)v9;
+                v9->entity = (Entity *)param;
+                v10 = v4->wanderer_list_18;
+                v9->prev = (stru24_WandererNode *)&v4->wanderer_list_18;
+                v9->next = v10;
+                v4->wanderer_list_18->prev = v9;
+                v4->wanderer_list_18 = v9;
+                return;
+            }
+            goto LABEL_22;
+        }
+        if (v8 == 1)
+        {
+            v11 = *((_DWORD *)param + 73);
+            LOBYTE_HEXRAYS(v11) = v11 & 0x7F;
+            BYTE1(v11) |= 2u;
+            *((_DWORD *)param + 73) = v11;
+            v12 = v4->marshalling_nodes_list__evmission8_only_free_pool;
+            if (v12)
+                v4->marshalling_nodes_list__evmission8_only_free_pool = v12->next;
+            else
+                v12 = 0;
+            if (v12)
+            {
+                v13 = v4->_2A0_player_side;
+                v14 = (stru24_AttackerNode *)&v4->marshalling_nodes_list__evmission8_only_60;
+                *((_DWORD *)param + v13 + 9) = (int)v12;
+                v12->entity = (Entity *)param;
+                v12->list_8 = 0;
+                v12->next = v14->next;
+                v12->prev = v14;
+                v14->next->prev = v12;
+                v14->next = v12;
+            }
+            else
+            {
+                show_message_ex(0, aWarningOutOfMa);
+            }
+        }
+        else
+        {
+            v15 = v4->attacker_list_free_pool;
+            if (v15)
+                v4->attacker_list_free_pool = v15->next;
+            else
+                v15 = 0;
+            if (v15)
+            {
+                v16 = v4->_2A0_player_side;
+                v17 = (stru24_AttackerNode *)&v4->attacker_list_48;
+                *((_DWORD *)param + v16 + 9) = (int)v15;
+                v15->entity = (Entity *)param;
+                v15->list_8 = 0;
+                v15->next = v17->next;
+                v15->prev = v17;
+                v17->next->prev = v15;
+                v17->next = v15;
+            }
+            else
+            {
+                show_message_ex(0, aWarningOutOfAt);
+            }
+        }
+    }
+}
+
+//----- (0042DA90) --------------------------------------------------------
+void script_42DA90_ai(Script *a2)
+{
+    stru24 *v1; // ebx@1
+    stru24_AttackerNode *v2; // edi@2
+    Entity *v3; // eax@3
+    stru24 *v4; // esi@3
+    Sprite *v5; // eax@3
+    int v6; // ebp@3
+    stru24 *i; // eax@3
+    Entity *v8; // ecx@4
+    Sprite *v9; // ecx@5
+    int v10; // ebx@5
+    Sprite *v11; // edx@6
+    int v12; // ecx@6
+    int v13; // edx@8
+    int v14; // ebx@8
+    int v15; // ecx@10
+    stru24_stru160 *v16; // edx@15
+    stru24_stru160 *v17; // eax@16
+    stru24_stru160 **v18; // ecx@19
+    Entity *v19; // eax@21
+    Entity *v20; // edx@21
+    int v21; // [sp+8h] [bp-18h]@3
+    int v22; // [sp+Ch] [bp-14h]@3
+    stru24_AttackerNode *v23; // [sp+Ch] [bp-14h]@15
+    stru24 *v24; // [sp+10h] [bp-10h]@1
+    char *v25; // [sp+14h] [bp-Ch]@2
+    enum PLAYER_SIDE v26; // [sp+18h] [bp-8h]@21
+    Entity *v27; // [sp+1Ch] [bp-4h]@21
+
+    v1 = (stru24 *)a2->param;
+    v24 = v1;
+    if (v1->next != v1)
+    {
+        v2 = v1->marshalling_nodes_list__evmission8_only_60;
+        v25 = (char *)&v1->marshalling_nodes_list__evmission8_only_60;
+        if ((stru24_AttackerNode **)v2 != &v1->marshalling_nodes_list__evmission8_only_60)
+        {
+            do
+            {
+                v3 = v2->entity;
+                v4 = 0;
+                v22 = 0x7FFFFFFF;
+                v3->sprite->field_88_unused = 1;
+                v5 = v3->sprite;
+                v6 = v5->x;
+                v21 = v5->y;
+                for (i = v1->next; i != v1; i = i->next)
+                {
+                    v8 = i->_8_entity;
+                    if (!v8->destroyed)
+                    {
+                        v8->sprite->field_88_unused = 1;
+                        v9 = i->_8_entity->sprite;
+                        v10 = v9->x;
+                        v9->field_88_unused = 1;
+                        if (v10 - v6 <= 0)
+                        {
+                            v11 = i->_8_entity->sprite;
+                            v12 = v6 - v11->x;
+                        }
+                        else
+                        {
+                            v11 = i->_8_entity->sprite;
+                            v12 = v11->x - v6;
+                        }
+                        v13 = v11->y;
+                        v14 = v13 - v21;
+                        if (v13 - v21 <= 0)
+                            v14 = v21 - v13;
+                        v15 = v14 + v12;
+                        if (v15 < v22)
+                        {
+                            v22 = v15;
+                            v4 = i;
+                        }
+                        v1 = v24;
+                    }
+                }
+                if (v4)
+                {
+                    v23 = v2->prev;
+                    v16 = (stru24_stru160 *)v4->struC;
+                    if (!v16)
+                    {
+                        v17 = v1->list_160_head;
+                        if (v17)
+                        {
+                            v4->struC = (stru24_struC *)v17;
+                            v1->list_160_head = v1->list_160_head->next;
+                        }
+                        else
+                        {
+                            v4->struC = 0;
+                        }
+                        v18 = (stru24_stru160 **)v4->struC;
+                        if (v18)
+                        {
+                            *v18 = v1->list_11C;
+                            v4->struC->field_4 = (int)&v1->list_11C;
+                            v1->list_11C->prev = (stru24_stru160 *)v4->struC;
+                            v1->list_11C = (stru24_stru160 *)v4->struC;
+                            v4->struC->_C_param = &v4->struC->_C_param;
+                            v4->struC->field_10 = (int)&v4->struC->_C_param;
+                            v4->struC->field_1C = 0;
+                        }
+                    }
+                    v2->list_8 = v16;
+                    v19 = v4->_8_entity;
+                    v20 = v2->entity;
+                    v26 = v1->_2A0_player_side;
+                    v27 = v19;
+                    script_trigger_event(v19->script, EVT_MSG_1527, &v26, v20->script);
+                    v2->next->prev = v2->prev;
+                    v2->prev->next = v2->next;
+                    v2->next = (stru24_AttackerNode *)v4->struC->_C_param;
+                    v2->prev = (stru24_AttackerNode *)&v4->struC->_C_param;
+                    *((_DWORD *)v4->struC->_C_param + 1) = (int)v2;
+                    v4->struC->_C_param = v2;
+                    v2 = v23;
+                }
+                v2 = v2->next;
+            } while ((char *)v2 != v25);
+        }
+    }
+    stru24_42E070(v1);
+    script_sleep(a2, 60);
+}
+
+//----- (0042DC70) --------------------------------------------------------
+void script_42DC70_ai(Script *a1)
+{
+    a1->handler = script_42DA90_ai;
+    script_sleep(a1, 60);
+}
+
+//----- (0042DC90) --------------------------------------------------------
+void EventHandler_42DC90_evolved_mission5_ai(Script *a1, Script *a2, enum SCRIPT_EVENT event, Entity *param)
+{
+    stru24 *v4; // esi@1
+    stru24_EnemyNode *v5; // eax@4
+    stru24_EnemyNode *v6; // edx@8
+    stru24_AttackerNode *v7; // eax@11
+    stru24_AttackerNode *v8; // edx@15
+    stru24_WandererNode *v9; // eax@17
+    enum PLAYER_SIDE v10; // ecx@23
+    enum PLAYER_SIDE v11; // edx@24
+    stru24_EnemyNode *v12; // eax@25
+    stru24_AttackerNode *v13; // eax@29
+    stru24_stru40 *v14; // eax@32
+                        // 40B720: context -> stru24
+    v4 = (stru24 *)a1->param;
+    if (event == EVT_SHOW_UI_CONTROL)
+    {
+        v10 = param->player_side;
+        if (v10 == 0)
+            goto LABEL_37;
+        v11 = v4->_2A0_player_side;
+        if (v10 != v11)
+        {
+            v12 = (stru24_EnemyNode *)param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v11];
+            if (v12)
+            {
+                v12->next->prev = v12->prev;
+                v12->prev->next = v12->next;
+                v12->next = v4->enemy_list_free_pool;
+                v4->enemy_list_free_pool = v12;
+            }
+            else
+            {
+                show_message_ex(0, aWarningUnreg_0);
+            }
+            return;
+        }
+        if (v10)
+        {
+            v14 = (stru24_stru40 *)param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side];
+            if (v14)
+            {
+                v14->next->prev = v14->prev;
+                v14->prev->next = v14->next;
+                v14->next = v4->list_40_head;
+                v4->list_40_head = v14;
+            }
+            else
+            {
+                show_message_ex(0, aWarningUnreg_2);
+            }
+        }
+        else
+        {
+        LABEL_37:
+            v13 = (stru24_AttackerNode *)param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side];
+            if (v13)
+            {
+                v13->next->prev = v13->prev;
+                v13->prev->next = v13->next;
+                v13->next = v4->attacker_list_free_pool;
+                v4->attacker_list_free_pool = v13;
+            }
+            else
+            {
+                show_message_ex(0, aWarningUnreg_1);
+            }
+        }
+    }
+    else if (event == EVT_MSG_1521_entity_created)
+    {
+        if (is_enemy(v4->_2A0_player_side, param))
+        {
+            v5 = v4->enemy_list_free_pool;
+            if (v5)
+                v4->enemy_list_free_pool = v5->next;
+            else
+                v5 = 0;
+            if (v5)
+            {
+                param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v5;
+                v5->entity = param;
+                v6 = v4->enemy_list_108;
+                v5->prev = (stru24_EnemyNode *)&v4->enemy_list_108;
+                v5->next = v6;
+                v4->enemy_list_108->prev = v5;
+                v4->enemy_list_108 = v5;
+            }
+            else
+            {
+                show_message_ex(0, aWarningOutOfEnemyNodes);
+            }
+        }
+        else if (param->player_side)
+        {
+            v9 = v4->wanderer_list_free_pool;
+            if (v9)
+                v4->wanderer_list_free_pool = v9->next;
+            else
+                v9 = 0;
+            if (v9)
+            {
+                param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v9;
+                v9->entity = param;
+                param->_12C_prison_bunker_spawn_type = 2;
+                v9->next = v4->wanderer_list_18;
+                v9->prev = (stru24_WandererNode *)&v4->wanderer_list_18;
+                v4->wanderer_list_18->prev = v9;
+                v4->wanderer_list_18 = v9;
+            }
+            else
+            {
+                show_message_ex(0, aWarningOutOfWa);
+            }
+        }
+        else
+        {
+            v7 = v4->attacker_list_free_pool;
+            if (v7)
+                v4->attacker_list_free_pool = v7->next;
+            else
+                v7 = 0;
+            if (v7)
+            {
+                param->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v7;
+                v7->entity = param;
+                v8 = v4->attacker_list_48;
+                v7->prev = (stru24_AttackerNode *)&v4->attacker_list_48;
+                v7->next = v8;
+                v4->attacker_list_48->prev = v7;
+                v4->attacker_list_48 = v7;
+            }
+            else
+            {
+                show_message_ex(0, aWarningOutOfNe);
+            }
+        }
+    }
+}

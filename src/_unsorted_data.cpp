@@ -6164,7 +6164,6 @@ int dword_478FF4; // weak
 int _4793F8_map_width; // weak
 int dword_47952C; // weak
 int dword_47953C; // weak
-int dword_479540; // weak
 Sidebar *stru22_list_479548;
 Sidebar *stru22_list_47954C;
 Sidebar *sidebar_list;
@@ -6262,7 +6261,7 @@ int _47A1B0_custom_mission_briefing_ui; // weak
 char global_console_argv[260];
 int dword_47A2BC; // weak
 char *global_cmd_line;
-int game_state; // weak
+GAME_STATE game_state = GAME_STATE::MainMenu;
 int netz_47A2C8; // weak
 enum LEVEL_ID current_level_idx;
 __int16 current_mute_level; // weak
@@ -6452,15 +6451,42 @@ RenderString *render_string_list;
 RenderString *render_string_list_free_pool;
 RenderString *render_string_list_47C784;
 BuildingPlanner _47C788_building_planner; // weak
-ProductionGroup *_47C798_infantry_production_group_first;
-ProductionGroup *_47C79C_infantry_production_group_last;
-ProductionGroup *_47C7E4_vehicles_production_group;
-ProductionGroup *stru21prod_buildings_first;
-ProductionGroup *stru21prod_buildings_last;
-ProductionGroup *_47C87C_stru21prod_towers_first;
-ProductionGroup *_47C880_stru21prod_towers_last;
-ProductionGroup *_47C8C8_stru21prod_airstrike_first;
-ProductionGroup *_47C8CC_stru21prod_airstrike_last;
+ProductionGroup _47C798_infantry_pg;    // 47C798
+ProductionGroup _47C7E4_vehicles_pg;    // 47C7E4
+ProductionGroup _47C830_buildings_pg;   // 47C830
+ProductionGroup _47C87C_towers_pg;      // 47C87C
+ProductionGroup _47C8C8_aircraft_pg;    // 47C8C8
+ProductionGroup *ProductionGroupAccessor(PRODUCTION_GROUP_ID group) {
+    switch (group) {
+        case PRODUCTION_GROUP_INFANTRY: {
+            return &_47C798_infantry_pg;
+        } break;
+
+        case PRODUCTION_GROUP_VEHICLES: {
+            return &_47C7E4_vehicles_pg;
+        } break;
+
+        case PRODUCTION_GROUP_BUILDINGS: {
+            return &_47C830_buildings_pg;
+        } break;
+
+        case PRODUCTION_GROUP_TOWERS: {
+            return &_47C87C_towers_pg;
+        } break;
+
+        case PRODUCTION_GROUP_AIRCRAFT: {
+            return &_47C8C8_aircraft_pg;
+        } break;
+
+        case PRODUCTION_GROUP_BLACKSMITH: {
+            __debugbreak();
+            //return _47C7E4_vehicles_production_group;
+        } break;
+
+        default:
+            __debugbreak();
+    }
+}
 Sidebar *_47C914_sidebar;
 ProductionGroup *production_group_list_47C918;
 ProductionGroup *production_group_list_47C91C;

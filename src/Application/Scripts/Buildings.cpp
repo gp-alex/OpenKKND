@@ -467,7 +467,7 @@ void entity_4038B0(Entity *a1, enum PLAYER_SIDE side)
         v6->turret_sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[v3]];
     if (v2->player_side == player_side)
     {
-        entity_44B100_buildings__mess_with_fog_of_war(v2);
+        map_reveal_fog_around_entity(v2);
         ++UNIT_num_player_units;
         --UNIT_num_nonplayer_units;
         v7 = v2->mode_return;
@@ -510,7 +510,7 @@ void UNIT_Handler_RepairStation(Script *a1)
             v1 = EntityFactory().Create(a1);
             v1->script->event_handler = EventHandler_RepairStation;
             v1->script->script_type = SCRIPT_REPAIR_STATION_HANDLER;
-            entity_44B100_buildings__mess_with_fog_of_war(v1);
+            map_reveal_fog_around_entity(v1);
             entity_initialize_building(v1, 1, 0, 0);
             if (!v1->sprite->cplc_ptr1_pstru20)
             {
