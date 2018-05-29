@@ -1719,14 +1719,17 @@ struct DataMobdItem_stru0
 	DataMobdItem_stru1 *field_18;
 };
 
-#define BOXD_STRU0_TILE_SLOT0   (1 << 0)
-#define BOXD_STRU0_TILE_SLOT1   (1 << 1)
-#define BOXD_STRU0_TILE_SLOT2   (1 << 2)
-#define BOXD_STRU0_TILE_SLOT3   (1 << 3)
-#define BOXD_STRU0_TILE_SLOT4   (1 << 4)
-#define BOXD_STRU0_ALL_SLOTS    (BOXD_STRU0_TILE_SLOT0 | BOXD_STRU0_TILE_SLOT1 | BOXD_STRU0_TILE_SLOT2 | BOXD_STRU0_TILE_SLOT3 | BOXD_STRU0_TILE_SLOT4)
-#define BOXD_STRU0_IMPASSIBLE   0x60
-#define BOXD_STRU0_80           0x80
+#define BOXD_STRU0_TILE_SLOT(n)         (1 << (n))
+#define BOXD_STRU0_TILE_SLOT0           BOXD_STRU0_TILE_SLOT(0)
+#define BOXD_STRU0_TILE_SLOT1           BOXD_STRU0_TILE_SLOT(1)
+#define BOXD_STRU0_TILE_SLOT2           BOXD_STRU0_TILE_SLOT(2)
+#define BOXD_STRU0_TILE_SLOT3           BOXD_STRU0_TILE_SLOT(3)
+#define BOXD_STRU0_TILE_SLOT4           BOXD_STRU0_TILE_SLOT(4)
+#define BOXD_STRU0_ALL_SLOTS            (BOXD_STRU0_TILE_SLOT0 | BOXD_STRU0_TILE_SLOT1 | BOXD_STRU0_TILE_SLOT2 | BOXD_STRU0_TILE_SLOT3 | BOXD_STRU0_TILE_SLOT4)
+#define BOXD_STRU0_OBSTRUCTED           0x20    // edges of some landscapes
+#define BOXD_STRU0_BLOCKED              0x40    // completely blocked terrrain
+#define BOXD_STRU0_IMPASSIBLE           (BOXD_STRU0_BLOCKED | BOXD_STRU0_OBSTRUCTED)
+#define BOXD_STRU0_VEHICLE_BUILDING     0x80    // tile is occupied by a vehicle or a building
 /* 389 */
 struct DataBoxd_stru0_per_map_unit
 {
@@ -1735,6 +1738,9 @@ struct DataBoxd_stru0_per_map_unit
     }
     bool IsAnySlotOccupied() const {
         return flags & BOXD_STRU0_ALL_SLOTS;
+    }
+    bool IsVehicleOrBuilding() const {
+        return flags & BOXD_STRU0_VEHICLE_BUILDING;
     }
 
 	char flags;
@@ -2030,7 +2036,8 @@ struct EntitySerialized
 	char entity_array_1AC[40];
 	char entity_array_1D4[40];
 	char entity_array_1FC[40];
-	char entity_array_224[88];
+	char entity_array_224[40];
+    char entity_array_24C[48];
 	int entity_27C_entity_id;
 	int entity_27C_entity_id_2;
 	int entity_array_294[8];

@@ -299,7 +299,7 @@ void entity_mode_4446B0_oiltanker_load_oil(Entity *a1)
     int v6; // eax@11
 
     v1 = a1;
-    entity_40DF50_boxd_update_map_tile(a1, 0);
+    Map_40DF50_update_tile(a1, 0);
     v2 = (EntityOilTankerState *)v1->state;
     if (v2->_0_oil_loaded < 500)
     {
@@ -561,7 +561,7 @@ void entity_mode_444B40_oiltanker_unload_oil(Entity *a1)
     v2 = (EntityOilTankerState *)a1->state;
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
-    entity_40DF50_boxd_update_map_tile(a1, 0);
+    Map_40DF50_update_tile(a1, 0);
     if (v2->_0_oil_loaded > 0)
     {
         v1->mode = entity_mode_444B40_oiltanker_unload_oil;

@@ -35,7 +35,6 @@ struct Entity_stru60
 /* 427 */
 struct Entity_stru224
 {
-    int array_0[10];
     int _28_indexer;
     int _2C_map_x;
     int _30_map_y;
@@ -45,7 +44,7 @@ struct Entity_stru224
     int _40_xy_idx;
     int _44_map_x;
     int _48_map_y;
-    int field_4C;
+    int _41B970_result; // 4C
     int field_50;
     int field_54;
 };
@@ -157,11 +156,12 @@ struct Entity
     int field_150;
     int field_154;
     int field_158;
-    int array_15C[10];
-    int array_184[10];
-    int array_1AC[10];
-    int array_1D4[10];
-    int array_1FC[10];
+    int _15C_waypoints_xs[10]; // map_x`s
+    int _15C_waypoints_ys/*array_184*/[10]; // map_y`s
+    int _1AC_waypoints_xs[10]; // map_x`s
+    int _1AC_waypoints_ys/*array_1D4*/[10]; // map_y`s
+    int _1FC_waypoints_xs[10]; // map_x`s  for map classification 0
+    int _1FC_waypoints_ys/*array_224*/[10]; // map_y`s
     Entity_stru224 stru224;
     Entity *entity_27C;
     int entity_27C_entity_id;

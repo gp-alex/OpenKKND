@@ -1,4 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
+#include <assert.h>
 #include <direct.h>
 
 #include "src/kknd.h"
@@ -5206,7 +5207,7 @@ int map_40DA90_move_entity(Entity *a1)
 		{
 			v15 = Map_40EEB0_place_entity(a1, new_map_x, new_map_y, 1);
 			if (v15 == 5)
-				return boxd_40EA50(v1, new_map_x, new_map_y, &_478AA8_boxd_stru0_array[new_map_x + _4793F8_map_width * new_map_y]);
+				return Map_40EA50_classify_tile_objects(v1, new_map_x, new_map_y, &_478AA8_boxd_stru0_array[new_map_x + _4793F8_map_width * new_map_y]);
 			boxd_40F160(v1, v1->sprite_map_x, v1->sprite_map_y, v1->_A4_idx_in_tile);
 			v1->_A4_idx_in_tile = v15;
 			v1->sprite_map_x = new_map_x;
@@ -5494,7 +5495,7 @@ char *entity_40DEC0_boxd(Entity *a1, int a2, int a3, int a4)
 }
 
 //----- (0040DF50) --------------------------------------------------------
-void entity_40DF50_boxd_update_map_tile(Entity *a1, int a2)
+void Map_40DF50_update_tile(Entity *a1, int a2)
 {
 	Entity *v2; // ebp@1
     int v3;
@@ -5506,21 +5507,21 @@ void entity_40DF50_boxd_update_map_tile(Entity *a1, int a2)
 	v2 = a1;
 	if (entity_is_xl_vehicle(a1))
 	{
-		v7 = global2map(a1->sprite->y - 16 * 256);
-		v3 = global2map(a1->sprite->y + 16 * 256);
-		v8 = global2map(a1->sprite->x - 16 * 256);
-		v9 = global2map(a1->sprite->x + 16 * 256);
+		v7 = global2map(a1->sprite->y - 1 * 4096);
+		v3 = global2map(a1->sprite->y + 1 * 4096);
+		v8 = global2map(a1->sprite->x - 1 * 4096);
+		v9 = global2map(a1->sprite->x + 1 * 4096);
 		for (v7; v7 <= v3; ++v7)
 		{
             for (v11 = v8; v11 <= v9; ++v11)
 			{
-                boxd_40F230_update_map_tile(v2, v11++, v7, 0, a2);
+                Map_40F230_update_tile(v2, v11++, v7, 0, a2);
 			}
 		}
 	}
 	else
 	{
-		boxd_40F230_update_map_tile(a1, a1->sprite_map_x, a1->sprite_map_y, a1->_A4_idx_in_tile, a2);
+		Map_40F230_update_tile(a1, a1->sprite_map_x, a1->sprite_map_y, a1->_A4_idx_in_tile, a2);
 	}
 }
 
@@ -5713,7 +5714,7 @@ int Map_40E1B0_place_xl_entity(Entity *a1, int x, int y, int a4)
 		}
 	}
 LABEL_9:
-	v11 = boxd_40EA50(v4, v5, v8, &_478AA8_boxd_stru0_array[v5 + _4793F8_map_width * v8]);
+	v11 = Map_40EA50_classify_tile_objects(v4, v5, v8, &_478AA8_boxd_stru0_array[v5 + _4793F8_map_width * v8]);
 	v12 = v15;
 	for (a4a = v11; v12 <= ya; ++v12)
 	{
@@ -6145,7 +6146,7 @@ void boxd_40EA30_cleanup()
 }
 
 //----- (0040EA50) --------------------------------------------------------
-int boxd_40EA50(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a4)
+int boxd_40EA50_original(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a4)
 {
 	int v4; // eax@1
 	int v5; // edx@2
@@ -6305,6 +6306,157 @@ int boxd_40EA50(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a
         }
     }
 	return 0;
+}
+
+//----- (0040EA50) --------------------------------------------------------
+int boxd_40EA50_refactored(Entity *entity, int map_x, int map_y, DataBoxd_stru0_per_map_unit *tile)
+{
+    int v6; // eax@5
+    int v7; // eax@8
+    int v8; // edi@8
+    DataBoxd_stru0_per_map_unit *v9; // ebx@13
+    enum PLAYER_SIDE v11; // ebp@24
+    int v12; // edi@24
+    Entity **v13; // esi@24
+    int result; // eax@37
+    Entity **v17; // esi@46
+    enum PLAYER_SIDE v18; // ebx@51
+    int v19; // edi@51
+    int v20; // eax@57
+    int v21; // [sp+10h] [bp-1Ch]@8
+    int v22; // [sp+14h] [bp-18h]@8
+    int v23; // [sp+18h] [bp-14h]@8
+    int v24; // [sp+1Ch] [bp-10h]@8
+    int v26; // [sp+24h] [bp-8h]@8
+
+    if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
+        return 0;
+    v6 = entity->stats->field_4C;
+    if (v6 == 128)
+    {
+        if (tile->IsImpassibleTerrain() && !tile->IsVehicleOrBuilding())
+            return 0;
+        v17 = tile->_4_entities;
+        if (tile->_4_entities[0] == entity)
+        {
+            return 2;
+        }
+        else if (tile->flags & BOXD_STRU0_ALL_SLOTS)
+        {
+            if (!tile->IsVehicleOrBuilding())
+            {
+                v18 = entity->player_side;
+                v19 = 0;
+                while (!*v17 || is_enemy(v18, *v17))
+                {
+                    ++v19;
+                    ++v17;
+                    if (v19 >= 5)
+                    {
+                        if (!entity->stats->field_2C)
+                            break;
+                        return 2;
+                    }
+                }
+            }
+            v20 = -(((tile->flags ^ tile->flags2) & BOXD_STRU0_ALL_SLOTS) != 0);
+            LOBYTE_HEXRAYS(v20) = v20 & 0xFE;
+            return v20 + 3;
+        }
+        else
+        {
+            return 2;
+        }
+    }
+    else if (v6 == 512)
+    {
+        if (!tile->IsImpassibleTerrain() || tile->IsVehicleOrBuilding())
+        {
+            if ((tile->flags & BOXD_STRU0_ALL_SLOTS) == BOXD_STRU0_ALL_SLOTS)
+                return (tile->flags2 & BOXD_STRU0_ALL_SLOTS) != 0 ? 3 : 1;
+            else
+                return 2;
+        }
+    }
+    else if (entity_is_xl_vehicle(entity))
+    {
+        v7 = 0;
+        v8 = 0;
+        v23 = 0;
+        v24 = 0;
+        v26 = 0;
+        v22 = 0;
+        v21 = 0;
+        while (v8 + map_x < _4793F8_map_width && v7 + map_y < _478AAC_map_height)
+        {
+            v9 = &tile[v8 + (v7 != 0 ? _4793F8_map_width : 0)];
+            if (v9->IsImpassibleTerrain() && !v9->IsVehicleOrBuilding())
+                v26 = 1;
+            if (v9->IsVehicleOrBuilding() && v9->_4_entities[0] != entity)
+            {
+                if ((v9->flags2 & BOXD_STRU0_ALL_SLOTS) == BOXD_STRU0_ALL_SLOTS)
+                    v24 = 1;
+                else
+                    v23 = 1;
+            }
+            if (!v9->IsVehicleOrBuilding() && v9->flags & BOXD_STRU0_ALL_SLOTS)
+            {
+                if (entity->stats->field_2C)
+                {
+                    v11 = entity->player_side;
+                    v12 = 0;
+                    v13 = v9->_4_entities;
+                    while (!*v13 || is_enemy(v11, *v13))
+                    {
+                        ++v12;
+                        ++v13;
+                        if (v12 >= 5)
+                        {
+                            v8 = v21;
+                            goto LABEL_33;
+                        }
+                    }
+                    v8 = v21;
+                }
+                if ((v9->flags ^ v9->flags2) & BOXD_STRU0_ALL_SLOTS)
+                    v23 = 1;
+                else
+                    v24 = 1;
+            }
+        LABEL_33:
+            v7 = v22;
+            v21 = ++v8;
+            if (v8 < 2)
+            {
+                ;
+            }
+            else
+            {
+                v7 = v22 + 1;
+                v22 = v7;
+                if (v7 >= 2)
+                {
+                    if (v26)
+                        return 0;
+                    if (v23)
+                        result = 1;
+                    else
+                        result = (v24 != 0) + 2;
+                    return result;
+                }
+                v8 = 0;
+                v21 = 0;
+            }
+        }
+    }
+    return 0;
+}
+
+int Map_40EA50_classify_tile_objects(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a4) {
+    int one = boxd_40EA50_original(a1, map_x, map_y, a4);
+    int two = boxd_40EA50_refactored(a1, map_x, map_y, a4);
+    assert(one == two);
+    return two;
 }
 
 //----- (0040ED00) --------------------------------------------------------
@@ -6555,7 +6707,7 @@ LABEL_15:
 	if (a4 == 64)
 		v5->flags = 0;
     else {
-        v5->flags |= BOXD_STRU0_ALL_SLOTS | BOXD_STRU0_80;
+        v5->flags |= BOXD_STRU0_ALL_SLOTS | BOXD_STRU0_VEHICLE_BUILDING;
     }
 	if (a4)
 	{
@@ -6690,28 +6842,28 @@ int boxd_40F160(Entity *a1, int map_x, int map_y, int a4)
 }
 
 //----- (0040F230) --------------------------------------------------------
-void boxd_40F230_update_map_tile(Entity *a1, int map_x, int map_y, int a4, int a5)
+void Map_40F230_update_tile(Entity *a1, int map_x, int map_y, int slot, int a5)
 {
     DataBoxd_stru0_per_map_unit *tile = &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
 
 	if (map_x >= 0 && map_x < _4793F8_map_width && map_y >= 0 && map_y < _478AAC_map_height)
 	{
-		if (tile->flags & BOXD_STRU0_80)
+		if (tile->IsVehicleOrBuilding())
 		{
-			if (!a4 && tile->_4_entities[0] == a1)
+			if (slot == 0 && tile->_4_entities[0] == a1)
 			{
 				if (a5)
-					tile->flags2 |= 0x1F;
+					tile->flags2 |= BOXD_STRU0_ALL_SLOTS;
 				else
-					tile->flags2 &= 0xE0;
+					tile->flags2 &= ~BOXD_STRU0_ALL_SLOTS;
 			}
 		}
-		else if (a1->stats->is_infantry && (1 << a4) & tile->flags)
+		else if (a1->IsInfantry() && tile->flags & BOXD_STRU0_TILE_SLOT(slot))
 		{
 			if (a5)
-                tile->flags2 |= 1 << a4;
+                tile->flags2 |= BOXD_STRU0_TILE_SLOT(slot);
 			else
-                tile->flags2 &= ~(1 << a4);
+                tile->flags2 &= ~BOXD_STRU0_TILE_SLOT(slot);
 		}
 	}
 }
@@ -9160,7 +9312,7 @@ void entity_41A470(Entity *a1, Entity *a2)
 	v5 = v3->sprite->y;
 	v2->entity_8 = 0;
 	v2->sprite_y_2 = v5 + v4;
-	entity_40DF50_boxd_update_map_tile(v2, 1);
+	Map_40DF50_update_tile(v2, 1);
 	v2->mode = entity_mode_move_attack;
 }
 
@@ -10363,78 +10515,58 @@ bool entity_41B510(Entity *a1, Entity *a2)
 }
 
 //----- (0041B970) --------------------------------------------------------
-int entity_41B970_boxd(Entity *a1, int x, int y)
+int Map_41B970_straight_line_pathing(Entity *a1, int target_x, int target_y)
 {
-	Entity *v3; // edi@1
 	Sprite *v5; // edx@1
-	int v6; // ecx@1
-	int v7; // edx@1
 	int v8; // eax@2
 	int v9; // ebx@2
-	int v11; // eax@7
-	int v12; // esi@7
-	int v13; // [sp-14h] [bp-20h]@3
-	int v14; // [sp-10h] [bp-1Ch]@3
-	int v15; // [sp-Ch] [bp-18h]@3
-	int v16; // [sp-8h] [bp-14h]@3
-	Entity *v17; // [sp-4h] [bp-10h]@3
 
-	v3 = a1;
 	v5 = a1->sprite;
-	v6 = v5->x;
-	v7 = v5->y;
-	v3->stru224._28_indexer = 0;
-	if (v7 > y)
+    a1->stru224._28_indexer = 0;
+	if (v5->y > target_y)
 	{
-		v11 = (x - v6) / 256;
-		v12 = (v7 - y) / 256;
-		if (v11 <= 0)
+        // moving up
+        int dx = (target_x - v5->x) / 256;
+        int dy = (v5->y - target_y) / 256;
+		if (dx <= 0)
 		{
-			v17 = v3;
-			v16 = -256;
-			v15 = -256;
-			v14 = (v7 - y) / 256;
-			v13 = -v11;
-			if (-v11 > v12)
-				return boxd_41BA30(v6, v7, v13, v14, -256, -256, v3);
+            // up left
+			if (abs(dx) > dy)
+				return boxd_41BA30(v5->x, v5->y, abs(dx), dy, -256, -256, a1);
+            else
+                return boxd_41BC60(v5->x, v5->y, abs(dx), dy, -256, -256, a1);
 		}
 		else
 		{
-			v17 = v3;
-			v16 = -256;
-			v15 = 256;
-			v14 = (v7 - y) / 256;
-			v13 = v11;
-			if (v11 > v12)
-				return boxd_41BA30(v6, v7, v11, v14, 256, -256, v3);
+            //up right
+			if (dx > dy)
+				return boxd_41BA30(v5->x, v5->y, dx, dy, 256, -256, a1);
+            else
+                return boxd_41BC60(v5->x, v5->y, dx, dy, 256, -256, a1);
 		}
 	}
 	else
 	{
-		v8 = (x - v6) / 256;
-		v9 = (y - v7) / 256;
-		if (v8 <= 0)
+        // moving down
+        int dx = (target_x - v5->x) / 256;
+        int dy = (target_y - v5->y) / 256;
+		if (dx <= 0)
 		{
-			v17 = v3;
-			v16 = 256;
-			v15 = -256;
-			v14 = (y - v7) / 256;
-			v13 = -v8;
-			if (-v8 > v9)
-				return boxd_41BA30(v6, v7, v13, v9, -256, 256, v3);
+            // down left
+			if (abs(dx) > dy)
+				return boxd_41BA30(v5->x, v5->y, abs(dx), dy, -256, 256, a1);
+            else
+                return boxd_41BC60(v5->x, v5->y, abs(dx), dy, -256, 256, a1);
 		}
 		else
 		{
-			v17 = v3;
-			v16 = 256;
-			v15 = 256;
-			v14 = (y - v7) / 256;
-			v13 = v8;
-			if (v8 > v9)
-				return boxd_41BA30(v6, v7, v8, v9, 256, 256, v3);
+            // down right
+			if (dx > dy)
+				return boxd_41BA30(v5->x, v5->y, dx, dy, 256, 256, a1);
+            else
+                return boxd_41BC60(v5->x, v5->y, dx, dy, 256, 256, a1);
 		}
 	}
-	return boxd_41BC60(v6, v7, v13, v14, v15, v16, v17);
 }
 
 //----- (0041BA30) --------------------------------------------------------
@@ -10469,8 +10601,8 @@ int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1
 	{
         v19 = i + 1;
 		v30[i] = 0;
-		a1->array_15C[i] = -1;
-		a1->array_184[i] = -1;
+		a1->_15C_waypoints_xs[i] = -1;
+		a1->_15C_waypoints_ys[i] = -1;
 	}
 	a3a = 0;
 	v23 = 0;
@@ -10520,7 +10652,7 @@ int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1
 		if (next_map_y < map_y)
             tile -= _4793F8_map_width;
 
-		v16 = boxd_40EA50(a1, next_map_x, next_map_y, tile);
+		v16 = Map_40EA50_classify_tile_objects(a1, next_map_x, next_map_y, tile);
 		if (boxd_41BE90(&v19, v16, &a3a, &v23, a1, v30, a5a, a6a, next_map_x, next_map_y, &a11, &a8) != 6)
 			return 1;
 	}
@@ -10528,89 +10660,199 @@ int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1
     return boxd_41C060(v19, a1, a3a, v23, a5a, a6a, v30, a8);
 }
 
+void entity_log_pathing(Entity *e) {
+    log("indexer: %u", e->stru224._28_indexer);
+    if (e->stru224._28_indexer > 0) {
+        char buf[4096];
+
+        buf[0] = 0;
+        for (int i = 0; i < e->stru224._28_indexer; ++i) {
+            sprintf(buf + strlen(buf), "(%X,%X), ", e->_15C_waypoints_xs[i], e->_15C_waypoints_ys[i]);
+        }
+        log("_15C_waypoints = [%s]", buf);
+
+        buf[0] = 0;
+        for (int i = 0; i < e->stru224._28_indexer; ++i) {
+            sprintf(buf + strlen(buf), "(%X,%X), ", e->_1AC_waypoints_xs[i], e->_1AC_waypoints_ys[i]);
+        }
+        log("_1AC_waypoints = [%s]", buf);
+
+        buf[0] = 0;
+        for (int i = 0; i < e->stru224._28_indexer; ++i) {
+            sprintf(buf + strlen(buf), "(%X,%X), ", e->_1FC_waypoints_xs[i], e->_1FC_waypoints_ys[i]);
+        }
+        log("_1FC_waypoints = [%s]", buf);
+    }
+}
+
+
 //----- (0041BC60) --------------------------------------------------------
-int boxd_41BC60(int x, int y, int a3, int a4, int a5, int a6, Entity *a7)
+int boxd_41BC60_new(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity)
+{
+    int v8; // esi@1
+    int a3a; // [sp+1Ch] [bp-9Ch]@3
+    int a8; // [sp+20h] [bp-98h]@3
+    int v23; // [sp+24h] [bp-94h]@
+    int a11; // [sp+38h] [bp-80h]@3
+    int v30[10]; // [sp+40h] [bp-78h]@2
+    int v31[10]; // [sp+68h] [bp-50h]@20
+    int v32[10]; // [sp+90h] [bp-28h]@20
+
+    entity->stru224._44_map_x = 0;
+    entity->stru224._48_map_y = 0;
+    int map_x = global2map(x);
+    int map_y = global2map(y);
+    auto tile = &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
+    v8 = 2 * dx - dy;
+    for (int i = 0; i < 10; ++i) {
+        v30[i] = 0;
+        entity->_15C_waypoints_xs[i] = -1;
+        entity->_15C_waypoints_ys[i] = -1;
+    }
+
+    int v19 = 0;
+    a3a = 0;
+    v23 = 0;
+    a11 = 0;
+    a8 = 0;
+    if (dy == 0)
+        return boxd_41C060(0, entity, 0, 0, v32, v31, v30, 0);
+
+    for (int current_y = dy - 1; current_y >= 0; --current_y)
+    {
+        if (v8 < 0)
+        {
+            v8 += 2 * dx;
+        }
+        else
+        {
+            v8 += 2 * dx - 2 * dy;
+            x += x_step;
+        }
+
+        y += y_step;
+        int new_map_x = global2map(x);
+        int new_map_y = global2map(y);
+        if (new_map_x == map_x && new_map_y == map_y) {
+            continue;
+        }
+        if (new_map_x > map_x)
+            ++tile;
+        else if (new_map_x < map_x)
+            --tile;
+        if (new_map_y > map_y)
+            tile += _4793F8_map_width;
+        else if (new_map_y < map_y)
+            tile -= _4793F8_map_width;
+
+        map_x = new_map_x;
+        map_y = new_map_y;
+        int v16 = Map_40EA50_classify_tile_objects(entity, new_map_x, new_map_y, tile);
+        int r = boxd_41BE90(&v19, v16, &a3a, &v23, entity, v30, v32, v31, new_map_x, new_map_y, &a11, &a8);
+if (entity->player_side == player_side) {
+log("PATHING map(%X,%X)\tclassf %u\twayp %u", map_x, map_y, v16, r);
+}
+        if (r != 6) {
+if (entity->player_side == player_side) {
+log("PATHING complete(1): %u", r);
+entity_log_pathing(entity);
+}
+            return 1;
+        }
+    }
+
+    int result = boxd_41C060(v19, entity, a3a, v23, v32, v31, v30, a8);
+
+if (entity->player_side == player_side) {
+log("PATHING complete(2): %u", result);
+entity_log_pathing(entity);
+}
+    return result;
+}
+
+//----- (0041BC60) --------------------------------------------------------
+int boxd_41BC60_old(int x, int y, int a3, int a4, int a5, int a6, Entity *a7)
 {
 	int v7; // ebx@1
-	int v8; // esi@1
-	int v9; // eax@1
+	int v8; // esi@1 
+    int v9; // eax@1
 	int v10; // eax@7
 	int v11; // esi@9
-	int v12; // edi@9
-	bool v13; // zf@9
-	bool v14; // sf@9
-	unsigned __int8 v15; // of@9
-	int v16; // eax@20
-	DataBoxd_stru0_per_map_unit *a4a; // [sp+10h] [bp-A8h]@1
-	int v19; // [sp+14h] [bp-A4h]@1
+	int v12; // edi@9 
+    bool v13; // zf@9
+    bool v14; // sf@9
+    unsigned __int8 v15; // of@9
+    int v16; // eax@20
+    DataBoxd_stru0_per_map_unit *a4a; // [sp+10h] [bp-A8h]@1
+    int v19; // [sp+14h] [bp-A4h]@1
 	int v20; // [sp+18h] [bp-A0h]@1
 	int a3a; // [sp+1Ch] [bp-9Ch]@3
 	int a8; // [sp+20h] [bp-98h]@3
 	int v23; // [sp+24h] [bp-94h]@3
 	int v24; // [sp+28h] [bp-90h]@1
-	int v25; // [sp+2Ch] [bp-8Ch]@5
-	int v26; // [sp+30h] [bp-88h]@1
+	int v25; // [sp+2Ch] [bp-8Ch]@5 
+    int v26; // [sp+30h] [bp-88h]@1
 	int v27; // [sp+34h] [bp-84h]@9
 	int a11; // [sp+38h] [bp-80h]@3
 	int v29; // [sp+3Ch] [bp-7Ch]@1
 	int v30[10]; // [sp+40h] [bp-78h]@2
 	int v31[10]; // [sp+68h] [bp-50h]@20
-	int v32[10]; // [sp+90h] [bp-28h]@20
-	int v33; // [sp+C0h] [bp+8h]@3
+	int v32[10]; // [sp+90h] [bp-28h]@20 
+    int v33; // [sp+C0h] [bp+8h]@3
 
-	a7->stru224._44_map_x = 0;
-	a7->stru224._48_map_y = 0;
-	v20 = y >> 13;
-	v7 = x >> 13;
+    a7->stru224._44_map_x = 0;
+    a7->stru224._48_map_y = 0;
+    v20 = y >> 13;
+    v7 = x >> 13;
 	v24 = x;
-	a4a = &_478AA8_boxd_stru0_array[(x >> 13) + _4793F8_map_width * (y >> 13)];
-	v26 = 2 * a3;
-	v29 = 2 * a3 - 2 * a4;
-	v8 = 2 * a3 - a4;
-	v9 = 0;
-	v19 = 0;
-	do
-	{
-		v30[v9] = 0;
-		a7->array_15C[v9] = -1;
-		a7->array_184[v19] = -1;
-		v9 = v19 + 1;
-		v15 = __OFSUB__(v19 + 1, 10);
-		v14 = v19++ - 9 < 0;
-	} while (v14 ^ v15);
-	v19 = 0;
+    a4a = &_478AA8_boxd_stru0_array[(x >> 13) + _4793F8_map_width * (y >> 13)];
+    v26 = 2 * a3;
+    v29 = 2 * a3 - 2 * a4;
+    v8 = 2 * a3 - a4;
+    v9 = 0;
+    v19 = 0;
+    do
+    {
+        v30[v9] = 0;
+        a7->_15C_waypoints_xs[v9] = -1;
+        a7->_15C_waypoints_ys[v19] = -1;
+        v9 = v19 + 1;
+        v15 = __OFSUB__(v19 + 1, 10);
+        v14 = v19++ - 9 < 0;
+    } while (v14 ^ v15);
+    v19 = 0;
 	a3a = 0;
 	v23 = 0;
 	a11 = 0;
 	a8 = 0;
-	v13 = a4 == 0;
-	v33 = a4 - 1;
-	if (v13)
-		return boxd_41C060(v19, a7, a3a, v23, v32, v31, v30, a8);
-	while (1)
+    v13 = a4 == 0;
+    v33 = a4 - 1;
+    if (v13)
+        return boxd_41C060(v19, a7, a3a, v23, v32, v31, v30, a8);
+    while (1)
 	{
 		if (v8 < 0)
 		{
-			v10 = v26;
+            v10 = v26;
 		}
 		else
 		{
 			v10 = v29;
-			x += a5;
+            x += a5;
 			v24 = x;
 		}
 		v25 = v10 + v8;
-		y += a6;
+        y += a6;
 		v11 = x >> 13;
 		v12 = y >> 13;
-		v15 = __OFSUB__(x >> 13, v7);
-		v13 = x >> 13 == v7;
-		v14 = (x >> 13) - v7 < 0;
+        v15 = __OFSUB__(x >> 13, v7);
+        v13 = x >> 13 == v7;
+        v14 = (x >> 13) - v7 < 0;
 		v27 = y;
 		if (x >> 13 == v7)
 		{
-			if (v12 == v20)
-				goto LABEL_22;
+            if (v12 == v20)
+                goto LABEL_22;
 			v15 = __OFSUB__(v11, v7);
 			v13 = v11 == v7;
 			v14 = v11 - v7 < 0;
@@ -10624,37 +10866,40 @@ int boxd_41BC60(int x, int y, int a3, int a4, int a5, int a6, Entity *a7)
 		if (v14 ^ v15)
 			--a4a;
 		if (v12 > v20)
-			a4a += _4793F8_map_width;
+            a4a += _4793F8_map_width;
 		if (v12 < v20)
-			a4a -= _4793F8_map_width;
-		v7 = x >> 13;
-		v20 = y >> 13;
-		v16 = boxd_40EA50(a7, v11, v12, a4a);
-		if (boxd_41BE90(&v19, v16, &a3a, &v23, a7, v30, v32, v31, v11, v12, &a11, &a8) != 6)
+            a4a -= _4793F8_map_width;
+        v7 = x >> 13;
+        v20 = y >> 13;
+        v16 = Map_40EA50_classify_tile_objects(a7, v11, v12, a4a);
+        if (boxd_41BE90(&v19, v16, &a3a, &v23, a7, v30, v32, v31, v11, v12, &a11, &a8) != 6)
 			return 1;
 		y = v27;
 		x = v24;
-	LABEL_22:
-		v13 = v33-- == 0;
-		if (v13)
-			return boxd_41C060(v19, a7, a3a, v23, v32, v31, v30, a8);
+    LABEL_22:
+        v13 = v33-- == 0;
+        if (v13)
+            return boxd_41C060(v19, a7, a3a, v23, v32, v31, v30, a8);
 		v8 = v25;
 	}
 }
-// 4793F8: using guessed type int _4793F8_map_width;
-// 41BC60: using guessed type int var_78[10];
+
+int boxd_41BC60(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity) {
+    int one = boxd_41BC60_new(x, y, dx, dy, x_step, y_step, entity);
+    entity->stru224._28_indexer = 0; // reset
+    int two = boxd_41BC60_old(x, y, dx, dy, x_step, y_step, entity);
+    assert(one == two);
+    return two;
+}
 
 //----- (0041BE90) --------------------------------------------------------
-int boxd_41BE90(_DWORD *a1, int a2, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6, int *a7, int *a8, int map_x, int map_y, _DWORD *a11, _DWORD *a12)
+int boxd_41BE90(_DWORD *a1, int tile_classification_result, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6, int *a7, int *a8, int map_x, int map_y, _DWORD *a11, _DWORD *a12)
 {
-	int v12; // ebp@1
 	int v13; // edi@3
-	bool v14; // zf@7
 	int v15; // esi@23
 	int v17; // ecx@29
 
-	v12 = map_y;
-	switch (a2)
+	switch (tile_classification_result)
 	{
 	case 1:
 		if (!a5->stru224.field_54)
@@ -10664,44 +10909,39 @@ int boxd_41BE90(_DWORD *a1, int a2, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6,
 	case 3:
 		if (a5->stru224.field_50)
 			goto LABEL_6;
-		goto LABEL_5;
+        v13 = 0;
+        break;
 	case 2:
-	LABEL_5:
 		v13 = 0;
 		break;
 	default:
 	LABEL_6:
 		v13 = 1;
-		a5->array_1AC[a5->stru224._28_indexer] = map_x;
-		a5->array_1D4[a5->stru224._28_indexer] = map_y;
+		a5->_1AC_waypoints_xs[a5->stru224._28_indexer] = map_x;
+		a5->_1AC_waypoints_ys[a5->stru224._28_indexer] = map_y;
 		break;
 	}
-	v14 = a2 == 0;
-	if (!a2)
+
+	if (tile_classification_result == 0)
 	{
-		v14 = 1;
-		a5->array_1FC[a5->stru224._28_indexer] = map_x;
-		a5->stru224.array_0[a5->stru224._28_indexer] = map_y;
+		a5->_1FC_waypoints_xs[a5->stru224._28_indexer] = map_x;
+		a5->_1FC_waypoints_ys[a5->stru224._28_indexer] = map_y;
+        *a3 = 1;
+        a6[a5->stru224._28_indexer] = 0;
 	}
-	if (v14)
-	{
-		*a3 = 1;
-		a6[a5->stru224._28_indexer] = 0;
-	}
-	if (a2 == 3)
+	if (tile_classification_result == 3)
 		*a12 = 1;
-	if (a2 == 2)
+	if (tile_classification_result == 2)
 	{
 		*a4 = 1;
-		v12 = map_y;
 	}
 	else
 	{
 		*a11 = 1;
 	}
-	if (a2 == 2 && !*a3 && !*a11)
+	if (tile_classification_result == 2 && !*a3 && !*a11)
 	{
-		a5->stru224._48_map_y = v12;
+		a5->stru224._48_map_y = map_y;
 		a5->stru224._44_map_x = map_x;
 	}
 	if (*a1)
@@ -10710,15 +10950,15 @@ int boxd_41BE90(_DWORD *a1, int a2, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6,
 		{
 			if (!v13)
 			{
-				a5->array_15C[a5->stru224._28_indexer] = map_x;
-				a5->array_184[a5->stru224._28_indexer] = v12;
+				a5->_15C_waypoints_xs[a5->stru224._28_indexer] = map_x;
+				a5->_15C_waypoints_ys[a5->stru224._28_indexer] = map_y;
 				v15 = a5->stru224._28_indexer + 1;
 				a5->stru224._28_indexer = v15;
 				if (v15 == 10)
 					return 1;
 				*a1 = 0;
 			}
-			if (a2 == 1 || a2 == 3)
+			if (tile_classification_result == 1 || tile_classification_result == 3)
 			{
 				if (*a3)
 				{
@@ -10726,7 +10966,7 @@ int boxd_41BE90(_DWORD *a1, int a2, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6,
 					if (!a6[v17])
 					{
 						a7[v17] = map_x;
-						a8[a5->stru224._28_indexer] = v12;
+						a8[a5->stru224._28_indexer] = map_y;
 						a6[a5->stru224._28_indexer] = 1;
 						return 6;
 					}
@@ -10765,8 +11005,8 @@ int boxd_41C060(int a1, Entity *a2, int a3, int a4, int *a5, int *a6, int *a7, i
 		}
 		if (a7[v8])
 		{
-			a2->array_15C[v8] = a5[v8];
-			a2->array_184[v8] = a6[v8];
+			a2->_15C_waypoints_xs[v8] = a5[v8];
+			a2->_15C_waypoints_ys[v8] = a6[v8];
 			++a2->stru224._28_indexer;
 			return 3;
 		}
@@ -11726,12 +11966,13 @@ LABEL_148:
 	v4->entity_field_150 = v3->field_150;
 	v4->entity_field_154 = v3->field_154;
 	v4->entity_field_158 = v3->field_158;
-	memcpy(v4->entity_array_15C, v3->array_15C, sizeof(v4->entity_array_15C));
-	memcpy(v4->entity_array_184, v3->array_184, sizeof(v4->entity_array_184));
-	memcpy(v4->entity_array_1AC, v3->array_1AC, sizeof(v4->entity_array_1AC));
-	memcpy(v4->entity_array_1D4, v3->array_1D4, sizeof(v4->entity_array_1D4));
-	memcpy(v4->entity_array_1FC, v3->array_1FC, sizeof(v4->entity_array_1FC));
-	memcpy(v4->entity_array_224, &v3->stru224, sizeof(v4->entity_array_224));
+	memcpy(v4->entity_array_15C, v3->_15C_waypoints_xs, sizeof(v4->entity_array_15C));
+	memcpy(v4->entity_array_184, v3->_15C_waypoints_ys, sizeof(v4->entity_array_184));
+	memcpy(v4->entity_array_1AC, v3->_1AC_waypoints_xs, sizeof(v4->entity_array_1AC));
+	memcpy(v4->entity_array_1D4, v3->_1AC_waypoints_ys, sizeof(v4->entity_array_1D4));
+	memcpy(v4->entity_array_1FC, v3->_1FC_waypoints_xs, sizeof(v4->entity_array_1FC));
+    memcpy(v4->entity_array_224, v3->_1FC_waypoints_ys, sizeof(v4->entity_array_224));
+	memcpy(v4->entity_array_24C, &v3->stru224, sizeof(v4->entity_array_24C));
 	v76 = v3->entity_27C;
 	v77 = v3->entity_27C_entity_id;
 	if (!v76)
@@ -33380,7 +33621,7 @@ int entity_44D000_boxd(Entity *a1)
 		}
 		else
 		{
-			v9 = boxd_40EA50(v1, v7, v8, &v6[_478BE8_map_info__see40E6E0[v5]]) == 2;
+			v9 = Map_40EA50_classify_tile_objects(v1, v7, v8, &v6[_478BE8_map_info__see40E6E0[v5]]) == 2;
 			v29[v5] = v9;
 			if (!v9)
 				v25 = 1;
@@ -33489,7 +33730,7 @@ _DWORD *boxd_44D250(_DWORD *a1, _DWORD *a2, int a3, Entity *a4, int *a5)
 			&& v10 >= 0
 			&& v10 < _478AAC_map_height
 			&& !(v7 & 1)
-			&& boxd_40EA50(a4, v9, v10, &v8[_478BE8_map_info__see40E6E0[v7]]) == 2)
+			&& Map_40EA50_classify_tile_objects(a4, v9, v10, &v8[_478BE8_map_info__see40E6E0[v7]]) == 2)
 		{
 			break;
 		}
@@ -33563,7 +33804,7 @@ bool boxd_44D340(int *out_x, int *out_y, int a3, Entity *a1, int *out_idx)
 		v11 = *v23 + _465728_y_offsets[v7];
 		if (v10 < 0 || v10 >= _4793F8_map_width || v11 < 0 || v11 >= _478AAC_map_height || v7 & 1)
 			goto LABEL_23;
-		v12 = boxd_40EA50(v5, v10, v11, &v9[_478BE8_map_info__see40E6E0[v7]]) - 1;
+		v12 = Map_40EA50_classify_tile_objects(v5, v10, v11, &v9[_478BE8_map_info__see40E6E0[v7]]) - 1;
 		if (v12)
 		{
 			v13 = v12 - 1;

@@ -339,12 +339,13 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             v3->field_150 = v2->entity_field_150;
             v3->field_154 = v2->entity_field_154;
             v3->field_158 = v2->entity_field_158;
-            memcpy(v3->array_15C, v2->entity_array_15C, sizeof(v3->array_15C));
-            memcpy(v3->array_184, v2->entity_array_184, sizeof(v3->array_184));
-            memcpy(v3->array_1AC, v2->entity_array_1AC, sizeof(v3->array_1AC));
-            memcpy(v3->array_1D4, v2->entity_array_1D4, sizeof(v3->array_1D4));
-            memcpy(v3->array_1FC, v2->entity_array_1FC, sizeof(v3->array_1FC));
-            memcpy(&v3->stru224, v2->entity_array_224, sizeof(v3->stru224));
+            memcpy(v3->_15C_waypoints_xs, v2->entity_array_15C, sizeof(v3->_15C_waypoints_xs));
+            memcpy(v3->_15C_waypoints_ys, v2->entity_array_184, sizeof(v3->_15C_waypoints_ys));
+            memcpy(v3->_1AC_waypoints_xs, v2->entity_array_1AC, sizeof(v3->_1AC_waypoints_xs));
+            memcpy(v3->_1AC_waypoints_ys, v2->entity_array_1D4, sizeof(v3->_1AC_waypoints_ys));
+            memcpy(v3->_1FC_waypoints_xs, v2->entity_array_1FC, sizeof(v3->_1FC_waypoints_xs));
+            memcpy(v3->_1FC_waypoints_ys, v2->entity_array_224, sizeof(v3->_1FC_waypoints_ys));
+            memcpy(&v3->stru224, v2->entity_array_24C, sizeof(v3->stru224));
 
             v3->entity_27C = entityRepo->FindById(v2->entity_27C_entity_id);
             v3->entity_27C_entity_id = v2->entity_27C_entity_id_2;

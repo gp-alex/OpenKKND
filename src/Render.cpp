@@ -7,6 +7,10 @@
 
 
 
+const bool debug_outline_tiles = true;
+extern bool is_mission_running;
+
+
 IDirectDrawSurface *pdds_primary;
 IDirectDrawSurface *pdds_backbuffer;
 
@@ -821,6 +825,63 @@ int render_sprt_draw_handler(DrawJobDetails *data, int mode)
     return result;
 }
 
+void debug_mission_tile_outline(int map_x, int map_y, int draw_x, int draw_y) {
+    if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
+        return;
+
+    int black = 0;
+    int blue = 11;
+    int lightblue = 12;
+    int teal = 13;
+    int orange = 14;
+
+    auto tile = &_478AA8_boxd_stru0_array[map_x + map_y * _4793F8_map_width];
+    if (tile->IsVehicleOrBuilding()) {
+        int w = 32;
+        int h = 4;
+        for (int _y = draw_y; _y < draw_y + h; ++_y) {
+            if (_y < 0)
+                continue;
+            if (_y >= 480)
+                break;
+            for (int _x = draw_x; _x < draw_x + w; ++_x) {
+                if (_x < 0)
+                    continue;
+                if (_x >= 640)
+                    break;
+                int y_off = render_locked_surface_width_px * (render_clip_y + _y);
+                int x_off = _x + render_clip_x;
+                auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
+                *dst = blue;
+            }
+        }
+    } else if (tile->IsImpassibleTerrain()) {
+        int w = 32;
+        int h = 4;
+        int c = black;
+        if (tile->flags & BOXD_STRU0_OBSTRUCTED)
+            c = teal;
+        else if (tile->flags & BOXD_STRU0_BLOCKED)
+            c = orange;
+        for (int _y = draw_y; _y < draw_y + h; ++_y) {
+            if (_y < 0)
+                continue;
+            if (_y >= 480)
+                break;
+            for (int _x = draw_x; _x < draw_x + w; ++_x) {
+                if (_x < 0)
+                    continue;
+                if (_x >= 640)
+                    break;
+                int y_off = render_locked_surface_width_px * (render_clip_y + _y);
+                int x_off = _x + render_clip_x;
+                auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
+                *dst = c;
+            }
+        }
+    }
+}
+
 //----- (00412860) --------------------------------------------------------
 int render_scrl_draw_handler(DrawJobDetails *data, int mode)
 {
@@ -945,6 +1006,17 @@ int render_scrl_draw_handler(DrawJobDetails *data, int mode)
                                                                                            // last param = neg (y leftover)
                             else
                                 j_render_4349D0_draw_tile_32x32(tile_ptr + 4, v20, data_y);
+
+                            if (debug_outline_tiles) {
+                                if (is_mission_running) {
+                                    debug_mission_tile_outline(
+                                        starting_x_tile + num_x_tiles_to_draw - x_tiles_left,
+                                        starting_y_tile + y_tiles_to_draw - y_tiles_left,
+                                        v20,
+                                        data_y
+                                    );
+                                }
+                            }
                         }
                         v20 += data_draw_handler->tile_x_size;
                         ++image_data;
@@ -1146,9 +1218,6 @@ int render_clip(_DWORD *clipped_x, _DWORD *clipped_y, _DWORD *width, _DWORD *hei
     return result;
 }
 
-
-const bool debug_outline_tiles = true;
-
 void render_draw_tile_outlines(int x, int y, int w, int h) {
     //for (int _y = y; _y < y + h; ++_y) {
     //    for (int _x = x; _x < x + w; ++_x) {
@@ -1160,7 +1229,7 @@ void render_draw_tile_outlines(int x, int y, int w, int h) {
             continue;
         if (_x >= 640)
             break;
-        if (_y < 0 || y >= 480)
+        if (_y < 0 || _y >= 480)
             break;
         int y_off = render_locked_surface_width_px * (render_clip_y + _y);
         int x_off = _x + render_clip_x;
@@ -1181,7 +1250,6 @@ void render_draw_tile_outlines(int x, int y, int w, int h) {
     }
 }
 
-extern bool is_mission_running;
 //----- (004349A0) --------------------------------------------------------
 void render_draw_tile_32x32(void *tile, int x_arg, int y_arg)
 {

@@ -884,7 +884,7 @@ void entity_425A50_setup_spawn(Entity *a1, void *spawn_param, int spawn_type)
     v3->sprite->y_speed = 0;
     v3->_128_spawn_param = v4;
     v3->_12C_prison_bunker_spawn_type = 60 * spawn_type;
-    entity_40DF50_boxd_update_map_tile(v3, 0);
+    Map_40DF50_update_tile(v3, 0);
 }
 
 //----- (00425AB0) --------------------------------------------------------
@@ -931,7 +931,7 @@ void UNIT_Handler_Scout(Script *a1)
         v1->sprite->y_speed = 0;
         v1->_12C_prison_bunker_spawn_type = 60;
         v1->_128_spawn_param = (void *)76800;
-        entity_40DF50_boxd_update_map_tile(v1, 0);
+        Map_40DF50_update_tile(v1, 0);
         v1->script->event_handler = EventHandler_Infantry;
     }
     (v1->mode)(v1);

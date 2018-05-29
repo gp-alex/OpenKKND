@@ -13,3 +13,12 @@ new mode = entity_mode_move_attack OR entity_mode_move_tanker
 			script_trigger_event(EVT_ENTITY_MOVE, dst_x, dst_y)
 				case stru209_TYPE_MOVE
 				script_evt39030_handler	// process user unit orders
+
+PATHING
+
+entity_mode_attack_move_2_5_4165C0				// go straight along the line
+entity_mode_416060								// or rotate to align
+	case 1:	entity_mode_attack_move_1_415D30	// pathing result 1
+
+	Map_41B970_straight_line_pathing	// path along straight line
+		entity_mode_move_attack

@@ -207,7 +207,7 @@ void entity_move(Entity *a1, _47CAF0_task_attachment1_move_task *a2)
                     entity_414440_boxd(a1, &a1->sprite_x_2, &a1->sprite_y_2);
 
                     a1->entity_8 = 0;
-                    entity_40DF50_boxd_update_map_tile(a1, 1);
+                    Map_40DF50_update_tile(a1, 1);
 
                     a1->mode = entity_mode_move_attack;
                 }
