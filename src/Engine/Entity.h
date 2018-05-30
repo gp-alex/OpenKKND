@@ -35,11 +35,11 @@ struct Entity_stru60
 /* 427 */
 struct Entity_stru224
 {
-    int _28_indexer;
-    int _2C_map_x;
-    int _30_map_y;
-    int _34_x;
-    int _38_y;
+    int num_waypoints;
+    int _2C_waypoint_map_x;
+    int _2C_waypoint_map_y;
+    int _34_waypoint_map_x;
+    int _34_waypoint_map_y;
     int field_3C;
     int _40_xy_idx;
     int _44_map_x;

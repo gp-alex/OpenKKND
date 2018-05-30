@@ -404,9 +404,9 @@ int EntityTowerAttachment_4479F0(EntityTurret *a1)
         while (v10 < _478AAC_map_height)
         {
             v34 = v7 + v6;
-            v11 = &_478AA8_boxd_stru0_array[v6 + _4793F8_map_width * v10];
+            v11 = Map_get_tile(v6, v10);
             v12 = v6;
-            v30 = &_478AA8_boxd_stru0_array[v6 + _4793F8_map_width * v10];
+            v30 = Map_get_tile(v6, v10);
             v31 = v6;
             if (v6 < v7 + v6)
             {

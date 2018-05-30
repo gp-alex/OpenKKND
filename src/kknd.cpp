@@ -3755,7 +3755,7 @@ void UNIT_Handler_OilPatch(Script *a1)
 	}
 	v6 = v1->y;
 	v1->field_88_unused = 1;
-	v7 = &_478AA8_boxd_stru0_array[v1->x >> 13].flags2 + 24 * _4793F8_map_width * (v6 >> 13);
+	v7 = &Map_get_tile(v1->x >> 13, v6 >> 13)->flags2;
 	*v7 |= 0x80u;
 	script_yield(a1, 1, 0);
 	v1->drawjob->flags |= 0x40000000u;
@@ -5070,7 +5070,7 @@ int sprite_40D8B0_dmg(Sprite *a1, int a2)
 		{
 			v10 = v6;
 			v29 = v6;
-			v11 = &_478AA8_boxd_stru0_array[v6 + _4793F8_map_width * v9];
+			v11 = Map_get_tile(v6, v9);
 			v31 = v4 + v6;
 			if (v6 < v4 + v6)
 			{
@@ -5207,7 +5207,7 @@ int map_40DA90_move_entity(Entity *a1)
 		{
 			v15 = Map_40EEB0_place_entity(a1, new_map_x, new_map_y, 1);
 			if (v15 == 5)
-				return Map_40EA50_classify_tile_objects(v1, new_map_x, new_map_y, &_478AA8_boxd_stru0_array[new_map_x + _4793F8_map_width * new_map_y]);
+				return Map_40EA50_classify_tile_objects(v1, new_map_x, new_map_y, Map_get_tile(new_map_x, new_map_y));
 			boxd_40F160(v1, v1->sprite_map_x, v1->sprite_map_y, v1->_A4_idx_in_tile);
 			v1->_A4_idx_in_tile = v15;
 			v1->sprite_map_x = new_map_x;
@@ -5261,7 +5261,7 @@ bool entity_40DBF0_boxd_does_unit_fit(Entity *a1)
 					if (v7 >= v9)
 						return 1;
 					v10 = 24 * _4793F8_map_width;
-					v11 = &_478AA8_boxd_stru0_array[v6 + _4793F8_map_width * v7];
+					v11 = Map_get_tile(v6, v7);
 					while (1)
 					{
 						v12 = v11;
@@ -5561,7 +5561,7 @@ int entity_40E000_boxd(Entity *a1, int a2, int a3)
 	v23 = 0;
 	if (a1->stats->field_4C != 4096)
 	{
-		v5 = &_478AA8_boxd_stru0_array[(a2 >> 13) + _4793F8_map_width * (a3 >> 13)];
+		v5 = Map_get_tile(a2 >> 13, a3 >> 13);
 		result = boxd_40ED00(a1, v5);
 		if (result == 1 || result == 3)
 		{
@@ -5595,7 +5595,7 @@ int entity_40E000_boxd(Entity *a1, int a2, int a3)
 		do
 		{
 			v16 = v13;
-			v17 = &_478AA8_boxd_stru0_array[v13 + _4793F8_map_width * v15];
+			v17 = Map_get_tile(v13, v15);
 			if (v13 <= v14)
 			{
 				while (1)
@@ -5714,7 +5714,7 @@ int Map_40E1B0_place_xl_entity(Entity *a1, int x, int y, int a4)
 		}
 	}
 LABEL_9:
-	v11 = Map_40EA50_classify_tile_objects(v4, v5, v8, &_478AA8_boxd_stru0_array[v5 + _4793F8_map_width * v8]);
+	v11 = Map_40EA50_classify_tile_objects(v4, v5, v8, Map_get_tile(v5, v8));
 	v12 = v15;
 	for (a4a = v11; v12 <= ya; ++v12)
 	{
@@ -6567,7 +6567,7 @@ Entity *boxd_40EE10_prolly_get_building(int map_x, int map_y)
 
 	if (map_x < 0 || map_y < 1 || map_x >= _4793F8_map_width || map_y >= _478AAC_map_height)
 		goto LABEL_16;
-	v2 = &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
+	v2 = Map_get_tile(map_x, map_y);
 	if (v2->flags2 & 0x40)
 	{
 		v3 = v2[-1]._4_entities[0];
@@ -6600,7 +6600,7 @@ int boxd_40EE70(int map_x, int map_y)
 	result = 0;
 	if (map_x >= 0 && map_y >= 1 && map_x < _4793F8_map_width && map_y < _478AAC_map_height)
 	{
-		v2 = &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
+		v2 = Map_get_tile(map_x, map_y);
 		if (!(v2->flags & 0x1F) && !(v2->flags2 & 0x40))
 			result = 1;
 	}
@@ -6647,7 +6647,7 @@ int Map_40EEB0_place_entity(Entity *a1, int map_x, int map_y, int a4)
 	v4 = a1;
 	if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
 		return 5;
-	v5 = &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
+	v5 = Map_get_tile(map_x, map_y);
 	v7 = v5->flags;
 	if (a1->IsInfantry())
 	{
@@ -6844,7 +6844,7 @@ int boxd_40F160(Entity *a1, int map_x, int map_y, int a4)
 //----- (0040F230) --------------------------------------------------------
 void Map_40F230_update_tile(Entity *a1, int map_x, int map_y, int slot, int a5)
 {
-    DataBoxd_stru0_per_map_unit *tile = &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
+    DataBoxd_stru0_per_map_unit *tile = Map_get_tile(map_x, map_y);
 
 	if (map_x >= 0 && map_x < _4793F8_map_width && map_y >= 0 && map_y < _478AAC_map_height)
 	{
@@ -10245,7 +10245,7 @@ bool entity_41B510(Entity *a1, Entity *a2)
 					if (v8 == v9 && v10 == v11)
 						return 1;
 					v13 = _4793F8_map_width;
-					v14 = &_478AA8_boxd_stru0_array[v8 + _4793F8_map_width * v10];
+					v14 = Map_get_tile(v8, v10);
 					if (v10 > v11)
 					{
 						v32 = v9 - v8;
@@ -10514,15 +10514,16 @@ bool entity_41B510(Entity *a1, Entity *a2)
 	return 0;
 }
 
+Entity *debug_pathing_entity = nullptr;
 //----- (0041B970) --------------------------------------------------------
 int Map_41B970_straight_line_pathing(Entity *a1, int target_x, int target_y)
 {
 	Sprite *v5; // edx@1
 	int v8; // eax@2
 	int v9; // ebx@2
-
+debug_pathing_entity = a1;
 	v5 = a1->sprite;
-    a1->stru224._28_indexer = 0;
+    a1->stru224.num_waypoints = 0;
 	if (v5->y > target_y)
 	{
         // moving up
@@ -10592,7 +10593,7 @@ int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1
     int map_y = global2map(y);
     int next_x = x;
     int next_y = y;
-    DataBoxd_stru0_per_map_unit *tile = &_478AA8_boxd_stru0_array[map_x + map_y * _4793F8_map_width];
+    DataBoxd_stru0_per_map_unit *tile = Map_get_tile(map_x, map_y);
 	v26 = 2 * a4;
 	v29 = 2 * a4 - 2 * a3;
 	v8 = 2 * a4 - a3;
@@ -10653,7 +10654,7 @@ int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1
             tile -= _4793F8_map_width;
 
 		v16 = Map_40EA50_classify_tile_objects(a1, next_map_x, next_map_y, tile);
-		if (boxd_41BE90(&v19, v16, &a3a, &v23, a1, v30, a5a, a6a, next_map_x, next_map_y, &a11, &a8) != 6)
+		if (Map_41BE90_add_waypoint(&v19, v16, &a3a, &v23, a1, v30, a5a, a6a, next_map_x, next_map_y, &a11, &a8) != 6)
 			return 1;
 	}
 
@@ -10661,24 +10662,24 @@ int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1
 }
 
 void entity_log_pathing(Entity *e) {
-    log("indexer: %u", e->stru224._28_indexer);
-    if (e->stru224._28_indexer > 0) {
+    log("indexer: %u", e->stru224.num_waypoints);
+    if (e->stru224.num_waypoints > 0) {
         char buf[4096];
 
         buf[0] = 0;
-        for (int i = 0; i < e->stru224._28_indexer; ++i) {
+        for (int i = 0; i < e->stru224.num_waypoints; ++i) {
             sprintf(buf + strlen(buf), "(%X,%X), ", e->_15C_waypoints_xs[i], e->_15C_waypoints_ys[i]);
         }
         log("_15C_waypoints = [%s]", buf);
 
         buf[0] = 0;
-        for (int i = 0; i < e->stru224._28_indexer; ++i) {
+        for (int i = 0; i < e->stru224.num_waypoints; ++i) {
             sprintf(buf + strlen(buf), "(%X,%X), ", e->_1AC_waypoints_xs[i], e->_1AC_waypoints_ys[i]);
         }
         log("_1AC_waypoints = [%s]", buf);
 
         buf[0] = 0;
-        for (int i = 0; i < e->stru224._28_indexer; ++i) {
+        for (int i = 0; i < e->stru224.num_waypoints; ++i) {
             sprintf(buf + strlen(buf), "(%X,%X), ", e->_1FC_waypoints_xs[i], e->_1FC_waypoints_ys[i]);
         }
         log("_1FC_waypoints = [%s]", buf);
@@ -10702,7 +10703,7 @@ int boxd_41BC60_new(int x, int y, int dx, int dy, int x_step, int y_step, Entity
     entity->stru224._48_map_y = 0;
     int map_x = global2map(x);
     int map_y = global2map(y);
-    auto tile = &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
+    auto tile = Map_get_tile(map_x, map_y);
     v8 = 2 * dx - dy;
     for (int i = 0; i < 10; ++i) {
         v30[i] = 0;
@@ -10748,7 +10749,7 @@ int boxd_41BC60_new(int x, int y, int dx, int dy, int x_step, int y_step, Entity
         map_x = new_map_x;
         map_y = new_map_y;
         int v16 = Map_40EA50_classify_tile_objects(entity, new_map_x, new_map_y, tile);
-        int r = boxd_41BE90(&v19, v16, &a3a, &v23, entity, v30, v32, v31, new_map_x, new_map_y, &a11, &a8);
+        int r = Map_41BE90_add_waypoint(&v19, v16, &a3a, &v23, entity, v30, v32, v31, new_map_x, new_map_y, &a11, &a8);
 if (entity->player_side == player_side) {
 log("PATHING map(%X,%X)\tclassf %u\twayp %u", map_x, map_y, v16, r);
 }
@@ -10805,7 +10806,7 @@ int boxd_41BC60_old(int x, int y, int a3, int a4, int a5, int a6, Entity *a7)
     v20 = y >> 13;
     v7 = x >> 13;
 	v24 = x;
-    a4a = &_478AA8_boxd_stru0_array[(x >> 13) + _4793F8_map_width * (y >> 13)];
+    a4a = Map_get_tile(x >> 13, y >> 13);
     v26 = 2 * a3;
     v29 = 2 * a3 - 2 * a4;
     v8 = 2 * a3 - a4;
@@ -10872,7 +10873,7 @@ int boxd_41BC60_old(int x, int y, int a3, int a4, int a5, int a6, Entity *a7)
         v7 = x >> 13;
         v20 = y >> 13;
         v16 = Map_40EA50_classify_tile_objects(a7, v11, v12, a4a);
-        if (boxd_41BE90(&v19, v16, &a3a, &v23, a7, v30, v32, v31, v11, v12, &a11, &a8) != 6)
+        if (Map_41BE90_add_waypoint(&v19, v16, &a3a, &v23, a7, v30, v32, v31, v11, v12, &a11, &a8) != 6)
 			return 1;
 		y = v27;
 		x = v24;
@@ -10886,17 +10887,31 @@ int boxd_41BC60_old(int x, int y, int a3, int a4, int a5, int a6, Entity *a7)
 
 int boxd_41BC60(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity) {
     int one = boxd_41BC60_new(x, y, dx, dy, x_step, y_step, entity);
-    entity->stru224._28_indexer = 0; // reset
+entity->stru224.num_waypoints = 0; // reset
     int two = boxd_41BC60_old(x, y, dx, dy, x_step, y_step, entity);
     assert(one == two);
     return two;
 }
 
+
+DataBoxd_stru0_per_map_unit *Map_get_tile(int map_x, int map_y) {
+    if (map_x < 0 || map_x >= _4793F8_map_width) {
+        return nullptr;
+    }
+    if (map_y < 0 || map_y >= _478AAC_map_height) {
+        return nullptr;
+    }
+
+    return &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
+}
+
 //----- (0041BE90) --------------------------------------------------------
-int boxd_41BE90(_DWORD *a1, int tile_classification_result, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6, int *a7, int *a8, int map_x, int map_y, _DWORD *a11, _DWORD *a12)
+int Map_41BE90_add_waypoint(
+    _DWORD *a1, int tile_classification_result, _DWORD *a3, _DWORD *a4, Entity *a5,
+    int *a6, int *a7, int *a8, int map_x, int map_y, _DWORD *a11, _DWORD *a12
+)
 {
 	int v13; // edi@3
-	int v15; // esi@23
 	int v17; // ecx@29
 
 	switch (tile_classification_result)
@@ -10917,17 +10932,17 @@ int boxd_41BE90(_DWORD *a1, int tile_classification_result, _DWORD *a3, _DWORD *
 	default:
 	LABEL_6:
 		v13 = 1;
-		a5->_1AC_waypoints_xs[a5->stru224._28_indexer] = map_x;
-		a5->_1AC_waypoints_ys[a5->stru224._28_indexer] = map_y;
+		a5->_1AC_waypoints_xs[a5->stru224.num_waypoints] = map_x;
+		a5->_1AC_waypoints_ys[a5->stru224.num_waypoints] = map_y;
 		break;
 	}
 
 	if (tile_classification_result == 0)
 	{
-		a5->_1FC_waypoints_xs[a5->stru224._28_indexer] = map_x;
-		a5->_1FC_waypoints_ys[a5->stru224._28_indexer] = map_y;
+		a5->_1FC_waypoints_xs[a5->stru224.num_waypoints] = map_x;
+		a5->_1FC_waypoints_ys[a5->stru224.num_waypoints] = map_y;
         *a3 = 1;
-        a6[a5->stru224._28_indexer] = 0;
+        a6[a5->stru224.num_waypoints] = 0;
 	}
 	if (tile_classification_result == 3)
 		*a12 = 1;
@@ -10950,11 +10965,9 @@ int boxd_41BE90(_DWORD *a1, int tile_classification_result, _DWORD *a3, _DWORD *
 		{
 			if (!v13)
 			{
-				a5->_15C_waypoints_xs[a5->stru224._28_indexer] = map_x;
-				a5->_15C_waypoints_ys[a5->stru224._28_indexer] = map_y;
-				v15 = a5->stru224._28_indexer + 1;
-				a5->stru224._28_indexer = v15;
-				if (v15 == 10)
+				a5->_15C_waypoints_xs[a5->stru224.num_waypoints] = map_x;
+				a5->_15C_waypoints_ys[a5->stru224.num_waypoints] = map_y;
+				if (++a5->stru224.num_waypoints == 10)
 					return 1;
 				*a1 = 0;
 			}
@@ -10962,12 +10975,12 @@ int boxd_41BE90(_DWORD *a1, int tile_classification_result, _DWORD *a3, _DWORD *
 			{
 				if (*a3)
 				{
-					v17 = a5->stru224._28_indexer;
+					v17 = a5->stru224.num_waypoints;
 					if (!a6[v17])
 					{
 						a7[v17] = map_x;
-						a8[a5->stru224._28_indexer] = map_y;
-						a6[a5->stru224._28_indexer] = 1;
+						a8[a5->stru224.num_waypoints] = map_y;
+						a6[a5->stru224.num_waypoints] = 1;
 						return 6;
 					}
 				}
@@ -10991,7 +11004,7 @@ int boxd_41C060(int a1, Entity *a2, int a3, int a4, int *a5, int *a6, int *a7, i
 	{
 		if (a1 != 1)
 			goto LABEL_21;
-		v8 = a2->stru224._28_indexer;
+		v8 = a2->stru224.num_waypoints;
 		if (!v8 && !a3 && !a4 && !a8)
 			return 4;
 		if (v8)
@@ -11007,7 +11020,7 @@ int boxd_41C060(int a1, Entity *a2, int a3, int a4, int *a5, int *a6, int *a7, i
 		{
 			a2->_15C_waypoints_xs[v8] = a5[v8];
 			a2->_15C_waypoints_ys[v8] = a6[v8];
-			++a2->stru224._28_indexer;
+			++a2->stru224.num_waypoints;
 			return 3;
 		}
 		if (v8)
@@ -11018,7 +11031,7 @@ int boxd_41C060(int a1, Entity *a2, int a3, int a4, int *a5, int *a6, int *a7, i
 	}
 	else
 	{
-		result = a2->stru224._28_indexer != 0;
+		result = a2->stru224.num_waypoints != 0;
 	}
 	return result;
 }
@@ -11274,8 +11287,8 @@ bool boxd_41C660(int x, int y, int width, int height, int a5, int a6, Entity *a7
 		v14 = a7->sprite;
 		v30 = v14->y >> 13;
 		v29 = v14->x >> 13;
-		v15 = &_478AA8_boxd_stru0_array[v7 + _4793F8_map_width * v8];
-		switch (boxd_40ED00(a7, &_478AA8_boxd_stru0_array[v7 + _4793F8_map_width * v8]))
+		v15 = Map_get_tile(v7, v8);
+		switch (boxd_40ED00(a7, v15))
 		{
 		case 1:
 			if (a7->stru224.field_54)
@@ -11417,8 +11430,8 @@ bool boxd_41C890(int x, int y, int width, int height, int a5, int a6, Entity *a7
 		v14 = a7->sprite;
 		v29 = v14->y >> 13;
 		v28 = v14->x >> 13;
-		v15 = &_478AA8_boxd_stru0_array[v7 + _4793F8_map_width * v8];
-		switch (boxd_40ED00(a7, &_478AA8_boxd_stru0_array[v7 + _4793F8_map_width * v8]))
+		v15 = Map_get_tile(v7, v8);
+		switch (boxd_40ED00(a7, v15))
 		{
 		case 1:
 			if (a7->stru224.field_54)
@@ -33610,7 +33623,7 @@ int entity_44D000_boxd(Entity *a1)
 	v5 = 0;
 	v27 = v4;
 	v25 = 0;
-	v6 = &_478AA8_boxd_stru0_array[v4 + _4793F8_map_width * v3];
+	v6 = Map_get_tile(v4, v3);
 	while (1)
 	{
 		v7 = v4 + _465708_x_offsets[v5];
@@ -33719,7 +33732,7 @@ _DWORD *boxd_44D250(_DWORD *a1, _DWORD *a2, int a3, Entity *a4, int *a5)
 	v6 = a3 != 1 ? -1 : 1;
 	v14 = a1;
 	v7 = ((unsigned __int8)*a5 - 2 * (_BYTE)v6) & 7;
-	v8 = &_478AA8_boxd_stru0_array[*a1 + _4793F8_map_width * *a2];
+	v8 = Map_get_tile(*a1, *a2);
 	v15 = 0;
 	while (1)
 	{
@@ -33797,7 +33810,7 @@ bool boxd_44D340(int *out_x, int *out_y, int a3, Entity *a1, int *out_idx)
 	v7 = ((unsigned __int8)*out_idx - 2 * v20) & 7;
 	v8 = 0;
 	v21 = 0;
-	v9 = &_478AA8_boxd_stru0_array[*out_x + _4793F8_map_width * *out_y];
+	v9 = Map_get_tile(*out_x, *out_y);
 	while (1)
 	{
 		v10 = *out_x + _465708_x_offsets[v7];

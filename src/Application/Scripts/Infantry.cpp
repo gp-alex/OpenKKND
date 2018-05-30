@@ -562,7 +562,6 @@ bool entity_413860_boxd(Entity *a1)
 {
     Entity *v1; // esi@1
     int v2; // ebp@1
-    int v3; // edx@2
     Sprite *v4; // eax@3
     int v5; // ecx@3
     int v6; // eax@3
@@ -586,7 +585,7 @@ bool entity_413860_boxd(Entity *a1)
     v2 = a1->sprite->y >> 13;
     if (v2 >= _478AAC_map_height)
         return entity_413A90_boxd(a1);
-    v3 = _4793F8_map_width;
+
     v21 = v2 << 13;
     while (1)
     {
@@ -608,7 +607,7 @@ bool entity_413860_boxd(Entity *a1)
             return entity_413A90_boxd(v1);
     }
     v20 = v6 << 13;
-    while (v7 >= v3)
+    while (v7 >= _4793F8_map_width)
     {
     LABEL_18:
         ++v7;
@@ -616,13 +615,12 @@ bool entity_413860_boxd(Entity *a1)
         if (v7 >= v9)
             goto LABEL_19;
     }
-    v10 = Map_40EA50_classify_tile_objects(v1, v7, v2, &_478AA8_boxd_stru0_array[v7 + v3 * v2]);
+    v10 = Map_40EA50_classify_tile_objects(v1, v7, v2, Map_get_tile(v7, v2));
     v1->stru224.field_50 = 0;
     v1->stru224.field_54 = 1;
     if (v10 != 2)
     {
     LABEL_17:
-        v3 = _4793F8_map_width;
         goto LABEL_18;
     }
     v11 = v1->stats;
@@ -683,7 +681,7 @@ bool entity_413A90_boxd(Entity *a1)
     v3 = (v1->y >> 13) + 1;
     v14 = 0;
     v4 = -1;
-    v5 = &_478AA8_boxd_stru0_array[v2 + _4793F8_map_width * v3];
+    v5 = Map_get_tile(v2, v3);
     v6 = 2;
     v15 = 2;
     while (1)
@@ -765,7 +763,7 @@ int entity_413C10(Entity *a1)
     v11 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v1->sprite_x - v3, v1->sprite_y - v4);
     v6 = ((unsigned __int8)v1->current_mobd_lookup_idx + 16) & 0xE0;
     v7 = v6 >> 5;
-    v12 = &_478AA8_boxd_stru0_array[v5 + _4793F8_map_width * v10];
+    v12 = Map_get_tile(v5, v10);
     result = Map_40EA50_classify_tile_objects(v1, v5 + _465708_x_offsets[v7], v10 + _465728_y_offsets[v7], &v12[_478BE8_map_info__see40E6E0[v7]]);
     if (result != 2)
     {
@@ -1095,7 +1093,7 @@ bool entity_initialize_order(Entity *a1)
         v61 = v59->y >> 13;
         v62 = v59->x >> 13;
         v96 = v61;
-        v63 = &_478AA8_boxd_stru0_array[v62 + v61 * _4793F8_map_width];
+        v63 = Map_get_tile(v62, v61);
         if (v63[_478BE8_map_info__see40E6E0[0]]._4_entities[0] == v47
             || v63[_478BE8_map_info__see40E6E0[1]]._4_entities[0] == v47)
         {
@@ -1256,8 +1254,8 @@ void entity_414440_boxd(Entity *a1, int *a2, int *a3)
     {
         v4 = *a2 >> 13;
         v5 = *a3 >> 13;
-        v6 = &_478AA8_boxd_stru0_array[v4 + _4793F8_map_width * v5];
-        if (!Map_40EA50_classify_tile_objects(a1, v4, v5, &_478AA8_boxd_stru0_array[v4 + _4793F8_map_width * v5]))
+        v6 = Map_get_tile(v4, v5);
+        if (!Map_40EA50_classify_tile_objects(a1, v4, v5, v6))
         {
             if (Map_40EA50_classify_tile_objects(v3, v4 - 1, v5, v6 - 1))
             {
@@ -1321,8 +1319,8 @@ bool entity_414520_boxd(Entity *a1)
         while (v5 < _478AAC_map_height)
         {
             v6 = v3;
-            v7 = &_478AA8_boxd_stru0_array[v3 + _4793F8_map_width * v5];
-            v13 = &_478AA8_boxd_stru0_array[v3 + _4793F8_map_width * v5];
+            v7 = Map_get_tile(v3, v5);
+            v13 = Map_get_tile(v3, v5);
             if (v3 < v14 + v3)
             {
                 while (2)
@@ -1427,8 +1425,8 @@ void entity_414670(Entity *a1)
             if (v11 >= _478AAC_map_height)
                 break;
             v12 = v7;
-            v13 = &_478AA8_boxd_stru0_array[v7 + _4793F8_map_width * v11];
-            v20 = &_478AA8_boxd_stru0_array[v7 + _4793F8_map_width * v11];
+            v13 = Map_get_tile(v7, v11);
+            v20 = Map_get_tile(v7, v11);
             if (v7 < v21 + v7)
             {
                 while (2)
@@ -1658,7 +1656,7 @@ bool entity_414AD0_vehicle_collide_vehicle(Entity *a1)
     v3 = v1->current_mobd_lookup_idx >> 4;
     int map_y = global2map(v2->y + _465948_per_mobd_lookup_idx[((_BYTE)v3 - 4) & 0xF]);
     int map_x = global2map(v2->x + _465948_per_mobd_lookup_idx[v3]);
-    v6 = &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
+    v6 = Map_get_tile(map_x, map_y);
     v7 = Map_40EA50_classify_tile_objects(v1, map_x, map_y, v6);
     if (v7 < 0)
         return 0;
@@ -1919,7 +1917,7 @@ LABEL_18:
         v8 = v3 >> 4;
         v9 = v7->x + _465948_per_mobd_lookup_idx[v8];
         v10 = (v7->y + _465948_per_mobd_lookup_idx[((_BYTE)v8 - 4) & 0xF]) >> 13;
-        v11 = Map_40EA50_classify_tile_objects(v1, v9 >> 13, v10, &_478AA8_boxd_stru0_array[(v9 >> 13) + _4793F8_map_width * v10]);
+        v11 = Map_40EA50_classify_tile_objects(v1, v9 >> 13, v10, Map_get_tile(v9 >> 13, v10));
     }
     else
     {
@@ -2000,7 +1998,7 @@ LABEL_18:
                 v1,
                 v14 >> 13,
                 v15 >> 13,
-                &_478AA8_boxd_stru0_array[(v14 >> 13) + _4793F8_map_width * (v15 >> 13)]);
+                Map_get_tile(v14 >> 13, v15 >> 13));
         }
         else
         {
@@ -2422,7 +2420,7 @@ void entity_mode_move_attack(Entity *a1)
             return;
 
         case 3:
-            for (int i = 0; i < a1->stru224._28_indexer; ++i) {
+            for (int i = 0; i < a1->stru224.num_waypoints; ++i) {
                 a1->_1AC_waypoints_xs[i] = a1->_1FC_waypoints_xs[i];
                 a1->_1AC_waypoints_ys[i] = a1->_1FC_waypoints_ys[i];
             }
@@ -2477,8 +2475,7 @@ void entity_mode_attack_move_1_415D30(Entity *a1)
     int v20; // eax@32
 
     v1 = a1;
-    v2 = a1->stru224._28_indexer - 1;
-    a1->stru224._28_indexer = v2;
+    v2 = --a1->stru224.num_waypoints;
     if (v2 < 0)
     {
         if (a1->stru224.field_54)
@@ -2520,8 +2517,8 @@ void entity_mode_attack_move_1_415D30(Entity *a1)
         if (a1->stru224._2C_map_x == -1 && a1->stru224._30_map_y == -1)
         {
             if (v2)
-                a1->stru224._28_indexer = v2 - 1;
-            v3 = a1->stru224._28_indexer;
+                a1->stru224.num_waypoints = v2 - 1;
+            v3 = a1->stru224.num_waypoints;
             a1->stru224._2C_map_x = a1->_15C_waypoints_xs[v3];
             a1->stru224._30_map_y = a1->_15C_waypoints_ys[v3];
             a1->stru224._34_x = a1->_15C_waypoints_xs[v3];
@@ -2532,7 +2529,7 @@ void entity_mode_attack_move_1_415D30(Entity *a1)
             a1,
             a1->stru224._2C_map_x,
             a1->stru224._30_map_y,
-            &_478AA8_boxd_stru0_array[a1->stru224._2C_map_x + a1->stru224._30_map_y * _4793F8_map_width]
+            Map_get_tile(a1->stru224._2C_map_x, a1->stru224._30_map_y)
         );
         if (tile_classf == 2
             && boxd_41C130(
@@ -2551,8 +2548,8 @@ void entity_mode_attack_move_1_415D30(Entity *a1)
         else
         {
             v13 = ((_42D560_get_mobd_lookup_id_rotation(
-                v1->_1AC_waypoints_xs[v1->stru224._28_indexer] - v1->_15C_waypoints_xs[v1->stru224._28_indexer],
-                v1->_1AC_waypoints_ys[v1->stru224._28_indexer] - v1->_15C_waypoints_ys[v1->stru224._28_indexer])
+                v1->_1AC_waypoints_xs[v1->stru224.num_waypoints] - v1->_15C_waypoints_xs[v1->stru224.num_waypoints],
+                v1->_1AC_waypoints_ys[v1->stru224.num_waypoints] - v1->_15C_waypoints_ys[v1->stru224.num_waypoints])
                 + 16) >> 5) & 7;
             v1->field_140 = 0;
             v1->mode = entity_mode_416060;
@@ -2642,7 +2639,7 @@ void entity_mode_416060(Entity *a1)
                     entity_mode_416A70_oiltanker(v1);
                     return;
                 }
-                v6 = Map_40EA50_classify_tile_objects(v1, *v4, *v3, &_478AA8_boxd_stru0_array[*v4 + *v3 * _4793F8_map_width]);
+                v6 = Map_40EA50_classify_tile_objects(v1, *v4, *v3, Map_get_tile(*v4, *v3));
                 if (v6 == 2 || v6 == 3)
                 {
                     v7 = v1->stats;
@@ -2706,7 +2703,7 @@ void entity_mode_416060(Entity *a1)
                 v17 = v1->sprite;
                 if (*v16 == v17->x >> 13 && *v15 == v17->y >> 13)
                     goto LABEL_63;
-                v18 = Map_40EA50_classify_tile_objects(v1, *v16, *v15, &_478AA8_boxd_stru0_array[*v16 + *v15 * _4793F8_map_width]);
+                v18 = Map_40EA50_classify_tile_objects(v1, *v16, *v15, Map_get_tile(*v16, *v15));
                 if (v18 == 2 || v18 == 3)
                 {
                     v19 = v1->stats;
@@ -4125,8 +4122,8 @@ void entity_mode_4181B0(Entity *a1)
     char *v6; // eax@9
 
     v1 = a1;
-    v2 = &_478AA8_boxd_stru0_array[a1->stru224._2C_map_x + _4793F8_map_width * a1->stru224._30_map_y];
-    v3 = boxd_40ED00(a1, &_478AA8_boxd_stru0_array[a1->stru224._2C_map_x + _4793F8_map_width * a1->stru224._30_map_y]);
+    v2 = Map_get_tile(a1->stru224._2C_map_x, a1->stru224._30_map_y);
+    v3 = boxd_40ED00(a1, v2);
     if (v3 == 2)
     {
         Map_40DF50_update_tile(v1, 1);

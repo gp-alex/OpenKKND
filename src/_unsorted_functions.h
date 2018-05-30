@@ -9,6 +9,7 @@ int Map_40EEB0_place_entity(Entity *a1, int map_x, int map_y, int a4);
 int Map_40E1B0_place_xl_entity(Entity *a1, int x, int y, int a4); // idb
 int map_40DA90_move_entity(Entity *a1);
 int Map_40EA50_classify_tile_objects(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a4);
+DataBoxd_stru0_per_map_unit *Map_get_tile(int map_x, int map_y);
 
 void stru28_list_free();
 void UNIT_AttachHandler_DockPoint(Script *self);
@@ -383,7 +384,7 @@ bool entity_41B510(Entity *a1, Entity *a2);
 int Map_41B970_straight_line_pathing(Entity *a1, int a2, int a3); // idb
 int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1);
 int boxd_41BC60(int x, int y, int a3, int a4, int a5, int a6, Entity *a7);
-int boxd_41BE90(_DWORD *a1, int a2, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6, int *a7, int *a8, int map_x, int map_y, _DWORD *a11, _DWORD *a12);
+int Map_41BE90_add_waypoint(_DWORD *a1, int a2, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6, int *a7, int *a8, int map_x, int map_y, _DWORD *a11, _DWORD *a12);
 int boxd_41C060(int a1, Entity *a2, int a3, int a4, int *a5, int *a6, int *a7, int a8);
 bool boxd_41C130(int x, int y, int z, int w, Entity *entity);
 bool boxd_41C190(int x, int y, int z, int w, Entity *a5);

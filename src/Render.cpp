@@ -5,10 +5,13 @@
 
 #include "src/Render.h"
 
+#include "src/Engine/Entity.h"
+
 
 
 const bool debug_outline_tiles = true;
 extern bool is_mission_running;
+extern Entity *debug_pathing_entity;
 
 
 IDirectDrawSurface *pdds_primary;
@@ -825,6 +828,48 @@ int render_sprt_draw_handler(DrawJobDetails *data, int mode)
     return result;
 }
 
+void debug_mission_pathing_outline(int map_x, int map_y, int draw_x, int draw_y) {
+    if (!debug_pathing_entity) {
+        return;
+    }
+    if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
+        return;
+
+    bool should_outline = false;
+    int black = 0;
+    for (int i = 0; i < 10; ++i) {
+        if (debug_pathing_entity->_15C_waypoints_xs[i] == map_x && debug_pathing_entity->_15C_waypoints_ys[i] == map_y) {
+            should_outline = true;
+        }
+        if (debug_pathing_entity->_1AC_waypoints_xs[i] == map_x && debug_pathing_entity->_1AC_waypoints_ys[i] == map_y) {
+            should_outline = true;
+        }
+        if (debug_pathing_entity->_1FC_waypoints_xs[i] == map_x && debug_pathing_entity->_1FC_waypoints_ys[i] == map_y) {
+            should_outline = true;
+        }
+    }
+
+    if (should_outline) {
+        int w = 32;
+        int h = 4;
+        for (int _y = draw_y; _y < draw_y + h; ++_y) {
+            if (_y < 0)
+                continue;
+            if (_y >= 480)
+                break;
+            for (int _x = draw_x; _x < draw_x + w; ++_x) {
+                if (_x < 0)
+                    continue;
+                if (_x >= 640)
+                    break;
+                int y_off = render_locked_surface_width_px * (render_clip_y + _y);
+                int x_off = _x + render_clip_x;
+                auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
+                *dst = black;
+            }
+        }
+    }
+}
 void debug_mission_tile_outline(int map_x, int map_y, int draw_x, int draw_y) {
     if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
         return;
@@ -835,7 +880,7 @@ void debug_mission_tile_outline(int map_x, int map_y, int draw_x, int draw_y) {
     int teal = 13;
     int orange = 14;
 
-    auto tile = &_478AA8_boxd_stru0_array[map_x + map_y * _4793F8_map_width];
+    auto tile = Map_get_tile(map_x, map_y);
     if (tile->IsVehicleOrBuilding()) {
         int w = 32;
         int h = 4;
@@ -1010,6 +1055,12 @@ int render_scrl_draw_handler(DrawJobDetails *data, int mode)
                             if (debug_outline_tiles) {
                                 if (is_mission_running) {
                                     debug_mission_tile_outline(
+                                        starting_x_tile + num_x_tiles_to_draw - x_tiles_left,
+                                        starting_y_tile + y_tiles_to_draw - y_tiles_left,
+                                        v20,
+                                        data_y
+                                    );
+                                    debug_mission_pathing_outline(
                                         starting_x_tile + num_x_tiles_to_draw - x_tiles_left,
                                         starting_y_tile + y_tiles_to_draw - y_tiles_left,
                                         v20,
