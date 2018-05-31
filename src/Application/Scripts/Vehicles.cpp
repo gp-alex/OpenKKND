@@ -28,7 +28,7 @@ void UNIT_Handler_OilTanker(Script *a1)
             entity_oil_tanker_initialize(v1);
             entity_oil_tanker_initialize_state(v1);
         }
-        (v1->mode)(v1);
+        v1->ExecMode();
         v1->script->script_type = SCRIPT_TANKER_CONVOY_HANDLER;
         v2 = v1->_12C_prison_bunker_spawn_type;
         if (v2)
@@ -126,7 +126,7 @@ void entity_oil_tanker_initialize(Entity *a1)
             v1->sprite_map_x = v13->x >> 13;
             v1->sprite_map_y = v13->y >> 13;
             v17->event_handler = EventHandler_OilTanker;
-            v1->mode = entity_mode_4444D0_oiltanker;
+            v1->SetMode(entity_mode_4444D0_oiltanker);
         }
     }
     else if (entity_413860_boxd(v1))
@@ -175,7 +175,7 @@ void entity_oil_tanker_initialize(Entity *a1)
 //----- (004444D0) --------------------------------------------------------
 void entity_mode_4444D0_oiltanker(Entity *a1)
 {
-    a1->mode = entity_mode_4448C0_oiltanker;
+    a1->SetMode(entity_mode_4448C0_oiltanker);
     script_sleep(a1->script, 5);
 }
 
@@ -277,7 +277,7 @@ void entity_mode_444630_oiltanker(Entity *a1)
     a1->sprite->y_speed = 0;
     entity_load_idle_mobd(a1);
     if (!entity_advance_mobd_rotation(v2, 160, v1->stats->turning_speed))
-        v1->mode = entity_mode_4446B0_oiltanker_load_oil;
+        v1->SetMode(entity_mode_4446B0_oiltanker_load_oil);
     script_sleep(v1->script, 1);
 }
 
@@ -328,21 +328,21 @@ void entity_mode_4446B0_oiltanker_load_oil(Entity *a1)
                     if (!is_player_faction_evolved())
                     {
                         sound_play(SOUND_SURV_LOW_OIL_WARNING, 0, _4690A8_unit_sounds_volume, 16, 0);
-                        v1->mode = entity_mode_4446B0_oiltanker_load_oil;
+                        v1->SetMode(entity_mode_4446B0_oiltanker_load_oil);
                         goto LABEL_22;
                     }
                     sound_play(SOUND_MUTE_LOW_OIL_WARNING, 0, _4690A8_unit_sounds_volume, 16, 0);
                 }
-                v1->mode = entity_mode_4446B0_oiltanker_load_oil;
+                v1->SetMode(entity_mode_4446B0_oiltanker_load_oil);
                 goto LABEL_22;
             }
             if (v3)
                 v3->oilspot_for_drillrig__task_for_researchlab = 0;
         }
-        v1->mode = entity_mode_4446A0_oiltanker;
+        v1->SetMode(entity_mode_4446A0_oiltanker);
         goto LABEL_22;
     }
-    v1->mode = entity_mode_4447C0_oiltanker;
+    v1->SetMode(entity_mode_4447C0_oiltanker);
 LABEL_23:
     script_sleep(v1->script, 1);
 }
@@ -418,7 +418,7 @@ void entity_mode_4447C0_oiltanker(Entity *a1)
     }
     else
     {
-        v1->mode = entity_mode_444590_oiltanker;
+        v1->SetMode(entity_mode_444590_oiltanker);
     }
 }
 
@@ -497,7 +497,7 @@ void entity_mode_4448C0_oiltanker(Entity *a1)
     }
     else
     {
-        v1->mode = entity_mode_4444F0_oiltanker;
+        v1->SetMode(entity_mode_4444F0_oiltanker);
     }
 }
 
@@ -509,7 +509,7 @@ void entity_mode_4449D0_oiltanker(Entity *a1)
     entity_load_idle_mobd(a1);
 
     if (!entity_advance_mobd_rotation(&a1->current_mobd_lookup_idx, 160, a1->stats->turning_speed))
-        a1->mode = entity_mode_444A40_oiltanker;
+        a1->SetMode(entity_mode_444A40_oiltanker);
     script_sleep(a1->script, 1);
 }
 
@@ -521,7 +521,7 @@ void entity_mode_444A40_oiltanker(Entity *a1)
     a1->sprite->x_speed = -(a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->current_mobd_lookup_idx + 1]] >> 6);
     a1->sprite->y_speed = -(-entity_get_mobd_speed_y(a1));
     v1 = a1->script;
-    a1->mode = entity_mode_444B40_oiltanker_unload_oil;
+    a1->SetMode(entity_mode_444B40_oiltanker_unload_oil);
     script_sleep(v1, 80);
 }
 
@@ -547,7 +547,7 @@ void entity_mode_444AB0_oiltanker(Entity *a1)
     a1->sprite->x_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->current_mobd_lookup_idx + 1]] >> 6;
     a1->sprite->y_speed = -entity_get_mobd_speed_y(a1);
     v4 = a1->script;
-    a1->mode = entity_mode_4448C0_oiltanker;
+    a1->SetMode(entity_mode_4448C0_oiltanker);
     script_sleep(v4, 80);
 }
 
@@ -564,7 +564,7 @@ void entity_mode_444B40_oiltanker_unload_oil(Entity *a1)
     Map_40DF50_update_tile(a1, 0);
     if (v2->_0_oil_loaded > 0)
     {
-        v1->mode = entity_mode_444B40_oiltanker_unload_oil;
+        v1->SetMode(entity_mode_444B40_oiltanker_unload_oil);
         v2->_0_oil_loaded -= 20;
         if (v1->player_side == player_side)
             sound_play(SOUND_TANKER_OIL_UNLOADING, 0, _4690A8_unit_sounds_volume, 16, 0);
@@ -574,7 +574,7 @@ void entity_mode_444B40_oiltanker_unload_oil(Entity *a1)
     }
     else
     {
-        v1->mode = entity_mode_444AB0_oiltanker;
+        v1->SetMode(entity_mode_444AB0_oiltanker);
     }
 }
 
@@ -829,7 +829,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
             }
             v17 = (int)v5->state;
             if (*(_DWORD *)(v17 + 12) == *(_DWORD *)(v17 + 4))
-                v5->mode = entity_mode_4448C0_oiltanker;
+                v5->SetMode(entity_mode_4448C0_oiltanker);
             *(_DWORD *)(v17 + 12) = (int)param;
             *(_DWORD *)(v17 + 16) = *((_DWORD *)param + 76);
             if (v5->player_side == player_side)
@@ -853,7 +853,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
             }
             v20 = (int)v5->state;
             if (*(_DWORD *)(v20 + 8) == *(_DWORD *)(v20 + 4))
-                v5->mode = entity_mode_4447C0_oiltanker;
+                v5->SetMode(entity_mode_4447C0_oiltanker);
             *(_DWORD *)(v20 + 8) = (int)param;
             *(_DWORD *)(v20 + 20) = *((_DWORD *)param + 76);
             if (v5->player_side == player_side)
@@ -870,13 +870,13 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
         case EVT_MSG_1540:
             if (*((Entity **)v6 + 1) == v4)
             {
-                if (v5->mode == entity_mode_4446B0_oiltanker_load_oil)
+                if (v5->IsMode(entity_mode_4446B0_oiltanker_load_oil))
                 {
                     v21 = v5->script;
                     goto LABEL_65;
                 }
                 *((_DWORD *)v6 + 3) = 0;
-                v5->mode = entity_mode_4448C0_oiltanker;
+                v5->SetMode(entity_mode_4448C0_oiltanker);
             }
             else if (*((Entity **)v6 + 3) == v4)
             {
@@ -886,19 +886,19 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
         case EVT_MSG_1539:
             if (*((Entity **)v6 + 1) == v4)
             {
-                if (v5->mode == entity_mode_444B40_oiltanker_unload_oil)
+                if (v5->IsMode(entity_mode_444B40_oiltanker_unload_oil))
                 {
                     v21 = v5->script;
                 LABEL_65:
                     script_sleep(v21, 1);
                     v5->hitpoints = 0;
-                    v5->mode = entity_419560_on_death;
+                    v5->SetMode(entity_419560_on_death);
                     v5->destroyed = 1;
                 }
                 else
                 {
                     *((_DWORD *)v6 + 2) = 0;
-                    v5->mode = entity_mode_4447C0_oiltanker;
+                    v5->SetMode(entity_mode_4447C0_oiltanker);
                 }
             }
             else if (*((Entity **)v6 + 2) == v4)
@@ -928,7 +928,7 @@ void UNIT_Handler_MobileDerrick(Script *a1)
             entity_initialize_mobile_derrick(v1);
             entity_set_draw_handlers(v1);
         }
-        (v1->mode)(v1);
+        v1->ExecMode();
         v2 = v1->_134_param__unitstats_after_mobile_outpost_plant;
         if (v2)
             v1->_134_param__unitstats_after_mobile_outpost_plant = v2 - 1;
@@ -966,7 +966,7 @@ void entity_initialize_mobile_derrick(Entity *a1)
             v1->sprite_map_x = global2map(v12->x);
             v1->sprite_map_y = global2map(v12->y);
             v1->script->event_handler = EventHandler_MobileDerrick;
-            entity_mode_415540_infantry_adjust_placement_inside_tile(v1);
+            entity_mode_adjust_unit_placement_inside_tile(v1);
         }
         else {
             entity_mode_419760_infantry_destroyed(v1);
@@ -995,7 +995,7 @@ void entity_initialize_mobile_derrick(Entity *a1)
 void entity_mode_406CC0_mobilederrick(Entity *a1)
 {
     a1->script->event_handler = EventHandler_MobileDerrick;
-    entity_mode_415540_infantry_adjust_placement_inside_tile(a1);
+    entity_mode_adjust_unit_placement_inside_tile(a1);
 }
 
 //----- (00406CD0) --------------------------------------------------------
@@ -1076,12 +1076,12 @@ void entity_mode_406DC0_mobilederrick(Entity *a1)
         v1->sprite->y_speed = 0;
         entity_load_idle_mobd(v1);
         if (!entity_advance_mobd_rotation(&v1->current_mobd_lookup_idx, 160, v1->stats->turning_speed))
-            v1->mode = entity_mode_plant_mobile_derrick;
+            v1->SetMode(entity_mode_plant_mobile_derrick);
         script_yield_any_trigger(v1->script, 1);
     }
     else
     {
-        entity_mode_415540_infantry_adjust_placement_inside_tile(v1);
+        entity_mode_adjust_unit_placement_inside_tile(v1);
         script_yield_any_trigger(v1->script, 1);
     }
 }
@@ -1107,7 +1107,7 @@ void entity_mode_plant_mobile_derrick(Entity *a1)
     if (v3)
         v3->_80_entity__stru29__sprite__initial_hitpoints = (void *)v1->hitpoints;
     v4 = v1->script;
-    v1->mode = entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant;
+    v1->SetMode(entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant);
     script_sleep(v4, 5);
 }
 

@@ -92,7 +92,7 @@ void EventHandler_Aircraft(Script *receiver, Script *sender, enum SCRIPT_EVENT e
                     {
                         script_sleep(v4->script, 1);
                         v4->hitpoints = 0;
-                        v4->mode = entity_mode_401660_aircraft;
+                        v4->SetMode(entity_mode_401660_aircraft);
                         v4->destroyed = 1;
                     }
                 }
@@ -157,14 +157,14 @@ void UNIT_Handler_Aircraft(Script *a1)
         v2->sprite->z_index = 46080;
         v2->script->event_handler = EventHandler_Aircraft;
         v10 = v2->sprite;
-        v2->mode = entity_mode_401800_aircraft;
+        v2->SetMode(entity_mode_401800_aircraft);
         v10->x_speed = 0;
         v2->sprite->y_speed = 0;
         v2->_128_spawn_param = (void *)2;
         entity_401110_aircraft(v2);
         entity_410CF0_aircraft(v2);
     }
-    (v2->mode)(v2);
+    v2->ExecMode();
 }
 
 //----- (00401480) --------------------------------------------------------
@@ -187,7 +187,7 @@ void entity_mode_401480_aircraft(Entity *a1)
         v2->z_index = 768;
         sprite_40D8B0_dmg(v2, 64);
         v4 = v1->script;
-        v1->mode = entity_mode_401600_aircraft_stru31;
+        v1->SetMode(entity_mode_401600_aircraft_stru31);
         script_sleep(v4, 20);
     }
     else
@@ -209,8 +209,6 @@ void entity_401530_aircraft(Entity *a1, int a2)
     int v3; // edi@1
     Script *v4; // eax@1
     EntityTurret *v5; // eax@1
-    void(*v6)(Entity *); // eax@4
-    Script *v7; // ST00_4@5
 
     v2 = a1;
     v3 = a2;
@@ -232,15 +230,13 @@ void entity_401530_aircraft(Entity *a1, int a2)
     v2->sprite->z_speed_factor_2 = -10;
     if (v3)
     {
-        v6 = v2->mode;
-        v2->mode = entity_mode_401480_aircraft;
-        v2->mode_return = v6;
+        v2->SetReturnModeFromMode();
+        v2->SetMode(entity_mode_401480_aircraft);
     }
     else
     {
-        v7 = v2->script;
-        v2->mode = entity_mode_401600_aircraft_stru31;
-        script_sleep(v7, 60);
+        v2->SetMode(entity_mode_401600_aircraft_stru31);
+        script_sleep(v2->script, 60);
     }
 }
 
@@ -345,7 +341,7 @@ void entity_mode_4016B0_aircraft(Entity *a1)
     }
     else
     {
-        a1->mode = entity_mode_401800_aircraft;
+        a1->SetMode(entity_mode_401800_aircraft);
     }
 }
 // 47C048: using guessed type int _47C048_unit_bomberdmg;
@@ -396,7 +392,7 @@ void entity_mode_401800_aircraft(Entity *a1)
             {
                 v1->_12C_prison_bunker_spawn_type = 0;
                 v1->_134_param__unitstats_after_mobile_outpost_plant = 1;
-                v1->mode = entity_mode_4016B0_aircraft;
+                v1->SetMode(entity_mode_4016B0_aircraft);
             }
             else
             {

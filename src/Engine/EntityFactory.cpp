@@ -69,7 +69,7 @@ Entity *EntityFactory::Create(Script *a1)
     v1->stru11_list_104 = (stru11unit *)&v1->stru11_list_104;
     v1->_98_465610_accuracy_dmg_bonus_idx = 0;
     v1->entity_id = ++_47DCC4_entity_id_counter;
-    v1->mode = 0;
+    v1->SetMode(nullptr);
     v1->mode_idle = 0;
     v1->mode_arrive = 0;
     v1->mode_attacked = 0;
@@ -260,9 +260,10 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 v3->turret = 0;
             }
 
-            v3->mode = (void(*)(Entity *))get_handler(v2->entity_mode - 1);
-            if (!v3->mode)
+            EntityMode m = (void(*)(Entity *))get_handler(v2->entity_mode - 1);
+            if (!m)
                 return delete v3, nullptr;
+            v3->SetMode(m);
 
             v20 = v2->entity_mode_idle;
             v3->mode_idle = (void(*)(Entity *))get_handler(v20 - 1);
@@ -300,8 +301,8 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             v3->sprite_map_y = v2->entity_sprite_height_shr13;
             v3->sprite_x = v2->entity_sprite_width;
             v3->sprite_y = v2->entity_sprite_height;
-            v3->field_B8 = v2->field_B8;
-            v3->field_BC = v2->field_BC;
+            v3->_B8_move_dst_x = v2->field_B8;
+            v3->_B8_move_dst_y = v2->field_BC;
             v3->_C0_mobd_anim_speed_related = v2->field_C0;
             v3->field_C4 = v2->field_C4;
             v3->field_C8 = v2->field_C8;
@@ -345,7 +346,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             memcpy(v3->_1AC_waypoints_ys, v2->entity_array_1D4, sizeof(v3->_1AC_waypoints_ys));
             memcpy(v3->_1FC_waypoints_xs, v2->entity_array_1FC, sizeof(v3->_1FC_waypoints_xs));
             memcpy(v3->_1FC_waypoints_ys, v2->entity_array_224, sizeof(v3->_1FC_waypoints_ys));
-            memcpy(&v3->stru224, v2->entity_array_24C, sizeof(v3->stru224));
+            memcpy(&v3->pathing, v2->entity_array_24C, sizeof(v3->pathing));
 
             v3->entity_27C = entityRepo->FindById(v2->entity_27C_entity_id);
             v3->entity_27C_entity_id = v2->entity_27C_entity_id_2;

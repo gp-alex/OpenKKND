@@ -177,12 +177,12 @@ void UNIT_Handler_BeastEnclosure(Script *a1)
             if (!v1->sprite->cplc_ptr1_pstru20)
             {
                 entity_402BB0_set_arrive_handler(v1, entity_mode_402440_beastenclosure);
-                (v1->mode)(v1);
+                v1->ExecMode();
                 return;
             }
-            v1->mode = entity_mode_402440_beastenclosure;
+            v1->SetMode(entity_mode_402440_beastenclosure);
         }
-        (v1->mode)(v1);
+        v1->ExecMode();
     }
 }
 
@@ -212,7 +212,7 @@ void entity_mode_beastenclosure_set_default_production(Entity *a1)
                 memset(&_477318_beastenclosure, 0, sizeof(_477318_beastenclosure));
             }
             v1->mode_arrive = 0;
-            v1->mode = entity_mode_403650_building;
+            v1->SetMode(entity_mode_403650_building);
         }
         if (!v1->sprite->cplc_ptr1_pstru20)
             show_message_ex(0, aBuildingCompleted);
@@ -338,14 +338,13 @@ void entity_mode_402440_beastenclosure(Entity *a1)
     v1->script->script_type = SCRIPT_MUTE_BEAST_ENCLOSURE_HANDLER;
     if (v1->sprite->cplc_ptr1_pstru20)
     {
-        v1->mode = entity_mode_4034B0;
-        entity_mode_403650_building(v1);
+        v1->SetMode(entity_mode_4034B0);
     }
     else
     {
-        v1->mode = entity_mode_403650_building;
-        entity_mode_403650_building(v1);
+        v1->SetMode(entity_mode_403650_building);
     }
+    entity_mode_403650_building(v1);
 }
 
 //----- (004024D0) --------------------------------------------------------
@@ -478,12 +477,12 @@ void UNIT_Handler_Blacksmith(Script *a1)
             if (!v1->sprite->cplc_ptr1_pstru20)
             {
                 entity_402BB0_set_arrive_handler(v1, entity_mode_402870_blacksmith);
-                (v1->mode)(v1);
+                v1->ExecMode();
                 return;
             }
-            v1->mode = entity_mode_402870_blacksmith;
+            v1->SetMode(entity_mode_402870_blacksmith);
         }
-        (v1->mode)(v1);
+        v1->ExecMode();
     }
 }
 // 47C6DC: using guessed type int _47C6DC_dont_execute_unit_handlers;
@@ -507,7 +506,7 @@ void entity_mode_402780_blacksmith(Entity *a1)
         if (a1->mode_arrive == entity_mode_402780_blacksmith)
         {
             a1->mode_arrive = 0;
-            a1->mode = entity_mode_403650_building;
+            a1->SetMode(entity_mode_403650_building);
         }
         if (!a1->sprite->cplc_ptr1_pstru20)
             show_message_ex(0, aBuildingCompleted);
@@ -565,14 +564,13 @@ void entity_mode_402870_blacksmith(Entity *a1)
     v1->script->script_type = SCRIPT_MUTE_BLACKSMITH_HANDLER;
     if (v1->sprite->cplc_ptr1_pstru20)
     {
-        v1->mode = entity_mode_4034B0;
-        entity_mode_403650_building(v1);
+        v1->SetMode(entity_mode_4034B0);
     }
     else
     {
-        v1->mode = entity_mode_403650_building;
-        entity_mode_403650_building(v1);
+        v1->SetMode(entity_mode_403650_building);
     }
+    entity_mode_403650_building(v1);
 }
 
 //----- (00402900) --------------------------------------------------------

@@ -53,7 +53,7 @@ void entity_mode_407300_prison(Entity *a1)
     a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     v2 = v1->script;
-    v1->mode = (void(*)(Entity *))nullsub_1;
+    v1->SetMode((EntityMode)nullsub_1);
     script_sleep(v2, 1);
 }
 
@@ -61,7 +61,7 @@ void entity_mode_407300_prison(Entity *a1)
 void entity_mode_407390_prison(Entity *a1)
 {
     entity_load_idle_mobd(a1);
-    a1->mode = entity_mode_407300_prison;
+    a1->SetMode(entity_mode_407300_prison);
     script_sleep(a1->script, 1);
 }
 
@@ -77,9 +77,9 @@ void UNIT_Handler_Prison(Script *a1)
         v1->script->event_handler = EventHandler_Prison;
         entity_initialize_building(v1, 5, 0, 0);
         sprite_load_mobd(a1->sprite, 0);
-        v1->mode = entity_mode_407390_prison;
+        v1->SetMode(entity_mode_407390_prison);
     }
-    (v1->mode)(v1);
+    v1->ExecMode();
 }
 
 //----- (00407420) --------------------------------------------------------
@@ -110,7 +110,7 @@ void entity_mode_prison_spawn_unit(Entity *a1)
     }
     else
     {
-        a1->mode = entity_mode_403720_on_prison_death__or__prolly_any_generic_building;
+        a1->SetMode(entity_mode_403720_on_prison_death__or__prolly_any_generic_building);
     }
 }
 
@@ -124,7 +124,7 @@ void entity_mode_prison_on_death(Entity *a1)
     entity_mode_building_default_on_death(a1);
     v2 = v1->script;
     v1->_12C_prison_bunker_spawn_type = 10;
-    v1->mode = entity_mode_prison_spawn_unit;
+    v1->SetMode(entity_mode_prison_spawn_unit);
     script_sleep(v2, 80);
 }
 
@@ -138,7 +138,7 @@ void entity_mode_prison_spawn_unit_surv09(Entity *a1)
     a1->sprite->field_88_unused = 1;
     spawn_unit(UNIT_STATS_SURV_GENERAL, a1->sprite->x, a1->sprite->y, player_side);
     v2 = v1->script;
-    v1->mode = entity_mode_403720_on_prison_death__or__prolly_any_generic_building;
+    v1->SetMode(entity_mode_403720_on_prison_death__or__prolly_any_generic_building);
     script_sleep(v2, 10);
 }
 
@@ -151,7 +151,7 @@ void entity_mode_prison_on_death_surv09(Entity *a1)
     v1 = a1;
     entity_mode_building_default_on_death(a1);
     v2 = v1->script;
-    v1->mode = entity_mode_prison_spawn_unit_surv09;
+    v1->SetMode(entity_mode_prison_spawn_unit_surv09);
     script_sleep(v2, 80);
 }
 
@@ -207,7 +207,7 @@ void entity_mode_407630_bunker(Entity *a1)
         a1->sprite->y + a1->stru60.pstru4->y_offset - 1280,
         player_side);
     v1->_12C_prison_bunker_spawn_type = 0;
-    v1->mode = entity_4075F0_techbunker;
+    v1->SetMode(entity_4075F0_techbunker);
 }
 
 //----- (00407690) --------------------------------------------------------
@@ -296,12 +296,12 @@ LABEL_23:
         v6 = v1->script;
         v1->_12C_prison_bunker_spawn_type = 5;
         script_sleep(v6, 1);
-        v1->mode = entity_mode_407630_bunker;
+        v1->SetMode(entity_mode_407630_bunker);
     }
     else
     {
         script_sleep(v1->script, 1);
-        v1->mode = entity_4075F0_techbunker;
+        v1->SetMode(entity_4075F0_techbunker);
     }
 }
 
@@ -310,7 +310,7 @@ void entity_mode_407870_techbubker(Entity *a1)
 {
     entity_load_attack_mobd(a1);
     script_yield(a1->script, SCRIPT_FLAGS_20_10000000, 0);
-    a1->mode = entity_407690_techbunker_spawn;
+    a1->SetMode(entity_407690_techbunker_spawn);
 }
 
 //----- (00407950) --------------------------------------------------------
@@ -343,7 +343,7 @@ void entity_mode_407950_techbunker_spawn_generic(Entity *a1)
         {
             v1->_128_spawn_param = (void *)v3->player_side;
             sprite_408800_play_sound(v1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_unit_sounds_volume, 0);
-            v1->mode = entity_mode_407870_techbubker;
+            v1->SetMode(entity_mode_407870_techbubker);
         }
     }
     script_sleep(v1->script, 1);
@@ -380,7 +380,7 @@ void entity_mode_4079F0_techbunker_spawn10_surv18_lvl(Entity *a1)
             v1->_12C_prison_bunker_spawn_type = 10;
             v1->_128_spawn_param = (void *)v3->player_side;
             sprite_408800_play_sound(v1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_unit_sounds_volume, 0);
-            v1->mode = entity_mode_407870_techbubker;
+            v1->SetMode(entity_mode_407870_techbubker);
         }
     }
     script_sleep(v1->script, 1);
@@ -399,9 +399,9 @@ void entity_mode_407A90_techbunker(Entity *a1)
     a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     if (current_level_idx == LEVEL_SURV_18)
-        v1->mode = entity_mode_4079F0_techbunker_spawn10_surv18_lvl;
+        v1->SetMode(entity_mode_4079F0_techbunker_spawn10_surv18_lvl);
     else
-        v1->mode = entity_mode_407950_techbunker_spawn_generic;
+        v1->SetMode(entity_mode_407950_techbunker_spawn_generic);
     if (!single_player_game || _47C6D8_use__466098_cost_multipliers)
         v1->_134_param__unitstats_after_mobile_outpost_plant = kknd_rand_debug(__FILE__, __LINE__) % 25200 + 28800;
     else
@@ -413,7 +413,7 @@ void entity_mode_407A90_techbunker(Entity *a1)
 void entity_mode_407B70_techbunker(Entity *a1)
 {
     entity_load_idle_mobd(a1);
-    a1->mode = entity_mode_407A90_techbunker;
+    a1->SetMode(entity_mode_407A90_techbunker);
     script_sleep(a1->script, 1);
 }
 
@@ -435,14 +435,14 @@ void UNIT_Handler_TechBunker(Script *a1)
             v2->_128_spawn_param = (void *)24576;
             v3->event_handler = EventHandler_TechBunker;
             entity_attach_docking_point(v2);
-            v2->mode = entity_mode_407B70_techbunker;
-            (v2->mode)(v2);
+            v2->SetMode(entity_mode_407B70_techbunker);
+            v2->ExecMode();
             return;
         }
         sprite_list_remove(a1->sprite);
         script_terminate(a1);
     }
-    (v1->mode)(v1);
+    v1->ExecMode();
 }
 
 //----- (00407C20) --------------------------------------------------------
@@ -486,7 +486,7 @@ void entity_mode_407C60_on_death_tech_bunker(Entity *a1)
     entity_439150_add_explosion(v1);
     entity_438D90_on_death_explosion(v1);
     v5 = v1->script;
-    v1->mode = entity_mode_407C20_on_death_tech_bunker;
+    v1->SetMode(entity_mode_407C20_on_death_tech_bunker);
     script_sleep(v5, 185);
 }
 
@@ -504,7 +504,7 @@ void entity_mode_407D10(Entity *a1)
 void entity_mode_hut_on_death(Entity *a1)
 {
     entity_load_mobd_4(a1);
-    a1->mode = entity_mode_407D10;
+    a1->SetMode(entity_mode_407D10);
     script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
 
     a1->destroyed = 1;
@@ -563,7 +563,7 @@ void entity_mode_407E70_hut(Entity *a1)
     a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     v2 = v1->script;
-    v1->mode = entity_mode_407DA0;
+    v1->SetMode(entity_mode_407DA0);
     script_sleep(v2, 1);
 }
 
@@ -571,7 +571,7 @@ void entity_mode_407E70_hut(Entity *a1)
 void entity_mode_407F00_hut(Entity *a1)
 {
     entity_load_idle_mobd(a1);
-    a1->mode = entity_mode_407E70_hut;
+    a1->SetMode(entity_mode_407E70_hut);
     script_sleep(a1->script, 1);
 }
 
@@ -607,7 +607,7 @@ void UNIT_Handler_Hut(Script *a1)
             break;
         }
         v1->script->event_handler = EventHandler_Hut;
-        v1->mode = entity_mode_407F00_hut;
+        v1->SetMode(entity_mode_407F00_hut);
     }
-    (v1->mode)(v1);
+    v1->ExecMode();
 }

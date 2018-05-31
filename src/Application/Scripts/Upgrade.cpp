@@ -281,12 +281,12 @@ void UNIT_Handler_ResearchBuilding(Script *a1)
             if (!v1->sprite->cplc_ptr1_pstru20)
             {
                 entity_402BB0_set_arrive_handler(v1, entity_mode_researchlab_completed);
-                (v1->mode)(v1);
+                v1->ExecMode();
                 return;
             }
-            v1->mode = entity_mode_researchlab_completed;
+            v1->SetMode(entity_mode_researchlab_completed);
         }
-        (v1->mode)(v1);
+        v1->ExecMode();
     }
 }
 // 47C6DC: using guessed type int _47C6DC_dont_execute_unit_handlers;
@@ -322,14 +322,13 @@ void entity_mode_researchlab_completed(Entity *a1)
     v1->script->script_type = SCRIPT_RESEARCH_BUILDING_HANDLER;
     if (v1->sprite->cplc_ptr1_pstru20)
     {
-        v1->mode = entity_mode_4034B0;
-        entity_mode_403650_building(v1);
+        v1->SetMode(entity_mode_4034B0);
     }
     else
     {
-        v1->mode = entity_mode_403650_building;
-        entity_mode_403650_building(v1);
+        v1->SetMode(entity_mode_403650_building);
     }
+    entity_mode_403650_building(v1);
 }
 
 //----- (00438600) --------------------------------------------------------

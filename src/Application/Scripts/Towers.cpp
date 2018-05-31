@@ -34,7 +34,7 @@ void UNIT_Handler_Towers(Script *a1)
     if (v1)
     {
     LABEL_15:
-        (v1->mode)(v1);
+        v1->ExecMode();
         return;
     }
     v2 = EntityFactory().Create(a1);
@@ -61,14 +61,14 @@ void UNIT_Handler_Towers(Script *a1)
     if (v1->sprite->cplc_ptr1_pstru20)
     {
         entity_mode_4478E0_towers(v1);
-        v1->mode = entity_mode_4474D0_towers;
+        v1->SetMode(entity_mode_4474D0_towers);
         goto LABEL_15;
     }
     if (v1->player_side == player_side)
         script_trigger_event(v1->script, EVT_MSG_1529_ai, v1, task_mobd17_cursor);
     sprite_4272E0_load_mobd_item(v1->sprite, v1->stats->mobd_lookup_offset_attack, 0);
-    v1->mode = entity_mode_4474E0_towers;
-    (v1->mode)(v1);
+    v1->SetMode(entity_mode_4474E0_towers);
+    v1->ExecMode();
 }
 
 //----- (004474D0) --------------------------------------------------------
@@ -108,7 +108,7 @@ void entity_mode_tower_on_death(Entity *a1)
     script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v5 = v1->script;
-    v1->mode = entity_mode_tower_dead;
+    v1->SetMode(entity_mode_tower_dead);
     script_sleep(v5, 60);
 }
 
@@ -153,7 +153,7 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
         switch (event)
         {
         case EVT_MSG_1529_ai:
-            if (v4->mode == entity_mode_4474E0_towers)
+            if (v4->IsMode(entity_mode_4474E0_towers))
             {
                 if (param == (void *)1)
                 {
@@ -168,7 +168,7 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
                     entity_load_idle_mobd(v4);
                     entity_mode_4478E0_towers(v4);
                     script_trigger_event_group(v4->script, EVT_MSG_1551, 0, SCRIPT_TYPE_CA000012);
-                    v4->mode = entity_mode_4474D0_towers;
+                    v4->SetMode(entity_mode_4474D0_towers);
                 }
             }
             break;

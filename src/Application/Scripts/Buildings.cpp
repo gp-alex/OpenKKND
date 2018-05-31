@@ -278,7 +278,7 @@ void entity_mode_4034B0(Entity *a1)
     a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     v2 = v1->script;
-    v1->mode = entity_mode_403650_building;
+    v1->SetMode(entity_mode_403650_building);
     script_sleep(v2, 1);
 }
 
@@ -295,7 +295,7 @@ void entity_mode_403540(Entity *a1)
         building_limits_on_new_building(v1->unit_id);
         entity_410BE0_status_bar(v1);
         script_trigger_event_group(v1->script, EVT_MSG_1521_entity_created, v1, SCRIPT_TYPE_39030);
-        v1->mode = v1->mode_arrive;
+        v1->SetMode(v1->mode_arrive);
     }
     script_sleep(v1->script, 1);
 }
@@ -314,7 +314,7 @@ void entity_mode_4035C0_building(Entity *a1)
     a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     v2 = v1->script;
-    v1->mode = entity_mode_403540;
+    v1->SetMode(entity_mode_403540);
     script_sleep(v2, 1);
 }
 
@@ -340,7 +340,7 @@ void entity_mode_403650_building(Entity *a1)
     else
     {
         entity_load_idle_mobd(v1);
-        v1->mode = entity_mode_4035C0_building;
+        v1->SetMode(entity_mode_4035C0_building);
     }
     v4 = v1->_12C_prison_bunker_spawn_type;
     if (v4 <= 0)
@@ -433,7 +433,7 @@ void entity_mode_building_default_on_death(Entity *a1)
     entity_439150_add_explosion(v1);
     entity_438D90_on_death_explosion(v1);
     v9 = v1->script;
-    v1->mode = entity_mode_403720_on_prison_death__or__prolly_any_generic_building;
+    v1->SetMode(entity_mode_403720_on_prison_death__or__prolly_any_generic_building);
     script_sleep(v9, 165);
 }
 
@@ -515,12 +515,12 @@ void UNIT_Handler_RepairStation(Script *a1)
             if (!v1->sprite->cplc_ptr1_pstru20)
             {
                 entity_402BB0_set_arrive_handler(v1, entity_mode_437F30_repairstation);
-                (v1->mode)(v1);
+                v1->ExecMode();
                 return;
             }
-            v1->mode = entity_mode_437F30_repairstation;
+            v1->SetMode(entity_mode_437F30_repairstation);
         }
-        (v1->mode)(v1);
+        v1->ExecMode();
     }
 }
 // 47C6DC: using guessed type int _47C6DC_dont_execute_unit_handlers;
@@ -560,12 +560,11 @@ void entity_mode_437F30_repairstation(Entity *a1)
     }
     if (v1->sprite->cplc_ptr1_pstru20)
     {
-        v1->mode = entity_mode_4034B0;
-        entity_mode_403650_building(v1);
+        v1->SetMode(entity_mode_4034B0);
     }
     else
     {
-        v1->mode = entity_mode_403650_building;
-        entity_mode_403650_building(v1);
+        v1->SetMode(entity_mode_403650_building);
     }
+    entity_mode_403650_building(v1);
 }

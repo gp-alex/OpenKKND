@@ -851,7 +851,7 @@ void entity_mode_425920_scout(Entity *a1)
                 v5->turret_sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[v3]];
             map_reveal_fog_around_entity(v1);
             script_trigger_event_group(v1->script, EVT_MSG_1521_entity_created, v1, SCRIPT_TYPE_39030);
-            entity_mode_415540_infantry_adjust_placement_inside_tile(v1);
+            entity_mode_adjust_unit_placement_inside_tile(v1);
             if (v1->unit_id == UNIT_STATS_SURV_SCOUT)
             {
                 entity_scout = v1;
@@ -879,7 +879,7 @@ void entity_425A50_setup_spawn(Entity *a1, void *spawn_param, int spawn_type)
     v4 = spawn_param;
     entity_load_idle_mobd(a1);
     v5 = v3->sprite;
-    v3->mode = entity_mode_425920_scout;
+    v3->SetMode(entity_mode_425920_scout);
     v5->x_speed = 0;
     v3->sprite->y_speed = 0;
     v3->_128_spawn_param = v4;
@@ -903,9 +903,9 @@ void UNIT_Handler_General(Script *a1)
         v1->sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
         script_trigger_event_group(v1->script, EVT_MSG_1521_entity_created, v1, SCRIPT_TYPE_39030);
         v1->script->event_handler = EventHandler_Infantry;
-        entity_mode_415540_infantry_adjust_placement_inside_tile(v1);
+        entity_mode_adjust_unit_placement_inside_tile(v1);
     }
-    (v1->mode)(v1);
+    v1->ExecMode();
     v2 = v1->_134_param__unitstats_after_mobile_outpost_plant;
     if (v2)
         v1->_134_param__unitstats_after_mobile_outpost_plant = v2 - 1;
@@ -926,7 +926,7 @@ void UNIT_Handler_Scout(Script *a1)
         entity_set_draw_handlers(v1);
         entity_load_idle_mobd(v1);
         v2 = v1->sprite;
-        v1->mode = entity_mode_425920_scout;
+        v1->SetMode(entity_mode_425920_scout);
         v2->x_speed = 0;
         v1->sprite->y_speed = 0;
         v1->_12C_prison_bunker_spawn_type = 60;
@@ -934,7 +934,7 @@ void UNIT_Handler_Scout(Script *a1)
         Map_40DF50_update_tile(v1, 0);
         v1->script->event_handler = EventHandler_Infantry;
     }
-    (v1->mode)(v1);
+    v1->ExecMode();
     v3 = v1->_134_param__unitstats_after_mobile_outpost_plant;
     if (v3)
         v1->_134_param__unitstats_after_mobile_outpost_plant = v3 - 1;

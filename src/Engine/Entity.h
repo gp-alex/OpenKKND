@@ -33,7 +33,7 @@ struct Entity_stru60
 };
 
 /* 427 */
-struct Entity_stru224
+struct EntityPathing
 {
     int num_waypoints;
     int _2C_waypoint_map_x;
@@ -42,8 +42,8 @@ struct Entity_stru224
     int _34_waypoint_map_y;
     int field_3C;
     int _40_xy_idx;
-    int _44_map_x;
-    int _48_map_y;
+    int destination_map_x;
+    int destination_map_y;
     int _41B970_result; // 4C
     int field_50;
     int field_54;
@@ -65,7 +65,21 @@ enum ENTITY_ORDER : int
     ENTITY_ORDER_11 = 11,
 };
 
+#define ORIENTATION_N   0       // north
+#define ORIENTATION_NNE 16      // north-north-east
+#define ORIENTATION_NE  32
+#define ORIENTATION_E   64      // east
+#define ORIENTATION_SE  96      // south-east
+#define ORIENTATION_SSE 112     // south-south-east
+#define ORIENTATION_S   128     // south
+#define ORIENTATION_SSW 144     // south-south-west
+#define ORIENTATION_SW  160     // south-west
+#define ORIENTATION_W   192     // west
+#define ORIENTATION_NW  224     // north-west
+#define ORIENTATION_NNW 240     // north-north-west
+
 /* 307 */
+typedef void(*EntityMode)(struct Entity *);
 struct Entity
 {
     bool IsTanker() const {
@@ -75,6 +89,13 @@ struct Entity
     bool IsInfantry() const {
         return stats->is_infantry;
     }
+
+    void SetMode(EntityMode mode);
+    bool IsMode(EntityMode mode) const;
+    void ExecMode();
+    int ModeHandlerId() const;
+
+    void SetReturnModeFromMode();
 
     Entity *next;
     Entity *prev;
@@ -86,7 +107,9 @@ struct Entity
     EntityTurret *turret;
     void *state;
     Entity_stru24_ai _24_ai_node_per_player_side;
+private:
     void (*mode)(Entity *);
+public:
     void (*mode_idle)(Entity *);
     void (*mode_arrive)(Entity *);
     void (*mode_attacked)(Entity *);
@@ -99,11 +122,8 @@ struct Entity
     int current_mobd_lookup_idx;
     int field_80;
     int field_84;
-    int _88_dst_orientation; // mobd lookup idx of desired rotation
-                             // 0 north
-                             // 64 east
-                             // 128 south
-                             // 192 west
+    int _88_dst_orientation;    // mobd lookup idx of desired rotation
+                                // ORIENTATION_*
     int destroyed;
     int hitpoints;
     int field_94;
@@ -115,8 +135,8 @@ struct Entity
     int sprite_map_y;
     int sprite_x;
     int sprite_y;
-    int field_B8;
-    int field_BC;
+    int _B8_move_dst_x;
+    int _B8_move_dst_y;
     int _C0_mobd_anim_speed_related;
     int field_C4;
     int field_C8;
@@ -162,7 +182,7 @@ struct Entity
     int _1AC_waypoints_ys/*array_1D4*/[10]; // map_y`s
     int _1FC_waypoints_xs[10]; // map_x`s  for map classification 0
     int _1FC_waypoints_ys/*array_224*/[10]; // map_y`s
-    Entity_stru224 stru224;
+    EntityPathing pathing;
     Entity *entity_27C;
     int entity_27C_entity_id;
     int(*pfn_render_DrawUnitsAndUi)(DrawJobDetails *data, int mode);

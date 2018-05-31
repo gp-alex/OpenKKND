@@ -10,6 +10,31 @@
 using Engine::Infrastructure::EntityRepository;
 
 
+
+
+void Entity::SetMode(EntityMode mode) {
+if (unit_id == UNIT_STATS_SURV_MOBILE_DERRICK)
+log("SetMode: %s", get_handler_name(mode));
+    this->mode = mode;
+}
+bool Entity::IsMode(EntityMode mode) const {
+    return this->mode == mode;
+}
+void Entity::ExecMode() {
+if (unit_id == UNIT_STATS_SURV_MOBILE_DERRICK)
+log("ExecMode: %s", get_handler_name(mode));
+    (mode)(this);
+}
+int Entity::ModeHandlerId() const {
+    extern int get_handler_id(void *function);
+    return get_handler_id(mode);
+}
+
+void Entity::SetReturnModeFromMode() {
+    mode_return = mode;
+}
+
+
 int entity_get_mobd_speed_x(Entity *entity)
 {
     if (entity->current_mobd_lookup_idx != -1)
@@ -192,8 +217,8 @@ void entity_move(Entity *a1, _47CAF0_task_attachment1_move_task *a2)
                 v6 = a2->dst_y;
                 if (v6 >= 0 && v6 < map2global(_478AAC_map_height))
                 {
-                    a1->stru224.field_54 = 0;
-                    a1->stru224.field_50 = 0;
+                    a1->pathing.field_54 = 0;
+                    a1->pathing.field_50 = 0;
                     script_sleep(a1->script, 1);
 
                     a1->_DC_order = ENTITY_ORDER_MOVE;
@@ -209,7 +234,7 @@ void entity_move(Entity *a1, _47CAF0_task_attachment1_move_task *a2)
                     a1->entity_8 = 0;
                     Map_40DF50_update_tile(a1, 1);
 
-                    a1->mode = entity_mode_move_attack;
+                    a1->SetMode(entity_mode_move_attack);
                 }
             }
         }
@@ -259,8 +284,8 @@ void entity_attack(Entity *a1, _47CAF0_task_attachment1_attack_task *param)
                 game_globals_cpu[param->target->player_side].cash[v3->player_side] = 0;
                 game_globals_cpu[v3->player_side].cash[param->target->player_side] = 0;
             }
-            v3->stru224.field_54 = 0;
-            v3->stru224.field_50 = 0;
+            v3->pathing.field_54 = 0;
+            v3->pathing.field_50 = 0;
             script_sleep(v3->script, 1);
             v3->_DC_order = ENTITY_ORDER_ATTACK;
             v3->_E0_current_attack_target = param->target;
@@ -268,7 +293,7 @@ void entity_attack(Entity *a1, _47CAF0_task_attachment1_attack_task *param)
             v3->_E4_prev_attack_target = 0;
             v3->_134_param__unitstats_after_mobile_outpost_plant = 600;
             v3->entity_8 = 0;
-            v3->mode = entity_mode_move_attack;
+            v3->SetMode(entity_mode_move_attack);
         }
     }
 }
