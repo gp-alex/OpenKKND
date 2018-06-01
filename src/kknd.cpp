@@ -31134,7 +31134,7 @@ bool UNIT_InitTasks()
 	char *v0; // edi@1
 	int v1; // eax@1
 	int v2; // edi@1
-	char *v3; // ebp@1
+	//char *v3; // ebp@1
 	Script *v4; // eax@6
 	_47CAF0_task_attachment1 *v5; // esi@6
 	_47CAF0_task_attachment2 *v6; // eax@7
@@ -31151,10 +31151,11 @@ bool UNIT_InitTasks()
 	v1 = single_player_game;
 	v2 = 0;
 	v9 = dword_470510;
-	v3 = &netz_47A740[2].field_8;
+	//v3 = &netz_47A740[2].field_8;
+    int v3 = 1;
 	do
 	{
-		if (v1 == 0 && *(v3 - 28) != 0 || v1 && v2 == player_side)
+		if (v1 == 0 && netz_47A740[v3].field_8 != 0 || v1 && v2 == player_side)
 		{
 			v4 = script_create_function(SCRIPT_TYPE_39030, script_evt39030_handler);
 			_47CAF0_tasks_evt39030[v2] = v4;
@@ -31191,10 +31192,12 @@ bool UNIT_InitTasks()
 		{
 			_47CAF0_tasks_evt39030[v2] = 0;
 		}
-		v3 += 28;
+		//v3 += 28;
+        v3++;
 		++v2;
 		++v9;
-	} while ((int)v3 < (int)&netz_47A844);
+    }//while ((int)v3 < (int)&netz_47A844);
+    while (v3 < 8);
 	if (v1)
 	{
 		dword_47A830 = 1;

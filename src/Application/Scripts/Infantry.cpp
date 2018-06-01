@@ -2839,7 +2839,6 @@ void entity_mode_move_to_target_416790(Entity *a1)
     Sprite *v13; // edi@21
     int v18; // eax@31
     int v21; // eax@35
-    UnitStat *v22; // eax@35
     int v23; // eax@38
     UnitStat *v25; // eax@44
     Sprite *v26; // eax@44
@@ -2951,15 +2950,14 @@ void entity_mode_move_to_target_416790(Entity *a1)
     v21 = v1->field_124;
     LOBYTE_HEXRAYS(v21) = v21 | 1;
     v1->field_124 = v21;
-    v22 = v1->stats;
-    if (v22->is_infantry)
+    if (v1->IsInfantry())
     {
         entity_load_move_mobd(v1, v18);
         goto LABEL_37;
     }
     v28 = v1->sprite;
     v1->mode_turn_return = entity_mode_move_to_target_416790;
-    sprite_4272E0_load_mobd_item(v28, v22->mobd_lookup_offset_move, _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
+    sprite_4272E0_load_mobd_item(v28, v1->stats->mobd_lookup_offset_move, _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
     v1->sprite->x_speed = 0;
     v1->sprite->y_speed = 0;
     v1->SetMode(entity_mode_rotate_to_target_415A60);
