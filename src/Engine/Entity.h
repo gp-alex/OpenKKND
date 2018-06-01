@@ -97,6 +97,9 @@ struct Entity
 
     void SetReturnModeFromMode();
 
+    int GetCurrentFrame() const;
+    void SetCurrentFrame(int current_mobd_lookup_idx);
+
     Entity *next;
     Entity *prev;
     Entity *entity_8;
@@ -119,8 +122,8 @@ public:
     Sprite *sprite;
     Entity_stru60 stru60;
     int field_78;
-    int current_mobd_lookup_idx;
-    int field_80;
+private:    int current_mobd_lookup_idx;
+public:    int field_80;
     int field_84;
     int _88_dst_orientation;    // mobd lookup idx of desired rotation
                                 // ORIENTATION_*

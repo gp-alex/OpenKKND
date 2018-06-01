@@ -519,7 +519,7 @@ void entity_attach_docking_point(Entity *a1)
 		v2->_C_entity = 0;
 		v2->handler = EntityTurret_44BF00_handler;
 		v2->field_18 = 0;
-		v2->mobd_lookup_id = v1->current_mobd_lookup_idx;
+		v2->mobd_lookup_id = v1->GetCurrentFrame();
 		v2->stats_attachment_point = v1->stats->attach;
 	}
 	v1->turret = v2;
@@ -11626,6 +11626,10 @@ int GAME_Load_UnpackOilData(OilDepositSaveStruct *a1)
 	return result;
 }
 
+void EventHandler_Empty(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param) {
+    ;
+}
+
 //----- (0041CCE0) --------------------------------------------------------
 bool GAME_Save_PackEntity(Entity *entity, int save_data, int save_data_size)
 {
@@ -11832,7 +11836,7 @@ LABEL_9:
 	if (!result)
 		return result;
 	v4->entity_field_78 = v3->field_78;
-	v4->entity_mobd_idx = (MOBD_ID)v3->current_mobd_lookup_idx;
+	v4->entity_mobd_idx = (MOBD_ID)v3->GetCurrentFrame();
 	v4->entity_field_80 = v3->field_80;
 	v4->entity_field_84 = v3->field_84;
 	v4->entity_field_88 = v3->_88_dst_orientation;
@@ -30485,7 +30489,7 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 	}
 	v10 = v1->stats_attachment_point;
 	src = v1->mobd_lookup_id;
-	entity_advance_mobd_rotation(&src, v1->entity->current_mobd_lookup_idx, v10->mobd_frame_step);
+	entity_advance_mobd_rotation(&src, v1->entity->GetCurrentFrame(), v10->mobd_frame_step);
 	v11 = src;
 	if (src != v1->mobd_lookup_id)
 	{
@@ -32702,7 +32706,7 @@ void EntityTurret_44BF00_handler(EntityTurret *a1)
 	v3 = v1->stats_attachment_point;
 	v4 = v1->entity;
 	v1->handler = EntityTurret_44BF70;
-	entity_advance_mobd_rotation(v2, v4->current_mobd_lookup_idx, v3->mobd_frame_step);
+	entity_advance_mobd_rotation(v2, v4->GetCurrentFrame(), v3->mobd_frame_step);
 	sprite_4273B0_load_mobd_item_sound(
 		v1->turret_sprite,
 		v1->stats_attachment_point->mobd_lookup_table_offset,
@@ -32721,7 +32725,7 @@ void EntityTurret_44BF70(EntityTurret *a1)
 	v2 = (char *)&a1->mobd_lookup_id;
 	entity_advance_mobd_rotation(
 		&a1->mobd_lookup_id,
-		a1->entity->current_mobd_lookup_idx,
+		a1->entity->GetCurrentFrame(),
 		a1->stats_attachment_point->mobd_frame_step
     );
 	sprite_4273B0_load_mobd_item_sound(
@@ -32869,14 +32873,12 @@ bool _44C010_init_mission_globals()
 //----- (0044C1D0) --------------------------------------------------------
 void per_player_sprite_palettes_47DC88_free()
 {
-	void **v0; // esi@1
-
-	v0 = (void **)per_player_sprite_palettes;
-	do
-	{
-		free(*v0);
-		++v0;
-	} while ((int)v0 < (int) &entity_drag_selection_list);
+    for (int i = 0; i < 7; ++i) {
+        if (per_player_sprite_palettes[i]) {
+            free(per_player_sprite_palettes[i]);
+            per_player_sprite_palettes[i] = nullptr;
+        }
+    }
 }
 
 //----- (0044C1F0) --------------------------------------------------------

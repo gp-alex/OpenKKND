@@ -139,7 +139,7 @@ void cursor_classify_selected_unit(_428940_local *a1, Entity *v19)
 }
 
 
-
+const bool debug_click_crabs = false;
 //----- (0042C9E0) --------------------------------------------------------
 void cursor_drag_selection(_428940_local *a1, int x, int y)
 {
@@ -156,37 +156,41 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
 
     Sprite *drag_frame_x = sprite_create(MOBD_CURSORS, 0, 0);
 	sprite_load_mobd(drag_frame_x, CURSOR_MOBD_OFFSET_DRAG_FRAME_X);
-
-
-    UnitStat *stat = &unit_stats[UNIT_STATS_MUTE_MISSILE_CRAB];
-    //stat = &unit_stats[9];
+    drag_frame_x->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
     unsigned int i = GetTickCount() % (256 * 100);
-
-	drag_frame_x = sprite_create(stat->mobd_idx, 0, 0);
-	//sprite_load_mobd(drag_frame_x, 1216);
-    drag_frame_x->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
+    UnitStat *stat = &unit_stats[UNIT_STATS_MUTE_MISSILE_CRAB];
+    if (debug_click_crabs) {
+        drag_frame_x = sprite_create(stat->mobd_idx, 0, 0);
+        //sprite_load_mobd(drag_frame_x, 1216);
+    }
 
     Sprite *drag_frame_y = sprite_create(MOBD_CURSORS, 0, 0);
     sprite_load_mobd(drag_frame_y, CURSOR_MOBD_OFFSET_DRAG_FRAME_Y);
-	drag_frame_y = sprite_create(stat->mobd_idx, 0, 0);
-    //sprite_4272E0_load_mobd_item(drag_frame_y, 720, 2);
     drag_frame_y->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
+    if (debug_click_crabs) {
+        drag_frame_y = sprite_create(stat->mobd_idx, 0, 0);
+        //sprite_4272E0_load_mobd_item(drag_frame_y, 720, 2);
+    }
 
     Sprite *drag_frame_z = sprite_create(MOBD_CURSORS, 0, 0);
     sprite_load_mobd(drag_frame_z, CURSOR_MOBD_OFFSET_DRAG_FRAME_Z);
     drag_frame_z->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
-    drag_frame_z = sprite_create(stat->mobd_idx, 0, 0);
+    if (debug_click_crabs) {
+        drag_frame_z = sprite_create(stat->mobd_idx, 0, 0);
+    }
 
     Sprite *drag_frame_w = sprite_create(MOBD_CURSORS, 0, 0);
     sprite_load_mobd(drag_frame_w, CURSOR_MOBD_OFFSET_DRAG_FRAME_W);
     drag_frame_w->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
-    drag_frame_w = sprite_create(MOBD_69, 0, 0);
-    //736, 748, 772, 792, 760
-    sprite_load_mobd(drag_frame_w, 772);
-    drag_frame_w->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
+    if (debug_click_crabs) {
+        drag_frame_w = sprite_create(MOBD_69, 0, 0);
+        //736, 748, 772, 792, 760
+        sprite_load_mobd(drag_frame_w, 772);
+        drag_frame_w->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
+    }
 
     // while dragging
     while (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK))
@@ -222,64 +226,66 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
         }
 
 
-        //sprite_load_mobd(drag_frame_x, 1216);
-        unsigned int i = GetTickCount() % (256 * 20);
-        drag_frame_x->y -= 25 * 250;
-        if (stat->mobd_lookup_offset_attack != -1)
-        {
-            drag_frame_x->_60_mobd_anim_speed = 0x10000000;
-            sprite_4272E0_load_mobd_item(
-                drag_frame_x,
-                stat->mobd_lookup_offset_attack,
-                _47D3C4_entity_mobd_lookup_ids[i / 20]
-            );
-        }
-
-        drag_frame_y->x = drag_frame_x->x + 50 * 250;
-        drag_frame_y->y = drag_frame_x->y;
-        if (stat->mobd_lookup_offset_move != -1)
-        {
-            unsigned int t = GetTickCount() % (15 * 1500);
-
-            static bool init_ = true;
-            bool rot_changed = false;
-            static int rot = t / 1500;
-            if (rot != t / 1500)
+        if (debug_click_crabs) {
+            //sprite_load_mobd(drag_frame_x, 1216);
+            unsigned int i = GetTickCount() % (256 * 20);
+            drag_frame_x->y -= 25 * 250;
+            if (stat->mobd_lookup_offset_attack != -1)
             {
-                rot++;
-                rot_changed = true;
-            }
-            if (rot > 15)
-                rot = 0;
-
-            if (init_)
-            {
-                rot_changed = true;
-                init_ = false;
-            }
-
-            if (rot_changed)
-            {
-                drag_frame_y->_60_mobd_anim_speed = 0x10000000;
+                drag_frame_x->_60_mobd_anim_speed = 0x10000000;
                 sprite_4272E0_load_mobd_item(
-                    drag_frame_y,
-                    stat->mobd_lookup_offset_move,
-                    _47D3C4_entity_mobd_lookup_ids[rot * 16 + 1]
-                    //__47CFC4_mobd_lookup_speeds[i / 20]
+                    drag_frame_x,
+                    stat->mobd_lookup_offset_attack,
+                    _47D3C4_entity_mobd_lookup_ids[i / 20]
                 );
             }
-        }
 
-        drag_frame_z->x = drag_frame_x->x + 100 * 250;
-        drag_frame_z->y = drag_frame_x->y;
-        if (stat->mobd_lookup_offset_idle != -1)
-        {
-            drag_frame_z->_60_mobd_anim_speed = 0x10000000;
-            sprite_4272E0_load_mobd_item(
-                drag_frame_z,
-                stat->mobd_lookup_offset_idle,
-                _47D3C4_entity_mobd_lookup_ids[i / 20]
-            );
+            drag_frame_y->x = drag_frame_x->x + 50 * 250;
+            drag_frame_y->y = drag_frame_x->y;
+            if (stat->mobd_lookup_offset_move != -1)
+            {
+                unsigned int t = GetTickCount() % (15 * 1500);
+
+                static bool init_ = true;
+                bool rot_changed = false;
+                static int rot = t / 1500;
+                if (rot != t / 1500)
+                {
+                    rot++;
+                    rot_changed = true;
+                }
+                if (rot > 15)
+                    rot = 0;
+
+                if (init_)
+                {
+                    rot_changed = true;
+                    init_ = false;
+                }
+
+                if (rot_changed)
+                {
+                    drag_frame_y->_60_mobd_anim_speed = 0x10000000;
+                    sprite_4272E0_load_mobd_item(
+                        drag_frame_y,
+                        stat->mobd_lookup_offset_move,
+                        _47D3C4_entity_mobd_lookup_ids[rot * 16 + 1]
+                        //__47CFC4_mobd_lookup_speeds[i / 20]
+                    );
+                }
+            }
+
+            drag_frame_z->x = drag_frame_x->x + 100 * 250;
+            drag_frame_z->y = drag_frame_x->y;
+            if (stat->mobd_lookup_offset_idle != -1)
+            {
+                drag_frame_z->_60_mobd_anim_speed = 0x10000000;
+                sprite_4272E0_load_mobd_item(
+                    drag_frame_z,
+                    stat->mobd_lookup_offset_idle,
+                    _47D3C4_entity_mobd_lookup_ids[i / 20]
+                );
+            }
         }
 
         cursor_process_user_actions(a1, 0);

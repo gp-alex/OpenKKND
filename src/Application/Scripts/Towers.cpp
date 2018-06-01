@@ -302,7 +302,7 @@ void entity_mode_4478E0_towers(Entity *a1)
                 v5->param = v2;
                 v2->turret_sprite->param = v2;
                 v2->entity = v1;
-                v2->mobd_lookup_id = v1->current_mobd_lookup_idx;
+                v2->mobd_lookup_id = v1->GetCurrentFrame();
                 v6 = v1->stats->attach;
                 v2->handler = EntityTowerAttachment_handler_447C40;
                 v2->stats_attachment_point = v6;
@@ -921,14 +921,11 @@ void UNIT_AttachHandler_DockPoint(Script *self)
 //----- (004010C0) --------------------------------------------------------
 void EntityTowerAttachment_handler_4010C0(EntityTurret *a1)
 {
-    int v1; // eax@1
-
-    v1 = a1->entity->current_mobd_lookup_idx;
-    a1->mobd_lookup_id = v1;
+    a1->mobd_lookup_id = a1->entity->GetCurrentFrame();
     sprite_4272E0_load_mobd_item(
         a1->turret_sprite,
         a1->stats_attachment_point->mobd_lookup_table_offset,
-        _47D3C4_entity_mobd_lookup_ids[v1 + 1]);
+        _47D3C4_entity_mobd_lookup_ids[a1->entity->GetCurrentFrame() + 1]);
 }
 
 //----- (004010E0) --------------------------------------------------------

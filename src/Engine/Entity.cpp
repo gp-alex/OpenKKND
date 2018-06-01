@@ -1,5 +1,7 @@
 #include "Engine/Entity.h"
 
+#include <assert.h>
+
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 #include "src/kknd.h"
@@ -30,6 +32,14 @@ int Entity::ModeHandlerId() const {
     return get_handler_id(mode);
 }
 
+int Entity::GetCurrentFrame() const {
+    return current_mobd_lookup_idx;
+}
+void Entity::SetCurrentFrame(int current_mobd_lookup_idx) {
+    assert(current_mobd_lookup_idx < 256);
+    this->current_mobd_lookup_idx = current_mobd_lookup_idx;
+}
+
 void Entity::SetReturnModeFromMode() {
     mode_return = mode;
 }
@@ -37,18 +47,18 @@ void Entity::SetReturnModeFromMode() {
 
 int entity_get_mobd_speed_x(Entity *entity)
 {
-    if (entity->current_mobd_lookup_idx != -1)
+    if (entity->GetCurrentFrame() != -1)
     {
-        return entity->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[entity->current_mobd_lookup_idx + 1]] / 64;
+        return entity->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[entity->GetCurrentFrame() + 1]] / 64;
     }
     return 0;
 }
 
 int entity_get_mobd_speed_y(Entity *entity)
 {
-    if (entity->current_mobd_lookup_idx != -1)
+    if (entity->GetCurrentFrame() != -1)
     {
-        return entity->stats->speed * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[entity->current_mobd_lookup_idx + 1]] / 64;
+        return entity->stats->speed * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[entity->GetCurrentFrame() + 1]] / 64;
     }
     return 0;
 }
@@ -141,13 +151,13 @@ void entity_load_mobd_4(Entity *entity)
         sprite_4272E0_load_mobd_item(
             entity->sprite,
             entity->stats->mobd_lookup_offset_4,
-            _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
+            _47D3C4_entity_mobd_lookup_ids[entity->GetCurrentFrame() + 1]);
     }
 }
 
 void entity_load_idle_mobd(Entity *entity, int idx)
 {
-    entity->current_mobd_lookup_idx = idx;
+    entity->SetCurrentFrame(idx);
     entity_load_idle_mobd(entity);
 }
 
@@ -158,13 +168,13 @@ void entity_load_idle_mobd(Entity *entity)
         sprite_4272E0_load_mobd_item(
             entity->sprite,
             entity->stats->mobd_lookup_offset_idle,
-            _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
+            _47D3C4_entity_mobd_lookup_ids[entity->GetCurrentFrame() + 1]);
     }
 }
 
 void entity_load_move_mobd(Entity *entity, int idx)
 {
-    entity->current_mobd_lookup_idx = idx;
+    entity->SetCurrentFrame(idx);
     entity_load_move_mobd(entity);
 }
 
@@ -175,7 +185,7 @@ void entity_load_move_mobd(Entity *entity)
         sprite_4272E0_load_mobd_item(
             entity->sprite,
             entity->stats->mobd_lookup_offset_move,
-            _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
+            _47D3C4_entity_mobd_lookup_ids[entity->GetCurrentFrame() + 1]);
     }
 }
 
@@ -186,14 +196,14 @@ void entity_load_attack_mobd(Entity *entity)
         sprite_4272E0_load_mobd_item(
             entity->sprite,
             entity->stats->mobd_lookup_offset_attack,
-            _47D3C4_entity_mobd_lookup_ids[entity->current_mobd_lookup_idx + 1]);
+            _47D3C4_entity_mobd_lookup_ids[entity->GetCurrentFrame() + 1]);
     }
 }
 
 
 void entity_load_attack_mobd(Entity *entity, int idx)
 {
-    entity->current_mobd_lookup_idx = idx;
+    entity->SetCurrentFrame(idx);
     entity_load_attack_mobd(entity);
 }
 

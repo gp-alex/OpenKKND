@@ -6551,7 +6551,7 @@ MapdScrlImageTile *fog_of_war_tile_2;
 int _47CBC0_fow[256];
 int dword_47CFC0; // weak
 int __47CFC4_mobd_lookup_speeds[256];
-int _47D3C4_entity_mobd_lookup_ids[257];
+int _47D3C4_entity_mobd_lookup_ids[257 + 1];
 unsigned __int8 player_sprite_palette_tmp[256];
 stru12_game_globals game_globals_cpu[7];
 int entity_drag_selection_x; // weak

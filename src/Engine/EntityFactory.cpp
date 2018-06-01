@@ -69,10 +69,13 @@ Entity *EntityFactory::Create(Script *a1)
     v1->stru11_list_104 = (stru11unit *)&v1->stru11_list_104;
     v1->_98_465610_accuracy_dmg_bonus_idx = 0;
     v1->entity_id = ++_47DCC4_entity_id_counter;
-    v1->SetMode(nullptr);
-    v1->mode_idle = 0;
-    v1->mode_arrive = 0;
-    v1->mode_attacked = 0;
+    v1->SetMode(entity_mode_empty);
+    v1->mode_idle = entity_mode_empty;
+    v1->mode_arrive = entity_mode_empty;
+    v1->mode_attacked = entity_mode_empty;
+    v1->mode_return = entity_mode_empty;
+    v1->mode_turn_return = entity_mode_empty;
+    v1->event_handler = EventHandler_Empty;
     v1->sprite = v2;
     v1->script = a1;
     a1->script_type = SCRIPT_TYPE_60138_ENTITY_SCRIPTS;
@@ -80,7 +83,7 @@ Entity *EntityFactory::Create(Script *a1)
     a1->event_handler = MessageHandler_EntityScript;
     v2->param = v1;
     v1->stats = &unit_stats[v1->unit_id];
-    v1->current_mobd_lookup_idx = 128;
+    v1->SetCurrentFrame(128);
     v1->hitpoints = v1->stats->hitpoints;
     v1->field_78 = 0;
 
@@ -286,7 +289,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             memset(&v3->_24_ai_node_per_player_side, 0, sizeof(v3->_24_ai_node_per_player_side));
             memset32(&v3->stru60, (int)&entity_default_stru60_ptr, 6u);
             v3->field_78 = v2->entity_field_78;
-            v3->current_mobd_lookup_idx = v2->entity_mobd_idx;
+            v3->SetCurrentFrame(v2->entity_mobd_idx);
             v3->field_80 = v2->entity_field_80;
             v3->field_84 = v2->entity_field_84;
             v3->_88_dst_orientation = v2->entity_field_88;

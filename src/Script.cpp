@@ -572,6 +572,8 @@ struct ScriptHandler {
 
 ScriptHandler script_handlers[] =
 {
+    MAKE_HANDLER_PTR(entity_mode_empty),
+    MAKE_HANDLER_PTR(EventHandler_Empty),
     MAKE_HANDLER_PTR(UNIT_Handler_Outpost),
     MAKE_HANDLER_PTR(UNIT_Handler_OilTanker),
     MAKE_HANDLER_PTR(UNIT_Handler_MachineShop),
@@ -979,6 +981,14 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_433810_ingame_menu),
     MAKE_HANDLER_PTR(script_4339F0_ingame_menu),
     MAKE_HANDLER_PTR(script_4338F0_ingame_menu),
+
+    // ingame menu - save game
+    MAKE_HANDLER_PTR(script_432F30_ingame_menu_read_keyboard_input),
+    MAKE_HANDLER_PTR(script_433E60_ingame_menu),
+    MAKE_HANDLER_PTR(script_433FB0_ingame_menu),
+    MAKE_HANDLER_PTR(script_433ED0_ingame_menu),
+    MAKE_HANDLER_PTR(script_433F40_ingame_menu),
+    MAKE_HANDLER_PTR(script_421D60_on_savegame_failed),
 };
 
 
