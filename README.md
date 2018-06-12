@@ -1,4 +1,8 @@
 # OpenKKND
-KKND (extreme version) remake based on original exe decompilation
+KKND eXtreme remake based on original exe decompilation.
+Code refactoring is underway.
 
-Place compiled binaries to BIN folder, game should run just fine.
+# Build
+1. Build using any CMake-compatible IDE or command line (Visual Studio will do).
+2. Place compiled binaries to game installation folder, or BIN folder.
+3. Run.
