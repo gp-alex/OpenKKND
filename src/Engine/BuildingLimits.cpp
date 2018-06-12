@@ -13,7 +13,7 @@ BuildingLimits *building_limits_list_free_pool = nullptr;
 //----- (00403960) --------------------------------------------------------
 int building_limits_list_alloc()
 {
-    static_assert(sizeof(BuildingLimits) == 0x10);
+    //static_assert(sizeof(BuildingLimits) == 0x10);
 
     building_limits_list = new BuildingLimits[20];
     if (building_limits_list)

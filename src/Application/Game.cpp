@@ -266,4 +266,5 @@ void Game::WaitScreen() {
 void Game::Terminate() {
     netz_deinit();
     GAME_Deinit();
+    exit(-1);
 }

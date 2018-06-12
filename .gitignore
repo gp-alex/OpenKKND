@@ -1,3 +1,7 @@
+.vs/
+
 build/vs2017/.vs/OpenKKND/v15/*
 build/vs2017/Debug
 build/vs2017/x64
+
+bin/
