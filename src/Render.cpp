@@ -82,23 +82,22 @@ bool render_create_window(int width, int height, int bpp, int run, bool fullscre
                 v10 = 0;
                 goto LABEL_17;
             }
+            
+            global_wnd_style = WS_VISIBLE | WS_POPUP | WS_SYSMENU;
+            global_wnd_style_ex = WS_EX_APPWINDOW;
             if (global_fullscreen == 1)
             {
-                v11 = 0x90080000;
-                global_wnd_style_ex = 0x40008;
-                global_wnd_style = 0x90080000;
+                global_wnd_style_ex |= WS_EX_TOPMOST;
             }
             else
             {
-                v11 = 0x90CA0000;
-                global_wnd_style_ex = 0x40000;
-                global_wnd_style = 0x90CA0000;
+                global_wnd_style |= WS_DLGFRAME | WS_BORDER | WS_GROUP;
             }
             global_wnd_rect.left = 0;
             global_wnd_rect.right = global_wnd_width;
             global_wnd_rect.top = 0;
             global_wnd_rect.bottom = global_wnd_height;
-            AdjustWindowRect(&global_wnd_rect, v11, 0);
+            AdjustWindowRect(&global_wnd_rect, global_wnd_style, 0);
             global_wnd_rect.bottom -= global_wnd_rect.top;
             global_wnd_rect.right -= global_wnd_rect.left;
             global_wnd_rect.top = 0;
