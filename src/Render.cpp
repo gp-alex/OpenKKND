@@ -214,7 +214,7 @@ bool render_init_dd()
                         {
                             pdds_backbuffer = 0;
                             ddsd_primary.dwSize = 108;
-                            ddsd_primary.dwFlags = 33;
+                            ddsd_primary.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
                             ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLTSTRETCH | DDCAPS_ALIGNSIZESRC | DDCAPS_ALIGNBOUNDARYSRC;
                             ddsd_primary.dwBackBufferCount = 2;
                             fullscreen_flip_or_blt = 1;
@@ -233,14 +233,14 @@ bool render_init_dd()
                                     !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v1 = v9 != 0) : (v1 = 0),
                                     v1
                                     || ((fullscreen_flip_or_blt = 0,
-                                        ddsd_primary.dwFlags = 1,
+                                        ddsd_primary.dwFlags = DDSD_CAPS,
                                         ddsd_primary.ddsCaps.dwCaps = 512,
                                         !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v2 = v9 != 0) : (v2 = 0),
                                         v2
                                         && ((ddsd_primary.dwHeight = global_wnd_height,
                                             ddsd_primary.dwWidth = global_wnd_width,
                                             ddsd_primary.dwFlags = 7,
-                                            ddsd_primary.ddsCaps.dwCaps = 2112,
+                                            ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLT | DDCAPS_OVERLAY,
                                             !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_backbuffer = v9, v3 = v9 != 0) : (v3 = 0),
                                             v3))))
                             {
