@@ -234,7 +234,7 @@ bool render_init_dd()
                                     v1
                                     || ((fullscreen_flip_or_blt = 0,
                                         ddsd_primary.dwFlags = DDSD_CAPS,
-                                        ddsd_primary.ddsCaps.dwCaps = 512,
+                                        ddsd_primary.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE,
                                         !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v2 = v9 != 0) : (v2 = 0),
                                         v2
                                         && ((ddsd_primary.dwHeight = global_wnd_height,
