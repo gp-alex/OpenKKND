@@ -288,8 +288,8 @@ bool render_init_dd()
                         {
                             memset(&ddsd_primary, 0, sizeof(ddsd_primary));
                             ddsd_primary.dwSize = 108;
-                            ddsd_primary.dwFlags = 1;
-                            ddsd_primary.ddsCaps.dwCaps = 512;
+                            ddsd_primary.dwFlags = DDSD_CAPS;
+                            ddsd_primary.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
                             if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
                             {
                                 v4 = 0;
@@ -303,7 +303,7 @@ bool render_init_dd()
                             {
                                 ddsd_primary.dwHeight = global_wnd_height;
                                 ddsd_primary.dwWidth = global_wnd_width;
-                                ddsd_primary.dwFlags = 7;
+                                ddsd_primary.dwFlags = DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT;
                                 ddsd_primary.ddsCaps.dwCaps = DDCAPS_OVERLAYSTRETCH | DDCAPS_BLT;
                                 if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
                                 {
