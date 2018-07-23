@@ -8,15 +8,15 @@
 #include <time.h>
 #include <math.h>
 
-#include "lib/src/legacy_dx/ddraw.h"
-#include "lib/src/legacy_dx/dsound.h"
+#include <ddraw.h>
+#include <dsound.h>
 
 #include "src/hexrays-defs.h"
 
-#include "Infrastructure/File.h"
-#include "Infrastructure/Netz.h"
+#include "src/Infrastructure/File.h"
+#include "src/Infrastructure/Netz.h"
 #include "src/Script.h"
-#include "Infrastructure/Input.h"
+#include "src/Infrastructure/Input.h"
 
 struct UnitAttachmentPoint;
 struct UnitDamageSource;
