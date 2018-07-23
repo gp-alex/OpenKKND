@@ -3,9 +3,12 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 set(APPLICATION_SOURCES
 	Game.cpp
+	GameFactory.cpp
 	GameConfig.cpp
     GameConfigFactory.cpp
-	GameFactory.cpp
+	SdlWindow.cpp
+	WindowFactory.cpp
+	WindowConfigFactory.cpp
 	Scripts/Aircraft.cpp
 	Scripts/Buildings.cpp
 	Scripts/BuildingsMute.cpp
@@ -27,6 +30,11 @@ set(APPLICATION_HEADERS
 	GameConfig.h
     GameConfigFactory.h
 	GameFactory.h
+    IWindow.h
+	SdlWindow.h
+	WindowFactory.h
+	WindowConfig.h
+	WindowConfigFactory.h
 )
 
 if(WIN32)

@@ -18,22 +18,26 @@
 
 #include "Application/Game.h"
 #include "Application/GameFactory.h"
+#include "Application/WindowFactory.h"
+#include "Application/WindowConfigFactory.h"
+
+using Application::Game;
+using Application::GameFactory;
+using Application::WindowFactory;
+using Application::WindowConfigFactory;
 
 #include "Engine/BuildingLimits.h"
 #include "Engine/Entity.h"
 #include "Engine/EntityFactory.h"
 
+using Engine::EntityFactory;
+    
 #include "Engine/Infrastructure/EntityRepository.h"
 
 using Engine::Infrastructure::EntityRepository;
 
 #include "Infrastructure/File.h"
 #include "Infrastructure/Input.h"
-
-using Application::Game;
-using Application::GameFactory;
-
-using Engine::EntityFactory;
 
 
 #pragma comment(lib, "Winmm.lib") // timeGetTime
@@ -9793,6 +9797,9 @@ bool LVL_SysInit()
 	result = stru2_list_alloc();
 	if (result)
 	{
+        auto windowConfig = WindowConfigFactory().Create("OpenKKnD", 800, 600);
+        auto window = WindowFactory().CreateSdlWindow(windowConfig);
+
 		stru2_list_initialized = 1;
 		result = render_create_window(640, 480, 8, 1, false);
 		if (result)
