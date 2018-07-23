@@ -33865,14 +33865,15 @@ void log(const char *fmt, ...)
 
 
 //----- (0044D5D0) --------------------------------------------------------
-int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+//int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+int main(int argc, char* argv[])
 {
     timeBeginPeriod(1u);
 
     log_init();
 
-	global_win32_nCmdShow = nShowCmd;
-	global_hinstance = hInstance;
+	global_win32_nCmdShow = SW_SHOW;
+	global_hinstance = GetModuleHandle(nullptr);
 
     GameFactory gameFactory;
     auto game = gameFactory.Create();
