@@ -82,23 +82,22 @@ bool render_create_window(int width, int height, int bpp, int run, bool fullscre
                 v10 = 0;
                 goto LABEL_17;
             }
+            
+            global_wnd_style = WS_VISIBLE | WS_POPUP | WS_SYSMENU;
+            global_wnd_style_ex = WS_EX_APPWINDOW;
             if (global_fullscreen == 1)
             {
-                v11 = 0x90080000;
-                global_wnd_style_ex = 0x40008;
-                global_wnd_style = 0x90080000;
+                global_wnd_style_ex |= WS_EX_TOPMOST;
             }
             else
             {
-                v11 = 0x90CA0000;
-                global_wnd_style_ex = 0x40000;
-                global_wnd_style = 0x90CA0000;
+                global_wnd_style |= WS_DLGFRAME | WS_BORDER | WS_GROUP;
             }
             global_wnd_rect.left = 0;
             global_wnd_rect.right = global_wnd_width;
             global_wnd_rect.top = 0;
             global_wnd_rect.bottom = global_wnd_height;
-            AdjustWindowRect(&global_wnd_rect, v11, 0);
+            AdjustWindowRect(&global_wnd_rect, global_wnd_style, 0);
             global_wnd_rect.bottom -= global_wnd_rect.top;
             global_wnd_rect.right -= global_wnd_rect.left;
             global_wnd_rect.top = 0;
@@ -215,7 +214,7 @@ bool render_init_dd()
                         {
                             pdds_backbuffer = 0;
                             ddsd_primary.dwSize = 108;
-                            ddsd_primary.dwFlags = 33;
+                            ddsd_primary.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
                             ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLTSTRETCH | DDCAPS_ALIGNSIZESRC | DDCAPS_ALIGNBOUNDARYSRC;
                             ddsd_primary.dwBackBufferCount = 2;
                             fullscreen_flip_or_blt = 1;
@@ -234,14 +233,14 @@ bool render_init_dd()
                                     !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v1 = v9 != 0) : (v1 = 0),
                                     v1
                                     || ((fullscreen_flip_or_blt = 0,
-                                        ddsd_primary.dwFlags = 1,
-                                        ddsd_primary.ddsCaps.dwCaps = 512,
+                                        ddsd_primary.dwFlags = DDSD_CAPS,
+                                        ddsd_primary.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE,
                                         !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v2 = v9 != 0) : (v2 = 0),
                                         v2
                                         && ((ddsd_primary.dwHeight = global_wnd_height,
                                             ddsd_primary.dwWidth = global_wnd_width,
                                             ddsd_primary.dwFlags = 7,
-                                            ddsd_primary.ddsCaps.dwCaps = 2112,
+                                            ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLT | DDCAPS_OVERLAY,
                                             !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_backbuffer = v9, v3 = v9 != 0) : (v3 = 0),
                                             v3))))
                             {
@@ -289,8 +288,8 @@ bool render_init_dd()
                         {
                             memset(&ddsd_primary, 0, sizeof(ddsd_primary));
                             ddsd_primary.dwSize = 108;
-                            ddsd_primary.dwFlags = 1;
-                            ddsd_primary.ddsCaps.dwCaps = 512;
+                            ddsd_primary.dwFlags = DDSD_CAPS;
+                            ddsd_primary.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
                             if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
                             {
                                 v4 = 0;
@@ -304,7 +303,7 @@ bool render_init_dd()
                             {
                                 ddsd_primary.dwHeight = global_wnd_height;
                                 ddsd_primary.dwWidth = global_wnd_width;
-                                ddsd_primary.dwFlags = 7;
+                                ddsd_primary.dwFlags = DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT;
                                 ddsd_primary.ddsCaps.dwCaps = DDCAPS_OVERLAYSTRETCH | DDCAPS_BLT;
                                 if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
                                 {
