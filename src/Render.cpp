@@ -9,6 +9,8 @@
 
 
 
+HDC render_sw_hdc; // idb
+
 const bool debug_outline_tiles = true;
 extern bool is_mission_running;
 extern Entity *debug_pathing_entity;
@@ -77,89 +79,53 @@ bool render_create_window(int width, int height, int bpp, int run, bool fullscre
             v17.hCursor = 0;
             v17.lpszMenuName = 0;
             v17.hbrBackground = (HBRUSH)GetStockObject(5);
-            if (!RegisterClassExA(&v17))
+            if (RegisterClassExA(&v17))
             {
-                v10 = 0;
-                goto LABEL_17;
-            }
-            
-            global_wnd_style = WS_VISIBLE | WS_POPUP | WS_SYSMENU;
-            global_wnd_style_ex = WS_EX_APPWINDOW;
-            if (global_fullscreen == 1)
-            {
-                global_wnd_style_ex |= WS_EX_TOPMOST;
-            }
-            else
-            {
-                global_wnd_style |= WS_DLGFRAME | WS_BORDER | WS_GROUP;
-            }
-            global_wnd_rect.left = 0;
-            global_wnd_rect.right = global_wnd_width;
-            global_wnd_rect.top = 0;
-            global_wnd_rect.bottom = global_wnd_height;
-            AdjustWindowRect(&global_wnd_rect, global_wnd_style, 0);
-            global_wnd_rect.bottom -= global_wnd_rect.top;
-            global_wnd_rect.right -= global_wnd_rect.left;
-            global_wnd_rect.top = 0;
-            global_wnd_rect.left = 0;
-            v12 = GetSystemMetrics(0) - global_wnd_rect.right;
-            global_wnd_rect.right += v12;
-            v13 = global_wnd_rect.right - (v12 + global_wnd_rect.left);
-            global_wnd_rect.left += v12;
-            v14 = CreateWindowExA(
-                global_wnd_style_ex,
-                "KKNDXtremeMainWindowClass",
-                "KKND Xtreme",
-                global_wnd_style,
-                global_wnd_rect.left,
-                global_wnd_rect.top,
-                v13,
-                global_wnd_rect.bottom - global_wnd_rect.top,
-                0,
-                0,
-                global_hinstance,
-                0);
-            global_hwnd = v14;
-            if (!v14)
-            {
-                v10 = 0;
-                goto LABEL_17;
-            }
-            UpdateWindow(v14);
-        }
-        render_sw_initialize();
-        v10 = render_init_dd();
-    }
 
-LABEL_17:
-    if (v10)
-    {
-        v15 = (stru1_draw_params *)malloc(0xFCu);
-        stru1_list = v15;
-        if (v15)
-        {
-            v16 = 0;
-            do
-            {
-                v15[v16].next = &v15[v16 + 1];          // chain
-                                                        // [0] -> [1] -> [2] -> [3] -> [4] -> [5] -> [6]
-                v15 = stru1_list;
-                ++v16;
-            } while (v16 < 6);
-            stru1_list[6].next = 0;
-            stru1_list_free_pool = stru1_list;
-            default_stru1.prev = &default_stru1;
-            default_stru1.next = &default_stru1;
-            default_stru1.field_8 = 0;
-            default_stru1.anim_pos = 0x80000000;
-            default_stru1.clip_y = 0;
-            default_stru1.clip_x = 0;
-            default_stru1.clip_z = w1dth;
-            default_stru1.clip_w = he1ght;
-            default_stru1.field_20 = 0;
-            is_render_window_initialized = 1;
+                global_wnd_style = WS_VISIBLE | WS_POPUP | WS_SYSMENU;
+                global_wnd_style_ex = WS_EX_APPWINDOW;
+                if (global_fullscreen == 1)
+                {
+                    global_wnd_style_ex |= WS_EX_TOPMOST;
+                }
+                else
+                {
+                    global_wnd_style |= WS_DLGFRAME | WS_BORDER | WS_GROUP;
+                }
+                global_wnd_rect.left = 0;
+                global_wnd_rect.right = global_wnd_width;
+                global_wnd_rect.top = 0;
+                global_wnd_rect.bottom = global_wnd_height;
+                AdjustWindowRect(&global_wnd_rect, global_wnd_style, 0);
+                global_wnd_rect.bottom -= global_wnd_rect.top;
+                global_wnd_rect.right -= global_wnd_rect.left;
+                global_wnd_rect.top = 0;
+                global_wnd_rect.left = 0;
+                v12 = GetSystemMetrics(0) - global_wnd_rect.right;
+                global_wnd_rect.right += v12;
+                v13 = global_wnd_rect.right - (v12 + global_wnd_rect.left);
+                global_wnd_rect.left += v12;
+                v14 = CreateWindowExA(
+                    global_wnd_style_ex,
+                    "KKNDXtremeMainWindowClass",
+                    "KKND Xtreme",
+                    global_wnd_style,
+                    global_wnd_rect.left,
+                    global_wnd_rect.top,
+                    v13,
+                    global_wnd_rect.bottom - global_wnd_rect.top,
+                    0,
+                    0,
+                    global_hinstance,
+                    0);
+                global_hwnd = v14;
+                if (v14)
+                {
+                    UpdateWindow(v14);
+                }
 
-            return true;
+                return v14 != nullptr;
+            }
         }
     }
 
@@ -181,6 +147,13 @@ bool render_init_dd()
     IDirectDraw *lpDD; // [sp+6Ch] [bp-27Ch]@3
     DDCAPS v11; // [sp+70h] [bp-278h]@5
     DDCAPS v12; // [sp+1ACh] [bp-13Ch]@5
+    
+    //----- (00431920) --------------------------------------------------------
+    //void render_sw_initialize()
+    {
+	    if (global_wnd_bpp == 8)
+		    render_sw_hdc = GetDC(global_hwnd);
+    }
 
     if (!RenderDD_initialized && !pdd)
     {
@@ -536,7 +509,8 @@ void render_draw_list(DrawJobList *list)
     RECT v15; // [sp+64h] [bp-74h]@35
     DDBLTFX v16; // [sp+74h] [bp-64h]@34
 
-    if (list && render_default_stru1 && pdds_primary)
+    if (list)
+    /*if (list && render_default_stru1 && pdds_primary)
     {
         restore_palettes = 0;
         if (pdds_primary->IsLost() == 0x887601C2 && global_fullscreen == 1)
@@ -568,10 +542,11 @@ void render_draw_list(DrawJobList *list)
                 _40E430_update_palette(render_default_stru1->anim_pos);
                 if (!pdds_backbuffer->Lock(&stru_465810, &ddsd_primary, 1, 0))
                 {
-                    render_locked_surface_width_px = ddsd_primary.dwWidth;
+                    render_locked_surface_width_px = ddsd_primary.dwWidth;*/
+                    render_locked_surface_width_px = 640;
 
                     // 8/16 bpp are hardcoded, introduce a walkaround for ordinary bpp
-                    auto *pixels_8bpp = new unsigned char[ddsd_primary.dwWidth * ddsd_primary.dwHeight];
+                    static auto pixels_8bpp = new unsigned char[ddsd_primary.dwWidth * ddsd_primary.dwHeight];
 
                     //render_locked_surface_ptr = ddsd_primary.lpSurface;
                     render_locked_surface_ptr = pixels_8bpp;
@@ -589,7 +564,7 @@ void render_draw_list(DrawJobList *list)
                     }
 
                     // convert 8bpp to target bpp (32 here)
-                    for (int y = 0; y < ddsd_primary.dwHeight; ++y)
+                    /*for (int y = 0; y < ddsd_primary.dwHeight; ++y)
                     {
                         for (int x = render_locked_surface_width_px - 1; x >= 0; --x)
                         {
@@ -611,12 +586,77 @@ void render_draw_list(DrawJobList *list)
 
                             *(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (r << 16) | (g << 8) | b;
                         }
+                    }*/
+
+
+
+                    static auto pixels_32bpp = new unsigned int[640 * 480];
+
+                    for (int y = 0; y < 480; ++y)
+                    {
+                        for (int x = 640 - 1; x >= 0; --x)
+                        {
+                            auto c = pixels_8bpp[render_locked_surface_width_px * y + x];
+
+                            //auto p = (unsigned char *)ddsd_primary.lpSurface;
+                            //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (c << 16) | (c << 8) | c;
+
+                            int r, g, b;
+                            r = c;
+                            g = c;
+                            b = c;
+                            if (render_current_palette)
+                            {
+                                r = render_current_palette[c].peRed;
+                                g = render_current_palette[c].peGreen;
+                                b = render_current_palette[c].peBlue;
+                            }
+
+                            pixels_32bpp[y * 640 + x] = RGB(b, g, r);
+                            //SetPixel(render_sw_hdc, x, y, RGB(r, g, b));
+                            //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (r << 16) | (g << 8) | b;
+                        }
                     }
 
-                    delete[] pixels_8bpp;
+                    static HDC dc_backbuffer = CreateCompatibleDC(nullptr);
+                    static HBITMAP hbm_backbuffer = nullptr;
+                    if (hbm_backbuffer == nullptr) {
+                        hbm_backbuffer = CreateCompatibleBitmap(render_sw_hdc, 640, 480);
+                        DeleteObject(SelectObject(dc_backbuffer, hbm_backbuffer));
+                    }
+
+                    BITMAPINFO bmpInfo = { 0 };
+                    BITMAPINFOHEADER bmpInfoHeader = { 0 };
+                    BITMAP ImageBitmap;
+                    void *bits;
+
+                    bmpInfoHeader.biSize = sizeof(BITMAPINFOHEADER);
+                    bmpInfoHeader.biBitCount = 32;
+                    bmpInfoHeader.biClrImportant = 0;
+                    bmpInfoHeader.biClrUsed = 0;
+                    bmpInfoHeader.biCompression = BI_RGB;
+                    bmpInfoHeader.biHeight = -480;
+                    bmpInfoHeader.biWidth = 640;
+                    bmpInfoHeader.biPlanes = 1;
+                    bmpInfoHeader.biSizeImage = 640 * 480 * 4;
+
+                    ZeroMemory(&bmpInfo, sizeof(bmpInfo));
+                    bmpInfo.bmiHeader = bmpInfoHeader;
+                    bmpInfo.bmiColors->rgbBlue = 0;
+                    bmpInfo.bmiColors->rgbGreen = 0;
+                    bmpInfo.bmiColors->rgbRed = 0;
+                    bmpInfo.bmiColors->rgbReserved = 0;
+
+                    SetDIBitsToDevice(render_sw_hdc, 0, 0, 640, 480, 0, 0, 0, 480, pixels_32bpp, &bmpInfo, DIB_RGB_COLORS);
 
 
-                    if (!pdds_backbuffer->Unlock(ddsd_primary.lpSurface))
+
+
+                    //delete[] pixels_8bpp;
+                    //delete[] rgb32bits;
+
+
+                    /*if (!pdds_backbuffer->Unlock(ddsd_primary.lpSurface))
                     {
                         if (global_fullscreen == 1)
                         {
@@ -664,7 +704,7 @@ void render_draw_list(DrawJobList *list)
                 }
             }
         }
-    }
+    }*/
 }
 
 //----- (004125D0) --------------------------------------------------------
@@ -4016,4 +4056,266 @@ void render_on_wm_paint(struct tagRECT *a1)
             pdds_primary->Blt(a1, pdds_backbuffer, a1, 0, 0);
         }
     }
+}
+
+
+//----- (00431940) --------------------------------------------------------
+void render_sw_free_palette()
+{
+    HPALETTE v0; // eax@3
+
+    if (global_wnd_bpp == 8)
+    {
+        if (render_sw_default_palette)
+        {
+            v0 = SelectPalette(render_sw_hdc, render_sw_default_palette, 0);
+            DeleteObject(v0);
+        }
+        render_sw_palette = 0;
+    }
+}
+
+//----- (00431980) --------------------------------------------------------
+void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
+{
+    PALETTEENTRY *v1; // edx@1
+    int v2; // eax@4
+    char *v3; // ecx@9
+    BYTE *v4; // eax@9
+    int v5; // eax@11
+    _BYTE *v6; // ecx@14
+    int v7; // eax@14
+    HPALETTE v8; // esi@16
+    int v9; // [sp-Ch] [bp-410h]@4
+    _BYTE v10[1024]; // [sp+0h] [bp-404h]@14
+    int v11; // [sp+400h] [bp-4h]@14
+
+    v1 = palette_entries;
+    if (global_wnd_bpp == 8)
+    {
+        dword_47C018 = 0;
+        dword_468FD4 = 1;
+        dword_468FD8 = 2;
+        dword_468FDC = 4;
+        if (palette_entries)
+            memcpy(_47B408_palette_entries, palette_entries, sizeof(_47B408_palette_entries));
+        else
+            v1 = _47B408_palette_entries;
+        if (global_fullscreen == 1)
+        {
+            v3 = (char *)&RenderDD_primary_palette_values[0].peGreen;
+            v4 = &v1->peBlue;
+            do
+            {
+                v4[&RenderDD_primary_palette_values[0].peGreen - (BYTE *)v1] = 0;
+                *(v3 - 1) = *(v4 - 2);
+                *v3 = *(v4 - 1);
+                v4[(char *)RenderDD_primary_palette_values - (char *)v1] = *v4;
+                v3 += 4;
+                v4 += 4;
+            } while ((int)v3 < (int)&render_sw_hdc + 1);
+            v5 = render_dd_is_primary_surface_lost();
+            if (!v5)
+            {
+                v5 = (int)pddpal_primary;
+                if (pddpal_primary)
+                    v5 = pddpal_primary->SetEntries(0, 0, 256, RenderDD_primary_palette_values);
+            }
+        }
+        else
+        {
+            v6 = v10;
+            v7 = (int)&v1->peGreen;
+            v11 = 256;
+            do
+            {
+                *(_BYTE *)(&v10[2] - (_BYTE *)v1 + v7) = 0;
+                *v6 = *(_BYTE *)(v7 + 1);
+                *(_BYTE *)(v10 - (_BYTE *)v1 + v7) = *(_BYTE *)v7;
+                *(_BYTE *)(&v10[1] - (_BYTE *)v1 + v7) = *(_BYTE *)(v7 - 1);
+                v6 += 4;
+                v7 += 4;
+                --v11;
+            } while (v11);
+            v8 = render_sw_palette;
+            if (render_sw_palette)
+            {
+                render_sw_palette = _431B60_create_palette((PALETTEENTRY *)v10, 256);
+                SelectPalette(render_sw_hdc, render_sw_palette, 0);
+                DeleteObject(v8);
+            }
+            else
+            {
+                render_sw_palette = _431B60_create_palette((PALETTEENTRY *)v10, 256);
+                render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
+            }
+            v5 = RealizePalette(render_sw_hdc);
+        }
+    }
+}
+
+//----- (00431B60) --------------------------------------------------------
+HPALETTE _431B60_create_palette(PALETTEENTRY *a1, int num_entries)
+{
+    PALETTEENTRY *v2; // ebx@1
+    int v3; // ecx@1
+    char *v4; // esi@1
+    char *v5; // edi@1
+    int v6; // eax@1
+    char *v7; // ebp@1
+    int v8; // edx@1
+    int v9; // eax@4
+    int v10; // edx@4
+    int v11; // eax@6
+    int v12; // edx@6
+    int v14; // [sp+14h] [bp-408h]@1
+    struct
+    {
+        LOGPALETTE plpal; // [sp+18h] [bp-404h]@1
+        char pixels[0x400];
+    } v15;
+
+    v2 = a1;
+    v15.plpal.palVersion = 768;
+    v15.plpal.palNumEntries = 256;
+    memset(v15.plpal.palPalEntry, 0, 0x400u);
+    v14 = num_entries - 10;
+    v3 = &v15.plpal.palPalEntry[0].peBlue - (BYTE *)a1;
+    v4 = (char *)((char *)&v15.plpal.palNumEntries + 1 - (char *)v2);
+    v5 = (char *)((char *)v15.plpal.palPalEntry - (char *)v2);
+    v6 = (int)&v2->peGreen;
+    v7 = (char *)(&v15.plpal.palPalEntry[0].peGreen - (BYTE *)v2);
+    v8 = 10;
+    do
+    {
+        *(_BYTE *)(v3 + v6) = 0;
+        *(_BYTE *)(v6 + 1) = v4[v6];
+        *(_BYTE *)v6 = v5[v6];
+        *(_BYTE *)(v6 - 1) = v7[v6];
+        v6 += 4;
+        --v8;
+    } while (v8);
+    if (v14 > 10)
+    {
+        v9 = (int)&v2[10].peGreen;
+        v10 = v14 - 10;
+        do
+        {
+            v4[v9] = *(_BYTE *)(v9 + 1);
+            v5[v9] = *(_BYTE *)v9;
+            v7[v9] = *(_BYTE *)(v9 - 1);
+            *(_BYTE *)(v9 + v3) = 5;
+            v9 += 4;
+            --v10;
+        } while (v10);
+    }
+    v11 = (int)&v2[246].peGreen;
+    v12 = 10;
+    do
+    {
+        *(_BYTE *)(v11 + v3) = 0;
+        *(_BYTE *)(v11 + 1) = v4[v11];
+        *(_BYTE *)v11 = v5[v11];
+        *(_BYTE *)(v11 - 1) = v7[v11];
+        v11 += 4;
+        --v12;
+    } while (v12);
+    return CreatePalette(&v15.plpal);
+}
+
+//----- (00431C40) --------------------------------------------------------
+void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result)
+{
+    int v1; // edx@2
+    int i; // ecx@2
+    int v3; // eax@9
+    PALETTEENTRY *v4; // edx@10
+    char *v5; // ecx@14
+    BYTE *v6; // eax@14
+    IDirectDrawPalette *v7; // eax@16
+    PALETTEENTRY *v8; // ecx@19
+    int v9; // eax@19
+    HPALETTE v10; // esi@21
+    int v11; // [sp-Ch] [bp-410h]@9
+    PALETTEENTRY v12[256]; // [sp+0h] [bp-404h]@19
+    int v13; // [sp+400h] [bp-4h]@19
+
+    if (global_wnd_bpp == 8)
+    {
+        v1 = dword_468FDC << 8;
+        for (i = 0; i < v1; ++i)
+        {
+            if (((*(&_47B408_palette_entries[0].peRed + i) << 8) & 0xFFFFFF00) >= 0xFF00)
+                result = (void *)255;
+            else
+                result = (void *)*(&_47B408_palette_entries[0].peRed + i);
+            *(&palette_47BC10[0].peRed + i) = (unsigned __int8)result;
+        }
+
+        v4 = palette_47BC10;
+        dword_47C018 = 0;
+        dword_468FD4 = 1;
+        dword_468FD8 = 2;
+        dword_468FDC = 4;
+        if (palette_47BC10)
+            memcpy(_47B408_palette_entries, palette_47BC10, sizeof(_47B408_palette_entries));
+        else
+            v4 = _47B408_palette_entries;
+        if (global_fullscreen == 1)
+        {
+            v5 = (char *)&RenderDD_primary_palette_values[0].peGreen;
+            v6 = &v4->peBlue;
+            do
+            {
+                v6[&RenderDD_primary_palette_values[0].peGreen - (BYTE *)v4] = 0;
+                *(v5 - 1) = *(v6 - 2);
+                *v5 = *(v6 - 1);
+                v6[(char *)RenderDD_primary_palette_values - (char *)v4] = *v6;
+                v5 += 4;
+                v6 += 4;
+            } while ((int)v5 < (int)&render_sw_hdc + 1);
+            v7 = (IDirectDrawPalette *)render_dd_is_primary_surface_lost();
+            if (!v7)
+            {
+                v7 = pddpal_primary;
+                if (pddpal_primary)
+                    v7 = (IDirectDrawPalette *)pddpal_primary->SetEntries(
+                        0,
+                        0,
+                        256,
+                        RenderDD_primary_palette_values);
+            }
+        }
+        else
+        {
+            v8 = v12;
+            v9 = (int)&v4->peGreen;
+            v13 = 256;
+            do
+            {
+                *(_BYTE *)(&v12[0].peBlue - (BYTE *)v4 + v9) = 0;
+                v8->peRed = *(_BYTE *)(v9 + 1);
+                *(_BYTE *)((char *)v12 - (char *)v4 + v9) = *(_BYTE *)v9;
+                *(_BYTE *)(&v12[0].peGreen - (BYTE *)v4 + v9) = *(_BYTE *)(v9 - 1);
+                ++v8;
+                v9 += 4;
+                --v13;
+            } while (v13);
+            v10 = render_sw_palette;
+            if (render_sw_palette)
+            {
+                render_sw_palette = _431B60_create_palette(v12, 256);
+                SelectPalette(render_sw_hdc, render_sw_palette, 0);
+                DeleteObject(v10);
+            }
+            else
+            {
+                render_sw_palette = _431B60_create_palette(v12, 256);
+                render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
+            }
+            v7 = (IDirectDrawPalette *)RealizePalette(render_sw_hdc);
+        }
+        result = v7;
+    }
+    return result;
 }

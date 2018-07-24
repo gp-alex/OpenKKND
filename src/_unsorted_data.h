@@ -621,7 +621,6 @@ extern int game_window_created; // weak
 extern int _479DE8_boxd_initialized; // weak
 extern int stru2_list_elements_initialized; // weak
 extern int _479DF0_mapd_initialized; // weak
-extern __int16 stru2_list_initialized; // weak
 extern char current_savegame_filename[256];
 extern char byte_479EF8[192]; // idb
 extern char str[128];
@@ -741,7 +740,6 @@ extern stru15unit _47B3E0_outpost_levels;
 extern int max_outpost_level; // weak
 extern PALETTEENTRY _47B408_palette_entries[256];
 extern PALETTEENTRY RenderDD_primary_palette_values[256];
-extern HDC render_sw_hdc; // idb
 extern PALETTEENTRY palette_47BC10[256];
 extern HPALETTE render_sw_palette;
 extern HPALETTE render_sw_default_palette; // idb

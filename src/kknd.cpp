@@ -5844,6 +5844,8 @@ void _40E560_flip_gdi_update_syscolors()
 			v8 = 0;
 			v12 = *((_BYTE *)sys_colors + v1);
 			v3 = (*(COLORREF *)((char *)sys_colors + v1) >> 16) & 0xFF;
+
+            int i = 0;
 			v4 = (char *)&RenderDD_primary_palette_values[0].peGreen;
 			do
 			{
@@ -5865,8 +5867,9 @@ void _40E560_flip_gdi_update_syscolors()
 						+ (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
 				}
 				v4 += 4;
+                i++;
 				++v8;
-			} while ((int)v4 < (int)&render_sw_hdc + 1);
+            } while (i < 256);//((int)v4 < (int)&render_sw_hdc + 1);
 			LOBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values[v6].peGreen;
 			HIBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values[v6].peBlue;
 			*(COLORREF *)((char *)aRgbValues + v11) = RenderDD_primary_palette_values[v6].peRed | (v7 << 8);
@@ -9797,16 +9800,50 @@ bool LVL_SysInit()
 	result = stru2_list_alloc();
 	if (result)
 	{
-        auto windowConfig = WindowConfigFactory().Create("OpenKKnD", 800, 600);
+        int window_width = 640;
+        int windiw_height = 480;
+        bool fullsreen = false;
+
+        auto windowConfig = WindowConfigFactory().Create("OpenKKnD", window_width, windiw_height);
         auto window = WindowFactory().CreateSdlWindow(windowConfig);
 
-		stru2_list_initialized = 1;
-		result = render_create_window(640, 480, 8, 1, false);
-		if (result)
-		{
-			game_window_created = 1;
-			result = sound_initialize() != 0;
-		}
+		result = render_create_window(window_width, windiw_height, 8, 1, fullsreen);
+        if (result) {
+            bool v10 = render_init_dd();
+            if (v10) {
+                auto v15 = (stru1_draw_params *)malloc(0xFCu);
+                stru1_list = v15;
+                if (v15)
+                {
+                    auto v16 = 0;
+                    do
+                    {
+                        v15[v16].next = &v15[v16 + 1];          // chain
+                                                                // [0] -> [1] -> [2] -> [3] -> [4] -> [5] -> [6]
+                        v15 = stru1_list;
+                        ++v16;
+                    } while (v16 < 6);
+                    stru1_list[6].next = 0;
+                    stru1_list_free_pool = stru1_list;
+                    default_stru1.prev = &default_stru1;
+                    default_stru1.next = &default_stru1;
+                    default_stru1.field_8 = 0;
+                    default_stru1.anim_pos = 0x80000000;
+                    default_stru1.clip_y = 0;
+                    default_stru1.clip_x = 0;
+                    default_stru1.clip_z = window_width;
+                    default_stru1.clip_w = windiw_height;
+                    default_stru1.field_20 = 0;
+                    is_render_window_initialized = 1;
+                }
+
+                if (is_render_window_initialized)
+                {
+                    game_window_created = 1;
+                    result = sound_initialize() != 0;
+                }
+            }
+        }
 	}
 	return result;
 }
@@ -19970,274 +20007,6 @@ void entity_mode_outpost_on_death(Entity *a1)
 	v1 = a1;
 	entity_mode_outpost_on_death_update_production(a1);
 	entity_mode_building_default_on_death(v1);
-}
-
-//----- (00431920) --------------------------------------------------------
-void render_sw_initialize()
-{
-	if (global_wnd_bpp == 8)
-		render_sw_hdc = GetDC(global_hwnd);
-}
-
-//----- (00431940) --------------------------------------------------------
-void render_sw_free_palette()
-{
-	HPALETTE v0; // eax@3
-
-	if (global_wnd_bpp == 8)
-	{
-		if (render_sw_default_palette)
-		{
-			v0 = SelectPalette(render_sw_hdc, render_sw_default_palette, 0);
-			DeleteObject(v0);
-		}
-		render_sw_palette = 0;
-	}
-}
-
-//----- (00431980) --------------------------------------------------------
-void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
-{
-	PALETTEENTRY *v1; // edx@1
-	int v2; // eax@4
-	char *v3; // ecx@9
-	BYTE *v4; // eax@9
-	int v5; // eax@11
-	_BYTE *v6; // ecx@14
-	int v7; // eax@14
-	HPALETTE v8; // esi@16
-	int v9; // [sp-Ch] [bp-410h]@4
-	_BYTE v10[1024]; // [sp+0h] [bp-404h]@14
-	int v11; // [sp+400h] [bp-4h]@14
-
-	v1 = palette_entries;
-	if (global_wnd_bpp == 8)
-	{
-		dword_47C018 = 0;
-		dword_468FD4 = 1;
-		dword_468FD8 = 2;
-		dword_468FDC = 4;
-		if (palette_entries)
-			memcpy(_47B408_palette_entries, palette_entries, sizeof(_47B408_palette_entries));
-		else
-			v1 = _47B408_palette_entries;
-		if (global_fullscreen == 1)
-		{
-			v3 = (char *)&RenderDD_primary_palette_values[0].peGreen;
-			v4 = &v1->peBlue;
-			do
-			{
-				v4[&RenderDD_primary_palette_values[0].peGreen - (BYTE *)v1] = 0;
-				*(v3 - 1) = *(v4 - 2);
-				*v3 = *(v4 - 1);
-				v4[(char *)RenderDD_primary_palette_values - (char *)v1] = *v4;
-				v3 += 4;
-				v4 += 4;
-			} while ((int)v3 < (int)&render_sw_hdc + 1);
-			v5 = render_dd_is_primary_surface_lost();
-			if (!v5)
-			{
-				v5 = (int)pddpal_primary;
-				if (pddpal_primary)
-					v5 = pddpal_primary->SetEntries(0, 0, 256, RenderDD_primary_palette_values);
-			}
-		}
-		else
-		{
-			v6 = v10;
-			v7 = (int)&v1->peGreen;
-			v11 = 256;
-			do
-			{
-				*(_BYTE *)(&v10[2] - (_BYTE *)v1 + v7) = 0;
-				*v6 = *(_BYTE *)(v7 + 1);
-				*(_BYTE *)(v10 - (_BYTE *)v1 + v7) = *(_BYTE *)v7;
-				*(_BYTE *)(&v10[1] - (_BYTE *)v1 + v7) = *(_BYTE *)(v7 - 1);
-				v6 += 4;
-				v7 += 4;
-				--v11;
-			} while (v11);
-			v8 = render_sw_palette;
-			if (render_sw_palette)
-			{
-				render_sw_palette = _431B60_create_palette((PALETTEENTRY *)v10, 256);
-				SelectPalette(render_sw_hdc, render_sw_palette, 0);
-				DeleteObject(v8);
-			}
-			else
-			{
-				render_sw_palette = _431B60_create_palette((PALETTEENTRY *)v10, 256);
-				render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
-			}
-			v5 = RealizePalette(render_sw_hdc);
-		}
-	}
-}
-
-//----- (00431B60) --------------------------------------------------------
-HPALETTE _431B60_create_palette(PALETTEENTRY *a1, int num_entries)
-{
-	PALETTEENTRY *v2; // ebx@1
-	int v3; // ecx@1
-	char *v4; // esi@1
-	char *v5; // edi@1
-	int v6; // eax@1
-	char *v7; // ebp@1
-	int v8; // edx@1
-	int v9; // eax@4
-	int v10; // edx@4
-	int v11; // eax@6
-	int v12; // edx@6
-	int v14; // [sp+14h] [bp-408h]@1
-    struct
-    {
-        LOGPALETTE plpal; // [sp+18h] [bp-404h]@1
-        char pixels[0x400];
-    } v15;
-
-	v2 = a1;
-    v15.plpal.palVersion = 768;
-    v15.plpal.palNumEntries = 256;
-	memset(v15.plpal.palPalEntry, 0, 0x400u);
-	v14 = num_entries - 10;
-	v3 = &v15.plpal.palPalEntry[0].peBlue - (BYTE *)a1;
-	v4 = (char *)((char *)&v15.plpal.palNumEntries + 1 - (char *)v2);
-	v5 = (char *)((char *)v15.plpal.palPalEntry - (char *)v2);
-	v6 = (int)&v2->peGreen;
-	v7 = (char *)(&v15.plpal.palPalEntry[0].peGreen - (BYTE *)v2);
-	v8 = 10;
-	do
-	{
-		*(_BYTE *)(v3 + v6) = 0;
-		*(_BYTE *)(v6 + 1) = v4[v6];
-		*(_BYTE *)v6 = v5[v6];
-		*(_BYTE *)(v6 - 1) = v7[v6];
-		v6 += 4;
-		--v8;
-	} while (v8);
-	if (v14 > 10)
-	{
-		v9 = (int)&v2[10].peGreen;
-		v10 = v14 - 10;
-		do
-		{
-			v4[v9] = *(_BYTE *)(v9 + 1);
-			v5[v9] = *(_BYTE *)v9;
-			v7[v9] = *(_BYTE *)(v9 - 1);
-			*(_BYTE *)(v9 + v3) = 5;
-			v9 += 4;
-			--v10;
-		} while (v10);
-	}
-	v11 = (int)&v2[246].peGreen;
-	v12 = 10;
-	do
-	{
-		*(_BYTE *)(v11 + v3) = 0;
-		*(_BYTE *)(v11 + 1) = v4[v11];
-		*(_BYTE *)v11 = v5[v11];
-		*(_BYTE *)(v11 - 1) = v7[v11];
-		v11 += 4;
-		--v12;
-	} while (v12);
-	return CreatePalette(&v15.plpal);
-}
-
-//----- (00431C40) --------------------------------------------------------
-void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result)
-{
-	int v1; // edx@2
-	int i; // ecx@2
-	int v3; // eax@9
-	PALETTEENTRY *v4; // edx@10
-	char *v5; // ecx@14
-	BYTE *v6; // eax@14
-	IDirectDrawPalette *v7; // eax@16
-	PALETTEENTRY *v8; // ecx@19
-	int v9; // eax@19
-	HPALETTE v10; // esi@21
-	int v11; // [sp-Ch] [bp-410h]@9
-	PALETTEENTRY v12[256]; // [sp+0h] [bp-404h]@19
-	int v13; // [sp+400h] [bp-4h]@19
-
-	if (global_wnd_bpp == 8)
-	{
-		v1 = dword_468FDC << 8;
-		for (i = 0; i < v1; ++i)
-		{
-			if (((*(&_47B408_palette_entries[0].peRed + i) << 8) & 0xFFFFFF00) >= 0xFF00)
-				result = (void *)255;
-			else
-				result = (void *)*(&_47B408_palette_entries[0].peRed + i);
-			*(&palette_47BC10[0].peRed + i) = (unsigned __int8)result;
-		}
-
-		v4 = palette_47BC10;
-		dword_47C018 = 0;
-		dword_468FD4 = 1;
-		dword_468FD8 = 2;
-		dword_468FDC = 4;
-		if (palette_47BC10)
-			memcpy(_47B408_palette_entries, palette_47BC10, sizeof(_47B408_palette_entries));
-		else
-			v4 = _47B408_palette_entries;
-		if (global_fullscreen == 1)
-		{
-			v5 = (char *)&RenderDD_primary_palette_values[0].peGreen;
-			v6 = &v4->peBlue;
-			do
-			{
-				v6[&RenderDD_primary_palette_values[0].peGreen - (BYTE *)v4] = 0;
-				*(v5 - 1) = *(v6 - 2);
-				*v5 = *(v6 - 1);
-				v6[(char *)RenderDD_primary_palette_values - (char *)v4] = *v6;
-				v5 += 4;
-				v6 += 4;
-			} while ((int)v5 < (int)&render_sw_hdc + 1);
-			v7 = (IDirectDrawPalette *)render_dd_is_primary_surface_lost();
-			if (!v7)
-			{
-				v7 = pddpal_primary;
-				if (pddpal_primary)
-					v7 = (IDirectDrawPalette *)pddpal_primary->SetEntries(
-						0,
-						0,
-						256,
-						RenderDD_primary_palette_values);
-			}
-		}
-		else
-		{
-			v8 = v12;
-			v9 = (int)&v4->peGreen;
-			v13 = 256;
-			do
-			{
-				*(_BYTE *)(&v12[0].peBlue - (BYTE *)v4 + v9) = 0;
-				v8->peRed = *(_BYTE *)(v9 + 1);
-				*(_BYTE *)((char *)v12 - (char *)v4 + v9) = *(_BYTE *)v9;
-				*(_BYTE *)(&v12[0].peGreen - (BYTE *)v4 + v9) = *(_BYTE *)(v9 - 1);
-				++v8;
-				v9 += 4;
-				--v13;
-			} while (v13);
-			v10 = render_sw_palette;
-			if (render_sw_palette)
-			{
-				render_sw_palette = _431B60_create_palette(v12, 256);
-				SelectPalette(render_sw_hdc, render_sw_palette, 0);
-				DeleteObject(v10);
-			}
-			else
-			{
-				render_sw_palette = _431B60_create_palette(v12, 256);
-				render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
-			}
-			v7 = (IDirectDrawPalette *)RealizePalette(render_sw_hdc);
-		}
-        result = v7;
-	}
-	return result;
 }
 
 //----- (00431E60) --------------------------------------------------------
