@@ -24,3 +24,5 @@ namespace Infrastructure {
         static std::shared_ptr<Log> log;
     };
 };
+
+using InfrastructureDependencies = Infrastructure::DependencyInjection;

@@ -3,9 +3,9 @@
 #include <memory>
 #include <string>
 
-#include "src/Application/WindowConfig.h"
+#include "src/Infrastructure/Window/WindowConfig.h"
 
-namespace Application {
+namespace Infrastructure {
     class WindowConfigFactory {
     public:
         std::shared_ptr<const WindowConfig> Create(

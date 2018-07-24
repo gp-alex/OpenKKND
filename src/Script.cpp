@@ -1142,9 +1142,6 @@ int script_yield_any_trigger(Script *a1, int num_turns) {
 //----- (00445370) --------------------------------------------------------
 int script_yield(Script *a1, int yield_flags, int param)
 {
-    int v5; // eax@8
-    unsigned int v6; // eax@8
-
     if (yield_flags & SCRIPT_FLAGS_20_EVENT_TRIGGER && a1->event_list)
     {
         a1->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;

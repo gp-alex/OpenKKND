@@ -1,7 +1,7 @@
-#include "src/Application/WindowConfigFactory.h"
+#include "src/Infrastructure/Window/WindowConfigFactory.h"
 
-using Application::WindowConfigFactory;
-using Application::WindowConfig;
+using Infrastructure::WindowConfigFactory;
+using Infrastructure::WindowConfig;
 
 std::shared_ptr<const WindowConfig> WindowConfigFactory::Create(
     const std::string &title, int width, int height

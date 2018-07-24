@@ -575,25 +575,17 @@ extern stru26 _4795F0_stru26_array[3];
 extern stru27 _479740_stru27_array[3];
 extern tagRECT global_wnd_rect; // idb
 extern void *render_locked_surface_ptr;
-extern DDPIXELFORMAT pixelformat_primary;
 extern DWORD global_wnd_style; // idb
 extern int global_wnd_bpp; // weak
 extern unsigned int render_locked_surface_width_px; // idb
-extern DDSURFACEDESC ddsd_primary;
 extern int global_fullscreen; // weak
 extern int global_time_flows; // weak
 extern stru1_draw_params *stru1_list_free_pool;
 extern int global_wnd_height; // idb
 extern DWORD global_wnd_style_ex; // idb
 extern stru1_draw_params *stru1_list;
-extern int fullscreen_flip_or_blt; // weak
 extern int global_wnd_width; // idb
 extern bool is_render_window_initialized; // 411760
-extern IDirectDraw *pdd;
-extern IDirectDrawPalette *pddpal_primary;
-extern IDirectDrawClipper *pddclipper;
-extern HWND global_hwnd; // idb
-extern int RenderDD_initialized; // weak
 extern int timer_render_skips; // weak
 extern char palette_4798F8_sprt_aligned[512];
 extern stru1_draw_params *current_drawing_params;

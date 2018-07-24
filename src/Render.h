@@ -1,5 +1,11 @@
 #pragma once
 
+#include <memory>
+
+#include "src/Infrastructure/Renderer/Renderer.h"
+
+extern std::shared_ptr<Infrastructure::Renderer> gRenderer;
+
 struct stru1_draw_params;
 struct DrawJob;
 struct DrawJobList;
@@ -23,7 +29,6 @@ int render_scrl_draw_handler(DrawJobDetails *data, int mode);
 int render_video_draw_handler(DrawJobDetails *a1, int mode);
 
 void REND_SetClip(int a1, int a2, int a3, int a4);
-HRESULT __stdcall EnumAttachedSurfacesCallback(IDirectDrawSurface *lpDDSurface, DDSURFACEDESC *lpDDSurfaceDesc, void *lpContext);
 int render_clip(_DWORD *clipped_x, _DWORD *clipped_y, _DWORD *width, _DWORD *height, _DWORD *x, _DWORD *y); // idb
 void render_draw_tile_32x32(void *tile, int x_arg, int y_arg); // idb
 void render_draw_tile_transparent_edges_32x32(unsigned __int8 *tile, int a2, int a3);

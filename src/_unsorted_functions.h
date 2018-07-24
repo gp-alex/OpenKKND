@@ -769,7 +769,7 @@ Entity *entity_444BE0_oiltanker_get_state_entity(Entity *a1);
 void entity_mode_444CC0_oiltanker(Entity *a1);
 void entity_mode_444D10_oiltanker(Entity *a1);
 void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result);
+void _431C40_on_WM_ACTIVATEAPP_software_render(void *result);
 void coroutine_main();
 bool render_string_list_alloc();
 void render_string_445770(RenderString *a1, const char *text, DataMobdItem *custom_font); // idb

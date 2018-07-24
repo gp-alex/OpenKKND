@@ -1,5 +1,8 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "Application/Game.h"
+
+#include "src/Application/Game.h"
+
+using Application::Game;
 
 #include "src/kknd.h"
 
@@ -14,17 +17,44 @@
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
 
-#include "Engine/Entity.h"
+#include "src/Engine/Entity.h"
 
-#include "Infrastructure/File.h"
-#include "Infrastructure/Input.h"
+#include "src/Infrastructure/File.h"
+#include "src/Infrastructure/Input.h"
 
-using Application::Game;
+#include "src/Infrastructure/Renderer/RendererConfigFactory.h"
+#include "src/Infrastructure/Renderer/RendererFactory.h"
+
+using Infrastructure::RendererConfigFactory;
+using Infrastructure::RendererFactory;
+using Infrastructure::Renderer;
+
+#include "src/Infrastructure/Window/WindowConfigFactory.h"
+#include "src/Infrastructure/Window/WindowFactory.h"
+
+using Infrastructure::WindowConfigFactory;
+using Infrastructure::WindowFactory;
+
+std::shared_ptr<Renderer> gRenderer = nullptr;
+
 
 bool is_mission_running = false;
+
+
 //----- (00423460) --------------------------------------------------------
 void Game::Run() {
     Bitmap **v3; // esi@27
+
+    int window_width = 640;
+    int window_height = 480;
+    bool fullscreen = false;
+
+    auto windowConfig = WindowConfigFactory().Create("Open Krush Kill `n' Destroy", window_width, window_height);
+    window = WindowFactory().CreateSdlWindow(windowConfig);
+
+    auto rendererConfig = RendererConfigFactory().Create("SDL2", window, window_width, window_height, fullscreen);
+    renderer = RendererFactory().CreateSdl2(rendererConfig);
+    ::gRenderer = renderer;
 
     WaitScreen();
 

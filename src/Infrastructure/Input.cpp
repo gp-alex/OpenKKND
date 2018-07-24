@@ -132,6 +132,8 @@ void input_update_keyboard()
     input_now_pressed_keys.just_pressed_keys_mask = 0;
     input_now_pressed_keys.unpressed_keys_mask = 0;
     input_now_pressed_keys.field_C = -1;
+
+    extern HWND global_hwnd;
     if (GetActiveWindow() == global_hwnd)
     {
         nExt_pressed_key = 0;
@@ -223,6 +225,7 @@ bool input_4283A0_set_cursor_pos(__int16 x, __int16 y)
     int v6; // [sp-8h] [bp-14h]@5
     struct tagPOINT Point; // [sp+4h] [bp-8h]@1
 
+    extern HWND global_hwnd;
     if (input_mouse_window_losing_focus_reset_to_defaults)
     {
         Point.x = x;
@@ -266,6 +269,7 @@ int input_update_mouse()
     int v4; // eax@17
     struct tagPOINT Point; // [sp+8h] [bp-8h]@13
 
+    extern HWND global_hwnd;
     if (GetActiveWindow() == global_hwnd)
     {
         input_mouse_window_losing_focus_reset_to_defaults = 1;

@@ -6,9 +6,6 @@ set(APPLICATION_SOURCES
 	GameFactory.cpp
 	GameConfig.cpp
     GameConfigFactory.cpp
-	SdlWindow.cpp
-	WindowFactory.cpp
-	WindowConfigFactory.cpp
 	Scripts/Aircraft.cpp
 	Scripts/Buildings.cpp
 	Scripts/BuildingsMute.cpp
@@ -30,15 +27,7 @@ set(APPLICATION_HEADERS
 	GameConfig.h
     GameConfigFactory.h
 	GameFactory.h
-    IWindow.h
-	SdlWindow.h
-	WindowFactory.h
-	WindowConfig.h
-	WindowConfigFactory.h
 )
 
-if(WIN32)
-else()
-endif()
 
 add_library(Application STATIC ${APPLICATION_SOURCES} ${APPLICATION_HEADERS})

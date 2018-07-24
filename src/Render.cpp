@@ -9,15 +9,12 @@
 
 
 
-HDC render_sw_hdc; // idb
+HWND global_hwnd = nullptr;
+HDC render_sw_hdc = nullptr; // idb
 
 const bool debug_outline_tiles = true;
 extern bool is_mission_running;
 extern Entity *debug_pathing_entity;
-
-
-IDirectDrawSurface *pdds_primary;
-IDirectDrawSurface *pdds_backbuffer;
 
 
 PALETTEENTRY *render_current_palette = nullptr;
@@ -134,20 +131,7 @@ bool render_create_window(int width, int height, int bpp, int run, bool fullscre
 
 //----- (00411A50) --------------------------------------------------------
 bool render_init_dd()
-{
-    int v0; // eax@11
-    int v1; // eax@15
-    int v2; // eax@19
-    int v3; // eax@23
-    int v4; // eax@31
-    int v5; // eax@35
-    int v6; // eax@45
-    HWND v8; // eax@46
-    IDirectDrawSurface *v9; // [sp+68h] [bp-280h]@10
-    IDirectDraw *lpDD; // [sp+6Ch] [bp-27Ch]@3
-    DDCAPS v11; // [sp+70h] [bp-278h]@5
-    DDCAPS v12; // [sp+1ACh] [bp-13Ch]@5
-    
+{   
     //----- (00431920) --------------------------------------------------------
     //void render_sw_initialize()
     {
@@ -155,247 +139,12 @@ bool render_init_dd()
 		    render_sw_hdc = GetDC(global_hwnd);
     }
 
-    if (!RenderDD_initialized && !pdd)
-    {
-        RenderDD_initialized = 1;
-        lpDD = 0;
-        if (!DirectDrawCreate(0, &lpDD, 0))
-        {
-            pdd = lpDD;
-            if (lpDD)
-            {
-                v11.dwSize = 316;
-                memset(&v11.dwCaps, 0, 0x138u);
-                v12.dwSize = 316;
-                memset(&v12.dwCaps, 0, 0x138u);
-                lpDD->GetCaps(&v11, &v12);
-                if (v11.dwCaps & DDCAPS_CANBLTSYSMEM || v12.dwCaps & DDCAPS_CANBLTSYSMEM)
-                {
-                    if (global_fullscreen == 1)
-                    {
-                        global_wnd_style = 0x90080000;
-                        global_wnd_style_ex = 0x40008;
-                        SetWindowLongA(global_hwnd, GWL_STYLE, 0x90080000);
-                        SetWindowLongA(global_hwnd, GWL_EXSTYLE, global_wnd_style_ex);
-                        SetWindowPos(global_hwnd, (HWND)(void *)((int)HWND_MESSAGE | 0x2), 0, 0, global_wnd_width, global_wnd_height, 0x60u);
-                        InvalidateRect(global_hwnd, 0, 1);
-                        UpdateWindow(global_hwnd);
-                        if (!pdd->SetCooperativeLevel(
-                            global_hwnd,
-                            DDSCL_EXCLUSIVE | DDSCL_NOWINDOWCHANGES | DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN)
-                            && !pdd->SetDisplayMode(global_wnd_width, global_wnd_height, global_wnd_bpp))
-                        {
-                            pdds_backbuffer = 0;
-                            ddsd_primary.dwSize = 108;
-                            ddsd_primary.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
-                            ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLTSTRETCH | DDCAPS_ALIGNSIZESRC | DDCAPS_ALIGNBOUNDARYSRC;
-                            ddsd_primary.dwBackBufferCount = 2;
-                            fullscreen_flip_or_blt = 1;
-                            if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
-                            {
-                                v0 = 0;
-                            }
-                            else
-                            {
-                                pdds_primary = v9;
-                                v0 = v9 != 0;
-                            }
-                            if (v0
-                                || ((ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLTSTRETCH | DDCAPS_ALIGNSIZESRC | DDCAPS_ALIGNBOUNDARYSRC,
-                                    ddsd_primary.dwBackBufferCount = 1,
-                                    !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v1 = v9 != 0) : (v1 = 0),
-                                    v1
-                                    || ((fullscreen_flip_or_blt = 0,
-                                        ddsd_primary.dwFlags = DDSD_CAPS,
-                                        ddsd_primary.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE,
-                                        !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v2 = v9 != 0) : (v2 = 0),
-                                        v2
-                                        && ((ddsd_primary.dwHeight = global_wnd_height,
-                                            ddsd_primary.dwWidth = global_wnd_width,
-                                            ddsd_primary.dwFlags = 7,
-                                            ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLT | DDCAPS_OVERLAY,
-                                            !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_backbuffer = v9, v3 = v9 != 0) : (v3 = 0),
-                                            v3))))
-                            {
-                                if (pdds_backbuffer
-                                    || (v9 = (IDirectDrawSurface *)4,
-                                        !pdds_primary->GetAttachedSurface((LPDDSCAPS)&v9, &pdds_backbuffer)))
-                                {
-                                LABEL_38:
-                                    if ((global_fullscreen != 1
-                                        || !pdd->CreatePalette(68, RenderDD_primary_palette_values, &pddpal_primary, 0)
-                                        && !pdds_primary->SetPalette(pddpal_primary))
-                                        && !pdd->CreateClipper(0, &pddclipper, 0)
-                                        && !pddclipper->SetHWnd(0, global_hwnd)
-                                        && !pdds_primary->SetClipper(pddclipper)
-                                        && !pdds_primary->GetSurfaceDesc(&ddsd_primary))
-                                    {
-                                        memcpy(&pixelformat_primary, &ddsd_primary.ddpfPixelFormat, sizeof(pixelformat_primary));
-                                        v6 = ShowWindow(global_hwnd, global_win32_nCmdShow);
-                                        RenderDD_initialized = 0;
-                                        REND_DirectDrawClearScreen(1);
-                                        return 1;
-                                    }
-                                    goto LABEL_46;
-                                }
-                            }
-                        }
-                    }
-                    else                                  // windowed
-                    {
-                        global_wnd_style = 0x90CA0000;
-                        global_wnd_style_ex = 0x40000;
-                        SetWindowLongA(global_hwnd, GWL_STYLE, 0x90CA0000);
-                        SetWindowLongA(global_hwnd, GWL_EXSTYLE, global_wnd_style_ex);
-                        SetWindowPos(
-                            global_hwnd,
-                            (HWND)0xFFFFFFFE,
-                            global_wnd_rect.left,
-                            global_wnd_rect.top,
-                            global_wnd_rect.right - global_wnd_rect.left,
-                            global_wnd_rect.bottom - global_wnd_rect.top,
-                            0x60u);
-                        InvalidateRect(global_hwnd, 0, 1);
-                        UpdateWindow(global_hwnd);
-                        if (!pdd->SetCooperativeLevel(global_hwnd, DDSCL_NORMAL))
-                        {
-                            memset(&ddsd_primary, 0, sizeof(ddsd_primary));
-                            ddsd_primary.dwSize = 108;
-                            ddsd_primary.dwFlags = DDSD_CAPS;
-                            ddsd_primary.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-                            if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
-                            {
-                                v4 = 0;
-                            }
-                            else
-                            {
-                                pdds_primary = v9;
-                                v4 = v9 != 0;
-                            }
-                            if (v4)
-                            {
-                                ddsd_primary.dwHeight = global_wnd_height;
-                                ddsd_primary.dwWidth = global_wnd_width;
-                                ddsd_primary.dwFlags = DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT;
-                                ddsd_primary.ddsCaps.dwCaps = DDCAPS_OVERLAYSTRETCH | DDCAPS_BLT;
-                                if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
-                                {
-                                    v5 = 0;
-                                }
-                                else
-                                {
-                                    pdds_backbuffer = v9;
-                                    v5 = v9 != 0;
-                                }
-                                if (v5)
-                                    goto LABEL_38;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    LABEL_46:
-        RenderDD_initialized = 0;
-        render_cleanup_dd();
-        v8 = GetActiveWindow();
-        MessageBoxA(v8, (LPCSTR)aFailedToSetupDirectdraw, (LPCSTR)Caption, 0);
-        return 0;
-    }
-    return 1;
+    return true;
 }
 
 //----- (00411FE0) --------------------------------------------------------
 void render_cleanup_dd()
 {
-    IDirectDrawSurface *v0; // esi@3
-    int v1; // eax@15
-    IDirectDrawSurface *v2; // esi@23
-    int v3; // eax@24
-    IDirectDrawPalette *v4; // [sp+14h] [bp-4h]@9
-
-    if (!RenderDD_initialized && pdd)
-    {
-        v0 = pdds_primary;
-        if (pdds_primary)
-        {
-            pdds_primary->SetClipper(0);
-            v0 = pdds_primary;
-        }
-        if (pddclipper)
-        {
-            pddclipper->Release();
-            v0 = pdds_primary;
-            pddclipper = 0;
-        }
-        if (global_fullscreen == 1)
-        {
-            if (v0)
-            {
-                v4 = 0;
-                v0->GetPalette(&v4);
-                if (v4)
-                    pdds_primary->SetPalette(0);
-                v0 = pdds_primary;
-            }
-            if (pddpal_primary)
-            {
-                pddpal_primary->Release();
-                v0 = pdds_primary;
-                pddpal_primary = 0;
-            }
-        }
-        if (v0)
-        {
-            while (1)
-            {
-                v1 = v0->GetBltStatus(2);
-                if (v1 != 0x887601AE && v1 != 0x8876021C)
-                    break;
-                Sleep(0xAu);
-            }
-            if (fullscreen_flip_or_blt && v0->GetFlipStatus(2) == 0x887601AE)
-            {
-                do
-                    Sleep(0xAu);
-                while (v0->GetFlipStatus(2) == 0x887601AE);
-            }
-            v0->Release();
-        }
-        pdds_primary = 0;
-        if (!fullscreen_flip_or_blt)
-        {
-            v2 = pdds_backbuffer;
-            if (pdds_backbuffer)
-            {
-                while (1)
-                {
-                    v3 = v2->GetBltStatus(2);
-                    if (v3 != 0x887601AE && v3 != 0x8876021C)
-                        break;
-                    Sleep(0xAu);
-                }
-                if (fullscreen_flip_or_blt && v2->GetFlipStatus(2) == -2005532242)
-                {
-                    do
-                        Sleep(0xAu);
-                    while (v2->GetFlipStatus(2) == -2005532242);
-                }
-                v2->Release();
-            }
-        }
-        pdds_backbuffer = 0;
-        if (global_fullscreen != 1 && !GetWindowRect(global_hwnd, &global_wnd_rect))
-        {
-            global_wnd_rect.top = 0;
-            global_wnd_rect.left = 0;
-        }
-        if (pdd)
-        {
-            pdd->Release();
-            pdd = 0;
-        }
-    }
 }
 
 //----- (00412190) --------------------------------------------------------
@@ -483,21 +232,20 @@ void render_remove_stru1(stru1_draw_params *a1)
 //----- (004122B0) --------------------------------------------------------
 bool render_dd_is_primary_surface_lost()
 {
-    BOOL result; // eax@2
+    return false;
+    /*BOOL result; // eax@2
 
     if (!pdds_primary || (result = pdds_primary->IsLost()) != 0)
         result = 1;
-    return result;
+    return result;*/
 }
 
 //----- (004122D0) --------------------------------------------------------
 void render_draw_list(DrawJobList *list)
 {
     int restore_palettes; // ebx@4
-    IDirectDrawSurface *v3; // esi@7
     int v4; // eax@8
     HRESULT v5; // eax@9
-    IDirectDrawSurface *v6; // esi@14
     int v7; // eax@15
     HRESULT v8; // eax@16
     DrawJob *i; // esi@25
@@ -507,9 +255,8 @@ void render_draw_list(DrawJobList *list)
     POINT Point; // [sp+54h] [bp-84h]@35
     POINT v14; // [sp+5Ch] [bp-7Ch]@35
     RECT v15; // [sp+64h] [bp-74h]@35
-    DDBLTFX v16; // [sp+74h] [bp-64h]@34
 
-    if (list)
+    if (list && render_default_stru1)
     /*if (list && render_default_stru1 && pdds_primary)
     {
         restore_palettes = 0;
@@ -546,7 +293,8 @@ void render_draw_list(DrawJobList *list)
                     render_locked_surface_width_px = 640;
 
                     // 8/16 bpp are hardcoded, introduce a walkaround for ordinary bpp
-                    static auto pixels_8bpp = new unsigned char[ddsd_primary.dwWidth * ddsd_primary.dwHeight];
+                    //static auto pixels_8bpp = new unsigned char[ddsd_primary.dwWidth * ddsd_primary.dwHeight];
+                    static auto pixels_8bpp = new unsigned char[640 * 480];
 
                     //render_locked_surface_ptr = ddsd_primary.lpSurface;
                     render_locked_surface_ptr = pixels_8bpp;
@@ -747,7 +495,6 @@ void render_cleanup()
         free(stru1_list);
     }
 }
-// 4798CC: using guessed type int is_render_window_initialized;
 
 //----- (00412650) --------------------------------------------------------
 int render_sprt_draw_handler_setup_palettes()
@@ -1193,10 +940,9 @@ int render_video_draw_handler(DrawJobDetails *a1, int mode)
 //----- (00434790) --------------------------------------------------------
 void REND_DirectDrawClearScreen(int a2)
 {
-    int v2; // esi@1
+    /*int v2; // esi@1
     int v3; // eax@3
     int v8; // [sp+0h] [bp-6Ch]@3
-    DDBLTFX v9; // [sp+8h] [bp-64h]@7
 
     v2 = a2;
 
@@ -1217,7 +963,7 @@ void REND_DirectDrawClearScreen(int a2)
         v9.dwFillColor = 0;
         v9.dwSize = 100;
         pdds_primary->Blt(&_46BB50_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v9);
-    }
+    }*/
 }
 
 //----- (0040E2A0) --------------------------------------------------------
@@ -1255,7 +1001,7 @@ void REND_SetClip(int a1, int a2, int a3, int a4)
     render_clip_z = a3;
     render_clip_w = a4;
 }
-
+/*
 //----- (00434740) --------------------------------------------------------
 HRESULT __stdcall EnumAttachedSurfacesCallback(IDirectDrawSurface *lpDDSurface, DDSURFACEDESC *lpDDSurfaceDesc, void *lpContext)
 {
@@ -1270,7 +1016,7 @@ HRESULT __stdcall EnumAttachedSurfacesCallback(IDirectDrawSurface *lpDDSurface, 
     }
     return 1;
 }
-
+*/
 //----- (004348B0) --------------------------------------------------------
 int render_clip(_DWORD *clipped_x, _DWORD *clipped_y, _DWORD *width, _DWORD *height, _DWORD *x, _DWORD *y)
 {
@@ -4049,13 +3795,13 @@ void draw_list_free()
 
 void render_on_wm_paint(struct tagRECT *a1)
 {
-    if (pdds_primary)
+    /*if (pdds_primary)
     {
         if (pdds_backbuffer)
         {
             pdds_primary->Blt(a1, pdds_backbuffer, a1, 0, 0);
         }
-    }
+    }*/
 }
 
 
@@ -4114,13 +3860,13 @@ void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
                 v3 += 4;
                 v4 += 4;
             } while ((int)v3 < (int)&render_sw_hdc + 1);
-            v5 = render_dd_is_primary_surface_lost();
+            /*v5 = render_dd_is_primary_surface_lost();
             if (!v5)
             {
                 v5 = (int)pddpal_primary;
                 if (pddpal_primary)
                     v5 = pddpal_primary->SetEntries(0, 0, 256, RenderDD_primary_palette_values);
-            }
+            }*/
         }
         else
         {
@@ -4224,7 +3970,7 @@ HPALETTE _431B60_create_palette(PALETTEENTRY *a1, int num_entries)
 }
 
 //----- (00431C40) --------------------------------------------------------
-void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result)
+void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
 {
     int v1; // edx@2
     int i; // ecx@2
@@ -4232,7 +3978,6 @@ void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result)
     PALETTEENTRY *v4; // edx@10
     char *v5; // ecx@14
     BYTE *v6; // eax@14
-    IDirectDrawPalette *v7; // eax@16
     PALETTEENTRY *v8; // ecx@19
     int v9; // eax@19
     HPALETTE v10; // esi@21
@@ -4274,7 +4019,7 @@ void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result)
                 v5 += 4;
                 v6 += 4;
             } while ((int)v5 < (int)&render_sw_hdc + 1);
-            v7 = (IDirectDrawPalette *)render_dd_is_primary_surface_lost();
+            /*v7 = (IDirectDrawPalette *)render_dd_is_primary_surface_lost();
             if (!v7)
             {
                 v7 = pddpal_primary;
@@ -4284,7 +4029,7 @@ void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result)
                         0,
                         256,
                         RenderDD_primary_palette_values);
-            }
+            }*/
         }
         else
         {
@@ -4313,9 +4058,7 @@ void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result)
                 render_sw_palette = _431B60_create_palette(v12, 256);
                 render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
             }
-            v7 = (IDirectDrawPalette *)RealizePalette(render_sw_hdc);
+            RealizePalette(render_sw_hdc);
         }
-        result = v7;
     }
-    return result;
 }

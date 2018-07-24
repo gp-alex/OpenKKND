@@ -1,15 +1,15 @@
 #include <SDL2/SDL.h>
 
-#include "src/Application/WindowFactory.h"
+#include "src/Infrastructure/Window/WindowFactory.h"
 
-#include "src/Application/SdlWindow.h"
+#include "src/Infrastructure/Window/SdlWindow.h"
 
-using Application::WindowFactory;
-using Application::IWindow;
-using Application::SdlWindow;
-using Application::WindowConfig;
+using Infrastructure::WindowFactory;
+using Infrastructure::Window;
+using Infrastructure::SdlWindow;
+using Infrastructure::WindowConfig;
 
-std::shared_ptr<IWindow> WindowFactory::CreateSdlWindow(
+std::shared_ptr<Window> WindowFactory::CreateSdlWindow(
     std::shared_ptr<const WindowConfig> config
 ) {
     static bool _sdl2_winitialized = false;

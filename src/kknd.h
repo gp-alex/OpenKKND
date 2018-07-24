@@ -8,7 +8,6 @@
 #include <time.h>
 #include <math.h>
 
-#include <ddraw.h>
 #include <dsound.h>
 
 #include "src/hexrays-defs.h"

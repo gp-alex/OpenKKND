@@ -70,9 +70,23 @@ add_subdirectory(src)
 message("-------------------------")
 
 
+
 add_executable(OpenKKND ./src/Application/Game.cpp)
 
-#target_include_directories(OpenKKND PRIVATE ${SDL2_INCLUDE_DIR})
+target_link_libraries(OpenKKND
+    Application
+    Engine
+    Infrastructure InfrastructureWindow InfrastructureRenderer
+    Unsorted
+    ${SDL2_LIBRARY} ${SDL2_MAIN}
+)
 
-target_link_libraries(OpenKKND Application Engine Infrastructure Unsorted ${SDL2_LIBRARY} ${SDL2_MAIN})
+
+file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/assets" ASSETS_SRC_DIR)
+file(TO_NATIVE_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ASSETS_OUT_DIR)
+add_custom_command(TARGET OpenKKND
+    POST_BUILD
+    COMMAND xcopy ${ASSETS_SRC_DIR} ${ASSETS_OUT_DIR} /S /E /Y /I
+)
+
 

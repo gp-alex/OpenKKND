@@ -16,32 +16,27 @@
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
 
-#include "Application/Game.h"
-#include "Application/GameFactory.h"
-#include "Application/WindowFactory.h"
-#include "Application/WindowConfigFactory.h"
+#include "src/Application/Game.h"
+#include "src/Application/GameFactory.h"
 
 using Application::Game;
 using Application::GameFactory;
-using Application::WindowFactory;
-using Application::WindowConfigFactory;
 
-#include "Engine/BuildingLimits.h"
-#include "Engine/Entity.h"
-#include "Engine/EntityFactory.h"
+#include "src/Engine/BuildingLimits.h"
+#include "src/Engine/Entity.h"
+#include "src/Engine/EntityFactory.h"
 
 using Engine::EntityFactory;
     
-#include "Engine/Infrastructure/EntityRepository.h"
+#include "src/Engine/Infrastructure/EntityRepository.h"
 
 using Engine::Infrastructure::EntityRepository;
 
-#include "Infrastructure/File.h"
-#include "Infrastructure/Input.h"
+#include "src/Infrastructure/File.h"
+#include "src/Infrastructure/Input.h"
 
 
 #pragma comment(lib, "Winmm.lib") // timeGetTime
-#pragma comment(lib, "ddraw.lib") // DirectDrawCreate
 #pragma comment(lib, "Dsound.lib") // DirectSoundCreate
 
 
@@ -5823,7 +5818,6 @@ void _40E560_flip_gdi_update_syscolors()
 
 	if (global_fullscreen == 1)
 	{
-		pdd->FlipToGDISurface();
 		if (_465680_get_sys_colors)
 		{
 			v0 = 0;
@@ -5879,8 +5873,6 @@ void _40E560_flip_gdi_update_syscolors()
 		SetSysColors(25, &sys_colors_elements, aRgbValues);
 	}
 }
-// 465680: using guessed type int _465680_get_sys_colors;
-// 4798AC: using guessed type int global_fullscreen;
 
 //----- (0040E6B0) --------------------------------------------------------
 void _40E6B0_set_sys_colors()
@@ -9019,11 +9011,11 @@ int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 			if (wParam)
 			{
 				ShowWindow(hWnd, 3);
-				if (!RenderDD_initialized)
+				/*if (!RenderDD_initialized)
 				{
-					_431C40_on_WM_ACTIVATEAPP_software_render((void *)RenderDD_initialized);
+					_431C40_on_WM_ACTIVATEAPP_software_render();
 					return DefWindowProcA(hWnd, Msg, wParam, lParam);
-				}
+				}*/
 			}
 			else if (GetForegroundWindow() != hWnd)
 			{
@@ -9803,9 +9795,6 @@ bool LVL_SysInit()
         int window_width = 640;
         int windiw_height = 480;
         bool fullsreen = false;
-
-        auto windowConfig = WindowConfigFactory().Create("OpenKKnD", window_width, windiw_height);
-        auto window = WindowFactory().CreateSdlWindow(windowConfig);
 
 		result = render_create_window(window_width, windiw_height, 8, 1, fullsreen);
         if (result) {
@@ -22443,6 +22432,8 @@ bool sound_initialize()
 	sound_list_head = 0;
 	if (DirectSoundCreate(0, &pds, 0))
 		return 1;
+
+    extern HWND global_hwnd;
 	if (pds->SetCooperativeLevel(global_hwnd, 1))
 	{
 		pds->Release();

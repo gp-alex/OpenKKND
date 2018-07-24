@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
 
-#include "src/Application/SdlWindow.h"
+#include "src/Infrastructure/Window/SdlWindow.h"
 
-using Application::SdlWindow;
-
+using Infrastructure::SdlWindow;
+    
 bool SdlWindow::Initialize() {
     window = SDL_CreateWindow(
 		config->title.c_str(),      // window title
@@ -17,6 +17,19 @@ bool SdlWindow::Initialize() {
     if (window == nullptr) {
         log->Info("SdlWindow::Initialize: %s", SDL_GetError());
         return false;
+    }
+
+    static const char *icons[] = {
+        "assets/iconsurv.bmp",
+        "assets/iconmute.bmp"
+    };
+
+    auto surface = SDL_LoadBMP(
+        icons[SDL_GetTicks() / 10 % 2]
+    );
+    if (surface) {
+        SDL_SetWindowIcon(window, surface);
+        SDL_FreeSurface(surface);
     }
 
     return true;

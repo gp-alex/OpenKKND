@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 
+add_subdirectory(Renderer)
+add_subdirectory(Window)
+
+
 set(INFRASTRUCTURE_SOURCES
 	DependencyInjection.cpp
 	File.cpp
@@ -17,8 +21,5 @@ set(INFRASTRUCTURE_HEADERS
     Netz.h
 )
 
-if(WIN32)
-else()
-endif()
 
 add_library(Infrastructure STATIC ${INFRASTRUCTURE_SOURCES} ${INFRASTRUCTURE_HEADERS})
