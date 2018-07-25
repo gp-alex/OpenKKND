@@ -34,3 +34,46 @@ bool SdlWindow::Initialize() {
 
     return true;
 }
+
+void SdlWindow::SetWidth(int width) {
+    SDL_SetWindowSize(window, width, GetHeight());
+}
+
+void SdlWindow::SetHeight(int height) {
+    SDL_SetWindowSize(window, GetWidth(), height);
+}
+
+void SdlWindow::SetFullscreen() {
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+}
+
+int SdlWindow::GetWidth() const {
+    int w, h;
+    SDL_GetWindowSize(window, &w, &h);
+    return w;
+}
+
+int SdlWindow::GetHeight() const {
+    int w, h;
+    SDL_GetWindowSize(window, &w, &h);
+    return h;
+}
+
+void SdlWindow::PeekMessages() {
+    //Event handler
+    SDL_Event e;
+
+    //Handle events on queue
+    while (SDL_PollEvent(&e) != 0)
+    {
+        //User requests quit
+        if (e.type == SDL_QUIT)
+        {
+            //quit = true;
+        }
+    }
+}
+
+void SdlWindow::WaitMessage() {
+
+}

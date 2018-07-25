@@ -16,6 +16,13 @@ namespace Infrastructure {
         }
 
         virtual bool Initialize() override;
+        virtual void SetWidth(int width) override;
+        virtual int GetWidth() const override;
+        virtual void SetHeight(int height) override;
+        virtual int GetHeight() const override;
+        virtual void SetFullscreen() override;
+        virtual void PeekMessages() override;
+        virtual void WaitMessage() override;
 
         virtual void *GetApiHandle() const {
             return window;

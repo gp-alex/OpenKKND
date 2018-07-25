@@ -4,7 +4,10 @@
 
 #include "src/Infrastructure/Renderer/Renderer.h"
 
+#include "src/Infrastructure/Window/Window.h"
+
 extern std::shared_ptr<Infrastructure::Renderer> gRenderer;
+extern std::shared_ptr<Infrastructure::Window> gWindow;
 
 struct stru1_draw_params;
 struct DrawJob;

@@ -742,33 +742,33 @@ void entity_402E90_on_damage(Entity *a1, void *param, void(*on_death_mode)(Entit
 }
 
 //----- (00403B70) --------------------------------------------------------
-int sub_403B70(CHAR a1)
-{
-	int v1; // eax@3
-	int v2; // ecx@4
-	int result; // eax@7
-	CHAR RootPathName[4]; // [sp+0h] [bp-4h]@1
-
-	strcpy(RootPathName, "#:\\");
-	RootPathName[0] = a1;
-
-	v2 = GetDriveTypeA(RootPathName);
-
-	switch (v2)
-	{
-	case 5:
-		result = 1;
-		break;
-	case 0:
-	case 1:
-		result = -1;
-		break;
-	default:
-		result = 0;
-		break;
-	}
-	return result;
-}
+//int sub_403B70_get_drive_type(char drive_letter)
+//{
+//	int v1; // eax@3
+//	int v2; // ecx@4
+//	int result; // eax@7
+//	char RootPathName[4]; // [sp+0h] [bp-4h]@1
+//
+//	strcpy(RootPathName, "#:\\");
+//	RootPathName[0] = drive_letter;
+//
+//	v2 = GetDriveTypeA(RootPathName);
+//
+//	switch (v2)
+//	{
+//	case DRIVE_CDROM:
+//		result = 1;
+//		break;
+//	case DRIVE_UNKNOWN:
+//	case DRIVE_NO_ROOT_DIR:
+//		result = -1;
+//		break;
+//	default:
+//		result = 0;
+//		break;
+//	}
+//	return result;
+//}
 
 //----- (00403C20) --------------------------------------------------------
 int get_max_clanhall_level()
@@ -1173,7 +1173,6 @@ LABEL_22:
 bool is_tower_available(enum UNIT_ID unit_id)
 {
 	ProductionOption *v1; // eax@2
-	BOOL result; // eax@5
 
 	if (_47B3B8_tower_production_group
 		&& (v1 = _47B3B8_tower_production_group->next_option,
@@ -1183,22 +1182,17 @@ bool is_tower_available(enum UNIT_ID unit_id)
 		{
 			v1 = v1->next;
 			if ((ProductionOption **)v1 == &_47B3B8_tower_production_group->next_option)
-				return 0;
+				return false;
 		}
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+    return false;
 }
 
 //----- (004044C0) --------------------------------------------------------
 bool is_building_available(enum UNIT_ID a1)
 {
 	ProductionGroup *v1; // eax@2
-	BOOL result; // eax@5
 
 	if (_47B3D0_building_production_group
 		&& (v1 = (ProductionGroup *)_47B3D0_building_production_group->next_option,
@@ -1208,15 +1202,11 @@ bool is_building_available(enum UNIT_ID a1)
 		{
 			v1 = v1->next;
 			if ((ProductionOption **)v1 == &_47B3D0_building_production_group->next_option)
-				return 0;
+				return false;
 		}
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+    return false;
 }
 
 //----- (004044F0) --------------------------------------------------------
@@ -1252,7 +1242,7 @@ void copy_player_sprite_palette_aligned(unsigned __int8 *palette, unsigned __int
 bool sub_404530(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 {
 	int v5; // eax@2
-	BOOL result; // eax@3
+	bool result; // eax@3
 	int v7; // edx@4
 	int v8; // esi@6
 	Script *v9; // eax@6
@@ -1436,7 +1426,6 @@ bool sub_404760(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	int v6; // edx@4
 	int v7; // esi@5
 	Script *v8; // eax@7
-	BOOL result; // eax@9
 
 	if (a3 != 2
 		|| (v5 = a1->x, v5 > *((_DWORD *)a5 + 4))
@@ -1445,7 +1434,7 @@ bool sub_404760(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 		|| (v7 = *((_DWORD *)a4 + 5), v7 >= *((_DWORD *)a5 + 5))
 		|| v7 >= v6 + 2048)
 	{
-		result = 0;
+        return false;
 	}
 	else
 	{
@@ -1457,9 +1446,8 @@ bool sub_404760(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 			v8->flags_20 |= SCRIPT_FLAGS_20_400000;
 			a1->script->flags_24 |= a1->script->flags_20;
 		}
-		result = 1;
+        return true;
 	}
-	return result;
 }
 
 //----- (004047E0) --------------------------------------------------------
@@ -1471,7 +1459,6 @@ bool sub_4047E0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	int v8; // ebx@4
 	int v9; // eax@5
 	Script *v10; // eax@6
-	BOOL result; // eax@8
 
 	if (a3 == 1
 		|| (v5 = a1->x, v6 = *((_DWORD *)a5 + 4), v5 > v6)
@@ -1479,7 +1466,7 @@ bool sub_4047E0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 		|| (v8 = *((_DWORD *)a5 + 5), *((_DWORD *)a4 + 5) > v8 + 2048)
 		|| (v9 = v8 + (v5 - v7) * (*((_DWORD *)a5 + 2) - v8) / (v6 - v7), v9 >= a1->y))
 	{
-		result = 0;
+        return false;
 	}
 	else
 	{
@@ -1491,9 +1478,8 @@ bool sub_4047E0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 			v10->flags_20 |= SCRIPT_FLAGS_20_400000;
 			a1->script->flags_24 |= a1->script->flags_20;
 		}
-		result = 1;
+        return true;
 	}
-	return result;
 }
 
 //----- (00404870) --------------------------------------------------------
@@ -1505,7 +1491,6 @@ bool sub_404870(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	int v8; // ebx@4
 	int v9; // eax@5
 	Script *v10; // eax@6
-	BOOL result; // eax@8
 
 	if (a3
 		&& (v5 = a1->x, v6 = *((_DWORD *)a5 + 4), v5 <= v6)
@@ -1521,13 +1506,10 @@ bool sub_404870(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 			v10->flags_20 |= SCRIPT_FLAGS_20_400000;
 			a1->script->flags_24 |= a1->script->flags_20;
 		}
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+
+    return false;
 }
 
 //----- (00404900) --------------------------------------------------------
@@ -1738,15 +1720,12 @@ bool sub_404C60(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 //----- (00404C90) --------------------------------------------------------
 bool boxd_init()
 {
-	BOOL result; // eax@2
-
 	currently_running_lvl_boxd_valid = 0;
 	currently_running_lvl_boxd = (DataBoxd *)LVL_FindSection(BOXD);
 	if (currently_running_lvl_boxd)
 	{
-		result = (BOOL)malloc(0x17700u);            // 8000 items
-		_4773C0_boxd_array = (Boxd_stru0 *)result;
-		if (result)
+		_4773C0_boxd_array = (Boxd_stru0 *)malloc(0x17700u); // 8000 items
+		if (_4773C0_boxd_array)
 		{
 			_4773B0_boxd_item0_things = 0;
 			_4773A0_boxd_item0_num_things = currently_running_lvl_boxd->items->field_0_num_things;
@@ -1758,21 +1737,18 @@ bool boxd_init()
 			_4773B0_boxd_item0_things = (Boxd_stru0 **)malloc(4 * _4773A0_boxd_item0_num_things);
 			if (_4773B0_boxd_item0_things)
 			{
-				result = 1;
 				currently_running_lvl_boxd_valid = 1;
+                return true;
 			}
 			else
 			{
 				free(_4773C0_boxd_array);
-				result = 0;
+                return false;
 			}
 		}
+	} else {
+		return true;
 	}
-	else
-	{
-		result = 1;
-	}
-	return result;
 }
 
 //----- (00404D50) --------------------------------------------------------
@@ -2434,7 +2410,6 @@ void UNIT_Handler_OilTankerConvoy(Script *a1)
 bool render_string_4059C0(RenderString *a1, int a2, int a3)
 {
 	int v3; // edi@1
-	BOOL result; // eax@1
 	stru8 *v5; // esi@1
 	int i; // edx@1
 	int v7; // ebx@5
@@ -2443,12 +2418,14 @@ bool render_string_4059C0(RenderString *a1, int a2, int a3)
 	int v10; // ebp@8
 
 	v3 = a1->field_C;
-	result = 0;
 	v5 = a1->pstru8;
 	for (i = v3 * (a2 + 1) + 1; i; --i)
 		v5 = v5->next;
+
+    bool result = false;
 	if (v5->drawjob->job_details.y < -10)
-		result = 1;
+		result = true;
+
 	v7 = 0;
 	if (v3 > 0)
 	{
@@ -2747,7 +2724,6 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
 //----- (00405E60) --------------------------------------------------------
 bool cplc_init()
 {
-	BOOL result; // eax@2
 	DataCplcItem *v1; // eax@3
 	void *v2; // eax@3
 	DataCplcItem *v3; // esi@4
@@ -2784,10 +2760,9 @@ bool cplc_init()
 	currently_running_lvl_cplc = (DataCplc *)LVL_FindSection(CPLC);
 	if (currently_running_lvl_cplc)
 	{
-		result = (BOOL)malloc(0x5DC0u);
-		cplc_stru0_list = (DataCplc_stru0 *)result;
-		if (!result)
-			return result;
+		cplc_stru0_list = (DataCplc_stru0 *)malloc(0x5DC0u);
+		if (!cplc_stru0_list)
+			return false;
 		currently_running_lvl_cplc_data = 0;
 		v1 = currently_running_lvl_cplc->items;
 		currently_running_lvl_cplc_item = v1;
@@ -3476,16 +3451,12 @@ void cplc_init_script_do_reinit(int a1)
 //----- (004068C0) --------------------------------------------------------
 void cplc_init_script(int handler_id, bool reinit_ptrs)
 {
-	BOOL v2; // ebp@1
 	DataCplcItem_ptr1 *v3; // esi@2
 	DataCplcItem_ptr1 *v4; // edx@3
 	DataCplcItem_ptr1 *v5; // ecx@3
 	DataCplcItem_ptr1 *v6; // edi@3
 	DataCplcItem_ptr1 *v7; // ebx@3
-	int handler_1d; // [sp+0h] [bp-4h]@1
 
-	v2 = reinit_ptrs;
-	handler_1d = handler_id;
 	if (currently_running_lvl_cplc_valid)
 	{
 		v3 = _477430_cplc_item0_ptr1;
@@ -3497,9 +3468,9 @@ void cplc_init_script(int handler_id, bool reinit_ptrs)
 			v7 = _47746C_cplc_prev1;
 			do
 			{
-				if (v3->script_handler_id == handler_1d)
+				if (v3->script_handler_id == handler_id)
 				{
-					if (v2)
+					if (reinit_ptrs)
 					{
 						cplc_create_sprite_script(v3);
 						v7 = _47746C_cplc_prev1;
@@ -3571,32 +3542,24 @@ void cplc_free()
 //----- (00406FD0) --------------------------------------------------------
 bool oilspot_list_alloc()
 {
-	OilDeposit *v0; // eax@1
 	int v1; // ecx@2
-	BOOL result; // eax@4
 
-	v0 = (OilDeposit *)malloc(0x1800u);
-	oilspot_list = v0;
-	if (v0)
+	oilspot_list = (OilDeposit *)malloc(0x1800u);
+	if (oilspot_list)
 	{
-		oilspot_list_free_pool = v0;
+		oilspot_list_free_pool = oilspot_list;
 		v1 = 0;
 		do
 		{
-			v0[v1].next = &v0[v1 + 1];
-			v0 = oilspot_list;
+            oilspot_list[v1].next = &v0[v1 + 1];
 			++v1;
 		} while (v1 < 255);
 		oilspot_list[255].next = 0;
 		oilspot_list_head = (OilDeposit *)&oilspot_list_head;
 		oildeposit_list_end = (OilDeposit *)&oilspot_list_head;
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+    return false;
 }
 
 //----- (00407030) --------------------------------------------------------
@@ -9076,7 +9039,7 @@ int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 }
 
 //----- (00419DF0) --------------------------------------------------------
-void EventHandler_419DF0(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
+void EventHandler_419DF0_unit_repairing_in_bay(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
 {
 	Entity *v4; // ecx@1
 
@@ -9107,7 +9070,7 @@ void EventHandler_419DF0(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 }
 
 //----- (00419E80) --------------------------------------------------------
-void EventHandler_419E80(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
+void EventHandler_419E80_unit_in_repairbay(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
 {
 	Entity *v4; // ecx@1
 
@@ -9240,7 +9203,7 @@ void entity_41A400_evt1547(Entity *a1, Entity *a2)
 }
 
 //----- (0041A470) --------------------------------------------------------
-void entity_41A470(Entity *a1, Entity *a2)
+void entity_41A470_vehicle_repair_at_station(Entity *a1, Entity *a2)
 {
 	Entity *v2; // esi@1
 	Entity *v3; // edi@1
@@ -9255,7 +9218,7 @@ void entity_41A470(Entity *a1, Entity *a2)
 	v2->_E0_current_attack_target_entity_id = v3->entity_id;
 	v2->_E4_prev_attack_target = 0;
 	v2->_134_param__unitstats_after_mobile_outpost_plant = 600;
-	v2->mode_arrive = entity_mode_419230;
+	v2->mode_arrive = entity_mode_419230_arrive_at_repairbay;
 	v3->sprite->field_88_unused = 1;
 	v2->sprite_x_2 = v3->sprite->x + *(_DWORD *)(v3->stru60.ptr_14 + 4);
 	v4 = *(_DWORD *)(v3->stru60.ptr_14 + 8);
@@ -23809,8 +23772,12 @@ void script_43D090_mobd45_directx_ipx(Script *a1)
 
 	if (dword_46E404)
 	{
-		pcbBuffer = 12;
-		GetUserNameA(netz_default_player_name, &pcbBuffer);
+        netz_default_player_name[0] = 0;
+
+        auto username = OsGetUserName();
+        strncat(netz_default_player_name, username.c_str(), 12);
+		//pcbBuffer = 12;
+		//GetUserNameA(netz_default_player_name, &pcbBuffer);
 	}
 	v1 = a1->sprite;
 	v2 = sprite_create(MOBD_45, 0, a1->sprite);
@@ -25724,7 +25691,7 @@ void script_4404D0_mobd45_evt8(Script *a1)
 			v3->x = 10240;
 			v3->y = 62976;
 		}
-		v4 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441780_mobd45_evt8, SCRIPT_COROUTINE, 0);
+		v4 = sprite_create_scripted(MOBD_45, v2, script_441780_mobd45_evt8, SCRIPT_COROUTINE, 0);
 		if (v4)
 		{
 			v4->x = 45056;
@@ -25749,7 +25716,7 @@ void script_4404D0_mobd45_evt8(Script *a1)
 
 		netz_42F8E0(1);
 	}
-	v9 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_440810_mobd45, SCRIPT_COROUTINE, 0);
+	v9 = sprite_create_scripted(MOBD_45, v2, script_440810_mobd45, SCRIPT_COROUTINE, 0);
 	if (v9)
 	{
 		v10 = v9->script;
@@ -25760,13 +25727,13 @@ void script_4404D0_mobd45_evt8(Script *a1)
 	{
 		game_state = GAME_STATE::GAME_3;
 	}
-	v11 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441470_mobd45_evt8, SCRIPT_COROUTINE, 0);
+	v11 = sprite_create_scripted(MOBD_45, v2, script_441470_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v11)
 	{
 		v11->x = 75264;
 		v11->y = 17152;
 	}
-	v12 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_440CA0_mobd45_evt8, SCRIPT_COROUTINE, 0);
+	v12 = sprite_create_scripted(MOBD_45, v2, script_440CA0_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v12)
 	{
 		v12->x = 14080;
@@ -25775,7 +25742,7 @@ void script_4404D0_mobd45_evt8(Script *a1)
 		if (v13)
 			v13->script_type = v1->script_type;
 	}
-	v14 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441050_mobd45_evt8, SCRIPT_COROUTINE, 0);
+	v14 = sprite_create_scripted(MOBD_45, v2, script_441050_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v14)
 	{
 		v14->x = 70656;
@@ -25787,20 +25754,20 @@ void script_4404D0_mobd45_evt8(Script *a1)
 	}
 	else
 	{
-		v15 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441680_mobd45_evt8, SCRIPT_COROUTINE, 0);
+		v15 = sprite_create_scripted(MOBD_45, v2, script_441680_mobd45_evt8, SCRIPT_COROUTINE, 0);
 		if (v15)
 		{
 			v15->x = 97280;
 			v15->y = 38400;
 		}
 	}
-	v16 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441260_mobd45_evt8, SCRIPT_COROUTINE, 0);
+	v16 = sprite_create_scripted(MOBD_45, v2, script_441260_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v16)
 	{
 		v16->x = 58368;
 		v16->y = 38400;
 	}
-	v17 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_440ED0_mobd45_evt8, SCRIPT_COROUTINE, 0);
+	v17 = sprite_create_scripted(MOBD_45, v2, script_440ED0_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v17)
 	{
 		v17->x = 0x2000;
@@ -33603,6 +33570,8 @@ LABEL_25:
 void message_pump()
 {
 	MSG msg;
+
+    gWindow->PeekMessages();
 
 	while (PeekMessageA(&msg, 0, 0, 0, PM_REMOVE))
 	{

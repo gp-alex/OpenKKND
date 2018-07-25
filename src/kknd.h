@@ -2,14 +2,14 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <windows.h>
+/*#include <windows.h>
 #include <process.h>    // _beginthread, _endthread
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
 
 #include <dsound.h>
-
+*/
 #include "src/hexrays-defs.h"
 
 #include "src/Infrastructure/File.h"

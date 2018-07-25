@@ -15,6 +15,9 @@ namespace Infrastructure {
         }
 
         virtual bool Initialize() override;
+        virtual void ClearTarget(int r, int g, int b) override;
+        virtual void Present() override;
+        virtual void DrawImageCentered(int width, int height, const void *argb) override;
 
     private:
         std::shared_ptr<const RendererConfig> config = nullptr;

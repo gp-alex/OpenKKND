@@ -190,7 +190,7 @@ int netz_430670(int a1);
 int j_netz_430670(int a1);
 int netz_430690();
 int j_netz_430690();
-BOOL __stdcall DirectPlayEnumerateACallback(LPGUID lpguidSP, LPSTR lpSPName, DWORD dwMajorVersion, DWORD dwMinorVersion, LPVOID lpContext); // idb
+bool __stdcall DirectPlayEnumerateACallback(void *lpguidSP, char *lpSPName, __int32 dwMajorVersion, __int32 dwMinorVersion, void *lpContext); // idb
 int netz_create_direct_play(int a1);
 bool netz_430910_dplay();
 bool __stdcall netz_4309A0(int a1, int a2, char a3, int a4);

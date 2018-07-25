@@ -4717,7 +4717,7 @@ void entity_mode_418D20(Entity *a1)
 }
 
 //----- (00418E90) --------------------------------------------------------
-void entity_mode_418E90(Entity *a1)
+void entity_mode_418E90_leaving_repair_bay(Entity *a1)
 {
     Entity *v1; // esi@1
     char *v2; // eax@1
@@ -4769,9 +4769,9 @@ void entity_mode_418F60(Entity *a1)
     EntityTurret *v5; // eax@4
 
     v1 = a1;
-    a1->script->event_handler = EventHandler_419E80;
+    a1->script->event_handler = EventHandler_419E80_unit_in_repairbay;
     v2 = a1->sprite;
-    v1->SetMode(entity_mode_418E90);
+    v1->SetMode(entity_mode_418E90_leaving_repair_bay);
     v2->x_speed = -64;
     v1->sprite->y_speed = 64;
     entity_load_move_mobd(v1);
@@ -4793,7 +4793,7 @@ void entity_mode_418F60(Entity *a1)
 }
 
 //----- (00418FE0) --------------------------------------------------------
-void entity_mode_418FE0(Entity *a1)
+void entity_mode_418FE0_repairing_in_bay(Entity *a1)
 {
     Entity *v1; // esi@1
     int v2; // ebp@1
@@ -4857,9 +4857,9 @@ LABEL_20:
     if (v1->hitpoints >= v9)
     {
         v1->hitpoints = v9;
-        v1->script->event_handler = EventHandler_419E80;
+        v1->script->event_handler = EventHandler_419E80_unit_in_repairbay;
         v10 = v1->sprite;
-        v1->SetMode(entity_mode_418E90);
+        v1->SetMode(entity_mode_418E90_leaving_repair_bay);
         v10->x_speed = -64;
         v1->sprite->y_speed = 64;
         entity_load_move_mobd(v1);
@@ -4884,7 +4884,7 @@ LABEL_27:
 }
 
 //----- (00419180) --------------------------------------------------------
-void entity_mode_419180(Entity *a1)
+void entity_mode_419180_in_repairbay(Entity *a1)
 {
     Entity *v1; // esi@1
     Entity *v2; // eax@1
@@ -4893,7 +4893,7 @@ void entity_mode_419180(Entity *a1)
     UnitStat *v6; // edx@5
 
     v1 = a1;
-    a1->script->event_handler = EventHandler_419E80;
+    a1->script->event_handler = EventHandler_419E80_unit_in_repairbay;
     v2 = a1->_E0_current_attack_target;
     if (v2 && (v3 = v2->entity_id) != 0 && v3 == a1->_E0_current_attack_target_entity_id)
     {
@@ -4904,9 +4904,9 @@ void entity_mode_419180(Entity *a1)
             a1->sprite->x_speed = 0;
             a1->sprite->y_speed = 0;
             v6 = a1->stats;
-            a1->SetMode(entity_mode_418FE0);
+            a1->SetMode(entity_mode_418FE0_repairing_in_bay);
             entity_load_idle_mobd(a1);
-            v1->script->event_handler = EventHandler_419DF0;
+            v1->script->event_handler = EventHandler_419DF0_unit_repairing_in_bay;
         }
     }
     else
@@ -4921,7 +4921,7 @@ void entity_mode_419180(Entity *a1)
 }
 
 //----- (00419230) --------------------------------------------------------
-void entity_mode_419230(Entity *a1)
+void entity_mode_419230_arrive_at_repairbay(Entity *a1)
 {
     Entity *v1; // esi@1
     int *v2; // edi@1
@@ -4943,7 +4943,7 @@ void entity_mode_419230(Entity *a1)
         v3 = v1->_E0_current_attack_target;
         v1->_128_spawn_param = (void *)100;
         v1->_DC_order = ENTITY_ORDER_0;
-        v1->SetMode(entity_mode_419180);
+        v1->SetMode(entity_mode_419180_in_repairbay);
         *((_DWORD *)v3->state + 2) = 1;
         v1->event_handler = v1->script->event_handler;
     }
@@ -5353,7 +5353,7 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
             v4->_E4_prev_attack_target = 0;
             v4->_E0_current_attack_target_entity_id = v13;
             v4->_134_param__unitstats_after_mobile_outpost_plant = 600;
-            v4->mode_arrive = entity_mode_419230;
+            v4->mode_arrive = entity_mode_419230_arrive_at_repairbay;
             *(_DWORD *)(*((_DWORD *)param + 23) + 136) = 1;
             v4->sprite_x_2 = *(_DWORD *)(*((_DWORD *)param + 23) + 16) + *(_DWORD *)(*((_DWORD *)param + 29) + 4);
             v14 = *(_DWORD *)(*((_DWORD *)param + 29) + 8);

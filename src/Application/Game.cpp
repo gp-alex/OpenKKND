@@ -34,8 +34,10 @@ using Infrastructure::Renderer;
 
 using Infrastructure::WindowConfigFactory;
 using Infrastructure::WindowFactory;
+using Infrastructure::Window;
 
 std::shared_ptr<Renderer> gRenderer = nullptr;
+std::shared_ptr<Window> gWindow = nullptr;
 
 
 bool is_mission_running = false;
@@ -47,14 +49,18 @@ void Game::Run() {
 
     int window_width = 640;
     int window_height = 480;
-    bool fullscreen = false;
+    bool fullscreen = true;
 
     auto windowConfig = WindowConfigFactory().Create("Open Krush Kill `n' Destroy", window_width, window_height);
     window = WindowFactory().CreateSdlWindow(windowConfig);
+    ::gWindow = window;
 
     auto rendererConfig = RendererConfigFactory().Create("SDL2", window, window_width, window_height, fullscreen);
     renderer = RendererFactory().CreateSdl2(rendererConfig);
     ::gRenderer = renderer;
+
+    renderer->ClearTarget(0, 0, 0);
+    renderer->Present();
 
     WaitScreen();
 

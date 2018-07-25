@@ -865,7 +865,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
             }
             break;
         case EVT_MSG_1546_repair_at_station:
-            entity_41A470(v5, (Entity *)param);
+            entity_41A470_vehicle_repair_at_station(v5, (Entity *)param);
             break;
         case EVT_MSG_1540:
             if (*((Entity **)v6 + 1) == v4)

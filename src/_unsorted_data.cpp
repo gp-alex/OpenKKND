@@ -3,7 +3,7 @@
 
 #include "src/Render.h"
 
-#include "Engine/Entity.h"
+#include "src/Engine/Entity.h"
 
 _UNKNOWN loc_45D19B; // weak
 _UNKNOWN loc_45D1A4; // weak

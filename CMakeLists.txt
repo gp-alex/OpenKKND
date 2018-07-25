@@ -76,12 +76,14 @@ add_executable(OpenKKND ./src/Application/Game.cpp)
 target_link_libraries(OpenKKND
     Application
     Engine
-    Infrastructure InfrastructureWindow InfrastructureRenderer
+    Infrastructure
     Unsorted
     ${SDL2_LIBRARY} ${SDL2_MAIN}
 )
 
 
+# ----------------------
+# copy assets
 file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/assets" ASSETS_SRC_DIR)
 file(TO_NATIVE_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ASSETS_OUT_DIR)
 add_custom_command(TARGET OpenKKND

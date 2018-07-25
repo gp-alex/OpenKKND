@@ -745,11 +745,11 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(script_418A10),
     MAKE_HANDLER_PTR(entity_mode_418B30),
     MAKE_HANDLER_PTR(entity_mode_418D20),
-    MAKE_HANDLER_PTR(entity_mode_418E90),
+    MAKE_HANDLER_PTR(entity_mode_418E90_leaving_repair_bay),
     MAKE_HANDLER_PTR(entity_mode_418F60),
-    MAKE_HANDLER_PTR(entity_mode_418FE0),
-    MAKE_HANDLER_PTR(entity_mode_419180),
-    MAKE_HANDLER_PTR(entity_mode_419230),
+    MAKE_HANDLER_PTR(entity_mode_418FE0_repairing_in_bay),
+    MAKE_HANDLER_PTR(entity_mode_419180_in_repairbay),
+    MAKE_HANDLER_PTR(entity_mode_419230_arrive_at_repairbay),
     MAKE_HANDLER_PTR(entity_4192F0),
     MAKE_HANDLER_PTR(entity_mode_419390_oiltanker),
     MAKE_HANDLER_PTR(entity_mode_move_tanker),
@@ -760,8 +760,8 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(EventHandler_Infantry),
     MAKE_HANDLER_PTR(EventHandler_419CA0),
     MAKE_HANDLER_PTR(EventHandler_General_Scout),
-    MAKE_HANDLER_PTR(EventHandler_419DF0),
-    MAKE_HANDLER_PTR(EventHandler_419E80),
+    MAKE_HANDLER_PTR(EventHandler_419DF0_unit_repairing_in_bay),
+    MAKE_HANDLER_PTR(EventHandler_419E80_unit_in_repairbay),
     MAKE_HANDLER_PTR(entity_machineshop_on_upgrade_complete),
     MAKE_HANDLER_PTR(EventHandler_MachineShop),
     MAKE_HANDLER_PTR(entity_4220B0_machineshop),
@@ -979,6 +979,15 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_433810_ingame_menu),
     MAKE_HANDLER_PTR(script_4339F0_ingame_menu),
     MAKE_HANDLER_PTR(script_4338F0_ingame_menu),
+
+    MAKE_HANDLER_PTR(script_440810_mobd45),
+    MAKE_HANDLER_PTR(script_441780_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_441470_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_440CA0_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_441050_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_441680_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_441260_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_440ED0_mobd45_evt8),
 };
 
 
@@ -999,6 +1008,7 @@ const char *get_handler_name(void *function) {
         }
     }
 
+    // please add the script to   other_unsorted_handlers
     __debugbreak();
     return nullptr;
 }

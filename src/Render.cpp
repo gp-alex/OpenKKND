@@ -397,6 +397,13 @@ void render_draw_list(DrawJobList *list)
 
                     SetDIBitsToDevice(render_sw_hdc, 0, 0, 640, 480, 0, 0, 0, 480, pixels_32bpp, &bmpInfo, DIB_RGB_COLORS);
 
+                    for (int i = 0; i < 640 * 480; ++i) {
+                        pixels_32bpp[i] |= 0xFF000000;
+                    }
+
+                    gRenderer->ClearTarget(64, 64, 64);
+                    gRenderer->DrawImageCentered(640, 480, pixels_32bpp);
+                    gRenderer->Present();
 
 
 

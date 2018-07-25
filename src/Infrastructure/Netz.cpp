@@ -475,10 +475,9 @@ void *netz_42E690(void *a1, char a2)
 //----- (0042E7B0) --------------------------------------------------------
 bool netz_42E7B0()
 {
-    BOOL result; // eax@1
     char *v1; // ecx@4
 
-    result = 1;
+    bool result = true;
     if (netz_47A834 && !single_player_game)
     {
         if (netz_468B50_available_units_denom != 1)
@@ -491,7 +490,7 @@ bool netz_42E7B0()
                     return result;
             }
         }
-        result = 0;
+        result = false;
     }
     return result;
 }
@@ -2256,36 +2255,39 @@ int netz_430690()
 }
 
 //----- (004306C0) --------------------------------------------------------
-BOOL __stdcall DirectPlayEnumerateACallback(LPGUID lpguidSP, LPSTR lpSPName, DWORD dwMajorVersion, DWORD dwMinorVersion, LPVOID lpContext)
-{
-    HLOCAL v5; // eax@1
-    int v6; // ebx@1
-    char *v7; // edx@2
-    int v8; // ecx@2
-    int i; // eax@4
-
-    v5 = LocalAlloc(0, 0x1Cu);
-    v6 = (int)v5;
-    if (v5)
-    {
-        *(GUID *)((char *)v5 + 4) = *lpguidSP;
-        v7 = (char *)LocalAlloc(0, strlen(lpSPName) + 1);
-        *(_DWORD *)(v6 + 20) = (int)v7;
-        strcpy(v7, lpSPName);
-        v8 = netz_47A8DC;
-        if (!netz_47A8DC)
-        {
-            netz_47A8DC = v6;
-            *(_DWORD *)(v6 + 24) = 0;
-            return 1;
-        }
-        for (i = *(_DWORD *)(netz_47A8DC + 24); i; i = *(_DWORD *)(i + 24))
-            v8 = i;
-        *(_DWORD *)(v8 + 24) = v6;
-        *(_DWORD *)(v6 + 24) = 0;
-    }
-    return 1;
+bool __stdcall DirectPlayEnumerateACallback(void *lpguidSP, char *lpSPName, __int32 dwMajorVersion, __int32 dwMinorVersion, void *lpContext) {
+    return false;
 }
+//BOOL __stdcall DirectPlayEnumerateACallback(LPGUID lpguidSP, LPSTR lpSPName, DWORD dwMajorVersion, DWORD dwMinorVersion, LPVOID lpContext)
+//{
+//    HLOCAL v5; // eax@1
+//    int v6; // ebx@1
+//    char *v7; // edx@2
+//    int v8; // ecx@2
+//    int i; // eax@4
+//
+//    v5 = LocalAlloc(0, 0x1Cu);
+//    v6 = (int)v5;
+//    if (v5)
+//    {
+//        *(GUID *)((char *)v5 + 4) = *lpguidSP;
+//        v7 = (char *)LocalAlloc(0, strlen(lpSPName) + 1);
+//        *(_DWORD *)(v6 + 20) = (int)v7;
+//        strcpy(v7, lpSPName);
+//        v8 = netz_47A8DC;
+//        if (!netz_47A8DC)
+//        {
+//            netz_47A8DC = v6;
+//            *(_DWORD *)(v6 + 24) = 0;
+//            return 1;
+//        }
+//        for (i = *(_DWORD *)(netz_47A8DC + 24); i; i = *(_DWORD *)(i + 24))
+//            v8 = i;
+//        *(_DWORD *)(v8 + 24) = v6;
+//        *(_DWORD *)(v6 + 24) = 0;
+//    }
+//    return 1;
+//}
 
 //----- (00430780) --------------------------------------------------------
 int netz_create_direct_play(int a1)
@@ -2512,14 +2514,15 @@ int netz_430B10(int a1, int a2)
     int v9; // [sp+14h] [bp-1Ch]@10
     char *v10; // [sp+18h] [bp-18h]@10
     char *v11; // [sp+1Ch] [bp-14h]@10
-    char username[16]; // [sp+20h] [bp-10h]@3
+    char username[256]; // [sp+20h] [bp-10h]@3
 
     v2 = a2;
     if (netz_47A898_object)
     {
-        pcbBuffer = 15;
-        if (!GetUserNameA(username, &pcbBuffer))
-            strcpy(username, aUnknown);
+        strcpy(username, OsGetUserName().c_str());
+        //pcbBuffer = 15;
+        //if (!GetUserNameA(username, &pcbBuffer))
+        //    strcpy(username, aUnknown);
         memset(&netz_47A8E4, 0, sizeof(netz_47A8E4));
         netz_47A8E4.field_18 = 0x87824EC0;
         netz_47A8E4.field_0 = 80;
