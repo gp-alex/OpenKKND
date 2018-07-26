@@ -100,9 +100,6 @@ extern char *reg_MinimumInstall;
 extern char *reg_DriveLetter;
 extern char *reg_GamePath;
 extern char a_[2]; // weak
-extern char *aS;
-extern char *aLvl_runlevelFa;
-extern char *aLvl_substhunkF;
 extern char *MOBD;
 extern char *aLvl_loadlevelS;
 extern char *aSLevelsSS;

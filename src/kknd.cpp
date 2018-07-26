@@ -1749,7 +1749,7 @@ bool boxd_init()
 		}
 	} 
 
-    return false;
+    return true;
 }
 
 //----- (00404D50) --------------------------------------------------------
@@ -14543,8 +14543,7 @@ void GAME_PrepareSuperLvl(int mapd_idx)
 		LVL_Deinit();
 		netz_deinit();
 		GAME_Deinit();
-		if (aSuperSpriteLoa)
-			printf((const char *)aS, aSuperSpriteLoa);
+		log(aSuperSpriteLoa);
 		exit(0);
 	}
 	v3 = current_level_idx;
@@ -14597,8 +14596,7 @@ void GAME_PrepareSuperLvl(int mapd_idx)
 		LVL_Deinit();
 		netz_deinit();
 		GAME_Deinit();
-		if (aLvl_loadlevelS)
-			printf((const char *)aS, aLvl_loadlevelS);
+		log(aLvl_loadlevelS);
 		exit(0);
 	}
 	if (!LVL_SubstHunk(v17, sprites_lvl, (const char *)MOBD))
@@ -14606,16 +14604,14 @@ void GAME_PrepareSuperLvl(int mapd_idx)
 		LVL_Deinit();
 		netz_deinit();
 		GAME_Deinit();
-		if (aLvl_substhunkF)
-			printf((const char *)aS, aLvl_substhunkF);
+		log("LVL_SubstHunk( ) failed\n");
 		exit(0);
 	}
 	if (!LVL_RunLevel(current_level_lvl))
 	{
 		netz_deinit();
 		GAME_Deinit();
-		if (aLvl_runlevelFa)
-			printf((const char *)aS, aLvl_runlevelFa);
+        log("LVL_RunLevel() failed\n");
 		exit(0);
 	}
 	v18 = LVL_FindMapd();
@@ -14838,8 +14834,7 @@ void GAME_PrepareLevel()
 				LVL_Deinit();
 				netz_deinit();
 				GAME_Deinit();
-				if (aSpriteLoadFail)
-					printf((const char *)aS, aSpriteLoadFail);
+				log(aSpriteLoadFail);
 				exit(0);
 			}
 			v0 = current_level_idx;
@@ -14863,8 +14858,7 @@ void GAME_PrepareLevel()
 			LVL_Deinit();
 			netz_deinit();
 			GAME_Deinit();
-			if (aLvl_loadlevelS)
-				printf((const char *)aS, aLvl_loadlevelS);
+			log(aLvl_loadlevelS);
 			exit(0);
 		}
 		if (!LVL_SubstHunk(level_lvl, sprites_lvl, (const char *)MOBD))
@@ -14872,8 +14866,7 @@ void GAME_PrepareLevel()
 			LVL_Deinit();
 			netz_deinit();
 			GAME_Deinit();
-			if (aLvl_substhunkF)
-				printf((const char *)aS, aLvl_substhunkF);
+			log("LVL_SubstHunk( ) failed\n");
 			exit(0);
 		}
 	}
@@ -14883,8 +14876,7 @@ void GAME_PrepareLevel()
 	{
 		netz_deinit();
 		GAME_Deinit();
-		if (aLvl_runlevelFa)
-			printf((const char *)aS, aLvl_runlevelFa);
+        log("LVL_RunLevel() failed\n");
 		exit(0);
 	}
 	stru1_408480_reset_animation();
@@ -14899,8 +14891,7 @@ void GAME_PrepareLevel()
 	{
 		netz_deinit();
 		GAME_Deinit();
-		if (aUnit_initFaile)
-			printf((const char *)aS, aUnit_initFaile);
+		log(aUnit_initFaile);
 		exit(0);
 	}
 	stru37_stru38_list_alloc();
@@ -14927,8 +14918,7 @@ void GAME_PrepareLevel()
 			LVL_Deinit();
 			netz_deinit();
 			GAME_Deinit();
-			if (aLoadgamestateF)
-				printf((const char *)aS, aLoadgamestateF);
+			log(aLoadgamestateF);
 			exit(0);
 		}
 		game_state = GAME_STATE::MainMenu;
