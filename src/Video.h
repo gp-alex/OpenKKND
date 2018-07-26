@@ -121,8 +121,6 @@ extern int dword_477DBC; // weak
 extern DrawJob *video_477DC0;
 extern int video_477DC4_current_sound_position; // weak
 extern int dword_477DC8; // weak
-extern DSBUFFERDESC video_477DE4_dsb_desc; // weak
-extern IDirectSoundBuffer *video_477DE4_dsb;
 extern VideoFile *video;
 extern int video_477DEC_is_sound_playing; // weak
 extern int video_477DF0; // weak

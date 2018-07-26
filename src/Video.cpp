@@ -9,8 +9,6 @@ int dword_477DBC; // weak
 DrawJob *video_477DC0;
 int video_477DC4_current_sound_position; // weak
 int dword_477DC8; // weak
-DSBUFFERDESC video_477DE4_dsb_desc; // weak
-IDirectSoundBuffer *video_477DE4_dsb;
 VideoFile *video;
 int video_477DEC_is_sound_playing; // weak
 int video_477DF0; // weak

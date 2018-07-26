@@ -3,19 +3,16 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <windows.h>
-#include <process.h>    // _beginthread, _endthread
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
 
-#include <dsound.h>
-
 #include "src/hexrays-defs.h"
 #include "src/Render.h"
+#include "src/Script.h"
 
 #include "src/Infrastructure/File.h"
 #include "src/Infrastructure/Netz.h"
-#include "src/Script.h"
 #include "src/Infrastructure/Input.h"
 
 struct UnitAttachmentPoint;
@@ -377,37 +374,6 @@ struct __declspec(align(4)) LevelDesc
 };
 
 
-/* 262 */
-struct Sound
-{
-	int id;
-	IDirectSoundBuffer *pdsb;
-	Script *task;
-	File *file;
-	int hthread;
-	int field_14;
-	int field_18;
-	int sound_volume_offset;
-	int field_20;
-	int field_24;
-	int sound_pan_offset;
-	int field_2C;
-	int field_30;
-	int flags;
-	Sound *next;
-	Sound *prev;
-	int field_40;
-	char filename[32];
-	_BYTE gap64[42];
-	char field_8E[100];
-	char field_F2[80];
-	char field_142;
-	char field_143;
-	char field_144;
-	char field_145;
-	char field_146;
-	char field_147;
-};
 
 /* 270 */
 struct CustomMission
@@ -2082,15 +2048,6 @@ struct EntityOilTankerState
 	int array_20_size;
 	Entity *array_20[20];
 	EntityOilTankerAttachment_stru70 *pstru70;
-};
-
-/* 428 */
-struct sound_stru_2
-{
-	int riff_fourcc;
-	int riff_chunk_size;
-	int data_fourcc;
-	int data;
 };
 
 /* 429 */

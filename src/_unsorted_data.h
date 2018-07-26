@@ -699,23 +699,6 @@ extern Mapd_stru0 _47C380_mapd;
 extern int currently_running_lvl_mapd_valid; // weak
 extern int _47C390_mapd; // weak
 extern DataMapd *currently_running_lvl_mapd;
-extern int sound_list_end; // weak
-extern Sound *sound_list_free_pool;
-extern Sound *sound_list_47C3D4;
-extern sound_stru_2 **_47C4E0_sounds;
-extern LPDIRECTSOUND pds; // idb
-extern int _47C4E8_num_sounds; // weak
-extern int sound_volumes[16];
-extern Sound *sound_list_head;
-extern int sound_pans[16];
-extern int Sound_47C578[16];
-extern Sound *sound_list;
-extern int _47C5C0_can_sound; // weak
-extern int sound_list_last_id; // weak
-extern void *faction_slv; // idb
-extern BOOL sound_initialized;
-extern int dword_47C5D0; // weak
-extern int _47C5D4_sound_threaded_snd_id; // idb
 extern DrawJobList draw_list_47C5D8; // idb
 extern DrawJob *draw_list_free_pool;
 extern DrawJobList draw_list_47C5E8; // idb

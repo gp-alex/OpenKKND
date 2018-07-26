@@ -631,19 +631,6 @@ Bitmap *MAPD_Draw(enum MAPD_ID mapd_idx, unsigned int image_id, int z_index);
 void bitmap_list_remove(Bitmap *a1);
 void _4393F0_call_mapd();
 void bitmap_list_free();
-bool sound_initialize();
-bool LVL_LoadSlv(const char *slv_filename);
-int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset, Script *script);
-int sound_play_threaded(const char *name, int a2, int sound_volume_offset, int sound_pan_offset, Script *task); // idb
-void _439C10_sound_thread(Sound *a1); // idb
-void sound_stop(int sound_id);
-void sound_free_sounds();
-void _43A370_process_sound();
-void sound_deinit();
-bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3);
-bool sound_stru_2_43A710(sound_stru_2 *a1, WAVEFORMATEX **a2, int *a3, unsigned int *out_buffer_size);
-void sound_list_43A800(int a1);
-void sound_list_remove(Sound *a1);
 void script_43BA40(Script *a1, int a2, int(*a3)(void), int a4);
 void script_netz_43BA70(Script *a1);
 int nullsub_3(void);
