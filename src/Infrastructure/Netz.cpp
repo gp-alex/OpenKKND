@@ -9,6 +9,8 @@
 #include "src/Cursor.h"
 #include "src/Video.h"
 
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
+
 
 
 
@@ -1001,7 +1003,7 @@ int netz_42E820(netz_stru_3 *a1)
             dword_47A738 = 0;
             dword_47CB18 = 1;
             *(_DWORD *)&netz_47A740[2].str_0[0] = 1;
-            is_coroutine_list_initialization_failed = 0;
+            is_async_execution_supported = 0;
             dword_47CB1C = 0;
             dword_47A180 = 2;
             game_state = GAME_STATE::GAME_3;
@@ -1010,7 +1012,7 @@ int netz_42E820(netz_stru_3 *a1)
         case 62:
             if (netz_468B50_available_units_denom <= 2)
             {
-                is_coroutine_list_initialization_failed = 0;
+                is_async_execution_supported = 0;
                 *(_DWORD *)&netz_47A740[2].str_0[0] = 1;
                 dword_47CB18 = 1;
                 dword_47A738 = 0;
@@ -2973,7 +2975,7 @@ void script_449820_netz(Script *a1)
                 if (netz_449E00(&dword_47CB14, 0x9C40u, aWaitingForPlay))
                 {
                     dword_47A738 = 0;
-                    is_coroutine_list_initialization_failed = 0;
+                    is_async_execution_supported = 0;
                     netz_42F620();
                     dword_47CB14 = -1;
                     dword_47CB18 = 1;
@@ -3022,7 +3024,7 @@ void script_449820_netz(Script *a1)
                 if (netz_449E00(&dword_47CB14, 0x9C40u, aWaitingForServ))
                 {
                     dword_47A738 = 0;
-                    is_coroutine_list_initialization_failed = 0;
+                    is_async_execution_supported = 0;
                     netz_42F620();
                     dword_47CB14 = -1;
                     dword_47CB18 = 1;

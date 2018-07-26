@@ -23,12 +23,13 @@ Palette *render_current_palette = nullptr;
 
 
 
+Palette palette_477490;
+Palette *palette_4778A4;
 int j_render_nullsub_2; // weak
 int j_render_434B70; // weak
 Palette *ppalette_4785C0;
 int j_render_434A90; // weak
 int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
-Palette *_4785DC_syscolors_palette_entries;
 void(*j_render_4349D0_draw_tile_32x32)(void *pixels, int x, int y); // idb
 int(*j_render_4351A0_draw)(void *pixels, int x, int y, int w, int h); // idb
 Palette palette_4785F0; // weak
@@ -47,6 +48,32 @@ int render_width; // idb
 void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
 int render_478A94; // weak
 int j_render_nullsub_1; // weak
+Palette _47B408_palette_entries;
+PALETTEENTRY RenderDD_primary_palette_values[256];
+Palette palette_47BC10;
+HPALETTE render_sw_palette;
+HPALETTE render_sw_default_palette; // idb
+int render_clip_w; // weak
+int render_clip_z; // weak
+int render_clip_x; // weak
+int render_clip_y; // weak
+
+HPALETTE _431B60_create_palette(Palette *a1, int num_entries); // idb
+void _40E430_update_palette(unsigned int a1);
+
+
+
+
+Palette *_4785DC_syscolors_palette_entries;
+
+//----- (0040E550) --------------------------------------------------------
+Palette *GetSysPalette() {
+    return _4785DC_syscolors_palette_entries;
+}
+
+void SetSysPalette(Palette *pal) {
+    _4785DC_syscolors_palette_entries = pal;
+}
 
 
 
@@ -386,9 +413,9 @@ void render_draw_list(DrawJobList *list)
                             b = c;
                             if (render_current_palette)
                             {
-                                r = render_current_palette[c].peRed;
-                                g = render_current_palette[c].peGreen;
-                                b = render_current_palette[c].peBlue;
+                                r = render_current_palette->entires[c].peRed;
+                                g = render_current_palette->entires[c].peGreen;
+                                b = render_current_palette->entires[c].peBlue;
                             }
 
                             pixels_32bpp[y * 640 + x] = RGB(b, g, r);
@@ -3860,9 +3887,9 @@ void render_sw_free_palette()
 }
 
 //----- (00431980) --------------------------------------------------------
-void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
+void _431980_update_primary_palette(Palette *pal)
 {
-    PALETTEENTRY *v1; // edx@1
+    PaletteEntry *v1; // edx@1
     int v2; // eax@4
     char *v3; // ecx@9
     BYTE *v4; // eax@9
@@ -3874,17 +3901,17 @@ void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
     _BYTE v10[1024]; // [sp+0h] [bp-404h]@14
     int v11; // [sp+400h] [bp-4h]@14
 
-    v1 = palette_entries;
+    v1 = pal->entires;
     if (global_wnd_bpp == 8)
     {
         dword_47C018 = 0;
         dword_468FD4 = 1;
         dword_468FD8 = 2;
         dword_468FDC = 4;
-        if (palette_entries)
-            memcpy(_47B408_palette_entries, palette_entries, sizeof(_47B408_palette_entries));
+        if (pal)
+            render_copy_palette(&_47B408_palette_entries, pal);
         else
-            v1 = _47B408_palette_entries;
+            v1 = _47B408_palette_entries.entires;
         if (global_fullscreen == 1)
         {
             v3 = (char *)&RenderDD_primary_palette_values[0].peGreen;
@@ -3924,13 +3951,13 @@ void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
             v8 = render_sw_palette;
             if (render_sw_palette)
             {
-                render_sw_palette = _431B60_create_palette((PALETTEENTRY *)v10, 256);
+                render_sw_palette = _431B60_create_palette((Palette *)v10, 256);
                 SelectPalette(render_sw_hdc, render_sw_palette, 0);
                 DeleteObject(v8);
             }
             else
             {
-                render_sw_palette = _431B60_create_palette((PALETTEENTRY *)v10, 256);
+                render_sw_palette = _431B60_create_palette((Palette *)v10, 256);
                 render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
             }
             v5 = RealizePalette(render_sw_hdc);
@@ -3939,9 +3966,9 @@ void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
 }
 
 //----- (00431B60) --------------------------------------------------------
-HPALETTE _431B60_create_palette(PALETTEENTRY *a1, int num_entries)
+HPALETTE _431B60_create_palette(Palette *pal, int num_entries)
 {
-    PALETTEENTRY *v2; // ebx@1
+    PaletteEntry *v2; // ebx@1
     int v3; // ecx@1
     char *v4; // esi@1
     char *v5; // edi@1
@@ -3959,12 +3986,12 @@ HPALETTE _431B60_create_palette(PALETTEENTRY *a1, int num_entries)
         char pixels[0x400];
     } v15;
 
-    v2 = a1;
+    v2 = pal->entires;
     v15.plpal.palVersion = 768;
     v15.plpal.palNumEntries = 256;
     memset(v15.plpal.palPalEntry, 0, 0x400u);
     v14 = num_entries - 10;
-    v3 = &v15.plpal.palPalEntry[0].peBlue - (BYTE *)a1;
+    v3 = &v15.plpal.palPalEntry[0].peBlue - (BYTE *)v2;
     v4 = (char *)((char *)&v15.plpal.palNumEntries + 1 - (char *)v2);
     v5 = (char *)((char *)v15.plpal.palPalEntry - (char *)v2);
     v6 = (int)&v2->peGreen;
@@ -4013,14 +4040,15 @@ void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
     int v1; // edx@2
     int i; // ecx@2
     int v3; // eax@9
-    PALETTEENTRY *v4; // edx@10
+    PaletteEntry *v4; // edx@10
     char *v5; // ecx@14
     BYTE *v6; // eax@14
-    PALETTEENTRY *v8; // ecx@19
+    PaletteEntry *v8; // ecx@19
     int v9; // eax@19
     HPALETTE v10; // esi@21
     int v11; // [sp-Ch] [bp-410h]@9
-    PALETTEENTRY v12[256]; // [sp+0h] [bp-404h]@19
+    Palette v12_; // [sp+0h] [bp-404h]@19
+    PaletteEntry *v12 = v12_.entires; // [sp+0h] [bp-404h]@19
     int v13; // [sp+400h] [bp-4h]@19
 
     if (global_wnd_bpp == 8)
@@ -4028,22 +4056,22 @@ void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
         v1 = dword_468FDC << 8;
         for (i = 0; i < v1; ++i)
         {
-            if (((*(&_47B408_palette_entries[0].peRed + i) << 8) & 0xFFFFFF00) >= 0xFF00)
+            if (((*(&_47B408_palette_entries.entires[0].peRed + i) << 8) & 0xFFFFFF00) >= 0xFF00)
                 result = (void *)255;
             else
-                result = (void *)*(&_47B408_palette_entries[0].peRed + i);
-            *(&palette_47BC10[0].peRed + i) = (unsigned __int8)result;
+                result = (void *)*(&_47B408_palette_entries.entires[0].peRed + i);
+            *(&palette_47BC10.entires[0].peRed + i) = (unsigned __int8)result;
         }
 
-        v4 = palette_47BC10;
+        v4 = palette_47BC10.entires;
         dword_47C018 = 0;
         dword_468FD4 = 1;
         dword_468FD8 = 2;
         dword_468FDC = 4;
-        if (palette_47BC10)
-            memcpy(_47B408_palette_entries, palette_47BC10, sizeof(_47B408_palette_entries));
+        if (&palette_47BC10)
+            render_copy_palette(&_47B408_palette_entries, &palette_47BC10);
         else
-            v4 = _47B408_palette_entries;
+            v4 = _47B408_palette_entries.entires;
         if (global_fullscreen == 1)
         {
             v5 = (char *)&RenderDD_primary_palette_values[0].peGreen;
@@ -4087,13 +4115,13 @@ void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
             v10 = render_sw_palette;
             if (render_sw_palette)
             {
-                render_sw_palette = _431B60_create_palette(v12, 256);
+                render_sw_palette = _431B60_create_palette(&v12_, 256);
                 SelectPalette(render_sw_hdc, render_sw_palette, 0);
                 DeleteObject(v10);
             }
             else
             {
-                render_sw_palette = _431B60_create_palette(v12, 256);
+                render_sw_palette = _431B60_create_palette(&v12_, 256);
                 render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
             }
             RealizePalette(render_sw_hdc);
@@ -4108,7 +4136,330 @@ void _40E400_set_palette(Palette *palette)
     render_current_palette = palette;
 
     ppalette_4785C0 = palette;
-    _4785DC_syscolors_palette_entries = palette;
+    SetSysPalette(palette);
     _478A14_prev_stru1_palette_entries = -1;
     _40E430_update_palette(render_default_stru1->anim_pos);
+}
+
+
+//----- (0040E430) --------------------------------------------------------
+void _40E430_update_palette(unsigned int a1)
+{
+    unsigned int v1; // esi@1
+    PALETTEENTRY *v2; // edx@7
+    PALETTEENTRY *v3; // eax@7
+    int v4; // edi@7
+    BYTE *v5; // edx@8
+    BYTE *v6; // eax@8
+    __int16 v7; // cx@8
+    unsigned int v8; // ecx@10
+    BYTE *v9; // edx@13
+    BYTE *v10; // eax@13
+    unsigned int v11; // ecx@13
+    BYTE *v12; // edx@16
+    BYTE *v13; // eax@16
+    unsigned int v14; // ecx@16
+
+    v1 = a1 >> 23;
+    if (a1 >> 23)
+    {
+        auto sys = GetSysPalette();
+        if (sys && v1 != _478A14_prev_stru1_palette_entries)
+        {
+            _478A14_prev_stru1_palette_entries = a1 >> 23;
+            if (v1 == 256)
+            {
+                ppalette_4785C0 = sys;
+                _431980_update_primary_palette(sys);
+            }
+            else
+            {
+                v2 = (PALETTEENTRY *)sys;
+                v3 = (PALETTEENTRY *)&palette_4785F0;
+                v4 = 256;
+                if (a1 > 0x100)
+                {
+                    do
+                    {
+                        v8 = v1 * v2->peRed >> 8;
+                        if ((unsigned __int8)v8 > 0xFFu)
+                            v3->peRed = -1;
+                        else
+                            v3->peRed = v8;
+                        v9 = &v2->peGreen;
+                        v10 = &v3->peGreen;
+                        v11 = v1 * *v9 >> 8;
+                        if ((unsigned __int8)v11 > 0xFFu)
+                            *v10 = -1;
+                        else
+                            *v10 = v11;
+                        v12 = v9 + 1;
+                        v13 = v10 + 1;
+                        v14 = v1 * *v12 >> 8;
+                        if ((unsigned __int8)v14 > 0xFFu)
+                            *v13 = -1;
+                        else
+                            *v13 = v14;
+                        v2 = (PALETTEENTRY *)(v12 + 2);
+                        v3 = (PALETTEENTRY *)(v13 + 2);
+                        --v4;
+                    } while (v4);
+                }
+                else
+                {
+                    do
+                    {
+                        v3->peRed = (unsigned __int16)(v1 * v2->peRed) >> 8;
+                        v5 = &v2->peGreen;
+                        v6 = &v3->peGreen;
+                        *v6++ = (unsigned __int16)(v1 * *v5++) >> 8;
+                        v7 = *v5;
+                        v2 = (PALETTEENTRY *)(v5 + 2);
+                        *v6 = (unsigned __int16)(v1 * v7) >> 8;
+                        v3 = (PALETTEENTRY *)(v6 + 2);
+                        --v4;
+                    } while (v4);
+                }
+                ppalette_4785C0 = &palette_4785F0;
+                _431980_update_primary_palette(&palette_4785F0);
+            }
+        }
+    }
+    else
+    {
+        REND_DirectDrawClearScreen(0);
+    }
+}
+
+//----- (0040E530) --------------------------------------------------------
+void RENDER_SetViewportAndClear()
+{
+    p_render_set_clip(0, 0, render_width, render_height);
+    REND_DirectDrawClearScreen(0);
+}
+
+//----- (0040E560) --------------------------------------------------------
+void _40E560_flip_gdi_update_syscolors()
+{
+    unsigned int v0; // esi@3
+    unsigned int v1; // eax@6
+    int v2; // ebp@7
+    COLORREF v3; // edi@7
+    char *v4; // esi@7
+    int v5; // eax@8
+    int v6; // ecx@9
+    unsigned __int16 v7; // dx@13
+    int v8; // [sp+4h] [bp-78h]@7
+    int v9; // [sp+8h] [bp-74h]@7
+    int v10; // [sp+Ch] [bp-70h]@7
+    unsigned int v11; // [sp+10h] [bp-6Ch]@6
+    int v12; // [sp+14h] [bp-68h]@7
+    COLORREF aRgbValues[25]; // [sp+18h] [bp-64h]@13
+
+    if (global_fullscreen == 1)
+    {
+        if (_465680_get_sys_colors)
+        {
+            v0 = 0;
+            do
+            {
+                sys_colors[v0] = GetSysColor(*(int *)((char *)&sys_colors_elements + v0 * 4));
+                ++v0;
+            } while (v0 < 25);
+            _465680_get_sys_colors = 0;
+        }
+        v1 = 0;
+        v11 = 0;
+        do
+        {
+            v2 = *((_BYTE *)&sys_colors[0] + v1 + 1);
+            v10 = 0;
+            v9 = 195075;
+            v8 = 0;
+            v12 = *((_BYTE *)sys_colors + v1);
+            v3 = (*(COLORREF *)((char *)sys_colors + v1) >> 16) & 0xFF;
+
+            int i = 0;
+            v4 = (char *)&RenderDD_primary_palette_values[0].peGreen;
+            do
+            {
+                v5 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
+                    + (v2 - (unsigned __int8)*v4) * (v2 - (unsigned __int8)*v4)
+                    + (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
+                if (v5 >= v9)
+                {
+                    v6 = v10;
+                }
+                else
+                {
+                    v6 = v8;
+                    v10 = v8;
+                    if (!v5)
+                        break;
+                    v9 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
+                        + (v2 - (unsigned __int8)*v4) * (v2 - (unsigned __int8)*v4)
+                        + (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
+                }
+                v4 += 4;
+                i++;
+                ++v8;
+            } while (i < 256);//((int)v4 < (int)&render_sw_hdc + 1);
+            LOBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values[v6].peGreen;
+            HIBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values[v6].peBlue;
+            *(COLORREF *)((char *)aRgbValues + v11) = RenderDD_primary_palette_values[v6].peRed | (v7 << 8);
+            v1 = v11 + 4;
+            v11 = v1;
+        } while (v1 < 0x64);
+        SetSysColors(25, &sys_colors_elements, aRgbValues);
+    }
+}
+
+//----- (0040E6B0) --------------------------------------------------------
+void _40E6B0_set_sys_colors()
+{
+    if (global_fullscreen == 1)
+    {
+        SetSysColors(25, &sys_colors_elements, sys_colors);
+        _431980_update_primary_palette(GetSysPalette());
+    }
+}
+
+
+void render_copy_palette(Palette *dst, Palette *src) {
+    for (int i = 0; i < 256; ++i) {
+        dst->entires[i] = src->entires[i];
+    }
+}
+
+
+//----- (00408410) --------------------------------------------------------
+void _408410_dim_palette()
+{
+    int v1; // ecx@1
+    int v2; // ecx@3
+    BYTE v3; // dl@4
+
+    for (int i = 0; i < 240; ++i) {
+        palette_477490.entires[i].peRed = palette_4778A4->entires[i].peRed >> 1;
+        palette_477490.entires[i].peGreen = palette_4778A4->entires[i].peGreen >> 1;
+        palette_477490.entires[i].peBlue = palette_4778A4->entires[i].peBlue >> 1;
+        palette_477490.entires[i].peFlags = palette_4778A4->entires[i].peFlags >> 1;
+    }
+
+    for (int i = 240; i < 256; ++i) {
+        palette_477490.entires[i].peRed = palette_4778A4->entires[i].peRed;
+        palette_477490.entires[i].peGreen = palette_4778A4->entires[i].peGreen;
+        palette_477490.entires[i].peBlue = palette_4778A4->entires[i].peBlue;
+        palette_477490.entires[i].peFlags = palette_4778A4->entires[i].peFlags;
+    }
+
+    _40E400_set_palette(&palette_477490);
+}
+
+
+
+//----- (00408460) --------------------------------------------------------
+void sub_408460()
+{
+    _40E400_set_palette(palette_4778A4);
+    dword_4778A8 = 0;
+}
+// 4778A8: using guessed type int dword_4778A8;
+
+//----- (00408550) --------------------------------------------------------
+void _408550_multi_pal()
+{
+    FILE *v0; // edi@2
+    int v1; // esi@3
+    BYTE v2; // al@4
+    BYTE v3; // cl@4
+    char v4; // bl@6
+    int v5; // ebp@6
+    int v6; // eax@6
+    FILE *v7; // edi@10
+    int v8; // esi@11
+    BYTE v9; // dl@12
+    BYTE v10; // al@12
+    int v11; // ebp@14
+    PaletteEntry *v12; // ebx@14
+    char *v13; // edx@14
+    int v15; // ecx@16
+    BYTE v16; // [sp+10h] [bp-45Ch]@4
+    BYTE v17; // [sp+14h] [bp-458h]@4
+    BYTE v18; // [sp+18h] [bp-454h]@4
+    char v19[80]; // [sp+1Ch] [bp-450h]@2
+    Palette v20_; // [sp+6Ch] [bp-400h]@4
+    PaletteEntry *v20 = v20_.entires;
+
+    palette_4778A4 = GetSysPalette();
+    if (_47C6D8_use__466098_cost_multipliers)
+    {
+        sprintf(v19, aSLevelsMulti_p, game_data_installation_dir);
+        v0 = fopen(v19, aR);
+        if (v0)
+        {
+            v1 = 0;
+            do
+            {
+                fscanf(v0, aDDD, &v17, &v18, &v16);
+                v2 = v18;
+                v3 = v16;
+                v20[v1].peRed = v17;
+                v20[v1].peGreen = v2;
+                v20[v1].peBlue = v3;
+                v20[v1].peFlags = 0;
+                ++v1;
+            } while (v1 < 256);
+            fclose(v0);
+        }
+        v4 = byte_47C654;
+        render_copy_palette(&palette_477490, palette_4778A4);
+        v5 = player_sprite_color_by_player_side[player_side];
+        v6 = byte_47C654 << 6;
+        memcpy(&palette_477490.entires[16 * player_sprite_color_by_player_side[player_side]], (char *)v20 + v6, 0x40u);
+        if (v4 < 7 && v4 != v5)
+            memcpy((char *)palette_477490.entires + v6, &v20[112], 0x40u);
+    }
+    else
+    {
+        if (single_player_game)
+            return;
+        sprintf(v19, aSLevelsMulti_p, game_data_installation_dir);
+        v7 = fopen(v19, aR);
+        if (v7)
+        {
+            v8 = 0;
+            do
+            {
+                fscanf(v7, aDDD, &v16, &v18, &v17);
+                v9 = v18;
+                v10 = v17;
+                v20[v8].peRed = v16;
+                v20[v8].peGreen = v9;
+                v20[v8].peBlue = v10;
+                v20[v8].peFlags = 0;
+                ++v8;
+            } while (v8 < 256);
+            fclose(v7);
+        }
+        v11 = 0;
+        render_copy_palette(&palette_477490, palette_4778A4);
+        v12 = palette_477490.entires;
+        v13 = &netz_47A740[2].field_9;
+        //v14 = &player_sprite_color_by_player_side[1];
+        for (int v14 = 1; v14 < 7; ++v14)
+        {
+            if (*(v13 - 1))
+            {
+                v15 = *v13 << 6;
+                player_sprite_color_by_player_side[v14] = v11;
+                memcpy(v12, (char *)v20 + v15, 0x40u);
+            }
+            ++v11;
+            v13 += 28;
+            v12 += 16;
+        }
+    }
+    render_copy_palette(palette_4778A4, &palette_477490);
+    _40E400_set_palette(&palette_477490);
 }

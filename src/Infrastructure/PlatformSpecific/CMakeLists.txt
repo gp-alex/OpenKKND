@@ -17,6 +17,9 @@ if (WIN32)
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/OsToolsWindows.cpp"
     )
+    target_link_libraries(InfrastructurePlatformSpecific
+        winmm.lib # timeGetTime
+    )
 else()
     target_sources(InfrastructurePlatformSpecific
         PRIVATE

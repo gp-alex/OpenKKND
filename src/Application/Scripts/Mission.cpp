@@ -524,7 +524,7 @@ void script_4252C0(Script *a1, void *param)
     v2 = a1;
     v10 = param;
     a1->field_1C = 1;
-    is_coroutine_list_initialization_failed = 1;
+    is_async_execution_supported = 1;
     while (sub_408400())
         script_sleep(v2, 1);
     v3 = sprite_create(MOBD_MISSION_OUTCOME_MODAL, 0, 0);

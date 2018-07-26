@@ -60,6 +60,7 @@ void Game::Run() {
 
     renderer->ClearTarget(0, 0, 0);
     renderer->Present();
+    window->PeekMessages();
 
     WaitScreen();
 
@@ -136,7 +137,7 @@ void Game::Run() {
                 do
                 {
                     if (!single_player_game)
-                        is_coroutine_list_initialization_failed = dword_47A738 != 0;
+                        is_async_execution_supported = dword_47A738 != 0;
                     sprite_list_init_mobd_items();
                     sprite_list_update_positions();
                     input_update_keyboard();
@@ -242,7 +243,6 @@ void Game::MainMenu() {
 //----- (00422610) --------------------------------------------------------
 void Game::WaitScreen() {
     int v0; // eax@12
-    DataMapd *v4; // eax@24
     int v5; // esi@24
 
     GAME_ReadRegistry();
@@ -283,8 +283,8 @@ void Game::WaitScreen() {
         log("Wait LVL_RunLevel() failed\n");
         Terminate();
     }
-    v4 = LVL_FindMapd();
-    _40E400_set_palette(&v4->items->palette);
+    auto mapd = LVL_FindMapd();
+    _40E400_set_palette(mapd->items[0].GetPalette());
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
     _47C380_mapd.mapd_cplc_render_y = 0x1EA00;     // 490
     v5 = 1;

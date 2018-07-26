@@ -11,6 +11,7 @@
 #include <dsound.h>
 
 #include "src/hexrays-defs.h"
+#include "src/Render.h"
 
 #include "src/Infrastructure/File.h"
 #include "src/Infrastructure/Netz.h"
@@ -701,7 +702,11 @@ struct DataMapdItem
 	int num_images;
 	MapdScrlImage *images[1];
 	int num_palette_entries;
-	PALETTEENTRY palette;
+	__int32 _palette_start;
+
+    Palette *GetPalette() {
+        return (Palette *)&_palette_start;
+    }
 };
 
 /* 306 */

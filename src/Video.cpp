@@ -32,7 +32,7 @@ _UNKNOWN unk_47798C; // weak
 _UNKNOWN unk_47798E; // weak
 int dword_477940; // weak
 int dword_477944; // weak
-PALETTEENTRY _477990_video_palette; // idb
+Palette _477990_video_palette; // idb
 
 
 

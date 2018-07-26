@@ -1,16 +1,20 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "Infrastructure/Log.h"
+#include "src/Infrastructure/Log.h"
+
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
 using Infrastructure::Log;
 
 void Log::Info(const char *format, ...) {
     va_list args;
 
+    char msg[4096];
+
     va_start(args, format);
-    vprintf(format, args);
+    vsprintf_s(msg, format, args);
     va_end(args);
 
-    printf("\n");
+    OsDebugString(msg);
 }

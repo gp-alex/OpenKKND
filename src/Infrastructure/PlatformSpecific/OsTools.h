@@ -9,4 +9,12 @@
 */
 std::string OsGetUserName();
 
+void OsInitTimer();
+void OsInitConsole();
+
+/**
+*  \brief Output string to stdin, DebugOutput and any other available sink
+*/
+void OsDebugString(const char *str);
+
 extern const std::string constUnknownUser;

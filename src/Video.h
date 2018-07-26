@@ -143,4 +143,4 @@ extern __int64 qword_477984; // weak
 extern _UNKNOWN unk_47798C; // weak
 extern _UNKNOWN unk_47798E; // weak
 extern int dword_477944; // weak
-extern PALETTEENTRY _477990_video_palette; // idb
+extern Palette _477990_video_palette; // idb

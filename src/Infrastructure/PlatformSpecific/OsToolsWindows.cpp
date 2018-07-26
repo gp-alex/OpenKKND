@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include <Windows.h>
 #include <Lmcons.h>
 #if defined(GetUserName)
@@ -22,4 +24,22 @@ std::string OsGetUserName() {
     } else {
         return std::string(constUnknownUser);
     }
+}
+
+
+void OsDebugString(const char *str) {
+    printf("%s\n", str);
+    OutputDebugStringA(str);
+}
+
+
+void OsInitConsole() {
+    if (AllocConsole()) {
+        freopen("CONOUT$", "w", stdout);
+        freopen("CONOUT$", "w", stderr);
+    }
+}
+
+void OsInitTimer() {
+    timeBeginPeriod(1u);
 }

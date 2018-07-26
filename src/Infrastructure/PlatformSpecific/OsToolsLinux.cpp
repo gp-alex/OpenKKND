@@ -1,5 +1,6 @@
 #include <pwd.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #include <sys/types.h>
 
@@ -13,4 +14,12 @@ std::string OsGetUserName() {
     } else {
         return std::string(pd->pw_name);
     }
+}
+
+void OsDebugString(const char *str) {
+    printf("%s\n", str);
+}
+
+
+void OsInitConsole() {
 }

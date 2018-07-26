@@ -1034,7 +1034,7 @@ bool script_list_alloc(int coroutine_stack_size)
 
             coroutine_default_stack_size = coroutine_stack_size;
             coroutine_current = coroutine_list_head;
-            is_coroutine_list_initialization_failed = 0;
+            is_async_execution_supported = 0;
 
             return true;
         }

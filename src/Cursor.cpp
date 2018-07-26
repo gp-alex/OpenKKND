@@ -512,10 +512,10 @@ LABEL_27:
     script_yield_any_trigger(v2->_14_task, 1);
     input_get_mouse_state(&_47A5E0_mouse_input);
     input_get_keyboard_state(&_47A700_input);
-    v21 = is_coroutine_list_initialization_failed;
+    v21 = is_async_execution_supported;
     v22 = _47A700_input.pressed_keys_mask;
     v23 = 0;
-    if (is_coroutine_list_initialization_failed)
+    if (is_async_execution_supported)
     {
         dword_47A6FC = 0;
     }
@@ -541,7 +541,7 @@ LABEL_27:
         v2->field_5C = 0;
         v2->field_58 = 0;
         v22 = _47A700_input.pressed_keys_mask;
-        v21 = is_coroutine_list_initialization_failed;
+        v21 = is_async_execution_supported;
     }
     if (v2->field_4C && (v21 || _47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK))
     {
@@ -551,7 +551,7 @@ LABEL_27:
         dword_47A6F0 = 0;
         input_4283A0_set_cursor_pos(v2->cursor_x >> 8, v2->cursor_y >> 8);
         v24 = v2->cursor_x;
-        v21 = is_coroutine_list_initialization_failed;
+        v21 = is_async_execution_supported;
         _47A5E0_mouse_input.cursor_x_x256 = v2->cursor_x;
         _47A5E0_mouse_input.cursor_y_x256 = v2->cursor_y;
         v22 = _47A700_input.pressed_keys_mask;
@@ -663,7 +663,7 @@ LABEL_27:
         v2->field_5C = v28;
     input_4283A0_set_cursor_pos((unsigned int)render_width >> 1, (unsigned int)render_height >> 1);
 LABEL_82:
-    if ((dword_477890 || dword_477894) && is_coroutine_list_initialization_failed == v23 && dword_477890)
+    if ((dword_477890 || dword_477894) && is_async_execution_supported == v23 && dword_477890)
     {
         v32 = dword_477890 + _47C380_mapd.mapd_cplc_render_x;
         if (dword_477890 + _47C380_mapd.mapd_cplc_render_x >= 0)
@@ -687,7 +687,7 @@ LABEL_82:
         v23 = 0;
     }
     if (_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK
-        && is_coroutine_list_initialization_failed == v23
+        && is_async_execution_supported == v23
         && _47A5E0_mouse_input.cursor_x_x256 < (render_width - 32) << 8
         && v2->field_58 < 4096
         && v2->field_5C < 4096)
@@ -2111,11 +2111,11 @@ void script_game_cursor_handler(Script *a1)
             && _47A734_sidebar_tooltips_task)
         {
             dword_47A5A0 = 10;
-            if (is_coroutine_list_initialization_failed)
+            if (is_async_execution_supported)
                 goto LABEL_29;
             script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47A734_sidebar_tooltips_task);
         }
-        if (!is_coroutine_list_initialization_failed)
+        if (!is_async_execution_supported)
         {
             v8 = _47A700_input._10_wndproc_mapped_key;
             if (dword_47A6FC != 29
@@ -2207,7 +2207,7 @@ void script_game_cursor_handler(Script *a1)
                                     else if (_47A5E0_mouse_input.cursor_x_x256 < (render_width - 32) << 8)
                                     {
                                         cursor_load_mobd(&v62, CURSOR_MOBD_OFFSET_DEFAULT);
-                                        if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && !is_coroutine_list_initialization_failed)
+                                        if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && !is_async_execution_supported)
                                         {
                                             v62._70_sprite->field_88_unused = 1;
                                             cursor_drag_selection(&v62, v62._70_sprite->x, v62._70_sprite->y);
@@ -2416,7 +2416,7 @@ void script_game_cursor_handler(Script *a1)
                 if (!is_building_or_tower_available(*(enum UNIT_ID *)v62._78_msg1522_param))
                     goto LABEL_75;
                 v19 = v10->_54_inside_mobd_ptr4->field_18;
-                if (is_coroutine_list_initialization_failed)
+                if (is_async_execution_supported)
                     goto LABEL_75;
                 v10->field_88_unused = 1;
                 v62._70_sprite->field_88_unused = 1;
@@ -2483,7 +2483,7 @@ void script_game_cursor_handler(Script *a1)
             sprite_list_remove(v10);
             sub_42C9C0(v63);
             cursor_load_mobd(&v62, 12);
-            if (is_coroutine_list_initialization_failed)
+            if (is_async_execution_supported)
                 cursor_load_mobd(&v62, 12);
             else
                 v62.field_2C = 0;

@@ -38,7 +38,6 @@ using Engine::Infrastructure::EntityRepository;
 
 #include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
-#pragma comment(lib, "Winmm.lib") // timeGetTime
 #pragma comment(lib, "Dsound.lib") // DirectSoundCreate
 
 
@@ -1797,7 +1796,7 @@ void bodx_404D50_sprite_list(Sprite *list)
 		{
 			do
 			{
-				if (is_coroutine_list_initialization_failed && (v3 = v2->script) != 0)
+				if (is_async_execution_supported && (v3 = v2->script) != 0)
 					v4 = v3->field_1C & 1;
 				else
 					v4 = 1;
@@ -1941,7 +1940,7 @@ void boxd_404F40_sprite(Sprite *a1, int a2, int a3)
 	v3 = a1;
 	if (currently_running_lvl_boxd_valid)
 	{
-		if (is_coroutine_list_initialization_failed && (v4 = a1->script) != 0)
+		if (is_async_execution_supported && (v4 = a1->script) != 0)
 			v5 = v4->field_1C & 1;
 		else
 			v5 = 1;
@@ -3932,42 +3931,6 @@ int sub_408400()
 	return dword_4778AC;
 }
 
-//----- (00408410) --------------------------------------------------------
-void _408410_palettes()
-{
-	PALETTEENTRY *v0; // eax@1
-	int v1; // ecx@1
-	int v2; // ecx@3
-	BYTE v3; // dl@4
-
-	v0 = palette_4778A4;
-	dword_4778A8 = 1;
-	v1 = 0;
-	do
-	{
-		*(&palette_477490[0].peRed + v1) = v0->peRed >> 1;
-		v0 = (PALETTEENTRY *)((char *)v0 + 1);
-		++v1;
-	} while (v1 < 960);
-	v2 = 960;
-	do
-	{
-		v3 = v0->peRed;
-		v0 = (PALETTEENTRY *)((char *)v0 + 1);
-		*(&palette_477490[0].peRed + v2++) = v3;
-	} while (v2 < 1024);
-	_40E400_set_palette(palette_477490);
-}
-// 4778A8: using guessed type int dword_4778A8;
-
-//----- (00408460) --------------------------------------------------------
-void sub_408460()
-{
-	_40E400_set_palette(palette_4778A4);
-	dword_4778A8 = 0;
-}
-// 4778A8: using guessed type int dword_4778A8;
-
 //----- (00408480) --------------------------------------------------------
 void stru1_408480_reset_animation()
 {
@@ -4008,105 +3971,6 @@ void script_408500_anim(Script *a1)
 	dword_4778A0 = 0;
 }
 // 4778A0: using guessed type int dword_4778A0;
-
-//----- (00408550) --------------------------------------------------------
-void _408550_multi_pal()
-{
-	FILE *v0; // edi@2
-	int v1; // esi@3
-	BYTE v2; // al@4
-	BYTE v3; // cl@4
-	char v4; // bl@6
-	int v5; // ebp@6
-	int v6; // eax@6
-	FILE *v7; // edi@10
-	int v8; // esi@11
-	BYTE v9; // dl@12
-	BYTE v10; // al@12
-	int v11; // ebp@14
-	PALETTEENTRY *v12; // ebx@14
-	char *v13; // edx@14
-	int *v14; // eax@14
-	int v15; // ecx@16
-	BYTE v16; // [sp+10h] [bp-45Ch]@4
-	BYTE v17; // [sp+14h] [bp-458h]@4
-	BYTE v18; // [sp+18h] [bp-454h]@4
-	char v19[80]; // [sp+1Ch] [bp-450h]@2
-	PALETTEENTRY v20[256]; // [sp+6Ch] [bp-400h]@4
-
-	palette_4778A4 = sub_40E550();
-	if (_47C6D8_use__466098_cost_multipliers)
-	{
-		sprintf(v19, aSLevelsMulti_p, game_data_installation_dir);
-		v0 = fopen(v19, aR);
-		if (v0)
-		{
-			v1 = 0;
-			do
-			{
-				fscanf(v0, aDDD, &v17, &v18, &v16);
-				v2 = v18;
-				v3 = v16;
-				v20[v1].peRed = v17;
-				v20[v1].peGreen = v2;
-				v20[v1].peBlue = v3;
-				v20[v1].peFlags = 0;
-				++v1;
-			} while (v1 < 256);
-			fclose(v0);
-		}
-		v4 = byte_47C654;
-		memcpy(palette_477490, palette_4778A4, sizeof(palette_477490));
-		v5 = player_sprite_color_by_player_side[player_side];
-		v6 = byte_47C654 << 6;
-        memcpy(&palette_477490[16 * player_sprite_color_by_player_side[player_side]], (char *)v20 + v6, 0x40u);
-		if (v4 < 7 && v4 != v5)
-            memcpy((char *)palette_477490 + v6, &v20[112], 0x40u);
-	}
-	else
-	{
-		if (single_player_game)
-			return;
-		sprintf(v19, aSLevelsMulti_p, game_data_installation_dir);
-		v7 = fopen(v19, aR);
-		if (v7)
-		{
-			v8 = 0;
-			do
-			{
-				fscanf(v7, aDDD, &v16, &v18, &v17);
-				v9 = v18;
-				v10 = v17;
-				v20[v8].peRed = v16;
-				v20[v8].peGreen = v9;
-				v20[v8].peBlue = v10;
-				v20[v8].peFlags = 0;
-				++v8;
-			} while (v8 < 256);
-			fclose(v7);
-		}
-		v11 = 0;
-        memcpy(palette_477490, palette_4778A4, sizeof(palette_477490));
-		v12 = palette_477490;
-		v13 = &netz_47A740[2].field_9;
-		v14 = &player_sprite_color_by_player_side[1];
-		do
-		{
-			if (*(v13 - 1))
-			{
-				v15 = *v13 << 6;
-				*v14 = v11;
-				memcpy(v12, (char *)v20 + v15, 0x40u);
-			}
-			++v14;
-			++v11;
-			v13 += 28;
-			v12 += 16;
-		} while ((int)v14 < (int) & _47DCC4_entity_id_counter);
-	}
-    memcpy(palette_4778A4, palette_477490, 0x400u);
-	_40E400_set_palette(palette_477490);
-}
 
 //----- (00408780) --------------------------------------------------------
 bool stru1_init_anim()
@@ -5144,194 +5008,6 @@ char *get_resource_res_subfolder()
 		result = _465650_display_modes[2].name;
 	return result;
 }
-
-//----- (0040E430) --------------------------------------------------------
-void _40E430_update_palette(unsigned int a1)
-{
-	unsigned int v1; // esi@1
-	PALETTEENTRY *v2; // edx@7
-	PALETTEENTRY *v3; // eax@7
-	int v4; // edi@7
-	BYTE *v5; // edx@8
-	BYTE *v6; // eax@8
-	__int16 v7; // cx@8
-	unsigned int v8; // ecx@10
-	BYTE *v9; // edx@13
-	BYTE *v10; // eax@13
-	unsigned int v11; // ecx@13
-	BYTE *v12; // edx@16
-	BYTE *v13; // eax@16
-	unsigned int v14; // ecx@16
-
-	v1 = a1 >> 23;
-	if (a1 >> 23)
-	{
-		if (_4785DC_syscolors_palette_entries && v1 != _478A14_prev_stru1_palette_entries)
-		{
-			_478A14_prev_stru1_palette_entries = a1 >> 23;
-			if (v1 == 256)
-			{
-				ppalette_4785C0 = _4785DC_syscolors_palette_entries;
-				_431980_update_primary_palette(_4785DC_syscolors_palette_entries);
-			}
-			else
-			{
-				v2 = _4785DC_syscolors_palette_entries;
-				v3 = palette_4785F0;
-				v4 = 256;
-				if (a1 > 0x100)
-				{
-					do
-					{
-						v8 = v1 * v2->peRed >> 8;
-						if ((unsigned __int8)v8 > 0xFFu)
-							v3->peRed = -1;
-						else
-							v3->peRed = v8;
-						v9 = &v2->peGreen;
-						v10 = &v3->peGreen;
-						v11 = v1 * *v9 >> 8;
-						if ((unsigned __int8)v11 > 0xFFu)
-							*v10 = -1;
-						else
-							*v10 = v11;
-						v12 = v9 + 1;
-						v13 = v10 + 1;
-						v14 = v1 * *v12 >> 8;
-						if ((unsigned __int8)v14 > 0xFFu)
-							*v13 = -1;
-						else
-							*v13 = v14;
-						v2 = (PALETTEENTRY *)(v12 + 2);
-						v3 = (PALETTEENTRY *)(v13 + 2);
-						--v4;
-					} while (v4);
-				}
-				else
-				{
-					do
-					{
-						v3->peRed = (unsigned __int16)(v1 * v2->peRed) >> 8;
-						v5 = &v2->peGreen;
-						v6 = &v3->peGreen;
-						*v6++ = (unsigned __int16)(v1 * *v5++) >> 8;
-						v7 = *v5;
-						v2 = (PALETTEENTRY *)(v5 + 2);
-						*v6 = (unsigned __int16)(v1 * v7) >> 8;
-						v3 = (PALETTEENTRY *)(v6 + 2);
-						--v4;
-					} while (v4);
-				}
-				ppalette_4785C0 = palette_4785F0;
-				_431980_update_primary_palette(palette_4785F0);
-			}
-		}
-	}
-	else
-	{
-        REND_DirectDrawClearScreen(0);
-	}
-}
-
-//----- (0040E530) --------------------------------------------------------
-void RENDER_SetViewportAndClear()
-{
-	p_render_set_clip(0, 0, render_width, render_height);
-    REND_DirectDrawClearScreen(0);
-}
-
-//----- (0040E550) --------------------------------------------------------
-PALETTEENTRY *sub_40E550()
-{
-	return _4785DC_syscolors_palette_entries;
-}
-
-//----- (0040E560) --------------------------------------------------------
-void _40E560_flip_gdi_update_syscolors()
-{
-	unsigned int v0; // esi@3
-	unsigned int v1; // eax@6
-	int v2; // ebp@7
-	COLORREF v3; // edi@7
-	char *v4; // esi@7
-	int v5; // eax@8
-	int v6; // ecx@9
-	unsigned __int16 v7; // dx@13
-	int v8; // [sp+4h] [bp-78h]@7
-	int v9; // [sp+8h] [bp-74h]@7
-	int v10; // [sp+Ch] [bp-70h]@7
-	unsigned int v11; // [sp+10h] [bp-6Ch]@6
-	int v12; // [sp+14h] [bp-68h]@7
-	COLORREF aRgbValues[25]; // [sp+18h] [bp-64h]@13
-
-	if (global_fullscreen == 1)
-	{
-		if (_465680_get_sys_colors)
-		{
-			v0 = 0;
-			do
-			{
-				sys_colors[v0] = GetSysColor(*(int *)((char *)&sys_colors_elements + v0 * 4));
-				++v0;
-			} while (v0 < 25);
-			_465680_get_sys_colors = 0;
-		}
-		v1 = 0;
-		v11 = 0;
-		do
-		{
-			v2 = *((_BYTE *)&sys_colors[0] + v1 + 1);
-			v10 = 0;
-			v9 = 195075;
-			v8 = 0;
-			v12 = *((_BYTE *)sys_colors + v1);
-			v3 = (*(COLORREF *)((char *)sys_colors + v1) >> 16) & 0xFF;
-
-            int i = 0;
-			v4 = (char *)&RenderDD_primary_palette_values[0].peGreen;
-			do
-			{
-				v5 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
-					+ (v2 - (unsigned __int8)*v4) * (v2 - (unsigned __int8)*v4)
-					+ (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
-				if (v5 >= v9)
-				{
-					v6 = v10;
-				}
-				else
-				{
-					v6 = v8;
-					v10 = v8;
-					if (!v5)
-						break;
-					v9 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
-						+ (v2 - (unsigned __int8)*v4) * (v2 - (unsigned __int8)*v4)
-						+ (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
-				}
-				v4 += 4;
-                i++;
-				++v8;
-            } while (i < 256);//((int)v4 < (int)&render_sw_hdc + 1);
-			LOBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values[v6].peGreen;
-			HIBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values[v6].peBlue;
-			*(COLORREF *)((char *)aRgbValues + v11) = RenderDD_primary_palette_values[v6].peRed | (v7 << 8);
-			v1 = v11 + 4;
-			v11 = v1;
-		} while (v1 < 0x64);
-		SetSysColors(25, &sys_colors_elements, aRgbValues);
-	}
-}
-
-//----- (0040E6B0) --------------------------------------------------------
-void _40E6B0_set_sys_colors()
-{
-	if (global_fullscreen == 1)
-	{
-		SetSysColors(25, &sys_colors_elements, sys_colors);
-		_431980_update_primary_palette(_4785DC_syscolors_palette_entries);
-	}
-}
-// 4798AC: using guessed type int global_fullscreen;
 
 //----- (0040E6E0) --------------------------------------------------------
 bool boxd_40E6E0()
@@ -14943,7 +14619,7 @@ void GAME_PrepareSuperLvl(int mapd_idx)
 		exit(0);
 	}
 	v18 = LVL_FindMapd();
-	_40E400_set_palette(&v18[mApd_idx].items->palette);
+	_40E400_set_palette(v18[mApd_idx].items->GetPalette());
 	render_default_stru1->field_8 &= 0xBFFFFFFF;
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)mApd_idx, 0, 0);
 	render_default_stru1->clip_z = render_width;
@@ -15092,8 +14768,8 @@ return 1;
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 				v8 = &LVL_FindMapd()->items[1];
 			}
-			_40E400_set_palette(&v8->palette);
-			memcpy(&_477990_video_palette, _4785DC_syscolors_palette_entries, 0x400u);
+			_40E400_set_palette(v8->GetPalette());
+            render_copy_palette(&_477990_video_palette, GetSysPalette());
 			sprite_47A400.pstru7 = array_466028;
 			cplc_select(0);
 			cplc_406320();
@@ -15213,7 +14889,7 @@ void GAME_PrepareLevel()
 	}
 	stru1_408480_reset_animation();
 	v6 = LVL_FindMapd();
-	_40E400_set_palette((PALETTEENTRY *)&v6->items[1]);
+	_40E400_set_palette((Palette *)&v6->items[1]);
 	sidebar_button_list_alloc();
 	boxd_40E6E0();
 	_44C010_init_mission_globals();
@@ -16814,7 +16490,7 @@ void sprite_list_update_positions()
 		bodx_404D50_sprite_list((Sprite *)&sprite_list_47A4A0);
 		for (i = sprite_list_47A4A0; (Sprite **)i != &sprite_list_47A4A0; i = i->next)
 		{
-			if (is_coroutine_list_initialization_failed && (v1 = i->script) != 0)
+			if (is_async_execution_supported && (v1 = i->script) != 0)
 				v2 = v1->field_1C & 1;
 			else
 				v2 = 1;
@@ -17211,7 +16887,7 @@ void sprite_list_init_mobd_items()
 	{
 		for (i = sprite_list_47A4A0; (Sprite **)i != &sprite_list_47A4A0; i = i->next)
 		{
-			if (is_coroutine_list_initialization_failed && (v1 = i->script) != 0)
+			if (is_async_execution_supported && (v1 = i->script) != 0)
 				v2 = v1->field_1C & 1;
 			else
 				v2 = 1;
@@ -17221,7 +16897,7 @@ void sprite_list_init_mobd_items()
 	}
 }
 // 47A498: using guessed type int currently_running_lvl_mobd_valid;
-// 47C764: using guessed type __int16 is_coroutine_list_initialization_failed;
+// 47C764: using guessed type __int16 is_async_execution_supported;
 
 //----- (004275D0) --------------------------------------------------------
 void sprite_list_free()
@@ -20388,7 +20064,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 		if (single_player_game)
 		{
 			a1a = 0;
-			is_coroutine_list_initialization_failed = 0;
+			is_async_execution_supported = 0;
 			script_trigger_event(v1, EVT_MSG_1533, 0, task_mobd17_cursor);
 			sub_408460();
 			sprite_load_mobd(v3, 60);
@@ -20419,17 +20095,17 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 				}
 				script_discard_event(i);
 			}
-			if (is_coroutine_list_initialization_failed)
+			if (is_async_execution_supported)
 				a1a = 1;
 			if (v14)
 				a1a = 0;
 		} while (!a1a);
 		if (single_player_game)
 			break;
-		if (!is_coroutine_list_initialization_failed)
+		if (!is_async_execution_supported)
 		{
 			script_trigger_event(v1, EVT_MSG_1532, 0, task_mobd17_cursor);
-			while (!is_coroutine_list_initialization_failed)
+			while (!is_async_execution_supported)
                 script_sleep(v1, 1);
 			if (dword_47050C == 1)
 			{
@@ -20441,7 +20117,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 		}
 		dword_47C030 = 0;
 	LABEL_27:
-		_408410_palettes();
+		_408410_dim_palette();
 		v7 = 1;
 		do
 		{
@@ -20594,13 +20270,13 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 				}
 				v2 = 1;
 			}
-			if (!is_coroutine_list_initialization_failed)
+			if (!is_async_execution_supported)
 				a1a = 0;
 		} while (a1a);
 		script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
 		v3 = v15;
 	}
-	is_coroutine_list_initialization_failed = v2;
+	is_async_execution_supported = v2;
 	script_trigger_event(v1, EVT_MSG_1532, 0, task_mobd17_cursor);
 	goto LABEL_26;
 }
@@ -20817,7 +20493,7 @@ void script_433AF0_ingame_menu(Script *a1)
 			if (netz_468B50_available_units_denom <= 2)
 				*(_DWORD *)&netz_47A740[2].str_0[0] = 1;
 			netz_449FF0();
-			is_coroutine_list_initialization_failed = 0;
+			is_async_execution_supported = 0;
 			dword_47C030 = -1;
 			dword_47050C = -1;
 			dword_47A738 = 0;
@@ -23235,7 +22911,7 @@ void script_43CF50_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5->items->palette);
+	_40E400_set_palette(v5->items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
@@ -23291,7 +22967,7 @@ void script_43D090_mobd45_directx_ipx(Script *a1)
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
                 script_sleep(a1, 3);
 				v7 = LVL_FindMapd();
-				_40E400_set_palette(&v7[4].items->palette);
+				_40E400_set_palette(v7[4].items->GetPalette());
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
 				cplc_select(4);
 				cplc_406320();
@@ -23342,7 +23018,7 @@ void script_43D270_mobd45_directx_serial(Script *a1)
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
                 script_sleep(a1, 3);
 				v6 = LVL_FindMapd();
-				_40E400_set_palette(&v6[5].items->palette);
+				_40E400_set_palette(v6[5].items->GetPalette());
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)5, 0, -10);
 				cplc_select(5);
 				cplc_406320();
@@ -23395,7 +23071,7 @@ void script_43D430_mobd45_directx_modem(Script *a1)
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
                 script_sleep(a1, 3);
 				v6 = LVL_FindMapd();
-				_40E400_set_palette(&v6[6].items->palette);
+				_40E400_set_palette(v6[6].items->GetPalette());
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 				cplc_select(6);
 				cplc_406320();
@@ -23440,7 +23116,7 @@ void script_43D5F0_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5->items->palette);
+	_40E400_set_palette(v5->items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
@@ -23475,7 +23151,7 @@ void script_43D740_mobd45_evt17(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5[6].items->palette);
+	_40E400_set_palette(v5[6].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
@@ -23510,7 +23186,7 @@ void script_43D890_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5[6].items->palette);
+	_40E400_set_palette(v5[6].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
@@ -24000,7 +23676,7 @@ void script_43E230_mobd45_modems(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(v1, 3);
 	v10 = LVL_FindMapd();
-	_40E400_set_palette(&v10[6].items->palette);
+	_40E400_set_palette(v10[6].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
@@ -24070,7 +23746,7 @@ void script_43E470_mobd45_modems(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v9 = LVL_FindMapd();
-	_40E400_set_palette(&v9[6].items->palette);
+	_40E400_set_palette(v9[6].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
@@ -24104,7 +23780,7 @@ void script_43E670_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5->items->palette);
+	_40E400_set_palette(v5->items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
@@ -24508,7 +24184,7 @@ void script_43EE90_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(v1, 3);
 	v12 = LVL_FindMapd();
-	_40E400_set_palette(&v12[9].items->palette);
+	_40E400_set_palette(v12[9].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)9, 0, -10);
 	cplc_select(9);
 	cplc_406320();
@@ -24567,7 +24243,7 @@ void script_43F0E0_mobd45_modems(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v11 = LVL_FindMapd();
-	_40E400_set_palette(&v11[8].items->palette);
+	_40E400_set_palette(v11[8].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
@@ -24622,7 +24298,7 @@ void script_43F330_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v10 = LVL_FindMapd();
-	_40E400_set_palette(&v10[7].items->palette);
+	_40E400_set_palette(v10[7].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 	cplc_select(7);
 	cplc_406320();
@@ -24658,7 +24334,7 @@ void script_43F520_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v6 = LVL_FindMapd();
-	_40E400_set_palette(&v6[10].items->palette);
+	_40E400_set_palette(v6[10].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)10, 0, -10);
 	cplc_select(10);
 	cplc_406320();
@@ -24693,7 +24369,7 @@ void script_43F670_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5[1].items->palette);
+	_40E400_set_palette(v5[1].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 	cplc_select(1);
 	cplc_406320();
@@ -24701,7 +24377,6 @@ void script_43F670_mobd45(Script *a1)
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
-// 47C6C8: using guessed type int stru29_list_initialized;
 
 //----- (0043F7C0) --------------------------------------------------------
 void script_43F7C0(Script *a1)
@@ -24996,7 +24671,7 @@ void script_43FDE0_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5[1].items->palette);
+	_40E400_set_palette(v5[1].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 	cplc_select(1);
 	cplc_406320();
@@ -25072,7 +24747,7 @@ __debugbreak();
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v14 = LVL_FindMapd();
-	_40E400_set_palette(&v14[8].items->palette);
+	_40E400_set_palette(v14[8].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
@@ -25127,7 +24802,7 @@ void script_4402A0_mobd45_evt5(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v11 = LVL_FindMapd();
-		_40E400_set_palette(&v11[7].items->palette);
+		_40E400_set_palette(v11[7].items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 		cplc_select(7);
 		cplc_406320();
@@ -26066,7 +25741,7 @@ void script_441940_mobd45_evt17(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v4 = LVL_FindMapd();
-		_40E400_set_palette(&v4->items->palette);
+		_40E400_set_palette(v4->items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 		cplc_select(0);
 		cplc_406320();
@@ -26093,7 +25768,7 @@ void script_441940_mobd45_evt17(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v14 = LVL_FindMapd();
-		_40E400_set_palette(&v14[1].items->palette);
+		_40E400_set_palette(v14[1].items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 		v10 = 1;
 	}
@@ -26106,7 +25781,7 @@ void script_441940_mobd45_evt17(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v9 = LVL_FindMapd();
-		_40E400_set_palette(&v9[4].items->palette);
+		_40E400_set_palette(v9[4].items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
 		v10 = 4;
 	}
@@ -26431,7 +26106,7 @@ void script_4421F0_mobd45_evt8(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v16 = LVL_FindMapd();
-		_40E400_set_palette(&v16[1].items->palette);
+		_40E400_set_palette(v16[1].items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 		v13 = 1;
 	}
@@ -26446,7 +26121,7 @@ void script_4421F0_mobd45_evt8(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v12 = LVL_FindMapd();
-		_40E400_set_palette(&v12[4].items->palette);
+		_40E400_set_palette(v12[4].items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
 		v13 = 4;
 	}
@@ -26483,7 +26158,7 @@ void script_442580_mobd45_evt17(Script *task)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(task, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5->items->palette);
+	_40E400_set_palette(v5->items[0].GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
@@ -26506,7 +26181,7 @@ void script_4426D0_mobd45_evt6(Script *a1)
 	int v8; // ecx@10
 	DataMapd *v11; // eax@14
 	int v12; // [sp+0h] [bp-Ch]@5
-__debugbreak();
+__debugbreak(); // what isn this script?
 	v1 = a1->sprite;
 	v2 = sprite_create(MOBD_45, 0, a1->sprite);
 	v1->mobd_id = MOBD_45;
@@ -26540,7 +26215,7 @@ __debugbreak();
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v11 = LVL_FindMapd();
-	_40E400_set_palette(&v11[7].items->palette);
+	_40E400_set_palette(v11[7].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 	cplc_select(7);
 	cplc_406320();
@@ -26564,6 +26239,7 @@ void script_4428C0_mobd45_evt6(Script *a1)
 	int v11; // esi@25
 	DataMapd *v14; // eax@30
 	int v15; // [sp+0h] [bp-Ch]@5
+__debugbreak(); // what isn this script?
 
 	v1 = a1->sprite;
 	v2 = sprite_create(MOBD_45, 0, a1->sprite);
@@ -26615,7 +26291,7 @@ void script_4428C0_mobd45_evt6(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v14 = LVL_FindMapd();
-	_40E400_set_palette(&v14[8].items->palette);
+	_40E400_set_palette(v14[8].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
@@ -26875,7 +26551,7 @@ void script_443000_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5->items->palette);
+	_40E400_set_palette(v5->items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
@@ -27324,7 +27000,7 @@ void script_443C40(Script *a1, int cplc_item)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(v3, 3);
 	v6 = LVL_FindMapd();
-	_40E400_set_palette(&v6[v2].items->palette);
+	_40E400_set_palette(v6[v2].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(v2, 0, -10);
 	cplc_select(v2);
 	cplc_406320();
@@ -32252,7 +31928,7 @@ void _44C4B0_mess_with_turrets()
 
 	if (dword_47DCE8)
 	{
-		if (!is_coroutine_list_initialization_failed)
+		if (!is_async_execution_supported)
 			++_4269B0_task_attachment__4_some_task_flags;
 
         for (auto i: entityRepo->FindAll())
@@ -33067,21 +32743,18 @@ void message_pump()
 	}
 }
 
-void log_init()
-{
-    AllocConsole();
-    freopen("CONOUT$", "w", stdout);
-}
 
 void log(const char *fmt, ...)
 {
     va_list args;
 
+    char msg[4096];
+
     va_start(args, fmt);
-    vprintf(fmt, args);
+    vsprintf_s(msg, fmt, args);
     va_end(args);
 
-    printf("\n");
+    OsDebugString(msg);
 }
 
 
@@ -33089,9 +32762,8 @@ void log(const char *fmt, ...)
 //int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, char* argv[])
 {
-    timeBeginPeriod(1u);
-
-    log_init();
+    OsInitConsole();
+    OsInitTimer();
 
 	global_win32_nCmdShow = SW_SHOW;
 	global_hinstance = GetModuleHandle(nullptr);

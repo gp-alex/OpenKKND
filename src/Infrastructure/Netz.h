@@ -203,7 +203,7 @@ int netz_430DA0(unsigned int a1);
 char *netz_get_error_string(int error_code); // idb
 
 void script_449820_netz(Script *); // idb
-bool netz_449E00(_DWORD *a1, unsigned int a2, const char *a3);
+bool netz_449E00(int *a1, unsigned int a2, const char *a3);
 void netz_449FF0();
 void netz_44A160(char a1, char *a2, int a3);
 void *netz_44A220(char a1, char *a2, int a3);

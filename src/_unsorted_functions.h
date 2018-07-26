@@ -1,7 +1,6 @@
 #pragma once
 #include "src/kknd.h"
 
-void log_init();
 void log(const char *, ...);
 
 int map_place_entity(Entity *a1, int x, int y, int a3); // idb
@@ -176,12 +175,9 @@ void entity_mode_drillrig_on_death(Entity *a1);
 void script_408370(Script *a1);
 void sub_4083D0();
 int sub_408400();
-void _408410_palettes();
-void sub_408460();
 void stru1_408480_reset_animation();
 void script_4084A0_animation(Script *a1);
 void script_408500_anim(Script *a1);
-void _408550_multi_pal();
 bool stru1_init_anim();
 void stru1_set_animation(stru1_draw_params *a1, int start, int end, int length);
 void sprite_408800_play_sound(Sprite *a1, enum SOUND_ID sound, int volume, Script *script);
@@ -215,11 +211,6 @@ void Map_40DF50_update_tile(Entity *a1, int a2);
 int entity_40E000_boxd(Entity *a1, int a2, int a3);
 int REND_SetRoutines();
 char *get_resource_res_subfolder();
-void _40E430_update_palette(unsigned int a1);
-void RENDER_SetViewportAndClear();
-PALETTEENTRY *sub_40E550();
-void _40E560_flip_gdi_update_syscolors();
-void _40E6B0_set_sys_colors();
 bool boxd_40E6E0();
 void boxd_40EA20();
 void boxd_40EA30_cleanup();
@@ -533,10 +524,6 @@ void entity_mode_431680_outpost_arrive(Entity *a1);
 void entity_mode_outpost_on_death_update_production(Entity *a1);
 void _4318E0_free_building_production();
 void entity_mode_outpost_on_death(Entity *a1);
-void render_sw_initialize();
-void render_sw_free_palette();
-void _431980_update_primary_palette(PALETTEENTRY *palette_entries);
-HPALETTE _431B60_create_palette(PALETTEENTRY *a1, int num_entries); // idb
 void script_431E60_mobd_20_input(Script *a1);
 void script_431F10_ingame_menu(Script *a1); // idb
 void script_4321A0_ingame_menu(Script *a1);

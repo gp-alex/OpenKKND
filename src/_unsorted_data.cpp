@@ -6077,13 +6077,11 @@ OilDeposit *oilspot_list_head;
 OilDeposit *oildeposit_list_end;
 OilDeposit *oilspot_list;
 OilDeposit *oilspot_list_free_pool;
-PALETTEENTRY palette_477490[256];
 int dword_477890;
 int dword_477894;
 int dword_477898; // weak
 int dword_47789C; // weak
 int dword_4778A0; // weak
-PALETTEENTRY *palette_4778A4;
 int dword_4778A8; // weak
 int dword_4778AC; // weak
 int __4778C0_stru1_anim_length; // weak
@@ -6285,19 +6283,10 @@ int _47B3E0_unit_int_outpost_clanhall; // weak
 int __47B3E0_outpost_levels_negindex[5]; // weak
 stru15unit _47B3E0_outpost_levels;
 int max_outpost_level; // weak
-PALETTEENTRY _47B408_palette_entries[256];
-PALETTEENTRY RenderDD_primary_palette_values[256];
-PALETTEENTRY palette_47BC10[256];
-HPALETTE render_sw_palette;
-HPALETTE render_sw_default_palette; // idb
 int dword_47C018; // weak
 Script *receiver; // idb
 Script *task_47C028; // idb
 int dword_47C030; // weak
-int render_clip_w; // weak
-int render_clip_z; // weak
-int render_clip_x; // weak
-int render_clip_y; // weak
 int _47C048_unit_bomberdmg; // weak
 int _47C04C_num_explosions_max20; // weak
 stru175 _47C050_array[20];
@@ -6378,7 +6367,7 @@ Script *script_execute_list;
 Script *script_list_47C714;
 size_t coroutine_default_stack_size; // idb
 Script *task_creation_handler_arg;
-__int16 is_coroutine_list_initialization_failed; // weak
+__int16 is_async_execution_supported; // weak
 Script *script_list;
 int stru8_list_size; // weak
 int stru8_list_allocated; // weak

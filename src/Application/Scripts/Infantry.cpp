@@ -2875,7 +2875,6 @@ void entity_mode_move_to_target_416790(Entity *a1)
     int dy = abs(v1->sprite->y - v1->_B8_move_dst_y);
     if (dx > 256 * 256 || dy > 256 * 256)
     {
-    LABEL_52:
         entity_mode_move_attack(v1);
         return;
     }

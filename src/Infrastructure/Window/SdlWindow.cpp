@@ -1,3 +1,12 @@
+#if defined(WIN32)
+    #define FIX_WINDOWS_BLOCKING_WINDOW
+#endif
+
+#if defined(FIX_WINDOWS_BLOCKING_WINDOW)
+    #include <Windows.h>
+    #include <SDL2/SDL_syswm.h>
+#endif
+
 #include <SDL2/SDL.h>
 
 #include "src/Infrastructure/Window/SdlWindow.h"
@@ -45,6 +54,18 @@ void SdlWindow::SetHeight(int height) {
 
 void SdlWindow::SetFullscreen() {
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+    #if defined(FIX_WINDOWS_BLOCKING_WINDOW)
+    {
+        SDL_SysWMinfo info;
+        SDL_VERSION(&info.version);
+
+        if (SDL_GetWindowWMInfo(window, &info)) {
+            auto hwnd = info.info.win.window;
+            SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+        }
+    }
+    #endif
 }
 
 int SdlWindow::GetWidth() const {
