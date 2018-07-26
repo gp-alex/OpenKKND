@@ -19,6 +19,7 @@ set(UNSORTED_SOURCES
 	stru31.cpp
     Sound.cpp
     Video.cpp
+    Map.cpp
 )
 
 set(UNSORTED_HEADERS
@@ -36,6 +37,7 @@ set(UNSORTED_HEADERS
 	stru31.h
     Sound.h
     Video.h
+    Map.h
 )
 
 if(WIN32)

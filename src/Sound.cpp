@@ -1,8 +1,11 @@
 #include <direct.h>
 
+#include <process.h>    // _beginthread, _endthread
+
 #include "src/Sound.h"
 
 #include "src/kknd.h"
+#include "src/Random.h"
 #include "src/ScriptEvent.h"
 #include "src/_unsorted_functions.h"
 
@@ -24,10 +27,59 @@ Sound *sound_list;
 int _47C5C0_can_sound; // weak
 int sound_list_last_id; // weak
 void *faction_slv; // idb
-BOOL sound_initialized;
+bool sound_initialized = false;
 int dword_47C5D0; // weak
 int _47C5D4_sound_threaded_snd_id; // idb
 
+
+SOUND_ID _468988_sound_ids[4] = { SOUND_69, SOUND_53, SOUND_51, SOUND_50 };
+SOUND_ID _468998_sound_ids[4] = { SOUND_139, SOUND_116, SOUND_142, SOUND_140 };
+SOUND_ID _4689A8_sound_ids[2] = { SOUND_181, SOUND_182 };
+SOUND_ID _4689B0_sound_ids[4] = { SOUND_179, SOUND_180, SOUND_185, SOUND_0 };
+SOUND_ID _4689C0_sound_ids[22] =
+{
+    SOUND_182,
+    SOUND_183,
+    SOUND_184,
+    SOUND_182,
+    SOUND_183,
+    SOUND_184,
+    SOUND_182,
+    SOUND_183,
+    SOUND_184,
+    SOUND_182,
+    SOUND_183,
+    SOUND_184,
+    SOUND_182,
+    SOUND_183,
+    SOUND_184,
+    SOUND_182,
+    SOUND_183,
+    SOUND_184,
+    SOUND_182,
+    SOUND_183,
+    SOUND_184,
+    SOUND_186
+};
+SOUND_ID _468A18_sound_ids[2] = { SOUND_78, SOUND_85 };
+SOUND_ID _468A20_sound_ids[2] = { SOUND_156, SOUND_158 };
+SOUND_ID _468A28_sound_ids[4] = { SOUND_68, SOUND_49, SOUND_43, SOUND_0 };
+SOUND_ID _468A38_sound_ids[4] = { SOUND_133, SOUND_131, SOUND_91, SOUND_0 };
+SOUND_ID _468A48_sound_ids[2] = { SOUND_76, SOUND_85 };
+SOUND_ID _468A50_sound_ids[2] = { SOUND_154, SOUND_148 };
+SOUND_ID _468A58_sound_id = SOUND_69;
+
+
+SOUND_ID _46BB70_dmg_handler_sounds[3] = { SOUND_RIFLE_FIRE_2, SOUND_RIFLE_FIRE_3, SOUND_RIFLE_FIRE_4 };
+SOUND_ID _46BB80_dmg_handler_sounds[2] = { SOUND_GENERIC_PROJECTILE_DMG, SOUND_GENERIC_PROJECTILE_DMG_2 };
+
+SOUND_ID _465988_sounds[5] = { SOUND_174, SOUND_175, SOUND_176, SOUND_177, SOUND_178 };
+
+
+bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3);
+bool sound_stru_2_43A710(sound_stru_2 *a1, WAVEFORMATEX **a2, int *a3, unsigned int *out_buffer_size);
+void _439C10_sound_thread(Sound *a1); // idb
+void sound_list_remove(Sound *a1);
 
 
 
@@ -56,6 +108,208 @@ void sound_video_stop() {
     video_477DE4_dsb->Release();
 }
 
+
+
+
+SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id)
+{
+    switch (unit_id)
+    {
+    case UNIT_STATS_GORT:
+    case UNIT_STATS_PLASMA_TANK:
+    case UNIT_STATS_SENTINEL_DROID:
+        return _4689A8_sound_ids[kknd_rand() % -2];
+        break;
+    case UNIT_STATS_MUTE_DIRE_WOLF:
+        return (SOUND_ID)165;
+        break;
+    case UNIT_STATS_MUTE_GIANT_BEETLE:
+        return (SOUND_ID)168;
+        break;
+    case UNIT_STATS_MUTE_GIANT_SCORPION:
+        return (SOUND_ID)172;
+        break;
+    case UNIT_STATS_MUTE_MISSILE_CRAB:
+        return (SOUND_ID)170;
+        break;
+    case UNIT_STATS_MUTE_WAR_MASTADONT:
+        return (SOUND_ID)160;
+        break;
+    default:
+        if (is_player_faction_evolved())
+        {
+            return _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
+        }
+        else
+        {
+            return _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
+        }
+        break;
+    }
+}
+
+
+SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced)
+{
+    if (is_21st_century(unit_id))
+    {
+        return _4689C0_sound_ids[kknd_rand() % 22];
+    }
+    else if (unit_id == UNIT_STATS_SURV_SCOUT)
+    {
+        return SOUND_SURV_UNIT_SCOUT_192;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_MISSILE_CRAB)
+    {
+        return SOUND_MUTE_UNIT_MISSILE_CRAB_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_GIANT_BEETLE)
+    {
+        return SOUND_MUTE_UNIT_GIANT_BEETLE_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_WAR_MASTADONT)
+    {
+        return SOUND_MUTE_UNIT_WAR_MASTADONT_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_GIANT_SCORPION)
+    {
+        return SOUND_MUTE_UNIT_GIANT_SCORPION_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_DIRE_WOLF)
+    {
+        return SOUND_MUTE_UNIT_DIRE_WOLF_2;
+    }
+    else
+    {
+        if (!is_player_faction_evolved())
+        {
+            if (experienced)
+            {
+                int v13 = kknd_rand();
+                return _468A48_sound_ids[(((unsigned __int64)v13 >> 32) ^ abs(v13) & 1) - ((unsigned __int64)v13 >> 32)];
+            }
+            else
+            {
+                return _468A28_sound_ids[kknd_rand() % 3];
+            }
+        }
+        else
+        {
+            if (experienced)
+            {
+                int v14 = kknd_rand();
+                return _468A50_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 1) - ((unsigned __int64)v14 >> 32)];
+            }
+            else
+            {
+                return _468A38_sound_ids[kknd_rand() % 3];
+            }
+        }
+    }
+}
+
+
+SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced)
+{
+    if (is_21st_century(unit_id))
+    {
+        return _4689B0_sound_ids[kknd_rand() % 3];
+    }
+    else if (unit_id == UNIT_STATS_MUTE_MISSILE_CRAB)
+    {
+        return SOUND_MUTE_UNIT_MISSILE_CRAB_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_GIANT_BEETLE)
+    {
+        return SOUND_MUTE_UNIT_GIANT_BEETLE_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_WAR_MASTADONT)
+    {
+        return SOUND_MUTE_UNIT_WAR_MASTADONT_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_GIANT_SCORPION)
+    {
+        return SOUND_MUTE_UNIT_GIANT_SCORPION_2;
+    }
+    else if (unit_id == UNIT_STATS_MUTE_DIRE_WOLF)
+    {
+        return SOUND_MUTE_UNIT_DIRE_WOLF_2;
+    }
+    else if (unit_id == UNIT_STATS_SURV_SCOUT)
+    {
+        return SOUND_SURV_UNIT_SCOUT_192;
+    }
+    else
+    {
+        if (experienced)
+        {
+            if (is_player_faction_evolved())
+                return SOUND_153;
+            else
+                return SOUND_73;
+        }
+        else
+        {
+            if (!is_player_faction_evolved())
+            {
+                if ((char)kknd_rand() % -2)
+                {
+                    return SOUND_59;
+                }
+                else
+                {
+                    return SOUND_48;
+                }
+            }
+            else
+            {
+                if ((char)kknd_rand() % -2)
+                {
+                    return SOUND_92;
+                }
+                else
+                {
+                    return SOUND_119;
+                }
+            }
+        }
+    }
+}
+
+
+SOUND_ID get_unit_ready_sound(UNIT_ID unit_id)
+{
+    switch (unit_id)
+    {
+    case UNIT_STATS_MUTE_DIRE_WOLF:
+        return SOUND_MUTE_UNIT_DIRE_WOLF_READY;
+
+    case UNIT_STATS_MUTE_GIANT_BEETLE:
+        return SOUND_MUTE_UNIT_GIANT_BEETLE_READY;
+
+    case UNIT_STATS_MUTE_GIANT_SCORPION:
+        return SOUND_MUTE_UNIT_GIANT_SCORPION_READY;
+
+    case UNIT_STATS_MUTE_MISSILE_CRAB:
+        return SOUND_MUTE_UNIT_MISSILE_CRAB_READY;
+
+    case UNIT_STATS_MUTE_WAR_MASTADONT:
+        return SOUND_MUTE_UNIT_WAR_MASTADONT_READY;
+
+    default:
+    {
+        int v14 = kknd_rand();
+        if (is_player_faction_evolved())
+        {
+            return _468998_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 3) - ((unsigned __int64)v14 >> 32)];
+        }
+        else
+        {
+            return _468988_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 3) - ((unsigned __int64)v14 >> 32)];
+        }
+    }
+    }
+}
 
 
 

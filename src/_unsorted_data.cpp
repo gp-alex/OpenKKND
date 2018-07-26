@@ -759,7 +759,6 @@ int _465948_per_mobd_lookup_idx[16] =
 	4294964400,
 	4294965729
 };
-enum SOUND_ID _465988_sounds[5] = { SOUND_174, SOUND_175, SOUND_176, SOUND_177, SOUND_178 };
 
 int input_465A80_wndprockey_map[256] =
 {
@@ -2664,42 +2663,6 @@ DataCplcItem_ptr1_stru20 _468910_DataCplcItem_ptr1_stru20_outpost =
 int dword_468940[] = { -1 }; // weak
 int dword_468980 = -1; // weak
 int dword_468984 = -1; // weak
-enum SOUND_ID _468988_sound_ids[4] = { SOUND_69, SOUND_53, SOUND_51, SOUND_50 };
-enum SOUND_ID _468998_sound_ids[4] = { SOUND_139, SOUND_116, SOUND_142, SOUND_140 };
-enum SOUND_ID _4689A8_sound_ids[2] = { SOUND_181, SOUND_182 };
-enum SOUND_ID _4689B0_sound_ids[4] = { SOUND_179, SOUND_180, SOUND_185, SOUND_0 };
-enum SOUND_ID _4689C0_sound_ids[22] =
-{
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_186
-};
-enum SOUND_ID _468A18_sound_ids[2] = { SOUND_78, SOUND_85 };
-enum SOUND_ID _468A20_sound_ids[2] = { SOUND_156, SOUND_158 };
-enum SOUND_ID _468A28_sound_ids[4] = { SOUND_68, SOUND_49, SOUND_43, SOUND_0 };
-enum SOUND_ID _468A38_sound_ids[4] = { SOUND_133, SOUND_131, SOUND_91, SOUND_0 };
-enum SOUND_ID _468A48_sound_ids[2] = { SOUND_76, SOUND_85 };
-enum SOUND_ID _468A50_sound_ids[2] = { SOUND_154, SOUND_148 };
-enum SOUND_ID _468A58_sound_id = SOUND_69;
 char aSD[] = "%s $%d"; // idb
 char aSS_1[] = "%s: %s"; // idb
 unsigned __int8 _468A6C_mobd_lookups[68] =
@@ -2882,8 +2845,6 @@ char aD[6] = "  %d:"; // weak
 RECT _46BB40_enum_attached_surfaces_blt_rect = { 0, 0, 640, 480 };
 RECT _46BB50_blt_rect = { 0, 0, 640, 480 };
 int _46BB60_dmg_handler_mobd_offsets[3] = { 332, 364, 388 };
-enum SOUND_ID _46BB70_dmg_handler_sounds[3] = { SOUND_RIFLE_FIRE_2, SOUND_RIFLE_FIRE_3, SOUND_RIFLE_FIRE_4 };
-enum SOUND_ID _46BB80_dmg_handler_sounds[2] = { SOUND_GENERIC_PROJECTILE_DMG, SOUND_GENERIC_PROJECTILE_DMG_2 };
 char aSGameD_sav[] = "%s\\game%d.sav"; // idb
 char aSlotDSD[] = "Slot %d = %s %d\n"; // idb
 char aActiveslotD[] = "ActiveSlot=%d\n"; // idb

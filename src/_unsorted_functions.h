@@ -100,10 +100,6 @@ bool sub_4049D0(Sprite *a1, Sprite *a2, int a3, void *a4, void *);
 bool sub_404AA0(Sprite *a1, Sprite *a2, int a3, void *a4, void *);
 bool sub_404B80(Sprite *a1, Sprite *a2, int a3, void *a4, void *);
 bool sub_404C60(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5);
-bool boxd_init();
-void bodx_404D50_sprite_list(Sprite *list);
-void boxd_404F40_sprite(Sprite *a1, int a2, int a3);
-void boxd_free();
 void entity_show_hint(Entity *a1);
 void entity_4054D0_tanker_convoy(Entity *a1);
 void EventHandler_TankerConvoy(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
@@ -884,13 +880,4 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1); // idb
 void script_mobd79_evt1__main_menu_multiplayer(Script *a1); // idb
 void script_mobd79_evt1__main_menu_quit(Script *a1); // idb
 
-SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id);
-SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced);
-SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced);
-SOUND_ID get_unit_ready_sound(UNIT_ID unit_id);
 bool mobile_base_can_deploy(Entity *entity);
-
-int global2map(int coordinate);
-int map2global(int coordinate);
-bool map_is_same_tile(int coord1, int coord2);
-bool map_is_different_tile(int coord1, int coord2);

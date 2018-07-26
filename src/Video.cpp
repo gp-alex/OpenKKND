@@ -36,7 +36,7 @@ int dword_477944; // weak
 Palette _477990_video_palette; // idb
 
 
-
+extern IDirectSound *pds;
 extern DSBUFFERDESC video_477DE4_dsb_desc; // weak
 extern IDirectSoundBuffer *video_477DE4_dsb;
 
@@ -368,14 +368,16 @@ void VIDEO_40D090(VideoFile *a1)
     unk_47798C = v3;
     HIDWORD(qword_477984) = v1->header._14_looks_like_fps * v3;
     unk_47798E = (unsigned __int8)v1->header.field_18 != 8 ? 16 : 8;
+
+
     video_477DE4_dsb_desc.dwReserved = 0;
     video_477DE4_dsb_desc.dwSize = 20;
     video_477DE4_dsb_desc.dwFlags = 0;
     video_477DE4_dsb_desc.dwBufferBytes = 0x10000;
     video_477DE4_dsb_desc.lpwfxFormat = (LPWAVEFORMATEX)&video_477DE4_dsb_waveformatex;
     if (pds
-        && !pds->CreateSoundBuffer(&video_477DE4_dsb_desc, &video_477DE4_dsb, 0)
-        && !video_477DE4_dsb->Lock(0, 0x10000, (LPVOID *)&v4, &v7, &v6, &v5, 0))
+        && S_OK == pds->CreateSoundBuffer(&video_477DE4_dsb_desc, &video_477DE4_dsb, 0)
+        && S_OK == video_477DE4_dsb->Lock(0, 0x10000, (LPVOID *)&v4, &v7, &v6, &v5, 0))
     {
         memcpy(v4, v1->header.ptr_20, v1->header.num_sound_bytes);
         dword_477944 = v1->header.num_sound_bytes;

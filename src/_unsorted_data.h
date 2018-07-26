@@ -69,7 +69,6 @@ extern char *aFailedToSetupDirectdraw;
 extern char *Caption;
 extern unsigned __int8 palette_465848_sprt[256];
 extern int _465948_per_mobd_lookup_idx[16];
-extern enum SOUND_ID _465988_sounds[5];
 extern int input_465A80_wndprockey_map[256];
 extern int input_465FE8[16];
 extern stru7 array_466028[7];
@@ -174,18 +173,6 @@ extern DataCplcItem_ptr1_stru20 _468910_DataCplcItem_ptr1_stru20_outpost; // wea
 extern int dword_468940[]; // weak
 extern int dword_468980; // weak
 extern int dword_468984; // weak
-extern enum SOUND_ID _468988_sound_ids[4];
-extern enum SOUND_ID _468998_sound_ids[4];
-extern enum SOUND_ID _4689A8_sound_ids[2];
-extern enum SOUND_ID _4689B0_sound_ids[4];
-extern enum SOUND_ID _4689C0_sound_ids[22];
-extern enum SOUND_ID _468A18_sound_ids[2];
-extern enum SOUND_ID _468A20_sound_ids[2];
-extern enum SOUND_ID _468A28_sound_ids[4];
-extern enum SOUND_ID _468A38_sound_ids[4];
-extern enum SOUND_ID _468A48_sound_ids[2];
-extern enum SOUND_ID _468A50_sound_ids[2];
-extern enum SOUND_ID _468A58_sound_id;
 extern char aSD[]; // idb
 extern char aSS_1[]; // idb
 extern unsigned __int8 _468A6C_mobd_lookups[68];
@@ -254,8 +241,6 @@ extern char aD[6]; // weak
 extern RECT _46BB40_enum_attached_surfaces_blt_rect;
 extern RECT _46BB50_blt_rect;
 extern int _46BB60_dmg_handler_mobd_offsets[3];
-extern enum SOUND_ID _46BB70_dmg_handler_sounds[3];
-extern enum SOUND_ID _46BB80_dmg_handler_sounds[2];
 extern char aSGameD_sav[]; // idb
 extern char aSlotDSD[]; // idb
 extern char aActiveslotD[]; // idb
