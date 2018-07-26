@@ -1,7 +1,10 @@
+#include <direct.h>
+
 #include "src/Sound.h"
 
 #include "src/kknd.h"
 #include "src/ScriptEvent.h"
+#include "src/_unsorted_functions.h"
 
 
 #pragma comment(lib, "Dsound.lib") // DirectSoundCreate
@@ -36,9 +39,23 @@ IDirectSoundBuffer *video_477DE4_dsb;
 void sound_start_video_playback() {
 
 }
+
 void sound_end_video_playback() {
 
 }
+
+bool sound_video_get_position(int *play, int *write) {
+    return S_OK == video_477DE4_dsb->GetCurrentPosition(
+        (LPDWORD)play,
+        (LPDWORD)write
+    );
+}
+
+void sound_video_stop() {
+    video_477DE4_dsb->Stop();
+    video_477DE4_dsb->Release();
+}
+
 
 
 
@@ -152,7 +169,7 @@ bool LVL_LoadSlv(const char *slv_filename)
     {
         v1 = LVL_LoadLevel(slv_filename);
         faction_slv = v1;
-        if (v1 || (v1 = LVL_LoadLevel(shared_slv_filename), (faction_slv = v1) != 0))
+        if (v1 || (v1 = LVL_LoadLevel("sound.slv"), (faction_slv = v1) != 0))
         {
             v2 = v1->section_table;
             v3 = 0;
@@ -162,7 +179,7 @@ bool LVL_LoadSlv(const char *slv_filename)
             {
                 do
                 {
-                    if (!strncmp(aSoun, v2->name, 4u))
+                    if (!strncmp("SOUN", v2->name, 4u))
                         _47C4E0_sounds = *(sound_stru_2 ***)v4;
                     v5 = *((_DWORD *)v4 + 2);
                     v4 += 8;
@@ -364,7 +381,7 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
     char name[1024];
     sprintf(
         name,
-        (const char *)aSLevelsS,
+        "%s\\LEVELS\\%s",
         _getcwd(cwd, sizeof(cwd)),
         name_
     );
@@ -1007,15 +1024,15 @@ bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3)
     if (file)
     {
         file->read(v7, 4);
-        if (!memcmp(RIFF, v7, 4u))
+        if (!memcmp("RIFF", v7, 4u))
         {
             v3->read(&v8, 4);
             v3->read(v7, 4);
-            if (!memcmp(WAVE, v7, 4u) && v3->read(v7, 4) == 4)
+            if (!memcmp("WAVE", v7, 4u) && v3->read(v7, 4) == 4)
             {
                 while (v4 < 0x20)
                 {
-                    if (!memcmp(fmt, v7, 4u))
+                    if (!memcmp("fmt ", v7, 4u))
                     {
                         v3->read(&v8, 4);
                         if (v8 < 0xE)
@@ -1029,7 +1046,7 @@ bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3)
                         {
                             while (v4 < 0x20)
                             {
-                                if (!memcmp(aData, v7, 4u))
+                                if (!memcmp("data", v7, 4u))
                                 {
                                     v3->read(&v8, 4);
                                     if (a3)

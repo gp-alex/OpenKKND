@@ -1,7 +1,10 @@
+#include <dsound.h>
+
 #include "src/Video.h"
 
 #include "src/_unsorted_data.h"
 #include "src/Render.h"
+#include "src/Sound.h"
 
 DetailedDrawHandler_VideoPlayer stru_477D90; // weak
 int dword_477DB8; // weak
@@ -33,6 +36,9 @@ int dword_477944; // weak
 Palette _477990_video_palette; // idb
 
 
+
+extern DSBUFFERDESC video_477DE4_dsb_desc; // weak
+extern IDirectSoundBuffer *video_477DE4_dsb;
 
 
 //----- (0040CAE0) --------------------------------------------------------
@@ -123,7 +129,7 @@ int VIDEO_DoFrame()
     unsigned int v25; // [sp+68h] [bp-10h]@23
     void *v26; // [sp+6Ch] [bp-Ch]@23
     char *v27; // [sp+70h] [bp-8h]@8
-    __int16 *current_play_position; // [sp+74h] [bp-4h]@8
+    short *current_play_position; // [sp+74h] [bp-4h]@8
 
     v0 = video;
     if (!video)
@@ -139,10 +145,7 @@ int VIDEO_DoFrame()
                 v4 = ((_BYTE)v3 != 8) + 1;
                 if (BYTE1(v3) & 1)
                     v4 *= 2;
-                if (video_477DE4_dsb->GetCurrentPosition(
-                    (LPDWORD)&current_play_position,
-                    (LPDWORD)&v27))
-                {
+                if (!sound_video_get_position((int *)&current_play_position, (int *)&v27)) {
                     v5 = 0;
                     goto LABEL_14;
                 }
@@ -162,8 +165,7 @@ int VIDEO_DoFrame()
             {
                 if (video_477DEC_is_sound_playing)
                 {
-                    video_477DE4_dsb->Stop();
-                    video_477DE4_dsb->Release();
+                    sound_video_stop();
                     video_477DEC_is_sound_playing = 0;
                 }
                 VIDEO_Clean(video);
@@ -189,7 +191,7 @@ int VIDEO_DoFrame()
             v8 = video;
             if (video_477DEC_is_sound_playing)
             {
-                if (!video_477DE4_dsb->Lock(
+                if (S_OK == video_477DE4_dsb->Lock(
                     (((unsigned __int64)dword_477944 >> 32) ^ abs(dword_477944)) - ((unsigned __int64)dword_477944 >> 32),
                     v7,
                     (LPVOID *)&current_play_position,

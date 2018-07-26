@@ -113,7 +113,6 @@ extern char *aEvolvout_vbc;
 extern char *aSurvout_vbc;
 extern char *aLoadgamestateF;
 extern char *aUnit_initFaile;
-extern char *aSLevelsS;
 extern char *aSpriteLoadFail;
 extern CustomMission custom_missions[20];
 extern UnitNameId unit_name_id_lut[66];
@@ -267,12 +266,6 @@ extern int dword_46BC40[8];
 extern int dword_46BC60[9];
 extern int dword_46BC84[5];
 extern int dword_46BC98[8];
-extern char aSoun[]; // idb
-extern char shared_slv_filename[]; // idb
-extern char aData[5]; // weak
-extern char fmt[5]; // weak
-extern char WAVE[5]; // weak
-extern char RIFF[5]; // weak
 extern int render_43B4A6_46BD04; // weak
 extern __int16 word_46BD08; // weak
 extern int dword_46BD0A; // weak

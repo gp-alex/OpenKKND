@@ -66,9 +66,11 @@ bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3);
 bool sound_stru_2_43A710(sound_stru_2 *a1, WAVEFORMATEX **a2, int *a3, unsigned int *out_buffer_size);
 void sound_list_43A800(int a1);
 void sound_list_remove(Sound *a1);
+
 void sound_start_video_playback();
 void sound_end_video_playback();
-
+bool sound_video_get_position(int *play, int *write);
+void sound_video_stop();
 
 
 extern int sound_list_end; // weak

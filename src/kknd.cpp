@@ -6,7 +6,6 @@
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/stru29.h"
@@ -15,6 +14,7 @@
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
+#include "src/Sound.h"
 #include "src/Video.h"
 
 #include "src/Application/Game.h"
@@ -8970,7 +8970,7 @@ DataHunk *LVL_LoadLevel(const char *filename_)
 	{
 		sprintf(
 			filename,
-			(const char *)aSLevelsS,
+            "%s\\LEVELS\\%s",
 			_getcwd(cwd, sizeof(cwd)),//game_data_installation_dir,
 			filename_);
 	}

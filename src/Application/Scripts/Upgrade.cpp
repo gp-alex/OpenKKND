@@ -1,12 +1,13 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "_unsorted_data.h"
-#include "kknd.h"
-#include "Random.h"
-#include "Script.h"
-#include "ScriptEvent.h"
+#include "src/_unsorted_data.h"
+#include "src/kknd.h"
+#include "src/Random.h"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
+#include "src/Sound.h"
 
-#include "Engine/Entity.h"
-#include "Engine/EntityFactory.h"
+#include "src/Engine/Entity.h"
+#include "src/Engine/EntityFactory.h"
 
 using Engine::EntityFactory;
 

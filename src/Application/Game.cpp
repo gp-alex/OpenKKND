@@ -14,6 +14,7 @@ using Application::Game;
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
+#include "src/Sound.h"
 #include "src/Video.h"
 
 #include "src/Engine/Entity.h"

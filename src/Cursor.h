@@ -1,7 +1,8 @@
 #pragma once
 
-#pragma pack(push, 1)
+#include "src/Script.h"
 
+struct Entity;
 
 enum SELECTED_ENTITY_TYPE : __int32
 {
@@ -16,7 +17,76 @@ enum SELECTED_ENTITY_TYPE : __int32
     SELECTED_ENTITY_COMBAT_INFANTRY = 9,
 };
 
+
+
+enum stru209_TYPE : __int8
+{
+    stru209_TYPE_0 = 0,
+    stru209_TYPE_SELECT_UNIT_GROUP = 1,
+    stru209_TYPE_SELECT_UNIT = 2,
+    stru209_TYPE_DESELECT = 3,
+    stru209_TYPE_4 = 4,
+    stru209_TYPE_5 = 5,
+    stru209_TYPE_MOVE = 6,
+    stru209_TYPE_ATTACK = 7,
+    stru209_TYPE_8_production_ready = 8,
+    stru209_TYPE_9_spawn_unit = 9,
+    stru209_TYPE_DEPLOY_MOBILE_OUTPOST = 10,
+    stru209_TYPE_11 = 11,
+    stru209_TYPE_12_upgrade_complete = 12,
+    stru209_TYPE_13 = 13,
+    stru209_TYPE_15_multiplayer = 15,
+    stru209_TYPE_16_multiplayer = 16,
+    stru209_TYPE_17_multiplayer = 17,
+    stru209_TYPE_18 = 18,
+    stru209_TYPE_TANKER_SET_DRILLRIG = 19,
+    stru209_TYPE_TANKER_SET_BASE = 20,
+    stru209_TYPE_REPAIR_AT_STATION = 21,
+    stru209_TYPE_TECHNICIAN_REPAIR = 22,
+    stru209_TYPE_INFILTRATE = 24,
+    stru209_TYPE_25_spawn_unit = 25,
+    stru209_TYPE_26_destroy = 26,
+    stru209_TYPE_SWEAR_ALLEGIANCE = 27,
+};
+
+
+
+#pragma pack(push, 1)
+struct stru209
+{
+    stru209_TYPE type;
+    int param;
+    int param2;
+    int param3;
+    char _is_free;
+};
+#pragma pack(pop)
+
+
+/* 422 */
+#pragma pack(push, 1)
+struct task_428940_attach__cursors_2
+{
+    task_428940_attach__cursors_2 *next;
+    task_428940_attach__cursors_2 *prev;
+    Script *_8_task;
+};
+#pragma pack(pop)
+
+
+/* 421 */
+#pragma pack(push, 1)
+struct task_428940_attach__cursors
+{
+    task_428940_attach__cursors *next;
+    stru209 _stru209;
+    char field_12;
+    char field_13;
+};
+#pragma pack(pop)
+
 /* 435 */
+#pragma pack(push, 1)
 struct _428940_local
 {
     _428940_local *next;
@@ -51,63 +121,11 @@ struct _428940_local
     Sprite *_74_sprite;
     void *_78_msg1522_param;
 };
-
-
-enum stru209_TYPE : __int8
-{
-    stru209_TYPE_0 = 0,
-    stru209_TYPE_SELECT_UNIT_GROUP = 1,
-    stru209_TYPE_SELECT_UNIT = 2,
-    stru209_TYPE_DESELECT = 3,
-    stru209_TYPE_4 = 4,
-    stru209_TYPE_5 = 5,
-    stru209_TYPE_MOVE = 6,
-    stru209_TYPE_ATTACK = 7,
-    stru209_TYPE_8_production_ready = 8,
-    stru209_TYPE_9_spawn_unit = 9,
-    stru209_TYPE_DEPLOY_MOBILE_OUTPOST = 10,
-    stru209_TYPE_11 = 11,
-    stru209_TYPE_12_upgrade_complete = 12,
-    stru209_TYPE_13 = 13,
-    stru209_TYPE_15_multiplayer = 15,
-    stru209_TYPE_16_multiplayer = 16,
-    stru209_TYPE_17_multiplayer = 17,
-    stru209_TYPE_18 = 18,
-    stru209_TYPE_TANKER_SET_DRILLRIG = 19,
-    stru209_TYPE_TANKER_SET_BASE = 20,
-    stru209_TYPE_REPAIR_AT_STATION = 21,
-    stru209_TYPE_TECHNICIAN_REPAIR = 22,
-    stru209_TYPE_INFILTRATE = 24,
-    stru209_TYPE_25_spawn_unit = 25,
-    stru209_TYPE_26_destroy = 26,
-    stru209_TYPE_SWEAR_ALLEGIANCE = 27,
-};
-struct stru209
-{
-    stru209_TYPE type;
-    int param;
-    int param2;
-    int param3;
-    char _is_free;
-};
-/* 421 */
-struct task_428940_attach__cursors
-{
-    task_428940_attach__cursors *next;
-    stru209 _stru209;
-    char field_12;
-    char field_13;
-};
-
-/* 422 */
-struct task_428940_attach__cursors_2
-{
-    task_428940_attach__cursors_2 *next;
-    task_428940_attach__cursors_2 *prev;
-    Script *_8_task;
-};
-
 #pragma pack(pop)
+
+
+
+
 
 
 #define CURSOR_MOBD_OFFSET_DEFAULT                  12  // default arrow
