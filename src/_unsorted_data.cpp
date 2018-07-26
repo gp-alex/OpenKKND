@@ -6096,63 +6096,10 @@ int _4778C8_singleplayer_available_units_denom; // weak
 Script *task_ai_players[7];
 _UNKNOWN unk_4778EC; // weak
 stru24 *cpu_player_scripts_attached_stru24s[7];
-int dword_477940; // weak
-int dword_477944; // weak
-DetailedDrawHandler_VideoPlayer _477948_video_draw_details;
-int _477970_video_header_field_6; // weak
-int _477974_video_header_field_8; // weak
-DrawJob *video_477978_draw_job;
-_UNKNOWN video_477DE4_dsb_waveformatex; // weak
-_UNKNOWN unk_477982; // weak
-__int64 qword_477984; // weak
-_UNKNOWN unk_47798C; // weak
-_UNKNOWN unk_47798E; // weak
-PALETTEENTRY stru_477990; // idb
-DetailedDrawHandler_VideoPlayer stru_477D90; // weak
-int dword_477DB8; // weak
-int dword_477DBC; // weak
-DrawJob *video_477DC0;
-int video_477DC4_current_sound_position; // weak
-int dword_477DC8; // weak
-DSBUFFERDESC video_477DE4_dsb_desc; // weak
-IDirectSoundBuffer *video_477DE4_dsb;
-VideoFile *video;
-int video_477DEC_is_sound_playing; // weak
-int video_477DF0; // weak
-int dword_477DF4; // weak
-char video_477DF8_subtitles[756];
-int video_4780EC; // weak
-int video_4780F0; // weak
-int video_4780F4; // weak
-RenderString *video_4780F8_subtitles;
 int timer_delta_updated; // weak
 int timer_delta_ms; // weak
 int timer_time; // weak
 Entity *dword_478108[300];
-int j_render_nullsub_2; // weak
-int j_render_434B70; // weak
-PALETTEENTRY *ppalette_4785C0;
-int j_render_434A90; // weak
-int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
-PALETTEENTRY *_4785DC_syscolors_palette_entries;
-void (*j_render_4349D0_draw_tile_32x32)(void *pixels, int x, int y); // idb
-int(*j_render_4351A0_draw)(void *pixels, int x, int y, int w, int h); // idb
-PALETTEENTRY palette_4785F0[256]; // weak
-void(*p_render_set_clip)(int, int, int, int);
-void(*j_render_434C60)(unsigned __int8 *pixels, unsigned __int8 *palette, int x, int y, int w, int h); // idb
-int(*j_render_435320)(void *pixels, int x, int y, int w, int h);
-void(*j_render_draw_tile)(void *data, int image_off_x, int image_off_y, int image_x_size, int image_y_size);
-void(*j_render_draw_cursor_434A00)(void *pixels, int x, int y, int w, int h); // idb
-int render_478A0C; // weak
-int(*j_render_4349A0_draw_tile_32x32)(void *pixels, int x, int y); // idb
-int _478A14_prev_stru1_palette_entries; // weak
-COLORREF sys_colors[25];
-void(*j_render_434BD0)(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
-int render_height; // idb
-int render_width; // idb
-void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
-int render_478A94; // weak
-int j_render_nullsub_1; // weak
 DataBoxd_stru0_per_map_unit *_478AA8_boxd_stru0_array;
 int _478AAC_map_height; // weak
 int dword_478AB0; // weak
@@ -6567,4 +6514,3 @@ int dword_47DCE8; // weak
 HINSTANCE global_hinstance; // idb
 int global_win32_nCmdShow; // idb
 bool _47DCF4_wm_quit_received = false; // weak
-VideoFileFrame *video_47F434_frame;

@@ -215,7 +215,6 @@ void Map_40DF50_update_tile(Entity *a1, int a2);
 int entity_40E000_boxd(Entity *a1, int a2, int a3);
 int REND_SetRoutines();
 char *get_resource_res_subfolder();
-void _40E400_set_palette(PALETTEENTRY *palette);
 void _40E430_update_palette(unsigned int a1);
 void RENDER_SetViewportAndClear();
 PALETTEENTRY *sub_40E550();

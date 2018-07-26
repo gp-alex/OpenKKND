@@ -4,6 +4,7 @@
 
 #include "src/kknd.h"
 #include "src/_unsorted_functions.h"
+#include "src/Render.h"
 
 extern _UNKNOWN loc_45D19B; // weak
 extern _UNKNOWN loc_45D1A4; // weak
@@ -489,63 +490,10 @@ extern int _4778C8_singleplayer_available_units_denom; // weak
 extern Script *task_ai_players[7];
 extern _UNKNOWN unk_4778EC; // weak
 extern stru24 *cpu_player_scripts_attached_stru24s[7];
-extern int dword_477940; // weak
-extern int dword_477944; // weak
-extern DetailedDrawHandler_VideoPlayer _477948_video_draw_details;
-extern int _477970_video_header_field_6; // weak
-extern int _477974_video_header_field_8; // weak
-extern DrawJob *video_477978_draw_job;
-extern _UNKNOWN video_477DE4_dsb_waveformatex; // weak
-extern _UNKNOWN unk_477982; // weak
-extern __int64 qword_477984; // weak
-extern _UNKNOWN unk_47798C; // weak
-extern _UNKNOWN unk_47798E; // weak
-extern PALETTEENTRY stru_477990; // idb
-extern DetailedDrawHandler_VideoPlayer stru_477D90; // weak
-extern int dword_477DB8; // weak
-extern int dword_477DBC; // weak
-extern DrawJob *video_477DC0;
-extern int video_477DC4_current_sound_position; // weak
-extern int dword_477DC8; // weak
-extern DSBUFFERDESC video_477DE4_dsb_desc; // weak
-extern IDirectSoundBuffer *video_477DE4_dsb;
-extern VideoFile *video;
-extern int video_477DEC_is_sound_playing; // weak
-extern int video_477DF0; // weak
-extern int dword_477DF4; // weak
-extern char video_477DF8_subtitles[756];
-extern int video_4780EC; // weak
-extern int video_4780F0; // weak
-extern int video_4780F4; // weak
-extern RenderString *video_4780F8_subtitles;
 extern int timer_delta_updated; // weak
 extern int timer_delta_ms; // weak
 extern int timer_time; // weak
 extern Entity *dword_478108[300];
-extern int j_render_nullsub_2; // weak
-extern int j_render_434B70; // weak
-extern PALETTEENTRY *ppalette_4785C0;
-extern int j_render_434A90; // weak
-extern int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
-extern PALETTEENTRY *_4785DC_syscolors_palette_entries;
-extern void (*j_render_4349D0_draw_tile_32x32)(void *pixels, int x, int y); // idb
-extern int(*j_render_4351A0_draw)(void *pixels, int x, int y, int w, int h); // idb
-extern PALETTEENTRY palette_4785F0[256]; // weak
-extern void(*p_render_set_clip)(int, int, int, int);
-extern void (*j_render_434C60)(unsigned __int8 *pixels, unsigned __int8 *palette, int x, int y, int w, int h); // idb
-extern int(*j_render_435320)(void *pixels, int x, int y, int w, int h);
-extern void(*j_render_draw_tile)(void *data, int image_off_x, int image_off_y, int image_x_size, int image_y_size);
-extern void(*j_render_draw_cursor_434A00)(void *pixels, int x, int y, int w, int h); // idb
-extern int render_478A0C; // weak
-extern int(*j_render_4349A0_draw_tile_32x32)(void *pixels, int x, int y); // idb
-extern int _478A14_prev_stru1_palette_entries; // weak
-extern COLORREF sys_colors[25];
-extern void(*j_render_434BD0)(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
-extern int render_height; // idb
-extern int render_width; // idb
-extern void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
-extern int render_478A94; // weak
-extern int j_render_nullsub_1; // weak
 extern DataBoxd_stru0_per_map_unit *_478AA8_boxd_stru0_array;
 extern int _478AAC_map_height; // weak
 extern int dword_478AB0; // weak
@@ -929,4 +877,3 @@ extern int dword_47DCE8; // weak
 extern HINSTANCE global_hinstance; // idb
 extern int global_win32_nCmdShow; // idb
 extern bool _47DCF4_wm_quit_received; // weak
-extern VideoFileFrame *video_47F434_frame;

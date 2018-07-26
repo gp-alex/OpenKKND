@@ -1,9 +1,9 @@
-#include "src/kknd.h"
+#include "src/Render.h"
 
+#include "src/kknd.h"
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
-#include "src/Render.h"
+#include "src/Video.h"
 
 #include "src/Engine/Entity.h"
 
@@ -17,7 +17,38 @@ extern bool is_mission_running;
 extern Entity *debug_pathing_entity;
 
 
-PALETTEENTRY *render_current_palette = nullptr;
+Palette *render_current_palette = nullptr;
+
+
+
+
+
+int j_render_nullsub_2; // weak
+int j_render_434B70; // weak
+Palette *ppalette_4785C0;
+int j_render_434A90; // weak
+int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
+Palette *_4785DC_syscolors_palette_entries;
+void(*j_render_4349D0_draw_tile_32x32)(void *pixels, int x, int y); // idb
+int(*j_render_4351A0_draw)(void *pixels, int x, int y, int w, int h); // idb
+Palette palette_4785F0; // weak
+void(*p_render_set_clip)(int, int, int, int);
+void(*j_render_434C60)(unsigned __int8 *pixels, unsigned __int8 *palette, int x, int y, int w, int h); // idb
+int(*j_render_435320)(void *pixels, int x, int y, int w, int h);
+void(*j_render_draw_tile)(void *data, int image_off_x, int image_off_y, int image_x_size, int image_y_size);
+void(*j_render_draw_cursor_434A00)(void *pixels, int x, int y, int w, int h); // idb
+int render_478A0C; // weak
+int(*j_render_4349A0_draw_tile_32x32)(void *pixels, int x, int y); // idb
+int _478A14_prev_stru1_palette_entries; // weak
+COLORREF sys_colors[25];
+void(*j_render_434BD0)(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
+int render_height; // idb
+int render_width; // idb
+void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
+int render_478A94; // weak
+int j_render_nullsub_1; // weak
+
+
 
 //----- (00411760) --------------------------------------------------------
 bool render_create_window(int width, int height, int bpp, int run, bool fullscreen)
@@ -4068,4 +4099,16 @@ void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
             RealizePalette(render_sw_hdc);
         }
     }
+}
+
+
+//----- (0040E400) --------------------------------------------------------
+void _40E400_set_palette(Palette *palette)
+{
+    render_current_palette = palette;
+
+    ppalette_4785C0 = palette;
+    _4785DC_syscolors_palette_entries = palette;
+    _478A14_prev_stru1_palette_entries = -1;
+    _40E430_update_palette(render_default_stru1->anim_pos);
 }

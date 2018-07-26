@@ -17,6 +17,8 @@ set(UNSORTED_SOURCES
     ScriptEvent.cpp
 	stru29.cpp
 	stru31.cpp
+    Sound.cpp
+    Video.cpp
 )
 
 set(UNSORTED_HEADERS
@@ -32,6 +34,8 @@ set(UNSORTED_HEADERS
 	ScriptEvent.h
 	stru29.h
 	stru31.h
+    Sound.h
+    Video.h
 )
 
 if(WIN32)

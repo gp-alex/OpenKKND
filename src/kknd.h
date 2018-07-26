@@ -2,14 +2,14 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-/*#include <windows.h>
+#include <windows.h>
 #include <process.h>    // _beginthread, _endthread
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
 
 #include <dsound.h>
-*/
+
 #include "src/hexrays-defs.h"
 
 #include "src/Infrastructure/File.h"
@@ -1568,89 +1568,6 @@ struct EntityTankerConvoyAttachment
 	int x;
 	int y;
 	int checkpoint;
-};
-
-/* 374 */
-struct VideoFileHeader
-{
-	__int16 _0__first_4_bits_eq_bpp;
-	__int16 width;
-	__int16 height;
-	__int16 field_6;
-	__int16 field_8;
-	__int16 num_frames;
-	__int16 current_frame;
-	__int16 field_E;
-	int field_10;
-	int _14_looks_like_fps;
-	int field_18;
-	int num_sound_bytes;
-	__int16 *ptr_20;
-	int field_24;
-	int field_28;
-};
-
-/* 376 */
-struct VideoFileFrame
-{
-	int frame_size;
-	__int16 field_4;
-	__int16 field_6;
-	__int16 field_8;
-	__int16 field_A;
-	char gap_C[8];
-	__int16 _14__first_4_bits_eq_bpp;
-	__int16 width;
-	__int16 height;
-	__int16 field_1A;
-	__int16 field_1C;
-	__int16 num_frames;
-	__int16 field_20;
-	__declspec(align(1)) int _22_looks_like_fps;
-	__int16 field_26;
-	__int16 field_28;
-	__int16 field_2A;
-	__int16 field_2C;
-	__int16 field_2E;
-	__int16 field_30;
-	__int16 field_32;
-	__int16 field_34;
-	__int16 field_36;
-	__int16 field_38;
-	__int16 field_3A;
-};
-
-/* 375 */
-struct VideoFile
-{
-	VideoFileHeader header;
-	_BYTE gap2C[372];
-	int field_1A0[80];
-	_BYTE gap2E0[36];
-	int field_304[9];
-	_BYTE gap328[8];
-	__int16 field_330;
-	__int16 field_332;
-	FILE *file;
-	int data_offset;
-	void *frame_front_buffer;
-	void *frame_back_buffer;
-	int _344_prolly_palette[256];
-	VideoFileFrame _744_frame;
-	char field_780[131015];
-	char field_20747;
-};
-
-/* 377 */
-struct DetailedDrawHandler_VideoPlayer
-{
-	int(*handler)(DrawJobDetails *data, int mode);
-	int width;
-	int height;
-	int field_C;
-	int field_10;
-	int field_14;
-	void *_18_img_data;
 };
 
 /* 383 */

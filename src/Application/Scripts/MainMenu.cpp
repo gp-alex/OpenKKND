@@ -2,8 +2,8 @@
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
 #include "src/stru29.h"
+#include "src/Render.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 

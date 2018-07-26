@@ -4,11 +4,9 @@
 
 using Application::Game;
 
-#include "src/kknd.h"
-
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
+#include "src/kknd.h"
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/stru29.h"
@@ -16,6 +14,7 @@ using Application::Game;
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
+#include "src/Video.h"
 
 #include "src/Engine/Entity.h"
 
