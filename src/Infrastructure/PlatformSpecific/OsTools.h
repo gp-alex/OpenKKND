@@ -8,6 +8,7 @@
 *  \return user name on success, or constUnknownUser on error
 */
 std::string OsGetUserName();
+std::string OsGetCurrentDirectory();
 
 void OsInitTimer();
 void OsInitConsole();

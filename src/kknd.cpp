@@ -1,6 +1,5 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <assert.h>
-#include <direct.h>
+#include <time.h>
 
 #include "src/kknd.h"
 
@@ -6863,7 +6862,6 @@ bool LVL_SysInit()
 //----- (0041B140) --------------------------------------------------------
 DataHunk *LVL_LoadLevel(const char *filename_)
 {
-	char cwd[1024];
 	char filename[1024];
 
 	const char *ext = strrchr(filename_, '.');
@@ -6872,7 +6870,7 @@ DataHunk *LVL_LoadLevel(const char *filename_)
 		sprintf(
 			filename,
             "%s\\LEVELS\\%s",
-			_getcwd(cwd, sizeof(cwd)),//game_data_installation_dir,
+            OsGetCurrentDirectory().c_str(),//game_data_installation_dir,
 			filename_);
 	}
 	else if (!_stricmp(ext, ".lvl"))
@@ -6880,7 +6878,7 @@ DataHunk *LVL_LoadLevel(const char *filename_)
 		sprintf(
 			filename,
 			(const char *)aSLevelsSS,
-			_getcwd(cwd, sizeof(cwd)),//game_data_root_dir
+            OsGetCurrentDirectory().c_str(),//game_data_root_dir,
 			get_resource_res_subfolder(),
 			filename_
 		);

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <direct.h>
 
 #include <Windows.h>
 #include <Lmcons.h>
@@ -26,6 +27,13 @@ std::string OsGetUserName() {
     }
 }
 
+std::string OsGetCurrentDirectory() {
+    char buffer[MAX_PATH + 1];
+
+    return std::string(
+        _getcwd(buffer, sizeof(buffer))
+    );
+}
 
 void OsDebugString(const char *str) {
     printf("%s\n", str);

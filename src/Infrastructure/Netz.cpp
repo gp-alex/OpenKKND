@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include "src/Infrastructure/Netz.h"
 
 #include "src/kknd.h"

@@ -16,6 +16,17 @@ std::string OsGetUserName() {
     }
 }
 
+std::string OsGetCurrentDirectory() {
+    char buffer[SIZE + 1];
+
+    char *answer = getcwd(buffer, sizeof(buffer));
+    if (!answer) {
+        answer = "";
+    }
+
+    return std::string(answer);
+}
+
 void OsDebugString(const char *str) {
     printf("%s\n", str);
 }
