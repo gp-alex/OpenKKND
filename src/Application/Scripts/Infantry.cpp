@@ -238,11 +238,6 @@ void entity_attach_turret(Entity *a1)
 //----- (00413120) --------------------------------------------------------
 bool entity_413120_can_fire_on_entity(Entity *a1, Entity *a2, int entity_id)
 {
-    Sprite *v5; // eax@4
-    int v30; // ebp@33
-    Sprite *v31; // eax@38
-    int v33; // edi@40
-    __int16 v34; // ax@40
     int distance; // [sp+18h] [bp+4h]@27
 
     if (!a2 || a2->entity_id != entity_id || a2->destroyed) {
@@ -256,20 +251,20 @@ bool entity_413120_can_fire_on_entity(Entity *a1, Entity *a2, int entity_id)
 
     if (a1->IsInfantry())
     {
-        int dx = abs(v5->x - map_adjust_entity_in_tile_x(a1, a1->sprite->x));
-        int dy = abs(v5->y - map_adjust_entity_in_tile_y(a1, a1->sprite->y));
+        int dx = abs(a2->sprite->x - map_adjust_entity_in_tile_x(a1, a1->sprite->x));
+        int dy = abs(a2->sprite->y - map_adjust_entity_in_tile_y(a1, a1->sprite->y));
 
         distance = math_42D64D_vec_length_2d(dx / 256, dy / 256);
     }
     else
     {
-        int dx = abs(v5->x - a1->sprite->x);
-        int dy = abs(v5->y - a1->sprite->y);
+        int dx = abs(a2->sprite->x - a1->sprite->x);
+        int dy = abs(a2->sprite->y - a1->sprite->y);
 
         distance = math_42D64D_vec_length_2d(dx / 256, dy / 256);
     }
 
-    v30 = a1->GetFiringRange();
+    auto v30 = a1->GetFiringRange();
     if (!a1->IsMode(entity_mode_417F50) && !a1->IsMode(entity_mode_418590) && !a1->IsMode(entity_mode_default_idle))
     {
         if (a1->turret)
@@ -278,11 +273,10 @@ bool entity_413120_can_fire_on_entity(Entity *a1, Entity *a2, int entity_id)
         }
         else
         {
-            v31 = a2->sprite;
-            if (v31->x_speed || v31->y_speed)
+            if (a2->sprite->x_speed || a2->sprite->y_speed)
             {
-                v33 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v31->x_speed, v31->y_speed);
-                v34 = _42D560_get_mobd_lookup_id_rotation(a2->sprite->x - a1->sprite->x, a2->sprite->x - a1->sprite->x);
+                auto v33 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(a2->sprite->x_speed, a2->sprite->y_speed);
+                auto v34 = _42D560_get_mobd_lookup_id_rotation(a2->sprite->x - a1->sprite->x, a2->sprite->x - a1->sprite->x);
                 if (abs(v33 - v34) < 64)
                     v30 = (a1->GetFiringRange() >> 2) + (a1->GetFiringRange() >> 1);
             }
@@ -1321,7 +1315,7 @@ void entity_414670(Entity *a1)
                                 if (is_enemy(a1a->player_side, *v15))
                                 {
                                     v16 = (*v15)->stats;
-                                    if (v16->field_54 || v16->speed)
+                                    if (v16->_54_ai_importance || v16->speed)
                                     {
                                         if (entity_413120_can_fire_on_entity(a1a, *v15, (*v15)->entity_id))
                                         {
@@ -1456,14 +1450,12 @@ bool entity_414870_boxd(Entity *a1)
 //----- (004149A0) --------------------------------------------------------
 void entity_4149A0(Entity *a1)
 {
-    v1 = a1;
-    v2 = a1->sprite;
     a1->_E0_current_attack_target = 0;
 
     int some_x = a1->_11C__infantry_sprite_y___drillrig_oil_spot;
     int some_y = a1->_120__infantry_sprite_x;
 
-    if (abs(v2->x - some_x) > 0x10000 || abs(v2->y - some_y) > 0x10000)
+    if (abs(a1->sprite->x - some_x) > 0x10000 || abs(a1->sprite->y - some_y) > 0x10000)
     {
         a1->SetOrder(ENTITY_ORDER_11);
 
@@ -1479,7 +1471,7 @@ void entity_4149A0(Entity *a1)
         a1->sprite_x_2 = map_adjust_entity_in_tile_x(a1, a1->sprite->x);
         a1->sprite_y_2 = map_adjust_entity_in_tile_y(a1, a1->sprite->y);
         a1->SetReturnMode(entity_mode_adjust_unit_placement_inside_tile);
-        entity_mode_416A70_infantry(v1);
+        entity_mode_416A70_infantry(a1);
     }
 }
 
@@ -3809,7 +3801,7 @@ void entity_mode_418590(Entity *a1)
     {
         ++_47C048_unit_bomberdmg;
         v7 = sprite_create_scripted(v6->mobd_id, v1->sprite, v6->dmg_handler, SCRIPT_COROUTINE, v1->stru60.ptr_0);
-        v8 = v6->mobd_offset;
+        v8 = v6->mobd_lookup_offset_flying;
         v9 = v7;
         if (v8 != -1)
             sprite_4272E0_load_mobd_item(v7, v8, _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
@@ -4892,7 +4884,7 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
     switch (event)
     {
     case EVT_ENTITY_MOVE:
-        entity_41A9B0_unit(v4, (int)param);
+        entity_41A9B0_unit(v4, param);
         break;
     case EVT_ENTITY_ATTACK:
         if (v4->player_side == *(_DWORD *)param)

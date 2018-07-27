@@ -425,7 +425,6 @@ void entity_mobile_outpost_init(Entity *a1);
 void entity_mode_4278C0_mobile_outpost(Entity *a1);
 void MessageHandler_MobileOutpost(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void MessageHandler_MobileOutpostEmpty(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void __stdcall nullsub_2(int a1, int a2);
 void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1);
 void entity_427BB0_mobile_outpost_clanhall_planting(Entity *a1);
 void entity_mode_427BF0_mobile_outpost_clanhall_planting(Entity *a1);

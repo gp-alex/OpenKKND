@@ -5,6 +5,7 @@
 #include "src/kknd.h"
 #include "src/Script.h"
 #include "src/Map.h"
+#include "src/Pathfind.h"
 
 #include "Engine/Infrastructure/EntityRepository.h"
 

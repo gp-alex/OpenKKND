@@ -5,6 +5,7 @@
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Pathfind.h"
+#include "src/Map.h"
 
 #include "src/Engine/Entity.h"
 
@@ -206,7 +207,7 @@ void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIP
                             *(_DWORD *)(*((_DWORD *)param + 23) + 136) = 1;
                             v60->x = *(_DWORD *)(*((_DWORD *)param + 23) + 16);
                             v62 = *(_DWORD *)(*((_DWORD *)param + 23) + 20);
-                            v60->field_20 = 0;
+                            v60->_20_ai_importance = 0;
                             v60->y = v62;
                             v60->next = v61->next;
                             v60->prev = v61;
@@ -267,7 +268,7 @@ void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIP
                                 {
                                     v67->next->prev = v67->prev;
                                     v67->prev->next = v67->next;
-                                    v67->list_8->field_2C -= v67->entity->stats->field_54;
+                                    v67->list_8->_2C_ai_importance -= v67->entity->stats->_54_ai_importance;
                                     v68 = v67->list_8;
                                     if (v68 != v4->field_24C && v68->_C_next == &v68->_C_next)
                                     {
@@ -503,7 +504,7 @@ void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIP
                                 v4->field_24C->x_offset = v4->_278_x_offset;
                                 v4->field_24C->y_offset = v4->_27C_y_offset;
                                 v4->field_24C->field_24 = 0;
-                                v4->field_24C->field_2C = 0;
+                                v4->field_24C->_2C_ai_importance = 0;
                                 v4->field_24C->field_30 = 0;
                             }
                             v39 = *((_DWORD *)v5 + 4);
@@ -737,14 +738,14 @@ stru24_stru310 *stru24_4095B0(stru24 *a1, Entity *a2)
         result->y = a2->sprite->y;
         result->x_offset = a2->stru60.ptr_C->x_offset;
         result->y_offset = a2->stru60.ptr_C->y_offset;
-        result->field_20 = a2->stats->field_58;
+        result->_20_ai_importance = a2->stats->_58_ai_importance;
         v3 = a1->list_310_2EC;
         v4 = (char *)&a1->list_310_2EC;
         if ((stru24_stru310 **)v3 == &a1->list_310_2EC)
             a1->field_350 = 10;
         for (i = v3; (char *)i != v4; i = i->next)
         {
-            if (result->field_20 > i->field_20)
+            if (result->_20_ai_importance > i->_20_ai_importance)
                 break;
         }
         v6 = i->prev;
@@ -1188,7 +1189,7 @@ LABEL_26:
                 for (k = v1->list_94_78; (stru24_stru94 **)k != &v1->list_94_78; k = k->next)
                 {
                     v40 = k->_8_entity;
-                    if (v40->unit_id == unit_stats[v14->unit_id]._5C_unit_id)
+                    if (v40->unit_id == unit_stats[v14->unit_id].factory)
                     {
                         if (!entity_402AC0_is_mode_402AB0(v40) && k->_C_cost <= 0 && v1->field_2AC < v1->list_58_and_70_size)
                         {
@@ -1226,7 +1227,7 @@ LABEL_26:
             }
         }
     }
-    else if (!v25->field_20)
+    else if (!v25->_20_ai_importance)
     {
         v26 = v25->unit_id;
         if (_47C6D8_use__466098_cost_multipliers)
@@ -1248,7 +1249,7 @@ LABEL_26:
         v30 = v1->list_94_78;
         if ((stru24_stru94 **)v30 != &v1->list_94_78)
         {
-            while (v30->_8_entity->unit_id != unit_stats[v27]._5C_unit_id || v30->_C_cost > 0)
+            while (v30->_8_entity->unit_id != unit_stats[v27].factory || v30->_C_cost > 0)
             {
                 v30 = v30->next;
                 if ((stru24_stru94 **)v30 == &v1->list_94_78)
@@ -1261,7 +1262,7 @@ LABEL_26:
             v32 = (void *)v30->_8_entity_script_param;
             v30->_18_cost_per_time_step = v31;
             stru37_list_427D60_enqueue_item(v1->_2A8_p_globals_cash, &v30->_C_cost, v31, v30->_8_entity->script, v32, -1);
-            v25->field_20 = 1;
+            v25->_20_ai_importance = 1;
             v25->field_8 = 0;
         }
     }
@@ -1334,8 +1335,8 @@ LABEL_97:
                 v60 = v1->list_310_2EC;
                 if ((stru24_stru310 **)v60 != &v1->list_310_2EC)
                 {
-                    while (stru24_40B190(v1, 0x10000, v60->x, v60->y) >= unit_stats[33].field_54
-                        && v60->field_20 < unit_stats[48].field_58
+                    while (stru24_40B190(v1, 0x10000, v60->x, v60->y) >= unit_stats[33]._54_ai_importance
+                        && v60->_20_ai_importance < unit_stats[48]._58_ai_importance
                         || !sub_40AB60(v60))
                     {
                         v60 = v60->next;
@@ -1556,12 +1557,12 @@ LABEL_97:
             v106 = 0;
             v103->y_offset = 0;
             v103->x_offset = 0;
-            for (v103->field_2C = 0; v104 != (stru24_stru160 *)v105; ++v106)
+            for (v103->_2C_ai_importance = 0; v104 != (stru24_stru160 *)v105; ++v106)
             {
                 *(_DWORD *)(*((_DWORD *)v104->_C_next + 23) + 136) = 1;
                 v103->x_offset += *(_DWORD *)(*((_DWORD *)v104->_C_next + 23) + 16);
                 v103->y_offset += *(_DWORD *)(*((_DWORD *)v104->_C_next + 23) + 20);
-                v103->field_2C += *(_DWORD *)(*((_DWORD *)v104->_C_next + 6) + 84);
+                v103->_2C_ai_importance += *(_DWORD *)(*((_DWORD *)v104->_C_next + 6) + 84);
                 v104 = v104->next;
             }
             v107 = v103->x_offset / v106;
@@ -1624,7 +1625,7 @@ LABEL_97:
                                 v140[1] = &kk->field_8->_C_next;
                                 *((_DWORD *)kk->field_8->_C_next + 1) = (int)v140;
                                 kk->field_8->_C_next = v140;
-                                kk->field_8->field_2C += *(_DWORD *)(*((_DWORD *)v140[3] + 6) + 84);
+                                kk->field_8->_2C_ai_importance += *(_DWORD *)(*((_DWORD *)v140[3] + 6) + 84);
                                 v140[2] = kk->field_8;
                                 v140 = (void **)*v142;
                             } while (*v142 != v142);
@@ -1681,8 +1682,8 @@ LABEL_97:
                 nn->field_28 = v154;
                 v155 = v154;
                 if (v166
-                    || v1->field_2BC
-                    || (v156 = nn->field_2C, v157 = nn->field_30, y = v156 + v157 + 1, 100 * (v156 - v157) / y >= v1->field_2B8))
+                    || v1->_2BC_ai_importance
+                    || (v156 = nn->_2C_ai_importance, v157 = nn->field_30, y = v156 + v157 + 1, 100 * (v156 - v157) / y >= v1->field_2B8))
                 {
                     if (!nn->field_24 || v155 > 4)
                     {
@@ -1775,9 +1776,9 @@ LABEL_97:
                 v1->field_24C->_C_next = i2;
                 i2->list_8 = v1->field_24C;
                 v122 = v1->field_24C;
-                v123 = i2->entity->stats->field_54 + v122->field_2C;
+                v123 = i2->entity->stats->_54_ai_importance + v122->_2C_ai_importance;
                 i2 = v121;
-                v122->field_2C = v123;
+                v122->_2C_ai_importance = v123;
             }
         }
         v124 = v1->drill_rig_list_9C;
@@ -1794,14 +1795,14 @@ LABEL_97:
         }
         if (v1->list_160_head)
         {
-            if (v125 && v1->field_24C->field_2C >= v1->field_2B4)
+            if (v125 && v1->field_24C->_2C_ai_importance >= v1->field_2B4)
                 goto LABEL_275;
-            if (v1->field_2BC)
+            if (v1->_2BC_ai_importance)
                 goto LABEL_218;
-            if (v1->field_24C->field_2C >= v1->field_2C0)
+            if (v1->field_24C->_2C_ai_importance >= v1->field_2C0)
             {
             LABEL_275:
-                if (!v1->field_2BC && y && !v1->array_2C8_idx)
+                if (!v1->_2BC_ai_importance && y && !v1->array_2C8_idx)
                 {
                     v126 = *(_DWORD *)(y + 4);
                     v127 = *(_DWORD *)y;
@@ -1850,7 +1851,7 @@ LABEL_97:
                         v1->field_24C->field_1C = 0;
                         v1->field_24C->field_8 = 0;
                         v1->field_24C->field_24 = 0;
-                        v1->field_24C->field_2C = 0;
+                        v1->field_24C->_2C_ai_importance = 0;
                         v1->field_24C->field_30 = 0;
                         v1->field_24C->x_offset = v1->_278_x_offset;
                         v1->field_24C->y_offset = v1->_27C_y_offset;
@@ -2236,7 +2237,7 @@ stru24_EnemyNode **stru24_40B020(stru24 *a1, stru24_stru160 *a2)
         do
         {
             v9 = v4->entity;
-            if (!v9->destroyed && v9->stats->field_58)
+            if (!v9->destroyed && v9->stats->_58_ai_importance)
             {
                 v9->sprite->field_88_unused = 1;
                 v10 = v4->entity;
@@ -2247,7 +2248,7 @@ stru24_EnemyNode **stru24_40B020(stru24 *a1, stru24_stru160 *a2)
                     v12 = -v12;
                 if (v13 < 0)
                     v13 = -v13;
-                if (v21->field_2BC || v12 < 0x10000 && v13 < 0x10000)
+                if (v21->_2BC_ai_importance || v12 < 0x10000 && v13 < 0x10000)
                 {
                     if (v13 + v12 < v8 + v6)
                     {
@@ -2261,7 +2262,7 @@ stru24_EnemyNode **stru24_40B020(stru24 *a1, stru24_stru160 *a2)
                 else if (!v20)
                 {
                     v8 = v18;
-                    if ((v13 + v12) / v10->stats->field_58 < v18 + v6)
+                    if ((v13 + v12) / v10->stats->_58_ai_importance < v18 + v6)
                     {
                         v8 = v13;
                         v6 = v12;
@@ -2318,7 +2319,7 @@ int stru24_40B190(stru24 *a1, int size, int x, int y)
         do
         {
             v6 = v4->entity;
-            if (!v6->destroyed && v6->stats->field_54)
+            if (!v6->destroyed && v6->stats->_54_ai_importance)
             {
                 v6->sprite->field_88_unused = 1;
                 v7 = v4->entity;
@@ -2330,7 +2331,7 @@ int stru24_40B190(stru24 *a1, int size, int x, int y)
                 if (v10 < 0)
                     v10 = -v10;
                 if (v9 < v13 && v10 < v13)
-                    v12 += v7->stats->field_54;
+                    v12 += v7->stats->_54_ai_importance;
             }
             v4 = v4->next;
         } while ((char *)v4 != v5);
@@ -2367,7 +2368,7 @@ void stru24_40B230(stru24 *a1)
     {
         v2 = a1->enemy_list_108;
         v3 = (char *)&a1->enemy_list_108;
-        a1->field_2BC = 0;
+        a1->_2BC_ai_importance = 0;
         if ((stru24_EnemyNode **)v2 != &a1->enemy_list_108)
         {
             do
@@ -2385,7 +2386,7 @@ void stru24_40B230(stru24 *a1)
                         && v8 > v1->field_254 - 49152
                         && v8 < v1->field_25C + 49152)
                     {
-                        v1->field_2BC += v5->stats->field_54;
+                        v1->_2BC_ai_importance += v5->stats->_54_ai_importance;
                     }
                 }
                 v2 = v2->next;
@@ -2407,7 +2408,7 @@ void stru24_40B230(stru24 *a1)
             for (i = (stru24 *)v1->enemy_list_108; (stru24_EnemyNode **)i != &v1->enemy_list_108; i = i->next)
             {
                 v12 = i->_8_entity;
-                if (!v12->destroyed && v12->stats->field_54)
+                if (!v12->destroyed && v12->stats->_54_ai_importance)
                 {
                     v12->sprite->field_88_unused = 1;
                     v13 = i->_8_entity;
@@ -2422,9 +2423,9 @@ void stru24_40B230(stru24 *a1)
                     {
                         v17 = v13->stats;
                         if (v17->speed)
-                            *v10 += v17->field_54;
+                            *v10 += v17->_54_ai_importance;
                         else
-                            *v10 -= v17->field_54 >> 1;
+                            *v10 -= v17->_54_ai_importance >> 1;
                     }
                 }
             }
@@ -2575,7 +2576,7 @@ bool stru24_40B490(stru24 *a1, UNIT_ID a2, int *out_x, int *out_y)
                 {
                     if (v18 < (int)UNIT_STATS_SURV_GUARD_TOWER || v18 >(int)UNIT_STATS_MUTE_ROTARY_CANNON)
                     {
-                        v20 = (v17->stats->field_58 + v17->stats->field_54 + 10) >> 2;
+                        v20 = (v17->stats->_58_ai_importance + v17->stats->_54_ai_importance + 10) >> 2;
                     }
                     else
                     {
@@ -2784,9 +2785,9 @@ int UNIT_InitAiPlayers()
                 v62->list_58_and_70_size = 549 / (_4778C8_singleplayer_available_units_denom + 1);
                 v62->field_2B4 = 4;
                 v62->field_2B8 = -50;
-                v62->field_2BC = 0;
+                v62->_2BC_ai_importance = 0;
                 v63 = current_level_idx;
-                game_globals_per_player.cash[v83 + 1] = levels[current_level_idx].field_E;
+                game_globals_per_player.cash[v83 + 1] = levels[current_level_idx].evolved_starting_cash;
                 v62->level_field_22_or_2A = levels[v63].field_22;
                 v62->list_260 = (stru24_stru26C *)&v62->list_260;
                 v62->list_26C_264 = (stru24_stru26C *)&v62->list_260;
@@ -2944,11 +2945,11 @@ int UNIT_InitAiPlayers()
                 v40->_2A0_player_side = v76;
                 v40->_2A8_p_globals_cash = &game_globals_per_player.cash[v82 + 1];
                 v41 = _4778C8_singleplayer_available_units_denom;
-                game_globals_per_player.cash[v82 + 1] = levels[current_level_idx].field_E;
+                game_globals_per_player.cash[v82 + 1] = levels[current_level_idx].evolved_starting_cash;
                 v40->list_58_and_70_size = 549 / (v41 + 1);
                 v40->field_2B4 = 4;
                 v40->field_2B8 = -50;
-                v40->field_2BC = 0;
+                v40->_2BC_ai_importance = 0;
                 v40->level_field_22_or_2A = levels[current_level_idx].field_22;
                 v40->list_260 = (stru24_stru26C *)&v40->list_260;
                 v40->list_26C_264 = (stru24_stru26C *)&v40->list_260;
@@ -3146,7 +3147,7 @@ int UNIT_InitAiPlayers()
                 }
                 else if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
                 {
-                    *(_DWORD *)v6 = levels[current_level_idx].field_E;
+                    *(_DWORD *)v6 = levels[current_level_idx].evolved_starting_cash;
                     v5->level_field_22_or_2A = 0;
                     v5->field_360 = 0;
                 }
@@ -3160,7 +3161,7 @@ int UNIT_InitAiPlayers()
                 else
                 {
                     v9 = current_level_idx;
-                    *(_DWORD *)v6 = levels[current_level_idx].field_E;
+                    *(_DWORD *)v6 = levels[current_level_idx].evolved_starting_cash;
                     v5->level_field_22_or_2A = levels[v9].field_22;
                     v5->field_360 = levels[current_level_idx].field_20;
                 }
@@ -3181,7 +3182,7 @@ int UNIT_InitAiPlayers()
                 v5->field_258 = -1;
                 v5->field_254 = 0x40000000;
                 v5->field_25C = -1;
-                v5->field_2BC = 0;
+                v5->_2BC_ai_importance = 0;
                 v12 = (stru24_stru26C *)malloc(0x180u);
                 v5->list_26C = v12;
                 if (!v12)

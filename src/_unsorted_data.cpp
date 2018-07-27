@@ -5,6 +5,19 @@
 
 #include "src/Engine/Entity.h"
 
+int _479DF0_mapd_initialized; // weak
+int dword_478AB0; // weak
+int _478BE8_map_info__see40E6E0[8];
+char byte_478C08; // weak
+int dword_478FF4; // weak
+int dword_47952C; // weak
+int dword_47953C; // weak
+int currently_running_lvl_mapd_num_items; // weak
+Mapd_stru0 _47C380_mapd;
+int currently_running_lvl_mapd_valid; // weak
+int _47C390_mapd; // weak
+DataMapd *currently_running_lvl_mapd;
+Bitmap *_47A010_mapd_item_being_drawn[3];
 _UNKNOWN loc_45D19B; // weak
 _UNKNOWN loc_45D1A4; // weak
 _UNKNOWN loc_45D267; // weak
@@ -5932,17 +5945,6 @@ int max_beastenclosure_level = 0; // weak
 int dword_477358 = 0; // weak
 stru15unit _477378_clanhall = { { 0, 0, 0, 0, 0 }, 0, 0, 0, 0 };
 int max_clanhall_level = 0; // weak
-int _4773A0_boxd_item0_num_things = 0; // weak
-DataBoxd *currently_running_lvl_boxd = NULL;
-Boxd_stru0 *_4773A8_boxd_parray = NULL;
-int _4773AC_boxd_item0_map_x_scale = 0; // weak
-Boxd_stru0 **_4773B0_boxd_item0_things = NULL;
-int _4773B4_boxd_item0_map_num_y_tiles = 0; // weak
-int _4773B8_boxd_item0_map_y_scale = 0; // weak
-int currently_running_lvl_boxd_valid = 0; // weak
-Boxd_stru0 *_4773C0_boxd_array = NULL;
-BoxdTile **_4773C4_boxd_item0_map_tiles = NULL;
-int _4773C8_boxd_item0_map_num_x_tiles = 0; // weak
 char byte_4773D0[68] =
 {
 	'\0',

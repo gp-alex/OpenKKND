@@ -20,6 +20,7 @@ set(UNSORTED_SOURCES
     Sound.cpp
     Video.cpp
     Map.cpp
+    Pathfind.cpp
 )
 
 set(UNSORTED_HEADERS
@@ -38,6 +39,7 @@ set(UNSORTED_HEADERS
     Sound.h
     Video.h
     Map.h
+    Pathfind.h
 )
 
 if(WIN32)

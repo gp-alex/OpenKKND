@@ -1,5 +1,8 @@
 #pragma once
 
+#include "src/Engine/Entity.h"
+
+
 
 #define BOXD_STRU0_TILE_SLOT(n)         (1 << (n))
 #define BOXD_STRU0_TILE_SLOT0           BOXD_STRU0_TILE_SLOT(0)
@@ -101,3 +104,16 @@ bool boxd_41C890(int x, int y, int width, int height, int a5, int a6, Entity *a7
 
 
 extern DataBoxd_stru0_per_map_unit *_478AA8_boxd_stru0_array;
+
+
+extern int _4773A0_boxd_item0_num_things; // weak
+extern DataBoxd *currently_running_lvl_boxd;
+extern Boxd_stru0 *_4773A8_boxd_parray;
+extern int _4773AC_boxd_item0_map_x_scale; // weak
+extern Boxd_stru0 **_4773B0_boxd_item0_things;
+extern int _4773B4_boxd_item0_map_num_y_tiles; // weak
+extern int _4773B8_boxd_item0_map_y_scale; // weak
+extern int currently_running_lvl_boxd_valid; // weak
+extern Boxd_stru0 *_4773C0_boxd_array;
+extern BoxdTile **_4773C4_boxd_item0_map_tiles;
+extern int _4773C8_boxd_item0_map_num_x_tiles; // weak

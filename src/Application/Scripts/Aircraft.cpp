@@ -313,7 +313,7 @@ void entity_mode_4016B0_aircraft(Entity *a1)
         {
             ++_47C048_unit_bomberdmg;
             v4 = sprite_create_scripted(v3->mobd_id, a1->sprite, v3->dmg_handler, SCRIPT_FUNCTION, a1->stru60.ptr_0);
-            v5 = v3->mobd_offset;
+            v5 = v3->mobd_lookup_offset_flying;
             v6 = v4;
             if (v5 != -1)
                 sprite_load_mobd(v4, v5);

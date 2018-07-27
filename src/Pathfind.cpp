@@ -1,12 +1,34 @@
-#include "src/Pathing.h"
+#include <assert.h>
 
+#include "src/Pathfind.h"
+
+#include "src/_unsorted_data.h"
+#include "src/Map.h"
+#include "src/Random.h"
+#include "src/ScriptEvent.h"
+
+
+
+
+
+int _4773A0_boxd_item0_num_things = 0; // weak
+DataBoxd *currently_running_lvl_boxd = NULL;
+Boxd_stru0 *_4773A8_boxd_parray = NULL;
+int _4773AC_boxd_item0_map_x_scale = 0; // weak
+Boxd_stru0 **_4773B0_boxd_item0_things = NULL;
+int _4773B4_boxd_item0_map_num_y_tiles = 0; // weak
+int _4773B8_boxd_item0_map_y_scale = 0; // weak
+int currently_running_lvl_boxd_valid = 0; // weak
+Boxd_stru0 *_4773C0_boxd_array = NULL;
+BoxdTile **_4773C4_boxd_item0_map_tiles = NULL;
+int _4773C8_boxd_item0_map_num_x_tiles = 0; // weak
 
 
 DataBoxd_stru0_per_map_unit *_478AA8_boxd_stru0_array;
 
 
 
-Entity *map_get_tile_entities(int map_x, int map_y) {
+Entity **map_get_tile_entities(int map_x, int map_y) {
     assert(map_x >= 0 && map_x < map_get_width());
     assert(map_y >= 0 && map_y < map_get_height());
 
@@ -1003,6 +1025,11 @@ bool boxd_40E6E0()
     int v33; // [sp+34h] [bp-10h]@2
     int v34; // [sp+38h] [bp-Ch]@19
 
+    extern int _4793F8_map_width;
+    extern int _478AAC_map_height;
+    extern int _478AB4_map_width_shl_13;
+    extern int _478FF0_map_height_shl_13;
+
     byte_478C08 = 0;
     kknd_srand_3(0);
     dword_478FF4 = 0;
@@ -1016,12 +1043,13 @@ bool boxd_40E6E0()
         v30 = v1;
         v2 = v0->items->some_map_width_scale - 13;
         v32 = v0->items->some_map_width_scale - 13;
-        map_get_width() = v0->items->map_num_x_tiles << v32;
+        _4793F8_map_width = v0->items->map_num_x_tiles << v32;
         v33 = v1->some_map_height_scale - 13;
         v3 = v1->map_num_y_tiles << v33;
-        map_get_width_global() = map_get_width() << 13;
-        map_get_height() = v3;
-        map_get_height_global() = v3 << 13;
+        _478AAC_map_height = v3;
+
+        _478AB4_map_width_shl_13 = map2global(map_get_width());
+        _478FF0_map_height_shl_13 = map2global(v3);
         v4 = (DataBoxd_stru0_per_map_unit *)malloc(24 * map_get_width() * v3);
         _478AA8_boxd_stru0_array = v4;
         if (!v4)
@@ -1144,8 +1172,8 @@ bool boxd_40E6E0()
     }
     else
     {
-        map_get_height() = 0;
-        map_get_width() = 0;
+        _478AAC_map_height = 0;
+        _4793F8_map_width = 0;
         _478AA8_boxd_stru0_array = 0;
     }
     result = 1;
@@ -1233,7 +1261,7 @@ int boxd_40EA50_original(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_ma
                     ++v17;
                     if (v19 >= 5)
                     {
-                        if (!v25->stats->field_2C)
+                        if (!v25->stats->can_squash_infantry)
                             break;
                         return 2;
                     }
@@ -1285,7 +1313,7 @@ int boxd_40EA50_original(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_ma
             }
             if (!(v10 & 0x80) && v10 & 0x1F)
             {
-                if (v25->stats->field_2C)
+                if (v25->stats->can_squash_infantry)
                 {
                     v11 = v25->player_side;
                     v12 = 0;
@@ -1382,7 +1410,7 @@ int boxd_40EA50_refactored(Entity *entity, int map_x, int map_y, DataBoxd_stru0_
                     ++v17;
                     if (v19 >= 5)
                     {
-                        if (!entity->stats->field_2C)
+                        if (!entity->stats->can_squash_infantry)
                             break;
                         return 2;
                     }
@@ -1430,7 +1458,7 @@ int boxd_40EA50_refactored(Entity *entity, int map_x, int map_y, DataBoxd_stru0_
             }
             if (!v9->IsVehicleOrBuilding() && v9->flags & BOXD_STRU0_ALL_SLOTS)
             {
-                if (entity->stats->field_2C)
+                if (entity->stats->can_squash_infantry)
                 {
                     v11 = entity->player_side;
                     v12 = 0;
@@ -1546,7 +1574,7 @@ int boxd_40ED00(Entity *a1, DataBoxd_stru0_per_map_unit *a2)
                     ++v7;
                     if (v9 >= 5)
                     {
-                        if (v2->stats->field_2C)
+                        if (v2->stats->can_squash_infantry)
                             return 2;
                         break;
                     }
@@ -1686,7 +1714,7 @@ int Map_40EEB0_place_entity(Entity *a1, int map_x, int map_y, int a4)
         v14 = v5->_4_entities;
         if (v5->_4_entities[0] == v4)
             return ENTITY_MAKE_TILE_POSITION(0);
-        if (!v5->IsImpassibleTerrain() && !(v7 & 0x80) && a1->stats->field_2C)
+        if (!v5->IsImpassibleTerrain() && !(v7 & 0x80) && a1->stats->can_squash_infantry)
         {
             v15 = 0;
             player_side = v4->player_side;

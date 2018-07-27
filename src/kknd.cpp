@@ -498,7 +498,7 @@ void entity_402E90_on_damage(Entity *a1, void *param, void(*on_death_mode)(Entit
 		damage_amount = (void *)*((_WORD *)param + 72);
 		if (a1->hitpoints > 0)
 		{
-			if (a1->stats->field_54)
+			if (a1->stats->_54_ai_importance)
 			{
 				v5 = *((_DWORD *)param + 32);
 				if (v5)
@@ -8691,7 +8691,7 @@ LABEL_19:
 	}
 LABEL_24:
 	v9->field_28 = *(_DWORD *)(a2 + 12);
-	v9->field_2C = *(_DWORD *)(a2 + 16);
+	v9->_2C_ai_importance = *(_DWORD *)(a2 + 16);
 	v12 = *(_DWORD *)(a2 + 20);
 	v9->field_30 = v12;
 	if (v12 < 0)
@@ -9185,7 +9185,7 @@ void *GAME_Save_PackAiPlayers(size_t *size)
 		*((_DWORD *)v38 + 43) = v93->list_58_and_70_size;
 		*((_DWORD *)v38 + 44) = v93->field_2B4;
 		*((_DWORD *)v38 + 45) = v93->field_2B8;
-		*((_DWORD *)v38 + 46) = v93->field_2BC;
+		*((_DWORD *)v38 + 46) = v93->_2BC_ai_importance;
 		*((_DWORD *)v38 + 47) = v93->field_2C0;
 		*((_DWORD *)v38 + 48) = v93->array_2C8_idx;
 		memcpy((char *)v38 + 196, v93->array_2C8, 0x20u);
@@ -9198,7 +9198,7 @@ void *GAME_Save_PackAiPlayers(size_t *size)
 			*((_DWORD *)i19 - 4) = i22->y;
 			*((_DWORD *)i19 - 3) = i22->x_offset;
 			*((_DWORD *)i19 - 2) = i22->y_offset;
-			*((_DWORD *)i19 - 1) = i22->field_20;
+			*((_DWORD *)i19 - 1) = i22->_20_ai_importance;
 		}
 		for (i23 = v93->list_318; (stru24_stru310 **)i23 != &v93->list_318; i19 = (char *)i19 + 28)
 		{
@@ -9214,7 +9214,7 @@ void *GAME_Save_PackAiPlayers(size_t *size)
 			*((_DWORD *)i19 + 3) = i23->y;
 			*((_DWORD *)i19 + 4) = i23->x_offset;
 			*((_DWORD *)i19 + 5) = i23->y_offset;
-			*((_DWORD *)i19 + 6) = i23->field_20;
+			*((_DWORD *)i19 + 6) = i23->_20_ai_importance;
 			i23 = i23->next;
 		}
 		*((_DWORD *)v38 + 60) = v93->field_344;
@@ -9965,7 +9965,7 @@ bool GAME_Load_UnpackAiPlayers(void *save_data)
 			v4->field_24C->field_1C = 0;
 			v4->field_24C->field_8 = 0;
 			v4->field_24C->field_24 = 0;
-			v4->field_24C->field_2C = 0;
+			v4->field_24C->_2C_ai_importance = 0;
 		}
 		v122 = 0;
 		if (*((_DWORD *)v117 + 13) > 0)
@@ -10061,7 +10061,7 @@ bool GAME_Load_UnpackAiPlayers(void *save_data)
 		v4->list_58_and_70_size = *((_DWORD *)v117 + 43);
 		v4->field_2B4 = *((_DWORD *)v117 + 44);
 		v4->field_2B8 = *((_DWORD *)v117 + 45);
-		v4->field_2BC = *((_DWORD *)v117 + 46);
+		v4->_2BC_ai_importance = *((_DWORD *)v117 + 46);
 		v4->field_2C0 = *((_DWORD *)v117 + 47);
 		v4->array_2C8_idx = *((_DWORD *)v117 + 48);
 		memcpy(v4->array_2C8, v117 + 196, 0x14u);
@@ -10085,7 +10085,7 @@ bool GAME_Load_UnpackAiPlayers(void *save_data)
 			v108->y = *(_DWORD *)(v105 + 12);
 			v108->x_offset = *(_DWORD *)(v105 + 16);
 			v108->y_offset = *(_DWORD *)(v105 + 20);
-			v108->field_20 = *(_DWORD *)(v105 + 24);
+			v108->_20_ai_importance = *(_DWORD *)(v105 + 24);
 			v105 += 28;
 			++l;
 		}
@@ -10107,7 +10107,7 @@ bool GAME_Load_UnpackAiPlayers(void *save_data)
 				v109->y = *(_DWORD *)(v105 + 12);
 				v109->x_offset = *(_DWORD *)(v105 + 16);
 				v109->y_offset = *(_DWORD *)(v105 + 20);
-				v109->field_20 = *(_DWORD *)(v105 + 24);
+				v109->_20_ai_importance = *(_DWORD *)(v105 + 24);
 				v105 += 28;
 				++v106;
 				a2 = v105;
@@ -13970,11 +13970,10 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 	else
 	{
         // plant unsuccessful - restore entity
-
-		v1->unit_id = (UNIT_ID)v1->_134_param__unitstats_after_mobile_outpost_plant;
-		map_place_entity(v1, v1->sprite->x, v1->sprite->y, 0);
-		v1->sprite->x_speed = initial_x_speed;
-		v1->sprite->y_speed = initial_y_speed;
+		a1->unit_id = (UNIT_ID)a1->_134_param__unitstats_after_mobile_outpost_plant;
+		map_place_entity(a1, a1->sprite->x, a1->sprite->y, 0);
+		a1->sprite->x_speed = initial_x_speed;
+		a1->sprite->y_speed = initial_y_speed;
 	}
 }
 
@@ -21129,16 +21128,11 @@ void script_441340_mobd45_evt8(Script *a1)
 //----- (00441430) --------------------------------------------------------
 int get_current_level_starting_cash()
 {
-	int result; // eax@3
-
 	if (!single_player_game || _47C6D8_use__466098_cost_multipliers)
-		result = atoi(_46E420_starting_cash[(char)_46E420_starting_cash_idx]);
+		return atoi(_46E420_starting_cash[(char)_46E420_starting_cash_idx]);
 	else
-		result = levels[current_level_idx].starting_cash;
-	return result;
+		return levels[current_level_idx].survivor_starting_cash;
 }
-// 468B5C: using guessed type int single_player_game;
-// 47C5FC: using guessed type int _46E420_starting_cash_idx;
 
 //----- (00441470) --------------------------------------------------------
 void script_441470_mobd45_evt8(Script *a1)
@@ -24913,7 +24907,7 @@ void tower_attachment_handler_448980(EntityTurret *a1)
 	v1 = a1;
 	sprite_4272E0_load_mobd_item(
 		a1->turret_sprite,
-		a1->stats_attachment_point->mobd_lookup_table_offset,
+		a1->stats_attachment_point->mobd_lookup_offset_idle,
 		_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
 	v1->handler = tower_attachment_handler_4489B0;
 }
@@ -24960,7 +24954,7 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 		entity_advance_mobd_rotation(&v1->mobd_lookup_id, v9, v1->stats_attachment_point->mobd_frame_step);
 		sprite_4272E0_load_mobd_item(
 			v1->turret_sprite,
-			v1->stats_attachment_point->mobd_lookup_table_offset,
+			v1->stats_attachment_point->mobd_lookup_offset_idle,
 			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 		if (v1->mobd_lookup_id == v9)
 		{
@@ -24969,7 +24963,7 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 				v1->_C_entity->sprite->y - v1->turret_sprite->y);
 			sprite_4272E0_load_mobd_item(
 				v1->turret_sprite,
-				v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+				v1->stats_attachment_point->mobd_lookup_offset_attack,
 				_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 			v1->handler = tower_attachment_handler_448C40;
 		}
@@ -24985,7 +24979,7 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 		v1->mobd_lookup_id = src;
 		sprite_4273B0_load_mobd_item_sound(
 			v1->turret_sprite,
-			v12->mobd_lookup_table_offset,
+			v12->mobd_lookup_offset_idle,
 			_47D3C4_entity_mobd_lookup_ids[v11 + 1]);
 	}
 }
@@ -25006,7 +25000,7 @@ void tower_attachment_handler_448B40(EntityTurret *a1)
 	entity_advance_mobd_rotation(&v1->mobd_lookup_id, v4, v1->stats_attachment_point->mobd_frame_step);
 	sprite_4272E0_load_mobd_item(
 		v1->turret_sprite,
-		v1->stats_attachment_point->mobd_lookup_table_offset,
+		v1->stats_attachment_point->mobd_lookup_offset_idle,
 		_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 	if (v1->mobd_lookup_id == v4)
 	{
@@ -25015,7 +25009,7 @@ void tower_attachment_handler_448B40(EntityTurret *a1)
 			v1->_C_entity->sprite->y - v1->turret_sprite->y);
 		sprite_4272E0_load_mobd_item(
 			v1->turret_sprite,
-			v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+			v1->stats_attachment_point->mobd_lookup_offset_attack,
 			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 		v1->handler = tower_attachment_handler_448C40;
 	}
@@ -25032,7 +25026,7 @@ void tower_attachment_handler_448BF0(EntityTurret *a1)
 		a1->_C_entity->sprite->y - a1->turret_sprite->y);
 	sprite_4272E0_load_mobd_item(
 		v1->turret_sprite,
-		v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+		v1->stats_attachment_point->mobd_lookup_offset_attack,
 		_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 	v1->handler = tower_attachment_handler_448C40;
 }
@@ -25068,14 +25062,14 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 			v1->mobd_lookup_id = v2;
 			sprite_4273B0_load_mobd_item_sound(
 				v3,
-				v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+				v1->stats_attachment_point->mobd_lookup_offset_attack,
 				_47D3C4_entity_mobd_lookup_ids[v2 + 1]);
 			v4 = v1->stats_attachment_point->dmg_source;
 			if (v4 && _47C048_unit_bomberdmg < 200 && !v1->field_18)
 			{
 				++_47C048_unit_bomberdmg;
 				v5 = sprite_create_scripted(v4->mobd_id, v1->turret_sprite, v4->dmg_handler, SCRIPT_COROUTINE, v1->ptr_24);
-				v6 = v4->mobd_offset;
+				v6 = v4->mobd_lookup_offset_flying;
 				v7 = v5;
 				if (v6 != -1)
 					sprite_4272E0_load_mobd_item(v5, v6, _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
@@ -25128,7 +25122,7 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 		{
 			sprite_4272E0_load_mobd_item(
 				v1->turret_sprite,
-				v1->stats_attachment_point->mobd_lookup_table_offset,
+				v1->stats_attachment_point->mobd_lookup_offset_idle,
 				_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 			v1->handler = tower_attachment_handler_4489B0;
 		}
@@ -25137,7 +25131,7 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 	{
 		sprite_4272E0_load_mobd_item(
 			v1->turret_sprite,
-			v1->stats_attachment_point->mobd_lookup_table_offset,
+			v1->stats_attachment_point->mobd_lookup_offset_idle,
 			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 		v1->handler = tower_attachment_handler_4489B0;
 	}
@@ -25804,7 +25798,7 @@ void EntityTurret_44BF00_handler(EntityTurret *a1)
 	v2 = &a1->mobd_lookup_id;
 	sprite_4272E0_load_mobd_item(
 		a1->turret_sprite,
-		a1->stats_attachment_point->mobd_lookup_table_offset,
+		a1->stats_attachment_point->mobd_lookup_offset_idle,
 		_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
 	v3 = v1->stats_attachment_point;
 	v4 = v1->entity;
@@ -25812,7 +25806,7 @@ void EntityTurret_44BF00_handler(EntityTurret *a1)
 	entity_advance_mobd_rotation(v2, v4->current_mobd_lookup_idx, v3->mobd_frame_step);
 	sprite_4273B0_load_mobd_item_sound(
 		v1->turret_sprite,
-		v1->stats_attachment_point->mobd_lookup_table_offset,
+		v1->stats_attachment_point->mobd_lookup_offset_idle,
 		_47D3C4_entity_mobd_lookup_ids[*v2 + 1]
     );
     script_yield_any_trigger(v1->sprite_task, 2);
@@ -25833,7 +25827,7 @@ void EntityTurret_44BF70(EntityTurret *a1)
     );
 	sprite_4273B0_load_mobd_item_sound(
 		v1->turret_sprite,
-		v1->stats_attachment_point->mobd_lookup_table_offset,
+		v1->stats_attachment_point->mobd_lookup_offset_idle,
 		_47D3C4_entity_mobd_lookup_ids[*(_DWORD *)v2 + 1]
     );
     script_yield_any_trigger(v1->sprite_task, 2);
@@ -26056,7 +26050,7 @@ int UNIT_Init()
 		}
 		if (!v7)
 			goto LABEL_18;
-		v10 = v6 * (v4[-1].reload_time - 40) * v4[-2]._1C_mobd_lookup_table_offset_for_rotary_cannon / v7 >> 8;
+		v10 = v6 * (v4[-1].reload_time - 40) * v4[-2].mobd_lookup_offset_attack / v7 >> 8;
 		v4->reload2_time = v10;
 		if (v10 < 1)
 			v4->reload2_time = 1;

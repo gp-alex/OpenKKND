@@ -1,11 +1,13 @@
-#include "Engine/EntityFactory.h"
+#include "src/Engine/EntityFactory.h"
 
-#include "_unsorted_data.h"
-#include "kknd.h"
-#include "ScriptEvent.h"
-#include "stru31.h"
+#include "src/_unsorted_data.h"
+#include "src/kknd.h"
+#include "src/ScriptEvent.h"
+#include "src/stru31.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 
-#include "Engine/Infrastructure/EntityRepository.h"
+#include "src/Engine/Infrastructure/EntityRepository.h"
 
 using Engine::EntityFactory;
 using Engine::Infrastructure::EntityRepository;

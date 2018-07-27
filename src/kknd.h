@@ -319,7 +319,7 @@ struct UnitAttachmentPoint
 	int reload2_time; // reload time
 	int volley_size;
     int mobd_lookup_offset_idle;//mobd_lookup_table_offset; 
-    int mobd_lookup_offset_attack;// _1C_mobd_lookup_table_offset_for_rotary_cannon;
+    int mobd_lookup_offset_attack;
 	UnitDamageSource *dmg_source;
 	int field_24;
 };
@@ -1083,7 +1083,7 @@ struct stru24
 	int list_58_and_70_size;
 	int field_2B4;
 	int field_2B8;
-	int field_2BC;
+	int _2BC_ai_importance;
 	int field_2C0;
 	int array_2C8_idx;
 	int array_2C8[4];
@@ -1143,7 +1143,7 @@ struct stru24_stru160
 	int field_20;
 	stru24_EnemyNode *field_24;
 	int field_28;
-	int field_2C;
+	int _2C_ai_importance;
 	int field_30;
 	int x_offset;
 	int y_offset;
@@ -1245,7 +1245,7 @@ struct stru24_stru310
 	int y;
 	int x_offset;
 	int y_offset;
-	int field_20;
+	int _20_ai_importance;
 };
 
 /* 350 */
@@ -1398,14 +1398,20 @@ enum LEVEL_ID : __int32
     LEVEL_INVALID = -1
 };
 
+typedef void(*TurretHandler)(struct EntityTurret *);
+
 /* 372 */
 struct EntityTurret
 {
+    inline void SetHandler(TurretHandler handler) {
+        this->handler = handler;
+    }
+
 	Script *sprite_task;
 	Sprite *turret_sprite;
 	Entity *entity;
 	Entity *_C_entity;
-	void(*handler)(EntityTurret *);
+    TurretHandler handler;
 	int mobd_lookup_id;
 	int field_18;
 	int field_1C;

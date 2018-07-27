@@ -426,7 +426,7 @@ int EntityTowerAttachment_4479F0(EntityTurret *a1)
                             {
                                 v15 = *v14;
                                 v16 = (*v14)->stats;
-                                if ((v16->field_54 || v16->speed) && !v15->destroyed)
+                                if ((v16->_54_ai_importance || v16->speed) && !v15->destroyed)
                                 {
                                     v17 = math_42D64D_vec_length_2d(
                                         (v1->entity->sprite->x - v15->sprite->x) >> 8,
@@ -520,7 +520,7 @@ void EntityTowerAttachment_handler_447C40(EntityTurret *a1)
     v2 = a1->mobd_lookup_id;
     v3 = a1->stats_attachment_point;
     a1->_C_entity_idx = 0;
-    sprite_4272E0_load_mobd_item(a1->turret_sprite, v3->mobd_lookup_table_offset, _47D3C4_entity_mobd_lookup_ids[v2 + 1]);
+    sprite_4272E0_load_mobd_item(a1->turret_sprite, v3->mobd_lookup_offset_idle, _47D3C4_entity_mobd_lookup_ids[v2 + 1]);
     if (EntityTowerAttachment_4479F0(v1))
     {
         v4 = v1->sprite_task;
@@ -558,7 +558,7 @@ void EntityTowerAttachment_handler_447CA0(EntityTurret *a1)
     entity_advance_mobd_rotation(&v1->mobd_lookup_id, v5, v1->stats_attachment_point->mobd_frame_step);
     sprite_4272E0_load_mobd_item(
         v1->turret_sprite,
-        v1->stats_attachment_point->mobd_lookup_table_offset,
+        v1->stats_attachment_point->mobd_lookup_offset_idle,
         _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
     if (v1->mobd_lookup_id != v5)
         return;
@@ -575,12 +575,12 @@ void EntityTowerAttachment_handler_447CA0(EntityTurret *a1)
         v10 = _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1];
         if (v1->entity->unit_id == 57)
         {
-            sprite_4272E0_load_mobd_item(v1->turret_sprite, v9->_1C_mobd_lookup_table_offset_for_rotary_cannon, v10);
+            sprite_4272E0_load_mobd_item(v1->turret_sprite, v9->mobd_lookup_offset_attack, v10);
             v1->handler = EntityTowerAttachment_handler_447E20;
         }
         else
         {
-            sprite_4272E0_load_mobd_item(v1->turret_sprite, v9->mobd_lookup_table_offset, v10);
+            sprite_4272E0_load_mobd_item(v1->turret_sprite, v9->mobd_lookup_offset_idle, v10);
             v1->handler = EntityTowerAttachment_handler_447E20;
         }
     }
@@ -603,12 +603,12 @@ void EntityTowerAttachment_handler_447DD0(EntityTurret *a1)
     v3 = _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1];
     if (a1->entity->unit_id == UNIT_STATS_MUTE_ROTARY_CANNON)
     {
-        sprite_4272E0_load_mobd_item(a1->turret_sprite, v2->_1C_mobd_lookup_table_offset_for_rotary_cannon, v3);
+        sprite_4272E0_load_mobd_item(a1->turret_sprite, v2->mobd_lookup_offset_attack, v3);
         v1->handler = EntityTowerAttachment_handler_447E20;
     }
     else
     {
-        sprite_4272E0_load_mobd_item(a1->turret_sprite, v2->mobd_lookup_table_offset, v3);
+        sprite_4272E0_load_mobd_item(a1->turret_sprite, v2->mobd_lookup_offset_idle, v3);
         v1->handler = EntityTowerAttachment_handler_447E20;
     }
 }
@@ -649,12 +649,12 @@ void EntityTowerAttachment_handler_447E20(EntityTurret *a1)
             if (v7->unit_id == UNIT_STATS_MUTE_ROTARY_CANNON)
                 sprite_4273B0_load_mobd_item_sound(
                     v1->turret_sprite,
-                    v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+                    v1->stats_attachment_point->mobd_lookup_offset_attack,
                     _47D3C4_entity_mobd_lookup_ids[v6 + 1]);
             else
                 sprite_4273B0_load_mobd_item_sound(
                     v1->turret_sprite,
-                    v1->stats_attachment_point->mobd_lookup_table_offset,
+                    v1->stats_attachment_point->mobd_lookup_offset_idle,
                     _47D3C4_entity_mobd_lookup_ids[v6 + 1]);
             if (!v1->field_18)
             {
@@ -662,7 +662,7 @@ void EntityTowerAttachment_handler_447E20(EntityTurret *a1)
                 if (v8 != UNIT_STATS_SURV_MISSILE_BATTERY && v8 != UNIT_STATS_MUTE_ROTARY_CANNON)
                     sprite_4272E0_load_mobd_item(
                         v1->turret_sprite,
-                        v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+                        v1->stats_attachment_point->mobd_lookup_offset_attack,
                         _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
                 v1->handler = EntityTowerAttachment_handler_447FA0;
                 v1->sprite_task->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
@@ -690,7 +690,7 @@ void EntityTowerAttachment_handler_447F50(EntityTurret *a1)
     if (v2 != UNIT_STATS_SURV_MISSILE_BATTERY && v2 != UNIT_STATS_MUTE_ROTARY_CANNON)
         sprite_4272E0_load_mobd_item(
             a1->turret_sprite,
-            a1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+            a1->stats_attachment_point->mobd_lookup_offset_attack,
             _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
     v1->handler = EntityTowerAttachment_handler_447FA0;
     v1->sprite_task->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
@@ -718,7 +718,7 @@ void EntityTowerAttachment_handler_447FA0(EntityTurret *a1)
     {
         ++_47C048_unit_bomberdmg;
         v3 = sprite_create_scripted(v2->mobd_id, a1->turret_sprite, v2->dmg_handler, SCRIPT_COROUTINE, a1->ptr_24);
-        v4 = v2->mobd_offset;
+        v4 = v2->mobd_lookup_offset_flying;
         v5 = v3;
         if (v4 != -1)
             sprite_4272E0_load_mobd_item(v3, v4, _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
@@ -818,7 +818,7 @@ void EntityTowerAttachment_handler_448160(EntityTurret *a1)
         if (v5->unit_id != UNIT_STATS_MUTE_ROTARY_CANNON)
             sprite_4272E0_load_mobd_item(
                 v1->turret_sprite,
-                v1->stats_attachment_point->mobd_lookup_table_offset,
+                v1->stats_attachment_point->mobd_lookup_offset_idle,
                 _47D3C4_entity_mobd_lookup_ids[v4 + 1]);
         if (!v1->field_18)
         {
@@ -826,12 +826,12 @@ void EntityTowerAttachment_handler_448160(EntityTurret *a1)
             v7 = _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1];
             if (v1->entity->unit_id == UNIT_STATS_MUTE_ROTARY_CANNON)
             {
-                sprite_4272E0_load_mobd_item(v1->turret_sprite, v6->_1C_mobd_lookup_table_offset_for_rotary_cannon, v7);
+                sprite_4272E0_load_mobd_item(v1->turret_sprite, v6->mobd_lookup_offset_attack, v7);
                 v1->handler = EntityTowerAttachment_handler_447E20;
             }
             else
             {
-                sprite_4272E0_load_mobd_item(v1->turret_sprite, v6->mobd_lookup_table_offset, v7);
+                sprite_4272E0_load_mobd_item(v1->turret_sprite, v6->mobd_lookup_offset_idle, v7);
                 v1->handler = EntityTowerAttachment_handler_447E20;
             }
         }
@@ -852,7 +852,7 @@ void EntityTowerAttachment_handler_448230(EntityTurret *a1)
     v1 = a1;
     sprite_4272E0_load_mobd_item(
         a1->turret_sprite,
-        a1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+        a1->stats_attachment_point->mobd_lookup_offset_attack,
         _47D3C4_entity_mobd_lookup_ids[129]);
     script_yield(v1->sprite_task, SCRIPT_FLAGS_20_10000000, 0);
     v2 = v1->_C_entity;
@@ -878,7 +878,7 @@ void EntityTowerAttachment_handler_448290(EntityTurret *a1)
         v1->handler = EntityTowerAttachment_handler_448230;
     sprite_4272E0_load_mobd_item(
         v1->turret_sprite,
-        v1->stats_attachment_point->mobd_lookup_table_offset,
+        v1->stats_attachment_point->mobd_lookup_offset_idle,
         _47D3C4_entity_mobd_lookup_ids[*(_DWORD *)v2 + 1]);
 }
 
@@ -891,7 +891,7 @@ void EntityTowerAttachment_handler_4482D0_missile_battery(EntityTurret *a1)
     v1 = a1;
     sprite_4272E0_load_mobd_item(
         a1->turret_sprite,
-        a1->stats_attachment_point->mobd_lookup_table_offset,
+        a1->stats_attachment_point->mobd_lookup_offset_idle,
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
     v2 = v1->sprite_task;
     v1->handler = EntityTowerAttachment_handler_448290;
@@ -931,7 +931,7 @@ void EntityTowerAttachment_handler_4010C0(EntityTurret *a1)
     a1->mobd_lookup_id = v1;
     sprite_4272E0_load_mobd_item(
         a1->turret_sprite,
-        a1->stats_attachment_point->mobd_lookup_table_offset,
+        a1->stats_attachment_point->mobd_lookup_offset_idle,
         _47D3C4_entity_mobd_lookup_ids[v1 + 1]);
 }
 
@@ -943,7 +943,7 @@ void EntityTowerAttachment_handler_4010E0(EntityTurret *a1)
     v1 = a1;
     sprite_4272E0_load_mobd_item(
         a1->turret_sprite,
-        a1->stats_attachment_point->mobd_lookup_table_offset,
+        a1->stats_attachment_point->mobd_lookup_offset_idle,
         _47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
-    v1->handler = EntityTowerAttachment_handler_4010C0;
+    v1->SetHandler(EntityTowerAttachment_handler_4010C0);
 }

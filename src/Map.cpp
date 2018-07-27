@@ -13,8 +13,6 @@ using Engine::Infrastructure::EntityRepository;
 
 
 
-Bitmap *_47A010_mapd_item_being_drawn[3];
-
 int dword_470588[] = { 1, 0, 0, 0xC0000000 };
 int dword_470598 = 0; // weak
 int dword_47059C = 0; // weak
@@ -24,24 +22,12 @@ MobdSprtImage _47CBA0_MobdSprtImage_fog_of_war;
 DataMobdItem_stru0 _4705B0_minimap = { 0, 0, 0, &_47CBA0_MobdSprtImage_fog_of_war, NULL, SOUND_0, NULL }; // weak
 
 
-int dword_47CFC0; // weak
-int _479DF0_mapd_initialized; // weak
+int _4793F8_map_width; // weak
 int _478AAC_map_height; // weak
-int dword_478AB0; // weak
 int _478AB4_map_width_shl_13; // weak
 int _478FF0_map_height_shl_13; // weak
-int _478BE8_map_info__see40E6E0[8];
-char byte_478C08; // weak
-int dword_478FF4; // weak
-int _4793F8_map_width; // weak
-int dword_47952C; // weak
-int dword_47953C; // weak
-int currently_running_lvl_mapd_num_items; // weak
-Mapd_stru0 _47C380_mapd;
-int currently_running_lvl_mapd_valid; // weak
-int _47C390_mapd; // weak
-DataMapd *currently_running_lvl_mapd;
 
+MapdScrlImageTile *dword_47CFC0; // weak
 MapdScrlImageTile *fog_of_war_tile_15;
 int __478AAC_map_height_plus4; // weak
 MapdScrlImage *fog_of_war_scrl_source;
@@ -303,7 +289,7 @@ bool mapd_init_fog_of_war()
         fog_of_war_bitmap = MAPD_Draw(MAPD_FOG_OF_WAR, 0, 0x10000000);
         if (fog_of_war_bitmap)
         {
-            fog_of_war_bitmap->draw_job->on_update_handler = drawjob_update_handler_448390_fog_of_war;
+            fog_of_war_bitmap->draw_job->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_448390_fog_of_war;
             fog_of_war_scrl_source = (MapdScrlImage *)fog_of_war_bitmap->draw_job->job_details.image;
             __4793F8_map_width_plus4 = map_get_width() + 4;
             __478AAC_map_height_plus4 = map_get_height() + 4;
@@ -802,7 +788,7 @@ void map_reveal_fog_around_entity(Entity *a1)
     {
         a1->sprite->field_88_unused = 1;
         v1 = a1->sprite;
-        v2 = a1->stats->field_20;
+        v2 = a1->stats->view_range;
         v3 = 2 * (v1->x >> 13);
         v4 = 2 * (v1->y >> 13);
         v76 = 2 * (v1->x >> 13);
@@ -1043,7 +1029,7 @@ void map_reveal_fog_around_entity(Entity *a1)
             }
             else
             {
-                *(_DWORD *)v33 = dword_47CFC0;
+                *(_DWORD *)v33 = (int)dword_47CFC0;
                 v34 = v77 + 1;
             }
         }
@@ -1082,7 +1068,7 @@ void map_reveal_fog_around_entity(Entity *a1)
             }
             else
             {
-                *(_DWORD *)v33 = dword_47CFC0;
+                *(_DWORD *)v33 = (int)dword_47CFC0;
                 v34 = v77 + 1;
             }
         }
@@ -1126,7 +1112,7 @@ void map_reveal_fog_around_entity(Entity *a1)
                     v51 = v73 - v34;
                     do
                     {
-                        *(_DWORD *)v50 = dword_47CFC0;
+                        *(_DWORD *)v50 = (int)dword_47CFC0;
                         v50 += 4;
                         --v51;
                     } while (v51);
@@ -1299,7 +1285,7 @@ void map_reveal_fog_around_entity(Entity *a1)
                             v67 = fog_of_war_tile_12;
                             goto LABEL_295;
                         }
-                        *(_DWORD *)v60 = dword_47CFC0;
+                        *(_DWORD *)v60 = (int)dword_47CFC0;
                         goto LABEL_296;
                     }
                 }
@@ -1449,7 +1435,7 @@ void drawjob_update_handler_level_background(void *a1, DrawJob *a2)
 }
 
 //----- (00448390) --------------------------------------------------------
-void drawjob_update_handler_448390_fog_of_war(void *unused, DrawJob *a2)
+void drawjob_update_handler_448390_fog_of_war(Sprite *, DrawJob *a2)
 {
     if (_47A010_mapd_item_being_drawn[0])
     {

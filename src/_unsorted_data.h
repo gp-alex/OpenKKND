@@ -6,6 +6,20 @@
 #include "src/_unsorted_functions.h"
 #include "src/Render.h"
 
+
+extern int dword_478AB0; // weak
+extern int _478BE8_map_info__see40E6E0[8];
+extern char byte_478C08; // weak
+extern int dword_478FF4; // weak
+extern int dword_47952C; // weak
+extern int dword_47953C; // weak
+extern int _479DF0_mapd_initialized; // weak
+extern int currently_running_lvl_mapd_num_items; // weak
+extern Mapd_stru0 _47C380_mapd;
+extern int currently_running_lvl_mapd_valid; // weak
+extern int _47C390_mapd; // weak
+extern DataMapd *currently_running_lvl_mapd;
+extern Bitmap *_47A010_mapd_item_being_drawn[3];
 extern _UNKNOWN loc_45D19B; // weak
 extern _UNKNOWN loc_45D1A4; // weak
 extern _UNKNOWN loc_45D267; // weak
@@ -397,17 +411,6 @@ extern int max_beastenclosure_level; // weak
 extern int dword_477358; // weak
 extern stru15unit _477378_clanhall;
 extern int max_clanhall_level; // weak
-extern int _4773A0_boxd_item0_num_things; // weak
-extern DataBoxd *currently_running_lvl_boxd;
-extern Boxd_stru0 *_4773A8_boxd_parray;
-extern int _4773AC_boxd_item0_map_x_scale; // weak
-extern Boxd_stru0 **_4773B0_boxd_item0_things;
-extern int _4773B4_boxd_item0_map_num_y_tiles; // weak
-extern int _4773B8_boxd_item0_map_y_scale; // weak
-extern int currently_running_lvl_boxd_valid; // weak
-extern Boxd_stru0 *_4773C0_boxd_array;
-extern BoxdTile **_4773C4_boxd_item0_map_tiles;
-extern int _4773C8_boxd_item0_map_num_x_tiles; // weak
 extern char byte_4773D0[68]; // idb
 extern int dword_477410; // weak
 extern DataCplcItem_ptr1 *_477414_cplc_next2;

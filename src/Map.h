@@ -64,7 +64,7 @@ inline int map_get_height_global() {
 }
 
 
-Entity *map_get_tile_entities(int map_x, int map_y);
+Entity **map_get_tile_entities(int map_x, int map_y);
 bool map_is_entity_in_tile(int map_x, int map_y, Entity *entity);
 
 
@@ -101,21 +101,6 @@ int map_adjust_entity_in_tile_y_2(Entity *entity, int y);
 int map_get_entity_placement_inside_tile_x(Entity *a1, int a2); // idb
 int map_get_entity_placement_inside_tile_y(Entity *a1, int a2); // idb
 
-
-extern Bitmap *_47A010_mapd_item_being_drawn[3];
-
-extern int dword_478AB0; // weak
-extern int _478BE8_map_info__see40E6E0[8];
-extern char byte_478C08; // weak
-extern int dword_478FF4; // weak
-extern int dword_47952C; // weak
-extern int dword_47953C; // weak
-extern int _479DF0_mapd_initialized; // weak
-extern int currently_running_lvl_mapd_num_items; // weak
-extern Mapd_stru0 _47C380_mapd;
-extern int currently_running_lvl_mapd_valid; // weak
-extern int _47C390_mapd; // weak
-extern DataMapd *currently_running_lvl_mapd;
 
 extern int __4793F8_map_width_x2; // weak
 extern int __4793F8_map_width_plus4; // weak

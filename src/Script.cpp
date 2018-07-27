@@ -799,7 +799,7 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(UNIT_Handler_MobileOutpost),
     MAKE_HANDLER_PTR(entity_mode_4278C0_mobile_outpost),
     MAKE_HANDLER_PTR(MessageHandler_MobileOutpost),
-    MAKE_HANDLER_PTR(nullsub_2),
+    MAKE_HANDLER_PTR(MessageHandler_MobileOutpostEmpty),
     MAKE_HANDLER_PTR(entity_427BB0_mobile_outpost_clanhall_planting),
     MAKE_HANDLER_PTR(entity_mode_427BF0_mobile_outpost_clanhall_planting),
     MAKE_HANDLER_PTR(entity_427C30_after_mobile_outpost_clanhall_wagon_plant),
