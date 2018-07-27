@@ -25,7 +25,6 @@ int sys_colors_elements = 0;
 int kknd_sve_array_463070[15] = { 35, 62, 93, 42, 54, 12, 65, 89, 21, 30, 210, 87, 55, 66, 42 };
 int kknd_sve_array_4630AC[15] = { 77, 24, 84, 36, 20, 43, 72, 20, 5, 89, 189, 233, 91, 21, 13 };
 int dword_4630E8 = 2273464000; // weak
-GUID netz_463DE0 = { 2638611840u, 43042u, 4559u,{ 150u, 12u, 0u, 128u, 199u, 83u, 78u, 130u } };
 char asc_464068[4] = "#:\\"; // weak
 BasicProductionOption mute_default_buildings[6] =
 {
@@ -455,8 +454,10 @@ char aWarningOutOfTa[] = "Warning: out of tanker nodes"; // idb
 char aWarningOutOfBu[] = "Warning: out of building nodes"; // idb
 char aWarningOutOfEnemyNodes[] = "Warning: out of enemy nodes"; // idb
 char aEnemyaiCreatur[] = "EnemyAI: Creature ID unknown"; // idb
-int _465610_damage_multipliers[12] = { 0, 51, 102, 0, 0, 38, 76, 0, 0, 1200, 600, 0 };
-int _465640_accuracy_bonus[4] = { 0, 10, 20, 0 };
+int veterancy_damage_bonus[3] = { 0, 51, 102 };
+int veterancy_reload_bonus[3] = { 0, 38, 76 };
+int veterancy_regeneration_rate[3] =  { 0, 1200, 600 };
+int veterancy_accuracy_bonus[3] = { 0, 10, 20 };
 stru201_displaymode _465650_display_modes[3] =
 {
 	{ { 'M', 'O', 'D', 'E', 'X', '\0', '\0', '\0' }, 0, 0 },
@@ -493,8 +494,6 @@ unsigned __int8 _465804_stru26_stru27_initializer[4] = { 164u, 169u, 145u, 223u 
 stru1_draw_params default_stru1;
 stru1_draw_params *render_default_stru1 = &default_stru1;
 int render_first_drawing_item = 1; // weak
-RECT stru_465810 = { 0, 0, 640, 480 };
-char *aFailedToSetupDirectdraw = "Failed to setup DirectDraw";
 char *Caption = "Error";
 unsigned __int8 palette_465848_sprt[256] =
 {
@@ -2857,8 +2856,6 @@ char asc_46BB14[18] = "                 ";
 char aD_1[] = "%d:"; // idb
 char aD_0[5] = " %d:"; // weak
 char aD[6] = "  %d:"; // weak
-RECT _46BB40_enum_attached_surfaces_blt_rect = { 0, 0, 640, 480 };
-RECT _46BB50_blt_rect = { 0, 0, 640, 480 };
 int _46BB60_dmg_handler_mobd_offsets[3] = { 332, 364, 388 };
 char aSGameD_sav[] = "%s\\game%d.sav"; // idb
 char aSlotDSD[] = "Slot %d = %s %d\n"; // idb
@@ -6063,14 +6060,11 @@ stru26 _4795F0_stru26_array[3];
 stru27 _479740_stru27_array[3];
 tagRECT global_wnd_rect; // idb
 void *render_locked_surface_ptr;
-DWORD global_wnd_style; // idb
-int global_wnd_bpp; // weak
 unsigned int render_locked_surface_width_px; // idb
 int global_fullscreen; // weak
 int global_time_flows; // weak
 stru1_draw_params *stru1_list_free_pool;
 int global_wnd_height; // idb
-DWORD global_wnd_style_ex; // idb
 stru1_draw_params *stru1_list;
 int global_wnd_width; // idb
 bool is_render_window_initialized = false; // 411760
@@ -6378,6 +6372,4 @@ int UNIT_num_nonplayer_units; // weak
 int num_players_towers; // weak
 void *entity_default_stru60_ptr;
 int dword_47DCE8; // weak
-HINSTANCE global_hinstance; // idb
-int global_win32_nCmdShow; // idb
 bool _47DCF4_wm_quit_received = false; // weak

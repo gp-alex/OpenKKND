@@ -327,13 +327,13 @@ void entity_mode_4016B0_aircraft(Entity *a1)
             v6->field_84 = v1->entity_id;
             v6->field_8C_infantry_damage = LOWORD_HEXRAYS(v3->damage_infantry)
                 + (v3->damage_infantry
-                    * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+                    * veterancy_damage_bonus[v1->veterancy_level] >> 8);
             v6->field_8E_vehicle_damage = LOWORD_HEXRAYS(v3->damage_vehicle)
                 + (v3->damage_vehicle
-                    * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+                    * veterancy_damage_bonus[v1->veterancy_level] >> 8);
             v6->field_90_building_damage = LOWORD_HEXRAYS(v3->damage_building)
                 + (v3->damage_building
-                    * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+                    * veterancy_damage_bonus[v1->veterancy_level] >> 8);
         }
         v9 = v1->_134_param__unitstats_after_mobile_outpost_plant;
         v1->_12C_prison_bunker_spawn_type = 15;

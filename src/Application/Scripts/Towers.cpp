@@ -730,13 +730,13 @@ void EntityTowerAttachment_handler_447FA0(EntityTurret *a1)
         v5->field_84 = v1->entity->entity_id;
         v5->field_8C_infantry_damage = LOWORD_HEXRAYS(v2->damage_infantry)
             + (v2->damage_infantry
-                * _465610_damage_multipliers[v1->entity->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+                * veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
         v5->field_8E_vehicle_damage = LOWORD_HEXRAYS(v2->damage_vehicle)
             + (v2->damage_vehicle
-                * _465610_damage_multipliers[v1->entity->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+                * veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
         v5->field_90_building_damage = LOWORD_HEXRAYS(v2->damage_building)
             + (v2->damage_building
-                * _465610_damage_multipliers[v1->entity->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+                * veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
         v5->parent = v1->turret_sprite->parent;
         script_trigger_event(v1->entity->script, EVT_MSG_1497, v1->entity, v1->_C_entity->script);
     }

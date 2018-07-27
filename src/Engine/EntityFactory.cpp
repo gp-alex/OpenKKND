@@ -69,7 +69,7 @@ Entity *EntityFactory::Create(Script *a1)
     v1->stru11_list_108 = (stru11unit *)&v1->stru11_list_104;
     v1->field_94 = 0;
     v1->stru11_list_104 = (stru11unit *)&v1->stru11_list_104;
-    v1->_98_465610_accuracy_dmg_bonus_idx = 0;
+    v1->veterancy_level = 0;
     v1->entity_id = ++_47DCC4_entity_id_counter;
     v1->SetMode(nullptr);
     v1->mode_idle = 0;
@@ -295,7 +295,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             v3->destroyed = 0;
             v3->hitpoints = v2->entity_hitpoints;
             v3->field_94 = v2->entity_field_94;
-            v3->_98_465610_accuracy_dmg_bonus_idx = v2->entity_98__465610_damage_multipliers_idx;
+            v3->veterancy_level = v2->entity_98_veterancy_damage_bonus_idx;
             v3->_9C_hp_regen_condition = v2->entity_9C_hp_regen_condition;
             v3->_A0_hp_regen_condition = v2->entity_A0_hp_regen_condition;
             v3->_A4_idx_in_tile = v2->field_A4;

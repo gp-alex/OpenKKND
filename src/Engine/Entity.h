@@ -171,7 +171,7 @@ public:
     int destroyed;
     int hitpoints;
     int field_94;
-    int _98_465610_accuracy_dmg_bonus_idx;
+    int veterancy_level;   // 0, 1, 2
     int _9C_hp_regen_condition;
     int _A0_hp_regen_condition;
     int _A4_idx_in_tile;  // ENTITY_TILE_POSITION_*

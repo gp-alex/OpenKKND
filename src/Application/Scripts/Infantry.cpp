@@ -154,7 +154,7 @@ void entity_init_infantry(Entity *a1)
         v1->sprite_x_2 = v1->sprite_x;
         v1->sprite_y_2 = v1->sprite_y;
         v1->_134_param__unitstats_after_mobile_outpost_plant = 0;
-        v1->_98_465610_accuracy_dmg_bonus_idx = 0;
+        v1->veterancy_level = 0;
         v1->script->event_handler = EventHandler_General_Scout;
         v23 = v1->sprite;
         v24 = v1->sprite_y;
@@ -1865,13 +1865,13 @@ void entity_mode_adjust_unit_placement_inside_tile(Entity *a1)
 
     Map_40DF50_update_tile(v1, 0);
 
-    v12 = v1->_98_465610_accuracy_dmg_bonus_idx;
+    v12 = v1->veterancy_level;
     if (v12)
     {
         if (v1->IsInfantry())
         {
             v1->_9C_hp_regen_condition = 0;
-            v1->_A0_hp_regen_condition = (v1->stats->hitpoints << 8) / _465610_damage_multipliers[v12 + 8];
+            v1->_A0_hp_regen_condition = (v1->stats->hitpoints << 8) / veterancy_regeneration_rate[v12];
         }
     }
 }
@@ -1902,7 +1902,7 @@ void entity_mode_default_idle(Entity *a1)
         }
     }
 
-    if (v1->IsInfantry() && v1->_98_465610_accuracy_dmg_bonus_idx)
+    if (v1->IsInfantry() && v1->veterancy_level)
     {
         v3 = v1->_9C_hp_regen_condition;
         v4 = v3 + v1->_A0_hp_regen_condition;
@@ -3818,15 +3818,15 @@ void entity_mode_418590(Entity *a1)
         v9->_80_entity__stru29__sprite__initial_hitpoints = v1;
         v9->field_84 = v1->entity_id;
         v9->field_8C_infantry_damage = LOWORD_HEXRAYS(v6->damage_infantry)
-            + (v6->damage_infantry * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+            + (v6->damage_infantry * veterancy_damage_bonus[v1->veterancy_level] >> 8);
         v9->field_8E_vehicle_damage = LOWORD_HEXRAYS(v6->damage_vehicle)
-            + (v6->damage_vehicle * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+            + (v6->damage_vehicle * veterancy_damage_bonus[v1->veterancy_level] >> 8);
         v9->field_90_building_damage = LOWORD_HEXRAYS(v6->damage_building)
-            + (v6->damage_building * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+            + (v6->damage_building * veterancy_damage_bonus[v1->veterancy_level] >> 8);
         script_trigger_event(v1->script, EVT_MSG_1497, v1, v1->entity_8->script);
         script_sleep(
             v1->script,
-            v1->stats->reload_time - (v1->stats->reload_time * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx + 4] >> 8)
+            v1->stats->reload_time - (v1->stats->reload_time * veterancy_reload_bonus[v1->veterancy_level] >> 8)
         );
     }
     if (v1->_DC_order == ENTITY_ORDER_8)
@@ -4606,7 +4606,7 @@ void entity_419560_on_death(Entity *a1)
     v1->SetMode(entity_infantry_on_dead);
     if (v4->is_infantry)
     {
-        if (v1->_98_465610_accuracy_dmg_bonus_idx)
+        if (v1->veterancy_level)
         {
             v11 = _4690A8_unit_sounds_volume;
             v5 = kknd_rand_debug(__FILE__, __LINE__);
@@ -4813,14 +4813,14 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
             v9 = v4->stats;
             v10 = (int)param + v4->field_94;
             v4->field_94 = v10;
-            v11 = v4->_98_465610_accuracy_dmg_bonus_idx;
-            v4->_98_465610_accuracy_dmg_bonus_idx = v11 + v10 / v9->hitpoints;
-            v12 = v4->_98_465610_accuracy_dmg_bonus_idx == v11;
+            v11 = v4->veterancy_level;
+            v4->veterancy_level = v11 + v10 / v9->hitpoints;
+            v12 = v4->veterancy_level == v11;
             v4->field_94 = v10 % v9->hitpoints;
             if (!v12)
                 entity_410710_status_bar(v4);
-            if (v4->_98_465610_accuracy_dmg_bonus_idx >= 3)
-                v4->_98_465610_accuracy_dmg_bonus_idx = 2;
+            if (v4->veterancy_level >= 3)
+                v4->veterancy_level = 2;
             break;
         case EVT_MSG_1546_repair_at_station:
             script_sleep(v4->script, 1);

@@ -20,11 +20,9 @@ extern Entity *debug_pathing_entity;
 
 
 Palette *render_current_palette = nullptr;
-
-
-
-
-
+RECT stru_465810 = { 0, 0, 640, 480 };
+RECT _46BB40_enum_attached_surfaces_blt_rect = { 0, 0, 640, 480 };
+RECT _46BB50_blt_rect = { 0, 0, 640, 480 };
 Palette palette_477490;
 Palette *palette_4778A4;
 int j_render_nullsub_2; // weak
@@ -51,7 +49,7 @@ void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
 int render_478A94; // weak
 int j_render_nullsub_1; // weak
 Palette _47B408_palette_entries;
-PALETTEENTRY RenderDD_primary_palette_values[256];
+Palette RenderDD_primary_palette_values;
 Palette palette_47BC10;
 HPALETTE render_sw_palette;
 HPALETTE render_sw_default_palette; // idb
@@ -77,6 +75,9 @@ void SetSysPalette(Palette *pal) {
     _4785DC_syscolors_palette_entries = pal;
 }
 
+
+
+int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam); // idb
 
 
 //----- (00411760) --------------------------------------------------------
@@ -107,7 +108,7 @@ bool render_create_window(int width, int height, int bpp, int run, bool fullscre
     {
         return false;
     }
-    global_wnd_bpp = bpp;
+    int global_wnd_bpp = bpp;
     global_wnd_width = width;
     global_wnd_height = height;
     global_time_flows = run;
@@ -125,22 +126,22 @@ bool render_create_window(int width, int height, int bpp, int run, bool fullscre
         if (!global_hwnd)
         {
             v17.style = 8;
-            v17.hInstance = global_hinstance;
+            v17.hInstance = GetModuleHandle(nullptr);
             v17.lpszClassName = "KKNDXtremeMainWindowClass";
             v17.lpfnWndProc = (WNDPROC)WndProc;
             v17.cbSize = 48;
-            v17.hIcon = LoadIconA(global_hinstance, (LPCSTR)0x65);
+            v17.hIcon = LoadIconA(v17.hInstance, (LPCSTR)0x65);
             v17.cbClsExtra = 0;
             v17.cbWndExtra = 0;
-            v17.hIconSm = LoadIconA(global_hinstance, (LPCSTR)0x65);
+            v17.hIconSm = LoadIconA(v17.hInstance, (LPCSTR)0x65);
             v17.hCursor = 0;
             v17.lpszMenuName = 0;
             v17.hbrBackground = (HBRUSH)GetStockObject(5);
             if (RegisterClassExA(&v17))
             {
 
-                global_wnd_style = WS_VISIBLE | WS_POPUP | WS_SYSMENU;
-                global_wnd_style_ex = WS_EX_APPWINDOW;
+                DWORD global_wnd_style = WS_VISIBLE | WS_POPUP | WS_SYSMENU;
+                DWORD global_wnd_style_ex = WS_EX_APPWINDOW;
                 if (global_fullscreen == 1)
                 {
                     global_wnd_style_ex |= WS_EX_TOPMOST;
@@ -173,7 +174,7 @@ bool render_create_window(int width, int height, int bpp, int run, bool fullscre
                     global_wnd_rect.bottom - global_wnd_rect.top,
                     0,
                     0,
-                    global_hinstance,
+                    v17.hInstance,
                     0);
                 global_hwnd = v14;
                 if (v14)
@@ -195,7 +196,7 @@ bool render_init_dd()
     //----- (00431920) --------------------------------------------------------
     //void render_sw_initialize()
     {
-	    if (global_wnd_bpp == 8)
+	    //if (global_wnd_bpp == 8)
 		    render_sw_hdc = GetDC(global_hwnd);
     }
 
@@ -3876,7 +3877,7 @@ void render_on_wm_paint(struct tagRECT *a1)
 //----- (00431940) --------------------------------------------------------
 void render_sw_free_palette()
 {
-    HPALETTE v0; // eax@3
+    /*HPALETTE v0; // eax@3
 
     if (global_wnd_bpp == 8)
     {
@@ -3886,7 +3887,7 @@ void render_sw_free_palette()
             DeleteObject(v0);
         }
         render_sw_palette = 0;
-    }
+    }*/
 }
 
 //----- (00431980) --------------------------------------------------------
@@ -3904,7 +3905,7 @@ void _431980_update_primary_palette(Palette *pal)
     _BYTE v10[1024]; // [sp+0h] [bp-404h]@14
     int v11; // [sp+400h] [bp-4h]@14
 
-    v1 = pal->entires;
+    /*v1 = pal->entires;
     if (global_wnd_bpp == 8)
     {
         dword_47C018 = 0;
@@ -3928,13 +3929,13 @@ void _431980_update_primary_palette(Palette *pal)
                 v3 += 4;
                 v4 += 4;
             } while ((int)v3 < (int)&render_sw_hdc + 1);
-            /*v5 = render_dd_is_primary_surface_lost();
-            if (!v5)
-            {
-                v5 = (int)pddpal_primary;
-                if (pddpal_primary)
-                    v5 = pddpal_primary->SetEntries(0, 0, 256, RenderDD_primary_palette_values);
-            }*/
+            //v5 = render_dd_is_primary_surface_lost();
+            //if (!v5)
+            //{
+            //    v5 = (int)pddpal_primary;
+            //    if (pddpal_primary)
+            //        v5 = pddpal_primary->SetEntries(0, 0, 256, RenderDD_primary_palette_values);
+            //}
         }
         else
         {
@@ -3965,7 +3966,7 @@ void _431980_update_primary_palette(Palette *pal)
             }
             v5 = RealizePalette(render_sw_hdc);
         }
-    }
+    }*/
 }
 
 //----- (00431B60) --------------------------------------------------------
@@ -4054,7 +4055,7 @@ void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
     PaletteEntry *v12 = v12_.entires; // [sp+0h] [bp-404h]@19
     int v13; // [sp+400h] [bp-4h]@19
 
-    if (global_wnd_bpp == 8)
+    /*if (global_wnd_bpp == 8)
     {
         v1 = dword_468FDC << 8;
         for (i = 0; i < v1; ++i)
@@ -4088,17 +4089,17 @@ void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
                 v5 += 4;
                 v6 += 4;
             } while ((int)v5 < (int)&render_sw_hdc + 1);
-            /*v7 = (IDirectDrawPalette *)render_dd_is_primary_surface_lost();
-            if (!v7)
-            {
-                v7 = pddpal_primary;
-                if (pddpal_primary)
-                    v7 = (IDirectDrawPalette *)pddpal_primary->SetEntries(
-                        0,
-                        0,
-                        256,
-                        RenderDD_primary_palette_values);
-            }*/
+            //v7 = (IDirectDrawPalette *)render_dd_is_primary_surface_lost();
+            //if (!v7)
+            //{
+            //    v7 = pddpal_primary;
+            //    if (pddpal_primary)
+            //        v7 = (IDirectDrawPalette *)pddpal_primary->SetEntries(
+            //            0,
+            //            0,
+            //            256,
+            //            RenderDD_primary_palette_values);
+            //}
         }
         else
         {
@@ -4129,7 +4130,7 @@ void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
             }
             RealizePalette(render_sw_hdc);
         }
-    }
+    }*/
 }
 
 
@@ -4283,7 +4284,7 @@ void _40E560_flip_gdi_update_syscolors()
             v3 = (*(COLORREF *)((char *)sys_colors + v1) >> 16) & 0xFF;
 
             int i = 0;
-            v4 = (char *)&RenderDD_primary_palette_values[0].peGreen;
+            v4 = (char *)&RenderDD_primary_palette_values.entires[0].peGreen;
             do
             {
                 v5 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
@@ -4307,9 +4308,9 @@ void _40E560_flip_gdi_update_syscolors()
                 i++;
                 ++v8;
             } while (i < 256);//((int)v4 < (int)&render_sw_hdc + 1);
-            LOBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values[v6].peGreen;
-            HIBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values[v6].peBlue;
-            *(COLORREF *)((char *)aRgbValues + v11) = RenderDD_primary_palette_values[v6].peRed | (v7 << 8);
+            LOBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values.entires[v6].peGreen;
+            HIBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values.entires[v6].peBlue;
+            *(COLORREF *)((char *)aRgbValues + v11) = RenderDD_primary_palette_values.entires[v6].peRed | (v7 << 8);
             v1 = v11 + 4;
             v11 = v1;
         } while (v1 < 0x64);

@@ -5145,8 +5145,8 @@ int entity_410710_status_bar(Entity *a1)
 	int v5; // eax@10
 
 	v1 = 2;
-	if (a1->_98_465610_accuracy_dmg_bonus_idx <= 2)
-		v1 = a1->_98_465610_accuracy_dmg_bonus_idx;
+	if (a1->veterancy_level <= 2)
+		v1 = a1->veterancy_level;
 	v2 = a1->unit_id;
 	if ((int)v2 > (int)UNIT_STATS_SURV_SCOUT || (v2 & 0x80000000) != 0)
 	{
@@ -7890,7 +7890,7 @@ LABEL_9:
 	v4->entity_field_88 = v3->_88_dst_orientation;
 	v4->entity_hitpoints = v3->hitpoints;
 	v4->entity_field_94 = v3->field_94;
-	v4->entity_98__465610_damage_multipliers_idx = v3->_98_465610_accuracy_dmg_bonus_idx;
+	v4->entity_98_veterancy_damage_bonus_idx = v3->veterancy_level;
 	v4->entity_9C_hp_regen_condition = v3->_9C_hp_regen_condition;
 	v4->entity_A0_hp_regen_condition = v3->_A0_hp_regen_condition;
 	v4->field_A4 = v3->_A4_idx_in_tile;
@@ -13856,7 +13856,7 @@ void entity_mobile_outpost_init(Entity *a1)
             a1->sprite_y_2 = a1->sprite_y = map_adjust_entity_in_tile_y(a1, map2global(a1->sprite_map_y));
             a1->SetOrder(ENTITY_ORDER_MOVE);
             a1->_134_param__unitstats_after_mobile_outpost_plant = 0;
-            a1->_98_465610_accuracy_dmg_bonus_idx = 0;
+            a1->veterancy_level = 0;
             a1->SetScriptEventHandler(EventHandler_General_Scout);
             a1->SetReturnMode(entity_mode_4278C0_mobile_outpost);
             entity_4172D0(a1);
@@ -25079,14 +25079,13 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 				v7->_80_entity__stru29__sprite__initial_hitpoints = v1->entity;
 				v7->field_84 = v1->entity->entity_id;
 				v7->field_8C_infantry_damage = LOWORD_HEXRAYS(v4->damage_infantry)
-					+ (v4->damage_infantry
-						* _465610_damage_multipliers[v1->entity->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+					+ (v4->damage_infantry * veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
 				v7->field_8E_vehicle_damage = LOWORD_HEXRAYS(v4->damage_vehicle)
 					+ (v4->damage_vehicle
-						* _465610_damage_multipliers[v1->entity->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+						* veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
 				v7->field_90_building_damage = LOWORD_HEXRAYS(v4->damage_building)
 					+ (v4->damage_building
-						* _465610_damage_multipliers[v1->entity->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+						* veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
 				v7->parent = v1->turret_sprite->parent;
 				script_trigger_event(v1->entity->script, EVT_MSG_1497, v1->entity, v1->_C_entity->script);
 				v10 = v1->stats_attachment_point;
@@ -26966,9 +26965,6 @@ int main(int argc, char* argv[])
 {
     OsInitConsole();
     OsInitTimer();
-
-	global_win32_nCmdShow = SW_SHOW;
-	global_hinstance = GetModuleHandle(nullptr);
 
     GameFactory gameFactory;
     auto game = gameFactory.Create();

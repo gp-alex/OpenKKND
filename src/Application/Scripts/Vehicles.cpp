@@ -90,7 +90,7 @@ void entity_oil_tanker_initialize(Entity *a1)
 
         a1->SetOrder(ENTITY_ORDER_MOVE);
         a1->_134_param__unitstats_after_mobile_outpost_plant = 0;
-        a1->_98_465610_accuracy_dmg_bonus_idx = 0;
+        a1->veterancy_level = 0;
         a1->_12C_prison_bunker_spawn_type = 0;
         a1->SetScriptEventHandler(EventHandler_General_Scout);
         a1->SetReturnMode(entity_mode_4448C0_oiltanker);
@@ -920,7 +920,7 @@ void entity_initialize_mobile_derrick(Entity *a1)
         v1->sprite_x_2 = v1->sprite_x;
         v1->sprite_y_2 = v1->sprite_y;
         v1->_134_param__unitstats_after_mobile_outpost_plant = 0;
-        v1->_98_465610_accuracy_dmg_bonus_idx = 0;
+        v1->veterancy_level = 0;
         v22->event_handler = EventHandler_General_Scout;
         v1->mode_return = entity_mode_406CC0_mobilederrick;
         entity_4172D0(v1);

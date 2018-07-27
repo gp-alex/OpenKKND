@@ -27,7 +27,6 @@ extern int sys_colors_elements;
 extern int kknd_sve_array_463070[15];
 extern int kknd_sve_array_4630AC[15];
 extern int dword_4630E8; // weak
-extern GUID netz_463DE0;
 extern char asc_464068[4];
 extern BasicProductionOption mute_default_buildings[6];
 extern BasicProductionOption mute_default_infantry[3];
@@ -62,8 +61,10 @@ extern char aWarningOutOfTa[]; // idb
 extern char aWarningOutOfBu[]; // idb
 extern char aWarningOutOfEnemyNodes[]; // idb
 extern char aEnemyaiCreatur[]; // idb
-extern int _465610_damage_multipliers[12];
-extern int _465640_accuracy_bonus[4];
+extern int veterancy_damage_bonus[3];
+extern int veterancy_reload_bonus[3];
+extern int veterancy_regeneration_rate[3];
+extern int veterancy_accuracy_bonus[3];
 extern stru201_displaymode _465650_display_modes[3];
 extern int _465680_get_sys_colors; // weak
 extern int dword_465688[32];
@@ -78,8 +79,6 @@ extern unsigned __int8 _465804_stru26_stru27_initializer[4];
 extern stru1_draw_params default_stru1;
 extern stru1_draw_params *render_default_stru1;
 extern int render_first_drawing_item; // weak
-extern RECT stru_465810;
-extern char *aFailedToSetupDirectdraw;
 extern char *Caption;
 extern unsigned __int8 palette_465848_sprt[256];
 extern int _465948_per_mobd_lookup_idx[16];
@@ -252,8 +251,6 @@ extern char asc_46BB14[18];
 extern char aD_1[]; // idb
 extern char aD_0[5]; // weak
 extern char aD[6]; // weak
-extern RECT _46BB40_enum_attached_surfaces_blt_rect;
-extern RECT _46BB50_blt_rect;
 extern int _46BB60_dmg_handler_mobd_offsets[3];
 extern char aSGameD_sav[]; // idb
 extern char aSlotDSD[]; // idb
@@ -479,14 +476,11 @@ extern stru26 _4795F0_stru26_array[3];
 extern stru27 _479740_stru27_array[3];
 extern tagRECT global_wnd_rect; // idb
 extern void *render_locked_surface_ptr;
-extern DWORD global_wnd_style; // idb
-extern int global_wnd_bpp; // weak
 extern unsigned int render_locked_surface_width_px; // idb
 extern int global_fullscreen; // weak
 extern int global_time_flows; // weak
 extern stru1_draw_params *stru1_list_free_pool;
-extern int global_wnd_height; // idb
-extern DWORD global_wnd_style_ex; // idb
+extern int global_wnd_height; // idb]
 extern stru1_draw_params *stru1_list;
 extern int global_wnd_width; // idb
 extern bool is_render_window_initialized; // 411760
@@ -762,6 +756,4 @@ extern int UNIT_num_nonplayer_units; // weak
 extern int num_players_towers; // weak
 extern void *entity_default_stru60_ptr;
 extern int dword_47DCE8; // weak
-extern HINSTANCE global_hinstance; // idb
-extern int global_win32_nCmdShow; // idb
 extern bool _47DCF4_wm_quit_received; // weak

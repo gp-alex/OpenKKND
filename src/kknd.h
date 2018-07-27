@@ -1711,7 +1711,7 @@ struct EntitySerialized
 	int entity_field_88;
 	int entity_hitpoints;
 	int entity_field_94;
-	int entity_98__465610_damage_multipliers_idx;
+	int entity_98_veterancy_damage_bonus_idx;
 	int entity_9C_hp_regen_condition;
 	int entity_A0_hp_regen_condition;
 	int field_A4;

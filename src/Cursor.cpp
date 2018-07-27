@@ -1110,7 +1110,7 @@ void cursor_play_attack_order_response(_428940_local *a1)
     if (moveable)
     {
         unit_id = moveable->unit_id;
-        if (moveable->_98_465610_accuracy_dmg_bonus_idx)
+        if (moveable->veterancy_level)
         {
             experienced = true;
         }
@@ -1178,7 +1178,7 @@ void cursor_play_selection_response(_428940_local *a1, Entity *entity)
             && a1->_38_are_owned_units_selected)
         {
             auto v10 = is_player_faction_evolved() == 0;
-            auto v11 = entity->_98_465610_accuracy_dmg_bonus_idx;
+            auto v11 = entity->veterancy_level;
 
             SOUND_ID v7;
             if (v10)
@@ -1930,7 +1930,7 @@ void cursor_unit_move_confirmation(_428940_local *a1)
             sound_play(
                 get_unit_move_confirmation_sound(
                     v7->unit_id,
-                    v7->_98_465610_accuracy_dmg_bonus_idx != 0
+                    v7->veterancy_level != 0
                 ),
                 0,
                 _4690A8_unit_sounds_volume,

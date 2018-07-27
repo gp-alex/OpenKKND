@@ -16,6 +16,8 @@
 
 
 
+GUID IID_IDirectPlay2A = { 2638611840u, 43042u, 4559u,{ 150u, 12u, 0u, 128u, 199u, 83u, 78u, 130u } };
+
 netz_stru6_per_player netz_47A740[8];
 int(*netz_pfn_47A838)(netz_stru_3 *);
 
@@ -2420,7 +2422,7 @@ bool netz_430910_dplay()
     v1 = v0 + 4;
     if (!DirectPlayCreate((LPGUID)(v0 + 4), &lpDP, 0))
     {
-    (*(void(__stdcall **)(_DWORD, _DWORD, _DWORD))lpDP->lpVtbl)(lpDP, &netz_463DE0, &netz_47A898_object);
+    (*(void(__stdcall **)(_DWORD, _DWORD, _DWORD))lpDP->lpVtbl)(lpDP, &IID_IDirectPlay2A, &netz_47A898_object);
     (*((void(__stdcall **)(_DWORD))lpDP->lpVtbl + 2))(lpDP);
     netz_47A89C = *(_DWORD *)v1;
     netz_47A8A0 = *(_DWORD *)(v1 + 4);

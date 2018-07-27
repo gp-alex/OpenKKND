@@ -231,7 +231,6 @@ void entity_oil_tanker_initialize_state(Entity *a1);
 bool stru27_array_initialize();
 bool stru26_array_initialize();
 void stru26_stru27_free();
-int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam); // idb
 void UNIT_Handler_Vehicle(Script *a1); // idb
 void UNIT_Handler_Infantry(Script *a1);
 void entity_init_infantry(Entity *a1);

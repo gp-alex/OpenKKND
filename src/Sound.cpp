@@ -1,5 +1,6 @@
 #include <direct.h>
 
+#include <dsound.h>
 #include <process.h>    // _beginthread, _endthread
 
 #include "src/Sound.h"
@@ -13,6 +14,55 @@
 
 
 #pragma comment(lib, "Dsound.lib") // DirectSoundCreate
+
+
+
+
+
+/* 262 */
+struct Sound
+{
+    int id;
+    IDirectSoundBuffer *pdsb;
+    Script *task;
+    File *file;
+    int hthread;
+    int field_14;
+    int field_18;
+    int sound_volume_offset;
+    int field_20;
+    int field_24;
+    int sound_pan_offset;
+    int field_2C;
+    int field_30;
+    int flags;
+    Sound *next;
+    Sound *prev;
+    int field_40;
+    char filename[32];
+    char gap64[42];
+    char field_8E[100];
+    char field_F2[80];
+    char field_142;
+    char field_143;
+    char field_144;
+    char field_145;
+    char field_146;
+    char field_147;
+};
+
+
+/* 428 */
+struct sound_stru_2
+{
+    int riff_fourcc;
+    int riff_chunk_size;
+    int data_fourcc;
+    int data;
+};
+
+
+
 
 
 int sound_list_end; // weak
