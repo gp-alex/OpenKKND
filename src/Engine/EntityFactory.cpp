@@ -82,7 +82,7 @@ Entity *EntityFactory::Create(Script *a1)
     a1->event_handler = MessageHandler_EntityScript;
     v2->param = v1;
     v1->stats = &unit_stats[v1->unit_id];
-    v1->current_mobd_lookup_idx = 128;
+    v1->SetCurrentAnimFrame(128);
     v1->hitpoints = v1->stats->hitpoints;
     v1->field_78 = 0;
 
@@ -288,7 +288,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             memset(&v3->_24_ai_node_per_player_side, 0, sizeof(v3->_24_ai_node_per_player_side));
             memset32(&v3->stru60, (int)&entity_default_stru60_ptr, 6u);
             v3->field_78 = v2->entity_field_78;
-            v3->current_mobd_lookup_idx = v2->entity_mobd_idx;
+            v3->SetCurrentAnimFrame(v2->entity_mobd_idx);
             v3->field_80 = v2->entity_field_80;
             v3->field_84 = v2->entity_field_84;
             v3->_88_dst_orientation = v2->entity_field_88;

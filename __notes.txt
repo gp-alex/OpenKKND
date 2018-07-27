@@ -27,3 +27,9 @@ mobile derrick:
 	4. mode_turn_return - MOVING TO DESTINATION		entity_mode_move_to_target_416790
 	5. mode_arrive - DESTINATION REACED				entity_mode_406DC0_mobilederrick
 	6. mode - IDLE									entity_mode_default_idle
+
+
+
+
+NICE TEXT BOX (3 sec):
+	GAME_OnSaveFailed + script_421D60_on_savegame_failed

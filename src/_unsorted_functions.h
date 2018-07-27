@@ -798,7 +798,7 @@ bool sub_44CA50(enum UNIT_ID id); // idb
 Entity *entity_44CA70_find(Entity *a1, enum UNIT_ID a2, int player_side); // idb
 bool show_message_ex(Entity *a1, const char *text);
 bool show_message(const char *text);
-int entity_advance_mobd_rotation(int *src_lookup_id, int dst, int step); // idb
+int mobd_advance_anim(int *src_lookup_id, int dst, int step); // idb
 void script_show_message_ex(Script *a1); // idb
 bool _44CDC0_sidebar_is_units_limit();
 bool is_enemy(enum PLAYER_SIDE player_side, Entity *a2);

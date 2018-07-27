@@ -296,12 +296,12 @@ void entity_attach_docking_point(Entity *a1)
 		v2->sprite_task = v4;
 		v4->param = v2;
 		v2->turret_sprite->param = v2;
-		v2->sprite_task->event_handler = MessageHandler_EntityScript;
+		v2->sprite_task->SetEventHandler(MessageHandler_EntityScript);
 		v2->entity = v1;
 		v2->_C_entity = 0;
-		v2->handler = EntityTurret_44BF00_handler;
+		v2->SetHandler(EntityTurret_44BF00_handler);
 		v2->field_18 = 0;
-		v2->mobd_lookup_id = v1->current_mobd_lookup_idx;
+		v2->mobd_lookup_id = v1->GetCurrentAnimFrame();
 		v2->stats_attachment_point = v1->stats->attach;
 	}
 	v1->turret = v2;
@@ -7886,7 +7886,7 @@ LABEL_9:
 	if (!result)
 		return result;
 	v4->entity_field_78 = v3->field_78;
-	v4->entity_mobd_idx = (MOBD_ID)v3->current_mobd_lookup_idx;
+	v4->entity_mobd_idx = (MOBD_ID)v3->GetCurrentAnimFrame();
 	v4->entity_field_80 = v3->field_80;
 	v4->entity_field_84 = v3->field_84;
 	v4->entity_field_88 = v3->_88_dst_orientation;
@@ -24930,7 +24930,7 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 
 	v1 = a1;
 	v2 = a1->entity;
-	if ((v2->_DC_order == ENTITY_ORDER_ATTACK || v2->_DC_order == ENTITY_ORDER_8)
+	if ((v2->GetOrder() == ENTITY_ORDER_ATTACK || v2->GetOrder() == ENTITY_ORDER_8)
 		&& entity_4488F0_is_in_firing_range(v2, v2->_E0_current_attack_target, v2->_E0_current_attack_target_entity_id)
 		&& sub_44CE40(v1->entity->player_side, v1->entity->_E0_current_attack_target))
 	{
@@ -24949,9 +24949,9 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 		v7 = v1->_C_entity;
 		v8 = v1->turret_sprite;
 		v1->_C_entity_idx = v5;
-		v1->handler = tower_attachment_handler_448B40;
+		v1->SetHandler(tower_attachment_handler_448B40);
 		v9 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v7->sprite->x - v8->x, v7->sprite->y - v8->y);
-		entity_advance_mobd_rotation(&v1->mobd_lookup_id, v9, v1->stats_attachment_point->mobd_frame_step);
+        mobd_advance_anim(&v1->mobd_lookup_id, v9, v1->stats_attachment_point->mobd_frame_step);
 		sprite_4272E0_load_mobd_item(
 			v1->turret_sprite,
 			v1->stats_attachment_point->mobd_lookup_offset_idle,
@@ -24965,13 +24965,13 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 				v1->turret_sprite,
 				v1->stats_attachment_point->mobd_lookup_offset_attack,
 				_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
-			v1->handler = tower_attachment_handler_448C40;
+			v1->SetHandler(tower_attachment_handler_448C40);
 		}
 		return;
 	}
 	v10 = v1->stats_attachment_point;
 	src = v1->mobd_lookup_id;
-	entity_advance_mobd_rotation(&src, v1->entity->current_mobd_lookup_idx, v10->mobd_frame_step);
+	mobd_advance_anim(&src, v1->entity->GetCurrentAnimFrame(), v10->mobd_frame_step);
 	v11 = src;
 	if (src != v1->mobd_lookup_id)
 	{
@@ -24995,9 +24995,9 @@ void tower_attachment_handler_448B40(EntityTurret *a1)
 	v1 = a1;
 	v2 = a1->_C_entity;
 	v3 = v1->turret_sprite;
-	v1->handler = tower_attachment_handler_448B40;
+	v1->SetHandler(tower_attachment_handler_448B40);
 	v4 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v2->sprite->x - v3->x, v2->sprite->y - v3->y);
-	entity_advance_mobd_rotation(&v1->mobd_lookup_id, v4, v1->stats_attachment_point->mobd_frame_step);
+	mobd_advance_anim(&v1->mobd_lookup_id, v4, v1->stats_attachment_point->mobd_frame_step);
 	sprite_4272E0_load_mobd_item(
 		v1->turret_sprite,
 		v1->stats_attachment_point->mobd_lookup_offset_idle,
@@ -25011,7 +25011,7 @@ void tower_attachment_handler_448B40(EntityTurret *a1)
 			v1->turret_sprite,
 			v1->stats_attachment_point->mobd_lookup_offset_attack,
 			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
-		v1->handler = tower_attachment_handler_448C40;
+		v1->SetHandler(tower_attachment_handler_448C40);
 	}
 }
 
@@ -25802,8 +25802,8 @@ void EntityTurret_44BF00_handler(EntityTurret *a1)
 		_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
 	v3 = v1->stats_attachment_point;
 	v4 = v1->entity;
-	v1->handler = EntityTurret_44BF70;
-	entity_advance_mobd_rotation(v2, v4->current_mobd_lookup_idx, v3->mobd_frame_step);
+	v1->SetHandler(EntityTurret_44BF70);
+	mobd_advance_anim(v2, v4->GetCurrentAnimFrame(), v3->mobd_frame_step);
 	sprite_4273B0_load_mobd_item_sound(
 		v1->turret_sprite,
 		v1->stats_attachment_point->mobd_lookup_offset_idle,
@@ -25820,9 +25820,9 @@ void EntityTurret_44BF70(EntityTurret *a1)
 
 	v1 = a1;
 	v2 = (char *)&a1->mobd_lookup_id;
-	entity_advance_mobd_rotation(
+	mobd_advance_anim(
 		&a1->mobd_lookup_id,
-		a1->entity->current_mobd_lookup_idx,
+		a1->entity->GetCurrentAnimFrame(),
 		a1->stats_attachment_point->mobd_frame_step
     );
 	sprite_4273B0_load_mobd_item_sound(
@@ -25970,14 +25970,12 @@ bool _44C010_init_mission_globals()
 //----- (0044C1D0) --------------------------------------------------------
 void per_player_sprite_palettes_47DC88_free()
 {
-	void **v0; // esi@1
-
-	v0 = (void **)per_player_sprite_palettes;
-	do
-	{
-		free(*v0);
-		++v0;
-	} while ((int)v0 < (int) &entity_drag_selection_list);
+    for (int i = 0; i < 7; ++i) {
+        if (per_player_sprite_palettes[i]) {
+            free(per_player_sprite_palettes[i]);
+            per_player_sprite_palettes[i] = nullptr;
+        }
+    }
 }
 
 //----- (0044C1F0) --------------------------------------------------------
@@ -26344,7 +26342,7 @@ bool show_message(const char *text)
 }
 
 //----- (0044CB60) --------------------------------------------------------
-int entity_advance_mobd_rotation(int *src_lookup_id, int dst, int step)
+int mobd_advance_anim(int *src_lookup_id, int dst, int step)
 {
 	int v3; // esi@1
 	int result; // eax@2

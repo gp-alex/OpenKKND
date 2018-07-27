@@ -215,9 +215,9 @@ void entity_attach_turret(Entity *a1)
             v4->param = v2;
             v2->turret_sprite->param = v2;
             v2->entity = v1;
-            v2->mobd_lookup_id = v1->current_mobd_lookup_idx;
+            v2->mobd_lookup_id = v1->GetCurrentAnimFrame();
             v5 = v1->stats->attach;
-            v2->handler = tower_attachment_handler_448980;
+            v2->SetHandler(tower_attachment_handler_448980);
             v2->stats_attachment_point = v5;
             v1->turret = v2;
             v6 = v2->sprite_task;
@@ -654,7 +654,7 @@ int entity_413C10(Entity *a1)
     v10 = v4 >> 13;
     v5 = v3 >> 13;
     v11 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v1->sprite_x - v3, v1->sprite_y - v4);
-    v6 = ((unsigned __int8)v1->current_mobd_lookup_idx + 16) & 0xE0;
+    v6 = ((unsigned __int8)v1->GetCurrentAnimFrame() + 16) & 0xE0;
     v7 = v6 >> 5;
     v12 = boxd_get_tile(v5, v10);
     result = boxd_40EA50_classify_tile_objects(v1, v5 + _465708_x_offsets[v7], v10 + _465728_y_offsets[v7], &v12[_478BE8_map_info__see40E6E0[v7]]);
@@ -682,7 +682,7 @@ int entity_413C10(Entity *a1)
         if (result != 2)
             return result;
     }
-    v1->current_mobd_lookup_idx = v6;
+    v1->SetCurrentAnimFrame(v6);
     return result;
 }
 // 4793F8: using guessed type int map_get_width();
@@ -1493,7 +1493,7 @@ bool entity_414AD0_vehicle_collide_vehicle(Entity *a1)
     if (a1->stats->field_4C != 128)
         return 0;
     v2 = a1->sprite;
-    v3 = v1->current_mobd_lookup_idx >> 4;
+    v3 = v1->GetCurrentAnimFrame() >> 4;
     int map_y = global2map(v2->y + _465948_per_mobd_lookup_idx[((_BYTE)v3 - 4) & 0xF]);
     int map_x = global2map(v2->x + _465948_per_mobd_lookup_idx[v3]);
     v6 = boxd_get_tile(map_x, map_y);
@@ -1515,8 +1515,8 @@ bool entity_414AD0_vehicle_collide_vehicle(Entity *a1)
     {
         if (*v9)
         {
-            v10 = (*v9)->current_mobd_lookup_idx;
-            v11 = v1->current_mobd_lookup_idx;
+            v10 = (*v9)->GetCurrentAnimFrame();
+            v11 = v1->GetCurrentAnimFrame();
             v12 = abs(v10 - v11);
             if (v12 > 48)
                 break;
@@ -1684,8 +1684,8 @@ void entity_414E80(Entity *a1)
     }
 LABEL_18:
 
-    v6 = v1->current_mobd_lookup_idx;
-    v1->current_mobd_lookup_idx = v3;
+    v6 = v1->GetCurrentAnimFrame();
+    v1->SetCurrentAnimFrame(v3);
     if (entity_is_regular_vehicle(v1))
     {
         v7 = v1->sprite;
@@ -1700,10 +1700,10 @@ LABEL_18:
     }
     if (v11 == 2 || v11 == 3)
     {
-        switch (v1->current_mobd_lookup_idx)
+        switch (v1->GetCurrentAnimFrame())
         {
         case 0:
-            v1->current_mobd_lookup_idx = v6;
+            v1->SetCurrentAnimFrame(v6);
             v1->sprite_x = v1->sprite->x;
             v1->sprite_y = map_adjust_entity_in_tile_y(v1, v1->sprite->y - 0x2000);
             v1->SetMode(entity_mode_attack_move_2_5_4165C0);
@@ -1717,7 +1717,7 @@ LABEL_18:
 
         case 0x80:
         LABEL_42:
-            v1->current_mobd_lookup_idx = v6;
+            v1->SetCurrentAnimFrame(v6);
             v1->sprite_x = v1->sprite->x;
             v1->sprite_y = map_adjust_entity_in_tile_y(v1, v1->sprite->y + 0x2000);
             v1->SetMode(entity_mode_attack_move_2_5_4165C0);
@@ -1735,7 +1735,7 @@ LABEL_18:
     }
     else
     {
-        v1->current_mobd_lookup_idx = v4;
+        v1->SetCurrentAnimFrame(v4);
         if (entity_is_regular_vehicle(v1))
         {
             v13 = v1->sprite;
@@ -1754,16 +1754,16 @@ LABEL_18:
         }
         if (v16 != 2 && v16 != 3)
         {
-            v1->current_mobd_lookup_idx = v6;
+            v1->SetCurrentAnimFrame(v6);
             entity_mode_attack_move_4_order_3_7_417E60(v1);
             return;
         }
-        switch (v1->current_mobd_lookup_idx)
+        switch (v1->GetCurrentAnimFrame())
         {
         case 0:
             v1->sprite_x = v1->sprite->x;
             v1->sprite_y = map_adjust_entity_in_tile_y(v1, v1->sprite->y - 0x2000);
-            v1->current_mobd_lookup_idx = v6;
+            v1->SetCurrentAnimFrame(v6);
             v1->SetMode(entity_mode_attack_move_2_5_4165C0);
             return;
         case 0x40:
@@ -1777,7 +1777,7 @@ LABEL_18:
         }
     }
 
-    v1->current_mobd_lookup_idx = v6;
+    v1->SetCurrentAnimFrame(v6);
     v1->SetMode(entity_mode_attack_move_2_5_4165C0);
 }
 
@@ -1961,7 +1961,7 @@ void entity_mode_4157F0_infantry_idle_fidgeting(Entity *a1)
     {
         v6 = __OFSUB__(v3, 100);
         v5 = v3 - 100 < 0;
-        v7 = a1->current_mobd_lookup_idx;
+        v7 = a1->GetCurrentAnimFrame();
         if (v5 ^ v6)
         {
             entity_load_idle_mobd(a1, v7 + 32);
@@ -2057,17 +2057,17 @@ void entity_415A20(Entity *a1)
 //----- (00415A60) --------------------------------------------------------
 void entity_mode_rotate_to_target_415A60(Entity *a1)
 {
-    if (a1->current_mobd_lookup_idx == a1->_88_dst_orientation)
+    if (a1->GetCurrentAnimFrame() == a1->_88_dst_orientation)
     {
         a1->SetMode(a1->mode_turn_return);
     }
     else
     {
-        entity_advance_mobd_rotation(&a1->current_mobd_lookup_idx, a1->_88_dst_orientation, a1->stats->turning_speed);
+        entity_advance_rotation(a1, a1->_88_dst_orientation, a1->stats->turning_speed);
         sprite_4273B0_load_mobd_item_sound(
             a1->sprite,
             a1->stats->mobd_lookup_offset_move,
-            _47D3C4_entity_mobd_lookup_ids[a1->current_mobd_lookup_idx + 1]);
+            _47D3C4_entity_mobd_lookup_ids[a1->GetCurrentAnimFrame() + 1]);
     }
 }
 
@@ -2505,9 +2505,12 @@ void entity_mode_attack_move_2_5_4165C0(Entity *a1)
 
     if (a1->IsInfantry())
     {
-        a1->current_mobd_lookup_idx = _42D560_get_mobd_lookup_id_rotation(
-            a1->sprite_x - a1->sprite->x,
-            a1->sprite_y - a1->sprite->y);
+        a1->SetCurrentAnimFrame(
+            _42D560_get_mobd_lookup_id_rotation(
+                a1->sprite_x - a1->sprite->x,
+                a1->sprite_y - a1->sprite->y
+            )
+        );
         entity_413C10(a1);
 
         entity_load_move_mobd(a1);
@@ -2599,7 +2602,7 @@ void entity_mode_move_to_target_416790(Entity *a1)
 
     if (v1->field_124 & 1
         || v18 == -1                          // if rotation is uncertain
-        || v18 == v1->current_mobd_lookup_idx //      or we are facing right direction - move
+        || v18 == v1->GetCurrentAnimFrame() //      or we are facing right direction - move
     )
     {
     LABEL_37:
@@ -2662,8 +2665,8 @@ void entity_mode_move_to_target_416790(Entity *a1)
         goto LABEL_37;
     }
     v28 = v1->sprite;
-    v1->mode_turn_return = entity_mode_move_to_target_416790;
-    sprite_4272E0_load_mobd_item(v28, v1->stats->mobd_lookup_offset_move, _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
+    v1->SetTurnReturnMode(entity_mode_move_to_target_416790);
+    sprite_4272E0_load_mobd_item(v28, v1->stats->mobd_lookup_offset_move, _47D3C4_entity_mobd_lookup_ids[v1->GetCurrentAnimFrame() + 1]);
     v1->sprite->x_speed = 0;
     v1->sprite->y_speed = 0;
     v1->SetMode(entity_mode_rotate_to_target_415A60);
@@ -2707,7 +2710,7 @@ void entity_mode_416A70_infantry(Entity *a1)
             v1->sprite_y - v1->sprite->y
         );
 
-        if (v1->IsInfantry() || v1->current_mobd_lookup_idx == v23)
+        if (v1->IsInfantry() || v1->GetCurrentAnimFrame() == v23)
         {
             entity_load_move_mobd(v1, v23);
             v1->SetMode(entity_mode_416CD0);
@@ -2749,17 +2752,19 @@ void entity_mode_416CD0(Entity *a1)
     v4 = v2->x;
     if (abs(v2->x - a1->sprite_x) >= 512 || abs(v2->y - a1->sprite_y) >= 512)
     {
-        a1->current_mobd_lookup_idx = _42D560_get_mobd_lookup_id_rotation(
-            a1->sprite_x - v2->x, a1->sprite_y - v2->y
+        a1->SetCurrentAnimFrame(
+            _42D560_get_mobd_lookup_id_rotation(
+                a1->sprite_x - v2->x, a1->sprite_y - v2->y
+            )
         );
 
         sprite_4273B0_load_mobd_item_sound(
             a1->sprite,
             a1->stats->mobd_lookup_offset_move,
-            _47D3C4_entity_mobd_lookup_ids[a1->current_mobd_lookup_idx + 1]
+            _47D3C4_entity_mobd_lookup_ids[a1->GetCurrentAnimFrame() + 1]
         );
 
-        a1->sprite->x_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->current_mobd_lookup_idx + 1]] >> 6;
+        a1->sprite->x_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->GetCurrentAnimFrame() + 1]] >> 6;
         a1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
         if (map_40DA90_move_entity(v1) != 4)
         {
@@ -2816,7 +2821,7 @@ void entity_mode_416EB0(Entity *a1)
             a1->sprite_y - a1->sprite->y
         );
 
-        if (a1->IsInfantry() || a1->current_mobd_lookup_idx == v23)
+        if (a1->IsInfantry() || a1->GetCurrentAnimFrame() == v23)
         {
             entity_load_move_mobd(a1, v23);
             a1->SetMode(entity_mode_417100);
@@ -2853,7 +2858,7 @@ void entity_mode_417100(Entity *a1)
             )
         );
 
-        a1->sprite->x_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->current_mobd_lookup_idx + 1]] >> 6;
+        a1->sprite->x_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->GetCurrentAnimFrame() + 1]] >> 6;
         a1->sprite->y_speed = -entity_get_mobd_speed_y(a1);
         if (map_40DA90_move_entity(a1) != 4)
         {
@@ -3194,11 +3199,11 @@ void entity_417810(Entity *a1)
         v1->sprite->y_speed = 0;
         if (v1->field_D4)
         {
-            v1->field_D8 = ((unsigned __int8)v1->current_mobd_lookup_idx + 64) & 0xE0;
+            v1->field_D8 = ((unsigned __int8)v1->GetCurrentAnimFrame() + 64) & 0xE0;
         }
         else
         {
-            v1->field_D8 = ((unsigned __int8)v1->current_mobd_lookup_idx - 64) & 0xE0;
+            v1->field_D8 = ((unsigned __int8)v1->GetCurrentAnimFrame() - 64) & 0xE0;
         }
         entity_mode_417A20(v1);
     }
@@ -3231,11 +3236,11 @@ void entity_417980(Entity *a1)
 
     if (v1->field_D4)
     {
-        v1->field_D8 = ((unsigned __int8)v1->current_mobd_lookup_idx + 64) & 0xE0;
+        v1->field_D8 = ((unsigned __int8)v1->GetCurrentAnimFrame() + 64) & 0xE0;
     }
     else
     {
-        v1->field_D8 = ((unsigned __int8)v1->current_mobd_lookup_idx - 64) & 0xE0;
+        v1->field_D8 = ((unsigned __int8)v1->GetCurrentAnimFrame() - 64) & 0xE0;
     }
     entity_mode_417A20(v1);
 }
@@ -3278,7 +3283,7 @@ void entity_mode_417A20(Entity *a1)
                             v1->sprite_x - v1->sprite->x,
                             v1->sprite_y - v1->sprite->y);
                         v7 = v1->_88_dst_orientation;
-                        v1->current_mobd_lookup_idx = v6;
+                        v1->SetCurrentAnimFrame(v6);
                         v1->field_D8 = v7;
                         entity_413C10(v1);
                         entity_load_move_mobd(v1);
@@ -3383,7 +3388,7 @@ void entity_mode_417BD0(Entity *a1)
             v1->_88_dst_orientation = v13;
             if (v13 != -1)
             {
-                if (v1->current_mobd_lookup_idx != v13)
+                if (v1->GetCurrentAnimFrame() != v13)
                 {
                     v16 = v1->field_124;
                     LOBYTE_HEXRAYS(v16) = v16 | 1;
@@ -3402,7 +3407,7 @@ void entity_mode_417BD0(Entity *a1)
                 }
             }
         }
-        v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->current_mobd_lookup_idx + 1]] >> 6;
+        v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->GetCurrentAnimFrame() + 1]] >> 6;
         v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
         v1->sprite->x_speed += v1->sprite->x_speed < 0 ? 1 : 0;
         v1->sprite->y_speed += v1->sprite->y_speed < 0 ? 1 : 0;
@@ -3569,11 +3574,11 @@ void entity_mode_417FC0(Entity *a1)
         {
             if (v7 == v1->entity_27C_entity_id)
             {
-                v8 = v1->current_mobd_lookup_idx;
-                if (v6->current_mobd_lookup_idx - v8 <= 0)
-                    v9 = v8 - v6->current_mobd_lookup_idx;
+                v8 = v1->GetCurrentAnimFrame();
+                if (v6->GetCurrentAnimFrame() - v8 <= 0)
+                    v9 = v8 - v6->GetCurrentAnimFrame();
                 else
-                    v9 = v6->current_mobd_lookup_idx - v8;
+                    v9 = v6->GetCurrentAnimFrame() - v8;
                 if (v9 <= 48)
                 {
                     if (v6->stats->speed < v1->stats->speed)
@@ -3713,7 +3718,7 @@ void entity_418290(Entity *a1)
             v1->entity_8->sprite->y - v1->sprite->y
         );
 
-        if (v1->current_mobd_lookup_idx == rot) {
+        if (v1->GetCurrentAnimFrame() == rot) {
             v1->SetMode(entity_mode_418550);
             v1->pathing._2C_waypoint_map_x = kknd_rand_3() & 0x3F;
         } else {
@@ -3804,7 +3809,7 @@ void entity_mode_418590(Entity *a1)
         v8 = v6->mobd_lookup_offset_flying;
         v9 = v7;
         if (v8 != -1)
-            sprite_4272E0_load_mobd_item(v7, v8, _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
+            sprite_4272E0_load_mobd_item(v7, v8, _47D3C4_entity_mobd_lookup_ids[v1->GetCurrentAnimFrame() + 1]);
         v10 = v9->script;
         v11 = v1->sprite->z_index;
         v9->param = v6;
@@ -4402,25 +4407,23 @@ void entity_mode_419180_in_repairbay(Entity *a1)
 void entity_mode_419230_arrive_at_repairbay(Entity *a1)
 {
     Entity *v1; // esi@1
-    int *v2; // edi@1
     Entity *v3; // eax@2
 
     v1 = a1;
-    v2 = &a1->current_mobd_lookup_idx;
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
     entity_load_idle_mobd(a1);
-    if (!entity_advance_mobd_rotation(v2, 160, v1->stats->turning_speed))
+    if (!entity_advance_rotation(a1, 160, v1->stats->turning_speed))
     {
         v1->sprite->x_speed = 64;
         v1->sprite->y_speed = -64;
         sprite_4272E0_load_mobd_item(
             v1->sprite,
             v1->stats->mobd_lookup_offset_move,
-            _47D3C4_entity_mobd_lookup_ids[*v2 + 1]);
+            _47D3C4_entity_mobd_lookup_ids[a1->GetCurrentAnimFrame() + 1]);
         v3 = v1->_E0_current_attack_target;
         v1->_128_spawn_param = (void *)100;
-        v1->_DC_order = ENTITY_ORDER_0;
+        v1->SetOrder(ENTITY_ORDER_0);
         v1->SetMode(entity_mode_419180_in_repairbay);
         *((_DWORD *)v3->state + 2) = 1;
         v1->event_handler = v1->script->event_handler;
@@ -4523,7 +4526,7 @@ void entity_mode_move_tanker(Entity *a1)
 
     v1 = a1;
     v3 = a1->stats->mobd_lookup_offset_move;
-    v19 = _47D3C4_entity_mobd_lookup_ids[a1->current_mobd_lookup_idx + 1];
+    v19 = _47D3C4_entity_mobd_lookup_ids[a1->GetCurrentAnimFrame() + 1];
     v4 = a1->sprite;
     if (a1->IsMode(entity_mode_move_tanker))
     {
@@ -4557,7 +4560,7 @@ void entity_mode_move_tanker(Entity *a1)
     {
         v17 = _42D560_get_mobd_lookup_id_rotation(v13, v11 - v10->y);
         v18 = v1->stats;
-        v1->current_mobd_lookup_idx = v17;
+        v1->SetCurrentAnimFrame(v17);
         v1->sprite->x_speed = v18->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v17 + 1]] >> 6;
         v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
     }
@@ -4677,7 +4680,7 @@ void entity_mode_4197E0_infantry(Entity *a1)
 {
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
-    entity_load_move_mobd(a1, a1->current_mobd_lookup_idx + 64);
+    entity_load_move_mobd(a1, a1->GetCurrentAnimFrame() + 64);
     script_yield(a1->script, SCRIPT_FLAGS_20_10000000, 0);
 }
 

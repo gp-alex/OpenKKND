@@ -1,6 +1,11 @@
 #pragma once
 
-#include "kknd.h"
+#include "src/kknd.h"
+
+#include "src/Infrastructure/DependencyInjection.h"
+#include "src/Infrastructure/Log.h"
+
+
 
 
 struct Script;
@@ -119,6 +124,22 @@ struct Entity
     inline int GetFiringRange() const {
         return this->stats->firing_range;
     }
+
+
+    inline int GetCurrentAnimFrame() const {
+        return current_mobd_lookup_idx;
+    }
+
+    inline void SetCurrentAnimFrame(int current_mobd_lookup_idx) {
+        if (current_mobd_lookup_idx >= 256) {
+            InfrastructureDependencies::Resolve<Infrastructure::Log>()->Info("Entity::SetCurrentAnimFrame: %u", current_mobd_lookup_idx);
+            current_mobd_lookup_idx = 0;
+            __debugbreak();
+        }
+        this->current_mobd_lookup_idx = current_mobd_lookup_idx;
+    }
+
+
 
     Entity *next;
     Entity *prev;
@@ -251,6 +272,7 @@ void entity_load_move_mobd(Entity *entity, int idx);
 void entity_load_idle_mobd(Entity *entity);
 void entity_load_idle_mobd(Entity *entity, int idx);
 void entity_load_mobd_4(Entity *entity);
+int entity_advance_rotation(Entity *entity, int dst, int step);
 
 int entity_get_mobd_speed_x(Entity *entity);
 int entity_get_mobd_speed_y(Entity *entity);

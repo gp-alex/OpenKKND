@@ -1113,7 +1113,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
             v11 = 2248;
             if (!v3->stats->is_infantry)
                 v11 = 2184;
-            sprite_4272E0_load_mobd_item(v8, v11, _47D3C4_entity_mobd_lookup_ids[v3->current_mobd_lookup_idx + 1]);
+            sprite_4272E0_load_mobd_item(v8, v11, _47D3C4_entity_mobd_lookup_ids[v3->GetCurrentAnimFrame() + 1]);
         }
     }
     if (v18)

@@ -306,9 +306,9 @@ void entity_mode_4478E0_towers(Entity *a1)
                 v5->param = v2;
                 v2->turret_sprite->param = v2;
                 v2->entity = v1;
-                v2->mobd_lookup_id = v1->current_mobd_lookup_idx;
+                v2->mobd_lookup_id = v1->GetCurrentAnimFrame();
                 v6 = v1->stats->attach;
-                v2->handler = EntityTowerAttachment_handler_447C40;
+                v2->SetHandler(EntityTowerAttachment_handler_447C40);
                 v2->stats_attachment_point = v6;
                 v2->field_18 = 0;
                 v2->field_2C = 0;
@@ -555,7 +555,7 @@ void EntityTowerAttachment_handler_447CA0(EntityTurret *a1)
     v4 = v1->turret_sprite;
     v1->handler = EntityTowerAttachment_handler_447CA0;
     v5 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v2->sprite->x - v4->x, v2->sprite->y - v4->y);
-    entity_advance_mobd_rotation(&v1->mobd_lookup_id, v5, v1->stats_attachment_point->mobd_frame_step);
+    mobd_advance_anim(&v1->mobd_lookup_id, v5, v1->stats_attachment_point->mobd_frame_step);
     sprite_4272E0_load_mobd_item(
         v1->turret_sprite,
         v1->stats_attachment_point->mobd_lookup_offset_idle,
@@ -874,7 +874,7 @@ void EntityTowerAttachment_handler_448290(EntityTurret *a1)
 
     v1 = a1;
     v2 = (char *)&a1->mobd_lookup_id;
-    if (!entity_advance_mobd_rotation(&a1->mobd_lookup_id, 160, a1->stats_attachment_point->mobd_frame_step))
+    if (!mobd_advance_anim(&a1->mobd_lookup_id, 160, a1->stats_attachment_point->mobd_frame_step))
         v1->handler = EntityTowerAttachment_handler_448230;
     sprite_4272E0_load_mobd_item(
         v1->turret_sprite,
@@ -927,7 +927,7 @@ void EntityTowerAttachment_handler_4010C0(EntityTurret *a1)
 {
     int v1; // eax@1
 
-    v1 = a1->entity->current_mobd_lookup_idx;
+    v1 = a1->entity->GetCurrentAnimFrame();
     a1->mobd_lookup_id = v1;
     sprite_4272E0_load_mobd_item(
         a1->turret_sprite,

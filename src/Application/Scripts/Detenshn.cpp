@@ -592,19 +592,19 @@ void UNIT_Handler_Hut(Script *a1)
         switch (v2)
         {
         case 1:
-            v1->current_mobd_lookup_idx = 16;
+            v1->SetCurrentAnimFrame(16);
             break;
         case 2:
-            v1->current_mobd_lookup_idx = 32;
+            v1->SetCurrentAnimFrame(32);
             break;
         case 3:
-            v1->current_mobd_lookup_idx = 48;
+            v1->SetCurrentAnimFrame(48);
             break;
         case 4:
-            v1->current_mobd_lookup_idx = 64;
+            v1->SetCurrentAnimFrame(64);
             break;
         default:
-            v1->current_mobd_lookup_idx = 0;
+            v1->SetCurrentAnimFrame(0);
             break;
         }
         v1->script->event_handler = EventHandler_Hut;

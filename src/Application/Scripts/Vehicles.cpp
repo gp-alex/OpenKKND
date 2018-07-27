@@ -208,17 +208,13 @@ void entity_mode_444590_oiltanker(Entity *a1)
 //----- (00444630) --------------------------------------------------------
 void entity_mode_444630_oiltanker(Entity *a1)
 {
-    Entity *v1; // esi@1
-    int *v2; // edi@1
-
-    v1 = a1;
-    v2 = &a1->current_mobd_lookup_idx;
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
     entity_load_idle_mobd(a1);
-    if (!entity_advance_mobd_rotation(v2, 160, v1->stats->turning_speed))
-        v1->SetMode(entity_mode_4446B0_oiltanker_load_oil);
-    script_sleep(v1->script, 1);
+
+    if (!entity_advance_rotation(a1, 160, a1->stats->turning_speed))
+        a1->SetMode(entity_mode_4446B0_oiltanker_load_oil);
+    script_sleep(a1->script, 1);
 }
 
 //----- (004446A0) --------------------------------------------------------
@@ -448,7 +444,7 @@ void entity_mode_4449D0_oiltanker(Entity *a1)
     a1->sprite->y_speed = 0;
     entity_load_idle_mobd(a1);
 
-    if (!entity_advance_mobd_rotation(&a1->current_mobd_lookup_idx, 160, a1->stats->turning_speed))
+    if (!entity_advance_rotation(a1, 160, a1->stats->turning_speed))
         a1->SetMode(entity_mode_444A40_oiltanker);
     script_sleep(a1->script, 1);
 }
@@ -458,7 +454,7 @@ void entity_mode_444A40_oiltanker(Entity *a1)
 {
     Script *v1; // ST00_4@1
 
-    a1->sprite->x_speed = -(a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->current_mobd_lookup_idx + 1]] >> 6);
+    a1->sprite->x_speed = -(a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->GetCurrentAnimFrame() + 1]] >> 6);
     a1->sprite->y_speed = -(-entity_get_mobd_speed_y(a1));
     v1 = a1->script;
     a1->SetMode(entity_mode_444B40_oiltanker_unload_oil);
@@ -484,7 +480,7 @@ void entity_mode_444AB0_oiltanker(Entity *a1)
                 *(_DWORD *)(v3 + 24) = 0;
         }
     }
-    a1->sprite->x_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->current_mobd_lookup_idx + 1]] >> 6;
+    a1->sprite->x_speed = a1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[a1->GetCurrentAnimFrame() + 1]] >> 6;
     a1->sprite->y_speed = -entity_get_mobd_speed_y(a1);
     v4 = a1->script;
     a1->SetMode(entity_mode_4448C0_oiltanker);
@@ -1015,7 +1011,7 @@ void entity_mode_406DC0_mobilederrick(Entity *a1)
         v1->sprite->x_speed = 0;
         v1->sprite->y_speed = 0;
         entity_load_idle_mobd(v1);
-        if (!entity_advance_mobd_rotation(&v1->current_mobd_lookup_idx, 160, v1->stats->turning_speed))
+        if (!entity_advance_rotation(v1, 160, v1->stats->turning_speed))
             v1->SetMode(entity_mode_plant_mobile_derrick);
         script_yield_any_trigger(v1->script, 1);
     }
