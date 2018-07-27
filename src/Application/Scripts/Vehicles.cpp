@@ -3,6 +3,8 @@
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Sound.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 
 #include "src/Engine/Entity.h"
 #include "src/Engine/EntityFactory.h"
@@ -43,133 +45,70 @@ void UNIT_Handler_OilTanker(Script *a1)
 //----- (004441E0) --------------------------------------------------------
 void entity_oil_tanker_initialize(Entity *a1)
 {
-    Entity *v1; // esi@1
-    EntityOilTankerState *v2; // eax@1
-    UnitStat *v3; // eax@2
-    int v4; // edi@3
-    UnitStat *v5; // eax@5
-    int v6; // eax@6
-    int v7; // edi@8
-    UnitStat *v8; // eax@9
-    int v9; // eax@10
-    unsigned int v10; // edx@12
-    UnitStat *v11; // eax@12
-    int v12; // eax@13
-    Sprite *v13; // ecx@15
-    int v14; // edx@15
-    unsigned int v15; // edx@15
-    int v16; // eax@15
-    Script *v17; // edx@15
-    Sprite *v18; // edx@18
-    UnitStat *v19; // eax@19
-    int v20; // eax@20
-    int v21; // ecx@22
-    UnitStat *v22; // eax@22
-    int v23; // eax@23
-    int v24; // ecx@25
-    int v25; // eax@25
-    Script *v26; // edx@25
-
-    v1 = a1;
     a1->script->script_type = SCRIPT_TANKER_CONVOY_HANDLER;
-    v2 = (EntityOilTankerState *)script_create_local_object(a1->script, 116);
-    v1->state = v2;
-    v2->_0_oil_loaded = 0;
-    v2->_4_entity = 0;
-    v2->drillrig = 0;
-    v2->powerstation = 0;
-    v2->drillrig_entity_id = 0;
-    v2->powerstation_entity_id = 0;
-    v2->_18_entity_id = 0;
-    memset(v2->array_20, 0, sizeof(v2->array_20));
-    if (v1->sprite->cplc_ptr1)
+
+    auto state = (EntityOilTankerState *)script_create_local_object(
+        a1->script,
+        sizeof(EntityOilTankerState)
+    );
+    a1->state = state->constructor();
+
+    if (a1->sprite->cplc_ptr1)
     {
-        v3 = v1->stats;
-        v1->_A4_idx_in_tile = 0;
-        if (v3->is_infantry)
-            v4 = entity_40F100_get_dy(v1, 0);
-        else
-            v4 = v3->field_4C != 128 ? 7424 : 4096;
-        v5 = v1->stats;
-        if (v5->is_infantry)
-            v6 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
-        else
-            v6 = v5->field_4C != 128 ? 7424 : 4096;
-        v7 = map_place_entity(v1, v6 + (v1->sprite->x & 0xFFFFE000), v4 + (v1->sprite->y & 0xFFFFE000), 0);
-        if (v7 == 5)
-        {
-            entity_mode_419760_infantry_destroyed(v1);
-        }
-        else
-        {
-            v8 = v1->stats;
-            if (v8->is_infantry)
-                v9 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
-            else
-                v9 = v8->field_4C != 128 ? 7424 : 4096;
-            v10 = v9 + (v1->sprite->x & 0xFFFFE000);
-            v11 = v1->stats;
-            v1->sprite_x = v10;
-            if (v11->is_infantry)
-                v12 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
-            else
-                v12 = v11->field_4C != 128 ? 7424 : 4096;
-            v13 = v1->sprite;
-            v14 = v13->y;
-            v1->_DC_order = ENTITY_ORDER_MOVE;
-            v1->_A4_idx_in_tile = v7;
-            v15 = v12 + (v14 & 0xFFFFE000);
-            v16 = v1->sprite_x;
-            v1->sprite_y = v15;
-            v1->sprite_x_2 = v16;
-            v1->sprite_y_2 = v15;
-            v17 = v1->script;
-            v1->sprite_map_x = v13->x >> 13;
-            v1->sprite_map_y = v13->y >> 13;
-            v17->event_handler = EventHandler_OilTanker;
-            v1->SetMode(entity_mode_4444D0_oiltanker);
+        a1->_A4_idx_in_tile = 0;
+
+        int v7 = map_place_entity(
+            a1,
+            map_adjust_entity_in_tile_x(a1, a1->sprite->x),
+            map_adjust_entity_in_tile_y(a1, a1->sprite->y),
+            0
+        );
+
+        if (v7 == ENTITY_TILE_POSITION_INVALID) {
+            entity_mode_419760_infantry_destroyed(a1);
+        } else {
+            a1->sprite_x = map_adjust_entity_in_tile_x(a1, a1->sprite->x);
+            a1->sprite_y = map_adjust_entity_in_tile_y(a1, a1->sprite->y);
+            a1->sprite_x_2 = a1->sprite_x;
+            a1->sprite_y_2 = a1->sprite_y;
+            a1->sprite_map_x = global2map(a1->sprite->x);
+            a1->sprite_map_y = global2map(a1->sprite->y);
+
+            a1->SetOrder(ENTITY_ORDER_MOVE);
+            a1->_A4_idx_in_tile = v7;
+
+            a1->SetScriptEventHandler(EventHandler_OilTanker);
+            a1->SetMode(entity_mode_4444D0_oiltanker);
         }
     }
-    else if (entity_413860_boxd(v1))
+    else if (entity_413860_boxd(a1))
     {
-        v19 = v1->stats;
-        if (v19->is_infantry)
-            v20 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
-        else
-            v20 = v19->field_4C != 128 ? 7424 : 4096;
-        v21 = v20 + (v1->sprite_map_x << 13);
-        v22 = v1->stats;
-        v1->sprite_x = v21;
-        if (v22->is_infantry)
-            v23 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
-        else
-            v23 = v22->field_4C != 128 ? 7424 : 4096;
-        v24 = v1->sprite_x;
-        v25 = (v1->sprite_map_y << 13) + v23;
-        v26 = v1->script;
-        v1->sprite_y = v25;
-        v1->_DC_order = ENTITY_ORDER_MOVE;
-        v1->sprite_x_2 = v24;
-        v1->sprite_y_2 = v25;
-        v1->_134_param__unitstats_after_mobile_outpost_plant = 0;
-        v1->_98_465610_accuracy_dmg_bonus_idx = 0;
-        v1->_12C_prison_bunker_spawn_type = 0;
-        v26->event_handler = EventHandler_General_Scout;
-        v1->mode_return = entity_mode_4448C0_oiltanker;
-        entity_4172D0(v1);
+        a1->sprite_x = map_adjust_entity_in_tile_x(a1, map2global(a1->sprite_map_x));
+        a1->sprite_y = map_adjust_entity_in_tile_y(a1, map2global(a1->sprite_map_y));
+        a1->sprite_x_2 = a1->sprite_x;
+        a1->sprite_y_2 = a1->sprite_y;
+
+        a1->SetOrder(ENTITY_ORDER_MOVE);
+        a1->_134_param__unitstats_after_mobile_outpost_plant = 0;
+        a1->_98_465610_accuracy_dmg_bonus_idx = 0;
+        a1->_12C_prison_bunker_spawn_type = 0;
+        a1->SetScriptEventHandler(EventHandler_General_Scout);
+        a1->SetReturnMode(entity_mode_4448C0_oiltanker);
+        entity_4172D0(a1);
     }
     else
     {
-        script_trigger_event(v1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-        script_trigger_event_group(0, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
-        v1->script->script_type = SCRIPT_TYPE_INVALID;
-        v18 = v1->sprite;
-        v1->entity_id = 0;
-        v18->x_speed = 0;
-        v1->sprite->y_speed = 0;
-        sprite_list_remove(v1->sprite);
-        entityRepo->Delete(v1);
-        script_terminate(v1->script);
+        script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
+        script_trigger_event_group(0, EVT_SHOW_UI_CONTROL, a1, SCRIPT_TYPE_39030);
+
+        a1->script->script_type = SCRIPT_TYPE_INVALID;
+        a1->entity_id = 0;
+        a1->sprite->x_speed = 0;
+        a1->sprite->y_speed = 0;
+
+        sprite_list_remove(a1->sprite);
+        entityRepo->Delete(a1);
+        script_terminate(a1->script);
     }
 }
 
@@ -950,11 +889,11 @@ void entity_initialize_mobile_derrick(Entity *a1)
     v2->script_type = SCRIPT_MOBILE_DERRICK_HANDLER;
     if (a1->sprite->cplc_ptr1)
     {
-        v1->sprite->x = entity_transform_x(a1, a1->sprite->x);
-        v1->sprite->y = entity_transform_y(a1, a1->sprite->y);
+        v1->sprite->x = map_adjust_entity_in_tile_x(a1, a1->sprite->x);
+        v1->sprite->y = map_adjust_entity_in_tile_y(a1, a1->sprite->y);
         v1->_A4_idx_in_tile = 0;
         auto v11 = map_place_entity(
-            v1, entity_transform_x(a1, a1->sprite->x), entity_transform_y(a1, a1->sprite->y), 0
+            v1, map_adjust_entity_in_tile_x(a1, a1->sprite->x), map_adjust_entity_in_tile_y(a1, a1->sprite->y), 0
         );
         if (v11 != 5) {
             v12 = v1->sprite;
@@ -979,8 +918,8 @@ void entity_initialize_mobile_derrick(Entity *a1)
     }
     else {
         v22 = v1->script;
-        v1->sprite_x = entity_transform_x(a1, map2global(a1->sprite_map_x));
-        v1->sprite_y = entity_transform_y(a1, map2global(a1->sprite_map_y));
+        v1->sprite_x = map_adjust_entity_in_tile_x(a1, map2global(a1->sprite_map_x));
+        v1->sprite_y = map_adjust_entity_in_tile_y(a1, map2global(a1->sprite_map_y));
         v1->_DC_order = ENTITY_ORDER_MOVE;
         v1->sprite_x_2 = v1->sprite_x;
         v1->sprite_y_2 = v1->sprite_y;
@@ -1063,7 +1002,7 @@ void entity_mode_406DC0_mobilederrick(Entity *a1)
         while (1)
         {
             v4 = v2->sprite;
-            if (!((v3->x ^ v4->x) & 0xFFFFE000) && !((v3->y ^ v4->y) & 0xFFFFE000) && !(v4->drawjob->flags & 0x40000000))
+            if (map_is_same_tile(v3->x, v4->x) && map_is_same_tile(v3->y, v4->y) && !(v4->drawjob->flags & 0x40000000))
                 break;
             v2 = v2->next;
             if ((OilDeposit **)v2 == &oilspot_list_head)

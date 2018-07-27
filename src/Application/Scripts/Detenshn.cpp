@@ -5,6 +5,9 @@
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Sound.h"
+#include "src/Pathfind.h"
+#include "src/Map.h"
+
 
 #include "src/Engine/Entity.h"
 #include "src/Engine/EntityFactory.h"
@@ -47,9 +50,9 @@ void entity_mode_407300_prison(Entity *a1)
     v1 = a1;
     a1->sprite->field_88_unused = 1;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
+    a1->sprite->x = map_point_to_tile_global(a1->stru60.ptr_C->x_offset + a1->sprite->x) - a1->stru60.ptr_C->x_offset + 4096;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
+    a1->sprite->y = map_point_to_tile_global(a1->stru60.ptr_C->y_offset + a1->sprite->y) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     v2 = v1->script;
     v1->SetMode((EntityMode)nullsub_1);
@@ -393,9 +396,9 @@ void entity_mode_407A90_techbunker(Entity *a1)
     v1 = a1;
     a1->sprite->field_88_unused = 1;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
+    a1->sprite->x = map_point_to_tile_global(a1->stru60.ptr_C->x_offset + a1->sprite->x) - a1->stru60.ptr_C->x_offset + 4096;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
+    a1->sprite->y = map_point_to_tile_global(a1->stru60.ptr_C->y_offset + a1->sprite->y) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     if (current_level_idx == LEVEL_SURV_18)
         v1->SetMode(entity_mode_4079F0_techbunker_spawn10_surv18_lvl);
@@ -552,18 +555,17 @@ void EventHandler_Hut(Script *receiver, Script *sender, enum SCRIPT_EVENT event,
 void entity_mode_407E70_hut(Entity *a1)
 {
     Entity *v1; // esi@1
-    Script *v2; // eax@1
 
     v1 = a1;
     a1->sprite->field_88_unused = 1;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
+    a1->sprite->x = map_point_to_tile_global(a1->stru60.ptr_C->x_offset + a1->sprite->x) - a1->stru60.ptr_C->x_offset + 4096;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
+    a1->sprite->y = map_point_to_tile_global(a1->stru60.ptr_C->y_offset + a1->sprite->y) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
-    v2 = v1->script;
+
     v1->SetMode(entity_mode_407DA0);
-    script_sleep(v2, 1);
+    script_sleep(v1->script, 1);
 }
 
 //----- (00407F00) --------------------------------------------------------

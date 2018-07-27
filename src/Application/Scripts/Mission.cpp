@@ -1280,7 +1280,7 @@ void script_425F50_stru48_stru51_tech_bunkers(Script *a1)
                     v9 = *(_DWORD *)v5 - *((_DWORD *)v4 - 1);
                 else
                     v9 = *((_DWORD *)v4 - 1) - *(_DWORD *)v5;
-                v10 = math_42D64D_prolly_vec_length(v9 >> 8, v8 >> 8);
+                v10 = math_42D64D_vec_length_2d(v9 >> 8, v8 >> 8);
                 *v6 = v10;
                 if (v71 < v10)
                     v71 = v10;

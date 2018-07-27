@@ -1,9 +1,9 @@
 #include "src/kknd.h"
-
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
 #include "src/Random.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 
 
 //----- (00438930) --------------------------------------------------------
@@ -58,15 +58,15 @@ void _4389A0_prolly_create_map_damage_decal(int map_x, int map_y)
 
     v2 = map_x;
     v3 = map_y;
-    if (map_x >= 0 && map_y >= 0 && map_x < _478AB4_map_width_shl_13 && map_y < _478FF0_map_height_shl_13)
+    if (map_x >= 0 && map_y >= 0 && map_x < map_get_width_global() && map_y < map_get_height_global())
     {
         v4 = kknd_rand_debug(__FILE__, __LINE__) & 0x7FFF;
         if (v4 < 5000)
         {
-            v5 = v3 & 0xFFFFE000;
-            v6 = v2 & 0xFFFFE000;
+            v5 = map_point_to_tile_global(v3);
+            v6 = map_point_to_tile_global(v2);
             v7 = v5;
-            if (!(_478AA8_boxd_stru0_array[(v6 >> 13) + _4793F8_map_width * (v5 >> 13)].flags & 0xE0))
+            if (!(_478AA8_boxd_stru0_array[global2map(v6) + map_get_width() * global2map(v5)].flags & (BOXD_STRU0_OBSTRUCTED | BOXD_STRU0_BLOCKED | BOXD_STRU0_VEHICLE_BUILDING)))
             {
                 v8 = stru28_list_47C338;
                 if ((stru28 **)stru28_list_47C338 == &stru28_list_47C338)

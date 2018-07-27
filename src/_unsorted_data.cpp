@@ -451,6 +451,8 @@ stru201_displaymode _465650_display_modes[3] =
 	{ "640", 0, 0 }
 };
 int _465680_get_sys_colors = 1; // weak
+
+//ENTITY_TILE_POSITION_*
 int dword_465688[32] =
 {
 	4, 	4, 	4, 	4, 	4, 	4, 	4, 	4, 	4,
@@ -3012,14 +3014,6 @@ int dword_470510[] = { 2, 2, 2, 2, 2, 2, 2, 2 }; // weak
 char aCouldnTCreat_0[] = "Couldn't create new building"; // idb
 char aWaitingForServ[] = "waiting for server packet"; // idb
 char aWaitingForPlay[] = "waiting for player packet"; // idb
-
-int dword_470588[] = { 1, 0, 0, 0xC0000000 };
-int dword_470598 = 0; // weak
-int dword_47059C = 0; // weak
-int *_4705A8_minimap_smthn = dword_470588; // weak
-
-MobdSprtImage _47CBA0_MobdSprtImage_fog_of_war;
-DataMobdItem_stru0 _4705B0_minimap = { 0, 0, 0, &_47CBA0_MobdSprtImage_fog_of_war, NULL, SOUND_0, NULL }; // weak
 
 
 UnitDamageSource dmg_rifle = { MOBD_EXPLOSIONS, UNIT_DmgHandler_Rifle, -1, 0x14C, 0, 40, 30, 15, 0x20, 0 };
@@ -6049,17 +6043,6 @@ int timer_delta_updated; // weak
 int timer_delta_ms; // weak
 int timer_time; // weak
 Entity *dword_478108[300];
-DataBoxd_stru0_per_map_unit *_478AA8_boxd_stru0_array;
-int _478AAC_map_height; // weak
-int dword_478AB0; // weak
-int _478AB4_map_width_shl_13; // weak
-int _478BE8_map_info__see40E6E0[8];
-char byte_478C08; // weak
-int _478FF0_map_height_shl_13; // weak
-int dword_478FF4; // weak
-int _4793F8_map_width; // weak
-int dword_47952C; // weak
-int dword_47953C; // weak
 Sidebar *stru22_list_479548;
 Sidebar *stru22_list_47954C;
 Sidebar *sidebar_list;
@@ -6115,7 +6098,6 @@ int stru1_global_obj_anim_initialized; // weak
 int game_window_created; // weak
 int _479DE8_boxd_initialized; // weak
 int stru2_list_elements_initialized; // weak
-int _479DF0_mapd_initialized; // weak
 char current_savegame_filename[256];
 char byte_479EF8[192]; // idb
 char str[128];
@@ -6128,7 +6110,6 @@ int max_machineshop_level; // weak
 char app_root_dir[20]; // idb
 DataHunk *current_level_lvl; // idb
 char game_installation_drive_letter; // weak
-Bitmap *_47A010_mapd_item_being_drawn[3];
 int _47A01C_sound_id; // weak
 char game_data_root_dir[80]; // idb
 char game_data_installation_dir[256];
@@ -6255,11 +6236,6 @@ Bitmap *bitmap_list_47C364;
 void(*mapd_j_4391D0_handler)(Mapd_stru0 *, void *);
 Bitmap *bitmap_list_free_pool;
 void(*j_drawjob_update_handler_mapd_menu)(Bitmap *param, DrawJob *job);
-int currently_running_lvl_mapd_num_items; // weak
-Mapd_stru0 _47C380_mapd;
-int currently_running_lvl_mapd_valid; // weak
-int _47C390_mapd; // weak
-DataMapd *currently_running_lvl_mapd;
 DrawJobList draw_list_47C5D8; // idb
 DrawJob *draw_list_free_pool;
 DrawJobList draw_list_47C5E8; // idb
@@ -6375,41 +6351,7 @@ _DWORD dword_47CB14; // idb
 int dword_47CB18; // weak
 int dword_47CB1C; // weak
 int dword_47CB20; // weak
-MapdScrlImageTile *fog_of_war_tile_15;
-int __478AAC_map_height_plus4; // weak
-MapdScrlImage *fog_of_war_scrl_source;
-int __478AAC_map_height_x2; // weak
-MapdScrlImageTile *fog_of_war_tile_1;
-MapdScrlImageTile *fog_of_war_tile_10;
-MapdScrlImageTile *fog_of_war_tile_14;
-MapdScrlImageTile *fog_of_war_tile_4;
-MapdScrlImage *map_fog_of_war_scrl;
-int dword_47CB4C; // weak
-char byte_47CB50[8];
-Sprite *_47CB58_minimap_sprite;
-MapdScrlImageTile *fog_of_war_tile_11;
-MapdScrlImageTile *fog_of_war_tile_7;
-MapdScrlImageTile *fog_of_war_tile_3;
-int dword_47CB68; // weak
-int dword_47CB6C; // weak
-MapdScrlImageTile *fog_of_war_tile_13;
-void *_47CB74_fow_map_x2; // idb
-MapdScrlImageTile *fog_of_war_tile_6;
-int __4793F8_map_width_x2; // weak
-int __4793F8_map_width_plus4; // weak
-MapdScrlImageTile *fog_of_war_tile_8;
-void *_47CB88_fow_map_x2; // idb
-DrawHandlerData_Units *_47CB8C_fow;
-MapdScrlImageTile *fog_of_war_tile_5;
-MapdScrlImageTile *fog_of_war_tile_12;
-void *_47CB98_fow_map_x2;
-int dword_47CBAC; // weak
-Bitmap *fog_of_war_bitmap;
-MapdScrlImageTile **map_fog_of_war_scrl_tiles;
-MapdScrlImageTile *fog_of_war_tile_9;
-MapdScrlImageTile *fog_of_war_tile_2;
 int _47CBC0_fow[256];
-int dword_47CFC0; // weak
 int __47CFC4_mobd_lookup_speeds[256];
 int _47D3C4_entity_mobd_lookup_ids[257];
 unsigned __int8 player_sprite_palette_tmp[256];

@@ -82,6 +82,7 @@ void RENDER_SetViewportAndClear();
 Palette *GetSysPalette();
 void _40E6B0_set_sys_colors();
 void _40E560_flip_gdi_update_syscolors();
+int REND_SetRoutines();
 
 
 

@@ -61,7 +61,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
     v7 = (v6->y - v5) >> 8;
     v8 = (v6->x - v1->x) >> 8;
     v29 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v8, v7);
-    v9 = math_42D64D_prolly_vec_length(v8, v7);
+    v9 = math_42D64D_vec_length_2d(v8, v7);
     v10 = v3;
     v11 = v9 / *(_DWORD *)(v3 + 16);
     v12 = v28->entity_id;
@@ -225,7 +225,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
         v2->y = v5 + 2560;
     }
     v37 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v7, v8);
-    v10 = math_42D64D_prolly_vec_length(v7, v8);
+    v10 = math_42D64D_vec_length_2d(v7, v8);
     v11 = 2 * (v10 / *((_DWORD *)v34 + 4)) + 1;
     v38 = 2 * (v10 / *((_DWORD *)v34 + 4)) + 1;
     if (v35)
@@ -348,7 +348,7 @@ void script_436140_flamethrower_dmg_handler(Script *a1)
     v1->y_speed = (kknd_rand_debug(__FILE__, __LINE__) & 0xF)
         - *(_DWORD *)(v3 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v8 + 1]]
         - 8;
-    v9 = math_42D64D_prolly_vec_length(v7, v6);
+    v9 = math_42D64D_vec_length_2d(v7, v6);
     script_sleep(a1, v9 / *(_DWORD *)(v3 + 16));
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;
@@ -446,7 +446,7 @@ void script_4363C0_giant_bettle_dmg(Script *a1)
     v2->sprite->field_88_unused = 1;
     v5 = v3->y;
     v3->field_88_unused = 1;
-    v6 = math_42D64D_prolly_vec_length((v2->sprite->x - v3->x) >> 8, (v2->sprite->y - v5) >> 8);
+    v6 = math_42D64D_vec_length_2d((v2->sprite->x - v3->x) >> 8, (v2->sprite->y - v5) >> 8);
     v12 = v2->entity_id;
     v7 = v6 / *(_DWORD *)(v4 + 16);
     sprite_load_mobd(v3, 1784);
@@ -600,7 +600,7 @@ void UNIT_DmgHandler_Beetle(Script *a1)
             ++v25;
             script_sleep(a1, 2);
         } while (v25 < 6);
-        v17 = math_42D64D_prolly_vec_length(v28, v27);
+        v17 = math_42D64D_vec_length_2d(v28, v27);
         script_sleep(a1, v17 / *(_DWORD *)(v2 + 16) - 12);
     }
     sprite_list_remove(v1);
@@ -637,7 +637,7 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     v8 = (v5->y - v3) >> 8;
     sprite_load_mobd(v1, 1152);
     v1->pstru7 = &_479D48_stru7;
-    v9 = math_42D64D_prolly_vec_length(v7, v8);
+    v9 = math_42D64D_vec_length_2d(v7, v8);
     script_sleep(a1, v9 / *(_DWORD *)(v12 + 16));
     v1->x_speed = 0;
     v1->y_speed = 0;
@@ -765,7 +765,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         sprite_408800_play_sound(v4->sprite, SOUND_LASER_DMG, _4690A8_unit_sounds_volume, 0);
         v1->x_speed = v57 + *(_DWORD *)(v55 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v53 + 1]];
         v1->y_speed = v16 - *(_DWORD *)(v55 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v53 + 1]];
-        v17 = math_42D64D_prolly_vec_length(v8, v59);
+        v17 = math_42D64D_vec_length_2d(v8, v59);
         script_sleep(a1, v17 / *(_DWORD *)(v55 + 16));
         v1->x_speed = 0;
         v1->y_speed = 0;
@@ -798,7 +798,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         if (v23)
             v1->z_index = v23->turret_sprite->z_index + 1280;
         v54 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v24, v25);
-        v26 = math_42D64D_prolly_vec_length(v24, v25);
+        v26 = math_42D64D_vec_length_2d(v24, v25);
         v27 = 2 * (v26 / *(_DWORD *)(v55 + 16)) + 1;
         v60 = 2 * (v26 / *(_DWORD *)(v55 + 16)) + 1;
         if (v56)
@@ -1290,7 +1290,7 @@ void UNIT_DmgHandler_Bow(Script *a1)
     {
         v1->x_speed = v25 + v14 * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v24 + 1]];
         v1->y_speed = v15 - *(_DWORD *)(v19 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v24 + 1]];
-        v16 = math_42D64D_prolly_vec_length(v7, v6);
+        v16 = math_42D64D_vec_length_2d(v7, v6);
         v17 = a1;
         script_sleep(a1, v16 / *(_DWORD *)(v19 + 16));
         sprite_408800_play_sound(v1, SOUND_90_dmg_handler, _4690A8_unit_sounds_volume, 0);
@@ -1403,7 +1403,7 @@ void UNIT_DmgHandler_Projectile(Script *a1)
         sprite_408800_play_sound(v30->sprite, v19, v24, 0);
         v1->x_speed = v27 + *(_DWORD *)(v25 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v31 + 1]];
         v1->y_speed = v17 - *(_DWORD *)(v25 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v31 + 1]];
-        v20 = math_42D64D_prolly_vec_length(v7, v6);
+        v20 = math_42D64D_vec_length_2d(v7, v6);
         script_sleep(a1, v20 / *(_DWORD *)(v25 + 16));
         v16 = v30;
     }

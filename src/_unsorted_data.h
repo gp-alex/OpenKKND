@@ -314,15 +314,6 @@ extern char aCouldnTCreat_0[]; // idb
 extern char aWaitingForServ[]; // idb
 extern char aWaitingForPlay[]; // idb
 
-extern int dword_470588[];
-extern int dword_470598; // weak
-extern int dword_47059C; // weak
-extern int *_4705A8_minimap_smthn; // weak
-
-extern MobdSprtImage _47CBA0_MobdSprtImage_fog_of_war;
-extern DataMobdItem_stru0 _4705B0_minimap; // weak
-
-
 extern UnitDamageSource dmg_rifle;
 extern UnitDamageSource dmg_shell_anaconda;
 extern UnitDamageSource dmg_shell_cannontower;
@@ -467,17 +458,6 @@ extern int timer_delta_updated; // weak
 extern int timer_delta_ms; // weak
 extern int timer_time; // weak
 extern Entity *dword_478108[300];
-extern DataBoxd_stru0_per_map_unit *_478AA8_boxd_stru0_array;
-extern int _478AAC_map_height; // weak
-extern int dword_478AB0; // weak
-extern int _478AB4_map_width_shl_13; // weak
-extern int _478BE8_map_info__see40E6E0[8];
-extern char byte_478C08; // weak
-extern int _478FF0_map_height_shl_13; // weak
-extern int dword_478FF4; // weak
-extern int _4793F8_map_width; // weak
-extern int dword_47952C; // weak
-extern int dword_47953C; // weak
 extern Sidebar *stru22_list_479548;
 extern Sidebar *stru22_list_47954C;
 extern Sidebar *sidebar_list;
@@ -533,7 +513,6 @@ extern int stru1_global_obj_anim_initialized; // weak
 extern int game_window_created; // weak
 extern int _479DE8_boxd_initialized; // weak
 extern int stru2_list_elements_initialized; // weak
-extern int _479DF0_mapd_initialized; // weak
 extern char current_savegame_filename[256];
 extern char byte_479EF8[192]; // idb
 extern char str[128];
@@ -546,7 +525,6 @@ extern int max_machineshop_level; // weak
 extern char app_root_dir[20]; // idb
 extern DataHunk *current_level_lvl; // idb
 extern char game_installation_drive_letter; // weak
-extern Bitmap *_47A010_mapd_item_being_drawn[3];
 extern int _47A01C_sound_id; // weak
 extern char game_data_root_dir[80]; // idb
 extern char game_data_installation_dir[256];
@@ -672,11 +650,6 @@ extern Bitmap *bitmap_list_47C364;
 extern void(*mapd_j_4391D0_handler)(Mapd_stru0 *, void *);
 extern Bitmap *bitmap_list_free_pool;
 extern void(*j_drawjob_update_handler_mapd_menu)(Bitmap *param, DrawJob *job);
-extern int currently_running_lvl_mapd_num_items; // weak
-extern Mapd_stru0 _47C380_mapd;
-extern int currently_running_lvl_mapd_valid; // weak
-extern int _47C390_mapd; // weak
-extern DataMapd *currently_running_lvl_mapd;
 extern DrawJobList draw_list_47C5D8; // idb
 extern DrawJob *draw_list_free_pool;
 extern DrawJobList draw_list_47C5E8; // idb
@@ -762,41 +735,6 @@ extern _DWORD dword_47CB14; // idb
 extern int dword_47CB18; // weak
 extern int dword_47CB1C; // weak
 extern int dword_47CB20; // weak
-extern MapdScrlImageTile *fog_of_war_tile_15;
-extern int __478AAC_map_height_plus4; // weak
-extern MapdScrlImage *fog_of_war_scrl_source;
-extern int __478AAC_map_height_x2; // weak
-extern MapdScrlImageTile *fog_of_war_tile_1;
-extern MapdScrlImageTile *fog_of_war_tile_10;
-extern MapdScrlImageTile *fog_of_war_tile_14;
-extern MapdScrlImageTile *fog_of_war_tile_4;
-extern MapdScrlImage *map_fog_of_war_scrl;
-extern int dword_47CB4C; // weak
-extern char byte_47CB50[8];
-extern Sprite *_47CB58_minimap_sprite;
-extern MapdScrlImageTile *fog_of_war_tile_11;
-extern MapdScrlImageTile *fog_of_war_tile_7;
-extern MapdScrlImageTile *fog_of_war_tile_3;
-extern int dword_47CB68; // weak
-extern int dword_47CB6C; // weak
-extern MapdScrlImageTile *fog_of_war_tile_13;
-extern void *_47CB74_fow_map_x2; // idb
-extern MapdScrlImageTile *fog_of_war_tile_6;
-extern int __4793F8_map_width_x2; // weak
-extern int __4793F8_map_width_plus4; // weak
-extern MapdScrlImageTile *fog_of_war_tile_8;
-extern void *_47CB88_fow_map_x2; // idb
-extern DrawHandlerData_Units *_47CB8C_fow;
-extern MapdScrlImageTile *fog_of_war_tile_5;
-extern MapdScrlImageTile *fog_of_war_tile_12;
-extern void *_47CB98_fow_map_x2;
-extern int dword_47CBAC; // weak
-extern Bitmap *fog_of_war_bitmap;
-extern MapdScrlImageTile **map_fog_of_war_scrl_tiles;
-extern MapdScrlImageTile *fog_of_war_tile_9;
-extern MapdScrlImageTile *fog_of_war_tile_2;
-extern int _47CBC0_fow[256];
-extern int dword_47CFC0; // weak
 extern int __47CFC4_mobd_lookup_speeds[256];
 extern int _47D3C4_entity_mobd_lookup_ids[257];
 extern unsigned __int8 player_sprite_palette_tmp[256];

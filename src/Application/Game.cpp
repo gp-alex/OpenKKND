@@ -16,6 +16,8 @@ using Application::Game;
 #include "src/Coroutine.h"
 #include "src/Sound.h"
 #include "src/Video.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 
 #include "src/Engine/Entity.h"
 
@@ -145,7 +147,7 @@ void Game::Run() {
                     input_update_mouse();
                     _43A370_process_sound();
                     stru1_animate();
-                    boxd_40EA20();
+                    boxd_40EA20_gameloop_update();
                     _44C4B0_mess_with_turrets();
                     script_list_update();
                     _4393F0_call_mapd();

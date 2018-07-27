@@ -9,6 +9,8 @@
 #include "src/ScriptEvent.h"
 #include "src/_unsorted_functions.h"
 
+#incluâe "src/Engine/Entity.h"
+
 
 #pragma comment(lib, "Dsound.lib") // DirectSoundCreate
 

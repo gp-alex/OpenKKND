@@ -1,13 +1,12 @@
 #include "src/kknd.h"
-
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Pathfind.h"
 
-#include "Engine/Entity.h"
+#include "src/Engine/Entity.h"
 
 
 //----- (004089B0) --------------------------------------------------------
@@ -1961,7 +1960,7 @@ bool sub_40AB60(stru24_stru310 *a1)
                 {
                     while (1)
                     {
-                        if (v15 >= 0 && v16 >= 0 && v14 < _4793F8_map_width && v44 < _478AAC_map_height)
+                        if (v15 >= 0 && v16 >= 0 && v14 < map_get_width() && v44 < map_get_height())
                         {
                             v17 = v47;
                             if (v47 >= v44)
@@ -2004,7 +2003,7 @@ bool sub_40AB60(stru24_stru310 *a1)
                 v25 = v22 + v50 + 1;
                 for (i = v22 + v50 + 1; v24 < v52; ++v21)
                 {
-                    if (v23 >= 0 && v24 >= 0 && v21 < _4793F8_map_width && v25 < _478AAC_map_height)
+                    if (v23 >= 0 && v24 >= 0 && v21 < map_get_width() && v25 < map_get_height())
                     {
                         v26 = v23;
                         if (v23 >= v25)
@@ -2041,7 +2040,7 @@ bool sub_40AB60(stru24_stru310 *a1)
                 v30 = v48->_4_x + v49 + 1;
                 for (j = v50 - 1; v29 < j; ++v42)
                 {
-                    if (v29 >= 0 && v49 + 1 >= 0 && v30 < _4793F8_map_width && v42 < _478AAC_map_height)
+                    if (v29 >= 0 && v49 + 1 >= 0 && v30 < map_get_width() && v42 < map_get_height())
                     {
                         v31 = v49 + 1;
                         for (k = v29; k < v42; ++k)
@@ -2070,7 +2069,7 @@ bool sub_40AB60(stru24_stru310 *a1)
                 v36 = v44 - v48->_8_y;
                 for (l = v44; v36 < j; l = ++v34)
                 {
-                    if (v36 >= 0 && v35 >= 0 && v45 < _4793F8_map_width && v34 < _478AAC_map_height)
+                    if (v36 >= 0 && v35 >= 0 && v45 < map_get_width() && v34 < map_get_height())
                     {
                         v37 = v36;
                         if (v36 >= v34)
@@ -2534,11 +2533,11 @@ bool stru24_40B490(stru24 *a1, UNIT_ID a2, int *out_x, int *out_y)
 
     v35 = a1;
     v37 = 0;
-    v3 = _478FF0_map_height_shl_13 / 0x4000;
-    v4 = _478AB4_map_width_shl_13 / 0x4000;
-    v32 = _478AB4_map_width_shl_13 / 0x4000;
-    v33 = _478FF0_map_height_shl_13 / 0x4000;
-    v5 = 4 * _478AB4_map_width_shl_13 / 0x4000 * (_478FF0_map_height_shl_13 / 0x4000);
+    v3 = map_get_height_global() / 0x4000;
+    v4 = map_get_width_global() / 0x4000;
+    v32 = map_get_width_global() / 0x4000;
+    v33 = map_get_height_global() / 0x4000;
+    v5 = 4 * map_get_width_global() / 0x4000 * (map_get_height_global() / 0x4000);
     v6 = (char *)malloc(v5);
     v34 = v6;
     if (v6)

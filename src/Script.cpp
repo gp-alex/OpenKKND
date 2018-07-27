@@ -1,12 +1,13 @@
-#include "src/kknd.h"
+#include "src/Script.h"
 
+#include "src/kknd.h"
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
-#include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
+#include "src/Pathfind.h"
+#include "src/Map.h"
 
 #include "src/Engine/Entity.h"
 

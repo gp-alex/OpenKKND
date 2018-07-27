@@ -5,6 +5,7 @@
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Sound.h"
+#include "src/Map.h"
 
 #include "src/Engine/Entity.h"
 #include "src/Engine/EntityFactory.h"
@@ -272,9 +273,9 @@ void entity_mode_4034B0(Entity *a1)
     v1 = a1;
     a1->sprite->field_88_unused = 1;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
+    a1->sprite->x = map_point_to_tile_global(a1->stru60.ptr_C->x_offset + a1->sprite->x) - a1->stru60.ptr_C->x_offset + 4096;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
+    a1->sprite->y = map_point_to_tile_global(a1->stru60.ptr_C->y_offset + a1->sprite->y) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     v2 = v1->script;
     v1->SetMode(entity_mode_403650_building);
@@ -308,9 +309,9 @@ void entity_mode_4035C0_building(Entity *a1)
     v1 = a1;
     a1->sprite->field_88_unused = 1;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
+    a1->sprite->x = map_point_to_tile_global(a1->stru60.ptr_C->x_offset + a1->sprite->x) - a1->stru60.ptr_C->x_offset + 4096;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
+    a1->sprite->y = map_point_to_tile_global(a1->stru60.ptr_C->y_offset + a1->sprite->y) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     v2 = v1->script;
     v1->SetMode(entity_mode_403540);

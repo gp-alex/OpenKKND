@@ -8,6 +8,8 @@
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/Sound.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 
 #include "src/Engine/Entity.h"
 
@@ -716,8 +718,8 @@ LABEL_82:
     v41 = v39->y >> 13;
     if (v40 >= 0)
     {
-        if (v40 >= _4793F8_map_width)
-            v40 = _4793F8_map_width - 1;
+        if (v40 >= map_get_width())
+            v40 = map_get_width() - 1;
     }
     else
     {
@@ -725,15 +727,15 @@ LABEL_82:
     }
     if (v41 >= 0)
     {
-        if (v41 >= _478AAC_map_height)
-            v41 = _478AAC_map_height - 1;
+        if (v41 >= map_get_height())
+            v41 = map_get_height() - 1;
     }
     else
     {
         v41 = 0;
     }
 
-    auto tile = Map_get_tile(v40, v41);
+    auto tile = boxd_get_tile(v40, v41);
     v42 = tile->flags;
     v43 = v2->_14_task;
     v2->_34_is_cursor_over_impassible_terrain = tile->IsImpassibleTerrain();
@@ -2423,8 +2425,8 @@ void script_game_cursor_handler(Script *a1)
                 v20 = v19->x_offset;
                 v21 = v62._70_sprite->x;
                 v10->field_88_unused = 1;
-                v10->x = ((v20 + v21) & 0xFFFFE000) - v20 + 4096;
-                v10->y = ((v19->y_offset + v62._70_sprite->y) & 0xFFFFE000) - v19->y_offset + 4096;
+                v10->x = map_point_to_tile_global(v20 + v21) - v20 + 4096;
+                v10->y = map_point_to_tile_global(v19->y_offset + v62._70_sprite->y) - v19->y_offset + 4096;
                 v62._70_sprite->field_88_unused = 1;
                 v22 = sub_42C810(
                     v63,

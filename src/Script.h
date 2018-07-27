@@ -93,9 +93,21 @@ struct ScriptLocalObject
 #define SCRIPT_FLAGS_20_REPEATS_TRIGGER 0x80000000  // when script gets triggered by exhausting _14_num_repeats
 #define SCRIPT_FLAGS_20_ANY_TRIGGER     (SCRIPT_FLAGS_20_EVENT_TRIGGER | SCRIPT_FLAGS_20_REPEATS_TRIGGER)
 
+struct Script;
+typedef void (*ScriptEventHandler)(
+    Script *receiver,
+    Script *sender,
+    enum SCRIPT_EVENT event,
+    void *param
+);
+
 /* 72 */
 struct Script
 {
+    inline void SetEventHandler(ScriptEventHandler eventHandler) {
+        this->event_handler = eventHandler;
+    }
+
     Script *next;
     Script *prev;
     ScriptLocalObject *locals_list;
@@ -110,7 +122,7 @@ struct Script
     int _28_yield_flags; // flags requested in script_yield
     int field_2C;
     ScriptEvent *event_list;
-    void(*event_handler)(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
+    ScriptEventHandler event_handler;
     Sprite *sprite;
     void *param;
     void(*handler)(Script *);   // function or class Coroutine

@@ -4,6 +4,8 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 #include "src/Video.h"
+#include "src/Pathfind.h"
+#include "src/Map.h"
 
 #include "src/Engine/Entity.h"
 
@@ -683,7 +685,7 @@ void debug_mission_pathing_outline(int map_x, int map_y, int draw_x, int draw_y)
     if (!debug_pathing_entity) {
         return;
     }
-    if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
+    if (map_x < 0 || map_x >= map_get_width() || map_y < 0 || map_y >= map_get_height())
         return;
 
     bool should_outline = false;
@@ -721,8 +723,9 @@ void debug_mission_pathing_outline(int map_x, int map_y, int draw_x, int draw_y)
         }
     }
 }
+
 void debug_mission_tile_outline(int map_x, int map_y, int draw_x, int draw_y) {
-    if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
+    if (map_x < 0 || map_x >= map_get_width() || map_y < 0 || map_y >= map_get_height())
         return;
 
     int black = 0;
@@ -731,7 +734,7 @@ void debug_mission_tile_outline(int map_x, int map_y, int draw_x, int draw_y) {
     int teal = 13;
     int orange = 14;
 
-    auto tile = Map_get_tile(map_x, map_y);
+    auto tile = boxd_get_tile(map_x, map_y);
     if (tile->IsVehicleOrBuilding()) {
         int w = 32;
         int h = 4;

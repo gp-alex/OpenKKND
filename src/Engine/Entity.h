@@ -67,7 +67,7 @@ enum ENTITY_ORDER : int
 
 #define ORIENTATION_N   0       // north
 #define ORIENTATION_NNE 16      // north-north-east
-#define ORIENTATION_NE  32
+#define ORIENTATION_NE  32      // north-east
 #define ORIENTATION_E   64      // east
 #define ORIENTATION_SE  96      // south-east
 #define ORIENTATION_SSE 112     // south-south-east
@@ -79,7 +79,7 @@ enum ENTITY_ORDER : int
 #define ORIENTATION_NNW 240     // north-north-west
 
 /* 307 */
-typedef void(*EntityMode)(struct Entity *);
+typedef void (*EntityMode)(struct Entity *);
 struct Entity
 {
     bool IsTanker() const {
@@ -90,12 +90,35 @@ struct Entity
         return stats->is_infantry;
     }
 
+    inline void SetScriptEventHandler(ScriptEventHandler eventHandler) {
+        script->SetEventHandler(eventHandler);
+    }
+
     void SetMode(EntityMode mode);
     bool IsMode(EntityMode mode) const;
     void ExecMode();
     int ModeHandlerId() const;
 
     void SetReturnModeFromMode();
+
+    inline void SetReturnMode(EntityMode mode) {
+        this->mode_return = mode;
+    }
+    inline void SetTurnReturnMode(EntityMode mode) {
+        this->mode_turn_return = mode;
+    }
+
+    inline void SetOrder(ENTITY_ORDER order) {
+        this->_DC_order = order;
+    }
+
+    inline ENTITY_ORDER GetOrder() {
+        return this->_DC_order;
+    }
+
+    inline int GetFiringRange() const {
+        return this->stats->firing_range;
+    }
 
     Entity *next;
     Entity *prev;
@@ -130,7 +153,7 @@ public:
     int _98_465610_accuracy_dmg_bonus_idx;
     int _9C_hp_regen_condition;
     int _A0_hp_regen_condition;
-    int _A4_idx_in_tile;
+    int _A4_idx_in_tile;  // ENTITY_TILE_POSITION_*
     int sprite_map_x;
     int sprite_map_y;
     int sprite_x;
@@ -204,11 +227,6 @@ public:
 void entity_drag_selection_init(int y, int x, int z, int w);
 Script *entity_drag_selection_get_next_entity();
 
-int entity_get_dx(Entity *entity);
-int entity_get_dy(Entity *entity);
-int entity_transform_x(Entity *entity, int x);
-int entity_transform_y(Entity *entity, int y);
-
 
 
 bool entity_is_building(Entity *unit);
@@ -223,6 +241,8 @@ bool is_bomber(UNIT_ID unitId);
 bool entity_is_21st_century(Entity *entity);
 
 bool entity_is_xl_vehicle(Entity *entity);
+bool entity_is_regular_vehicle(Entity *entity);
+bool entity_is_infantry(Entity *entity);
 
 void entity_load_attack_mobd(Entity *entity);
 void entity_load_attack_mobd(Entity *entity, int idx);

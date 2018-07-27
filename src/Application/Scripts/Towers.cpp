@@ -1,18 +1,22 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "_unsorted_data.h"
-#include "kknd.h"
-#include "Script.h"
-#include "ScriptEvent.h"
-#include "stru31.h"
+#include "src/_unsorted_data.h"
+#include "src/kknd.h"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
+#include "src/stru31.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 
-#include "Engine/Entity.h"
-#include "Engine/EntityFactory.h"
+#include "src/Engine/Entity.h"
+#include "src/Engine/EntityFactory.h"
 
 using Engine::EntityFactory;
 
-#include "Engine/Infrastructure/EntityRepository.h"
+#include "src/Engine/Infrastructure/EntityRepository.h"
 
 using Engine::Infrastructure::EntityRepository;
+
+
 
 //----- (00447380) --------------------------------------------------------
 void UNIT_Handler_GuardTower(Script *a1)
@@ -52,8 +56,8 @@ void UNIT_Handler_Towers(Script *a1)
         }
     }
     entity_40DD00_boxd(v1);
-    v1->sprite->x = ((v1->sprite->x + v1->stru60.ptr_C->x_offset) & 0xFFFFE000) - v1->stru60.ptr_C->x_offset + 4096;
-    v1->sprite->y = ((v1->sprite->y + v1->stru60.ptr_C->y_offset) & 0xFFFFE000) - v1->stru60.ptr_C->y_offset + 4096;
+    v1->sprite->x = map_point_to_tile_global(v1->sprite->x + v1->stru60.ptr_C->x_offset) - v1->stru60.ptr_C->x_offset + 4096;
+    v1->sprite->y = map_point_to_tile_global(v1->sprite->y + v1->stru60.ptr_C->y_offset) - v1->stru60.ptr_C->y_offset + 4096;
     map_reveal_fog_around_entity(v1);
     entity_set_draw_handlers(v1);
     if (v1->player_side == player_side)
@@ -401,18 +405,18 @@ int EntityTowerAttachment_4479F0(EntityTurret *a1)
     v35 = v8 + v9;
     if (v8 < v8 + v9)
     {
-        while (v10 < _478AAC_map_height)
+        while (v10 < map_get_height())
         {
             v34 = v7 + v6;
-            v11 = Map_get_tile(v6, v10);
+            v11 = boxd_get_tile(v6, v10);
             v12 = v6;
-            v30 = Map_get_tile(v6, v10);
+            v30 = boxd_get_tile(v6, v10);
             v31 = v6;
             if (v6 < v7 + v6)
             {
                 while (2)
                 {
-                    if (v12 < _4793F8_map_width)
+                    if (v12 < map_get_width())
                     {
                         v13 = 0;
                         v14 = v11->_4_entities;
@@ -424,7 +428,7 @@ int EntityTowerAttachment_4479F0(EntityTurret *a1)
                                 v16 = (*v14)->stats;
                                 if ((v16->field_54 || v16->speed) && !v15->destroyed)
                                 {
-                                    v17 = math_42D64D_prolly_vec_length(
+                                    v17 = math_42D64D_vec_length_2d(
                                         (v1->entity->sprite->x - v15->sprite->x) >> 8,
                                         (v1->entity->sprite->y - v15->sprite->y) >> 8);
                                     v18 = v1->entity;
@@ -479,7 +483,7 @@ int EntityTowerAttachment_4479F0(EntityTurret *a1)
                     v25 = v23->param__entity__int;
                     if (!v25->destroyed)
                     {
-                        v26 = math_42D64D_prolly_vec_length(
+                        v26 = math_42D64D_vec_length_2d(
                             (v1->entity->sprite->x - v25->sprite->x) >> 8,
                             (v1->entity->sprite->y - v25->sprite->y) >> 8);
                         v27 = v1->entity;
@@ -501,8 +505,8 @@ int EntityTowerAttachment_4479F0(EntityTurret *a1)
     }
     return result;
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
+// 478AAC: using guessed type int map_get_height();
+// 4793F8: using guessed type int map_get_width();
 
 //----- (00447C40) --------------------------------------------------------
 void EntityTowerAttachment_handler_447C40(EntityTurret *a1)
@@ -560,7 +564,7 @@ void EntityTowerAttachment_handler_447CA0(EntityTurret *a1)
         return;
     v6 = v1->_C_entity;
     if (!v6->destroyed
-        && (v7 = math_42D64D_prolly_vec_length(
+        && (v7 = math_42D64D_vec_length_2d(
         (v1->entity->sprite->x - v6->sprite->x) >> 8,
             (v1->entity->sprite->y - v6->sprite->y) >> 8),
             v8 = v1->entity,
@@ -630,7 +634,7 @@ void EntityTowerAttachment_handler_447E20(EntityTurret *a1)
     if (v3)
     {
         if (!v2->destroyed
-            && (v4 = math_42D64D_prolly_vec_length(
+            && (v4 = math_42D64D_vec_length_2d(
             (a1->entity->sprite->x - v2->sprite->x) >> 8,
                 (a1->entity->sprite->y - v2->sprite->y) >> 8),
                 v5 = v1->entity,

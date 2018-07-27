@@ -10,6 +10,7 @@
 #include "src/hexrays-defs.h"
 #include "src/Render.h"
 #include "src/Script.h"
+#include "src/Sound.h"
 
 #include "src/Infrastructure/File.h"
 #include "src/Infrastructure/Netz.h"
@@ -272,10 +273,10 @@ struct UnitStat
 	int speed;
 	int reload_time;
 	int turning_speed;
-	int field_20;
+    int view_range;//field_20;
 	int firing_range;
 	int accuracy;
-	int field_2C;
+	int can_squash_infantry;
 	int is_infantry;
 	int mobd_lookup_offset_attack; // -1 for turreted units
 	int mobd_lookup_offset_move;
@@ -283,15 +284,17 @@ struct UnitStat
 	int mobd_lookup_offset_4; // damaged_buildings?
 	UnitAttachmentPoint *attach;
 	UnitDamageSource *dmg_source;
-	int field_4C;   // 4096
+	int field_4C;   // map tile occupation type/flag
+                    //
+                    // 4096: 2x2 tiles
                     // xl vehicles : autocannon, missile crab, mobile outposts
                     // gort
                     // plasma tank
                     //
-                    // 512
+                    // 512: 1/5th of a tile
                     // infantry
                     //
-                    // 128
+                    // 128: exactly 1 tile
                     // vehicles
                     // buildings
                     // tech bunker
@@ -300,9 +303,9 @@ struct UnitStat
                     // tree
                     // hut
 	enum PLAYER_SIDE player_side;
-	int field_54;
-	int field_58;
-	enum UNIT_ID _5C_unit_id;
+	int _54_ai_importance;
+	int _58_ai_importance;
+	enum UNIT_ID factory;
 	int production_time;
 };
 
@@ -312,11 +315,11 @@ struct UnitAttachmentPoint
 	enum MOBD_ID mobd_id;
 	void (*mode_attach)(Script *);
 	int mobd_frame_step;
-	int reload_time;
-	int reload2_time;
+	int reload_time;  // fire delay
+	int reload2_time; // reload time
 	int volley_size;
-	int mobd_lookup_table_offset;
-	int _1C_mobd_lookup_table_offset_for_rotary_cannon;
+    int mobd_lookup_offset_idle;//mobd_lookup_table_offset; 
+    int mobd_lookup_offset_attack;// _1C_mobd_lookup_table_offset_for_rotary_cannon;
 	UnitDamageSource *dmg_source;
 	int field_24;
 };
@@ -326,13 +329,13 @@ struct UnitDamageSource
 {
 	enum MOBD_ID mobd_id;
 	void(*dmg_handler)(Script *);
-	int mobd_offset;
-	int field_C;
-	int field_10;
+    int mobd_lookup_offset_flying;//mobd_offset;
+    int mobd_lookup_offset_hit;// field_C;
+    int speed;//field_10;
 	int damage_infantry;
 	int damage_vehicle;
 	int damage_building;
-	int field_20;
+	int _20_projectile_size; // 128 for bomber, 32 for otehrs
 	int field_24;
 };
 
@@ -357,11 +360,11 @@ struct __declspec(align(4)) LevelDesc
 	const char *lvl_filename;
 	const char *wav_filename;
 	const char *vbc_filename;
-	__int16 starting_cash;
-	__int16 field_E;
-	__int16 field_10;
+    __int16 survivor_starting_cash;//starting_cash;
+	__int16 evolved_starting_cash;//field_E;
+	__int16 field_10; // int 
 	__int16 _12_cost_multiplier_idx;
-	__int16 field_14;
+	__int16 field_14; // int tech level?
 	__int16 field_16;
 	unsigned int disabled_units_mask;
 	int field_1C;
@@ -1487,56 +1490,6 @@ struct DataMobdItem_stru0
 	DataMobdItem_stru1 *field_18;
 };
 
-#define BOXD_STRU0_TILE_SLOT(n)         (1 << (n))
-#define BOXD_STRU0_TILE_SLOT0           BOXD_STRU0_TILE_SLOT(0)
-#define BOXD_STRU0_TILE_SLOT1           BOXD_STRU0_TILE_SLOT(1)
-#define BOXD_STRU0_TILE_SLOT2           BOXD_STRU0_TILE_SLOT(2)
-#define BOXD_STRU0_TILE_SLOT3           BOXD_STRU0_TILE_SLOT(3)
-#define BOXD_STRU0_TILE_SLOT4           BOXD_STRU0_TILE_SLOT(4)
-#define BOXD_STRU0_ALL_SLOTS            (BOXD_STRU0_TILE_SLOT0 | BOXD_STRU0_TILE_SLOT1 | BOXD_STRU0_TILE_SLOT2 | BOXD_STRU0_TILE_SLOT3 | BOXD_STRU0_TILE_SLOT4)
-#define BOXD_STRU0_OBSTRUCTED           0x20    // edges of some landscapes
-#define BOXD_STRU0_BLOCKED              0x40    // completely blocked terrrain
-#define BOXD_STRU0_IMPASSIBLE           (BOXD_STRU0_BLOCKED | BOXD_STRU0_OBSTRUCTED)
-#define BOXD_STRU0_VEHICLE_BUILDING     0x80    // tile is occupied by a vehicle or a building
-/* 389 */
-struct DataBoxd_stru0_per_map_unit
-{
-    bool IsImpassibleTerrain() const {
-        return flags & BOXD_STRU0_IMPASSIBLE;
-    }
-    bool IsAnySlotOccupied() const {
-        return flags & BOXD_STRU0_ALL_SLOTS;
-    }
-    bool IsVehicleOrBuilding() const {
-        return flags & BOXD_STRU0_VEHICLE_BUILDING;
-    }
-
-	char flags;
-	char flags2;
-	char field_2;
-	char field_3;
-	Entity *_4_entities[5];
-};
-
-/* 390 */
-struct BoxdTile
-{
-	BoxdTile_stru0 *pstru0;
-	void *ptr_4;
-	int field_8;
-};
-
-/* 391 */
-struct BoxdTile_stru0
-{
-	int type;
-	int _4_x;
-	int _8_y;
-	int field_C;
-	int _10_z;
-	int _14_w;
-};
-
 /* 393 */
 struct Task_context_0
 {
@@ -1919,6 +1872,18 @@ struct EntityOilTankerAttachment_stru70
 /* 426 */
 struct EntityOilTankerState
 {
+    inline EntityOilTankerState *constructor() {
+        this->_0_oil_loaded = 0;
+        this->_4_entity = 0;
+        this->drillrig = 0;
+        this->powerstation = 0;
+        this->drillrig_entity_id = 0;
+        this->powerstation_entity_id = 0;
+        this->_18_entity_id = 0;
+        memset(this->array_20, 0, sizeof(this->array_20));
+
+        return this;
+    }
 	int _0_oil_loaded;
 	Entity *_4_entity;
 	Entity *powerstation;
