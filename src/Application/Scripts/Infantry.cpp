@@ -64,15 +64,15 @@ void UNIT_Handler_VehiclesInfantry(Script *a1)
         }
         if (!(((unsigned __int8)v1->entity_id ^ (unsigned __int8)dword_47953C) & 0x3F))
             entity_414670(v1);
-        v5 = v1->_E0_current_attack_target;
+        v5 = v1->retaliation_target;
         if (v5)
         {
             v6 = v5->entity_id;
             if (v6)
             {
-                if (v6 == v1->_E0_current_attack_target_entity_id)
+                if (v6 == v1->retaliation_target_id)
                 {
-                    v7 = v1->_E0_current_attack_target;
+                    v7 = v1->retaliation_target;
                     v1->_11C__infantry_sprite_y___drillrig_oil_spot = v7->sprite->x;
                     v1->_120__infantry_sprite_x = v7->sprite->y;
                 }
@@ -128,7 +128,7 @@ void entity_init_infantry(Entity *a1)
             entity_load_move_mobd(v1);
             v1->SetMode(entity_mode_4197E0_infantry);
             v1->destroyed = 1;
-            script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
+            script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
             entity_40DEC0_boxd(v1, v1->sprite_map_x, v1->sprite_map_y, v1->_A4_idx_in_tile);
             v1->script->event_handler = EventHandler_General_Scout;
         }
@@ -176,7 +176,7 @@ void entity_init_infantry(Entity *a1)
         v14 = v1->script;
         v1->SetMode(entity_mode_4197E0_infantry);
         v1->destroyed = 1;
-        script_trigger_event_group(v14, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
+        script_trigger_event_group(v14, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
         entity_40DEC0_boxd(v1, v1->sprite_map_x, v1->sprite_map_y, v1->_A4_idx_in_tile);
         v1->script->event_handler = EventHandler_General_Scout;
     }
@@ -300,9 +300,9 @@ void entity_4133D0(Entity *a1)
     Script *v17; // ecx@20
 
     v1 = a1;
-    v2 = a1->_E0_current_attack_target;
+    v2 = a1->retaliation_target;
     a1->entity_8 = 0;
-    if (v2 && (v3 = v2->entity_id) != 0 && v3 == v1->_E0_current_attack_target_entity_id && !v2->destroyed
+    if (v2 && (v3 = v2->entity_id) != 0 && v3 == v1->retaliation_target_id && !v2->destroyed
         || (v4 = v1->_E8_entity) != 0 && (v5 = v4->entity_id) != 0 && v5 == v1->_E8_entity_id && !v4->destroyed)
     {
     LABEL_21:
@@ -311,7 +311,7 @@ void entity_4133D0(Entity *a1)
     else
     {
         v6 = v1->_DC_order;
-        v1->_E0_current_attack_target = 0;
+        v1->retaliation_target = 0;
         v1->_E4_prev_attack_target = 0;
         v1->_E8_entity = 0;
         switch (v6)
@@ -353,7 +353,7 @@ void entity_4133D0(Entity *a1)
             v17 = v1->script;
             v1->SetMode(entity_mode_4197E0_infantry);
             v1->destroyed = 1;
-            script_trigger_event_group(v17, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
+            script_trigger_event_group(v17, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
             entity_40DEC0_boxd(v1, v1->sprite_map_x, v1->sprite_map_y, v1->_A4_idx_in_tile);
             v1->script->event_handler = EventHandler_General_Scout;
             break;
@@ -374,15 +374,15 @@ bool entity_4135E0(Entity *a1)
     int v16; // eax@38
 
     v1 = a1;
-    v2 = a1->_E0_current_attack_target;
-    if (v2 && (v3 = v2->entity_id) != 0 && v3 == a1->_E0_current_attack_target_entity_id)
+    v2 = a1->retaliation_target;
+    if (v2 && (v3 = v2->entity_id) != 0 && v3 == a1->retaliation_target_id)
     {
         if ((a1->GetOrder() == ENTITY_ORDER_ATTACK || a1->GetOrder() == ENTITY_ORDER_5 || a1->GetOrder() == ENTITY_ORDER_8)
-            && entity_413120_can_fire_on_entity(a1, v2, a1->_E0_current_attack_target_entity_id)
-            && sub_44CE40(v1->player_side, v1->_E0_current_attack_target))
+            && entity_413120_can_fire_on_entity(a1, v2, a1->retaliation_target_id)
+            && sub_44CE40(v1->player_side, v1->retaliation_target))
         {
-            v4 = v1->_E0_current_attack_target;
-            v1->entity_118_entity_id = v1->_E0_current_attack_target_entity_id;
+            v4 = v1->retaliation_target;
+            v1->entity_118_entity_id = v1->retaliation_target_id;
             v1->entity_8 = v4;
             entity_418290(v1);
             return true;
@@ -431,7 +431,7 @@ bool entity_4135E0(Entity *a1)
         case ENTITY_ORDER_3:
         case ENTITY_ORDER_5:
         case ENTITY_ORDER_8:
-            a1->_E0_current_attack_target = 0;
+            a1->retaliation_target = 0;
             a1->SetOrder(ENTITY_ORDER_0);
             a1->sprite->x = a1->sprite_x_2 = map_adjust_entity_in_tile_x(a1, a1->sprite->x);
             a1->sprite->y = a1->sprite_y_2 = map_adjust_entity_in_tile_y(a1, a1->sprite->y);
@@ -784,7 +784,7 @@ bool entity_initialize_order(Entity *a1)
     switch (a1->GetOrder())
     {
     case ENTITY_ORDER_10:
-        v2 = a1->_E0_current_attack_target;
+        v2 = a1->retaliation_target;
         v3 = v1->sprite_x_2;
         v4 = v1->sprite_y_2;
         v1->sprite_x = v3;
@@ -792,7 +792,7 @@ bool entity_initialize_order(Entity *a1)
         if (!v2)
             goto LABEL_25;
         v5 = v2->entity_id;
-        if (!v5 || v5 != v1->_E0_current_attack_target_entity_id || *((_DWORD *)v2->state + 2))
+        if (!v5 || v5 != v1->retaliation_target_id || *((_DWORD *)v2->state + 2))
             goto LABEL_25;
         v6 = v1->sprite;
         if (v6->x - v3 <= 0)
@@ -926,11 +926,11 @@ bool entity_initialize_order(Entity *a1)
         return result;
 
     case ENTITY_ORDER_3:
-        v47 = a1->_E0_current_attack_target;
+        v47 = a1->retaliation_target;
         if (!v47)
             goto LABEL_25;
         v48 = v47->entity_id;
-        if (!v48 || v48 != a1->_E0_current_attack_target_entity_id)
+        if (!v48 || v48 != a1->retaliation_target_id)
             goto LABEL_25;
         v49 = 0;
         v50 = v47->stats->attach;
@@ -996,20 +996,20 @@ bool entity_initialize_order(Entity *a1)
 
     case ENTITY_ORDER_ATTACK:
     case ENTITY_ORDER_4:
-        v68 = a1->_E0_current_attack_target;
+        v68 = a1->retaliation_target;
         if (v68)
         {
             v69 = v68->entity_id;
             if (v69)
             {
-                if (v69 == v1->_E0_current_attack_target_entity_id)
+                if (v69 == v1->retaliation_target_id)
                     goto LABEL_100;
             }
         }
         goto LABEL_25;
     case ENTITY_ORDER_8:
-        v70 = a1->_E0_current_attack_target;
-        if (v70 && (v71 = v70->entity_id) != 0 && v71 == a1->_E0_current_attack_target_entity_id)
+        v70 = a1->retaliation_target;
+        if (v70 && (v71 = v70->entity_id) != 0 && v71 == a1->retaliation_target_id)
         {
             v72 = a1->sprite_x_2;
             v73 = a1->sprite;
@@ -1028,7 +1028,7 @@ bool entity_initialize_order(Entity *a1)
                 v80 = (v1->sprite_y_2 >> 13) - v79;
             if (v76 + v80 <= 5)
             {
-                v81 = v1->_E0_current_attack_target;
+                v81 = v1->retaliation_target;
                 v1->sprite_x = v81->sprite->x;
                 v1->sprite_y = v81->sprite->y;
             }
@@ -1036,7 +1036,7 @@ bool entity_initialize_order(Entity *a1)
             {
                 v1->sprite_x = v72;
                 v1->sprite_y = v78;
-                v1->_E0_current_attack_target = 0;
+                v1->retaliation_target = 0;
                 v1->_DC_order = ENTITY_ORDER_MOVE;
             }
         }
@@ -1050,13 +1050,13 @@ bool entity_initialize_order(Entity *a1)
         }
         goto LABEL_35;
     case ENTITY_ORDER_5:
-        v68 = a1->_E0_current_attack_target;
+        v68 = a1->retaliation_target;
         if (v68)
         {
             v84 = v68->entity_id;
             if (v84)
             {
-                if (v84 == v1->_E0_current_attack_target_entity_id)
+                if (v84 == v1->retaliation_target_id)
                 {
                 LABEL_100:
                     v1->sprite_x = v68->sprite->x;
@@ -1208,10 +1208,10 @@ bool entity_414520_boxd(Entity *a1)
                             {
                                 a1a->_DC_order = ENTITY_ORDER_8;
                                 v11 = v13->_4_entities[v8];
-                                a1a->_E0_current_attack_target = v11;
+                                a1a->retaliation_target = v11;
                                 v12 = v11->entity_id;
                                 a1a->_134_param__unitstats_after_mobile_outpost_plant = 600;
-                                a1a->_E0_current_attack_target_entity_id = v12;
+                                a1a->retaliation_target_id = v12;
                                 a1a->_E4_prev_attack_target = 0;
                                 a1a->entity_8 = 0;
                                 entity_mode_move_attack(a1a);
@@ -1450,7 +1450,7 @@ bool entity_414870_boxd(Entity *a1)
 //----- (004149A0) --------------------------------------------------------
 void entity_4149A0(Entity *a1)
 {
-    a1->_E0_current_attack_target = 0;
+    a1->retaliation_target = 0;
 
     int some_x = a1->_11C__infantry_sprite_y___drillrig_oil_spot;
     int some_y = a1->_120__infantry_sprite_x;
@@ -2957,7 +2957,7 @@ void entity_mode_417360_infantry(Entity *a1)
                     v15 = v1->sprite_height_3;
                     v1->sprite_x_2 = v1->sprite_width_3;
                     v1->SetOrder(ENTITY_ORDER_MOVE);
-                    v1->_E0_current_attack_target = 0;
+                    v1->retaliation_target = 0;
                     v1->_134_param__unitstats_after_mobile_outpost_plant = 600;
                     v1->sprite_y_2 = v15;
                     v1->entity_8 = 0;
@@ -2974,8 +2974,8 @@ void entity_mode_417360_infantry(Entity *a1)
                     v12 = v1->_2A8_entity;
                     v13 = v1->_2A8_entity_id;
                     v1->_DC_order = ENTITY_ORDER_ATTACK;
-                    v1->_E0_current_attack_target = v12;
-                    v1->_E0_current_attack_target_entity_id = v13;
+                    v1->retaliation_target = v12;
+                    v1->retaliation_target_id = v13;
                     v1->_E4_prev_attack_target = 0;
                     v1->_134_param__unitstats_after_mobile_outpost_plant = 600;
                     v1->entity_8 = 0;
@@ -3784,9 +3784,9 @@ void entity_mode_418590(Entity *a1)
     }
     if (!sub_44CE40(v1->player_side, v1->entity_8))
     {
-        if (v1->entity_8 == v1->_E0_current_attack_target)
+        if (v1->entity_8 == v1->retaliation_target)
         {
-            v1->_E0_current_attack_target = 0;
+            v1->retaliation_target = 0;
             entity_4133D0(v1);
             return;
         }
@@ -3823,7 +3823,7 @@ void entity_mode_418590(Entity *a1)
             + (v6->damage_vehicle * veterancy_damage_bonus[v1->veterancy_level] >> 8);
         v9->field_90_building_damage = LOWORD_HEXRAYS(v6->damage_building)
             + (v6->damage_building * veterancy_damage_bonus[v1->veterancy_level] >> 8);
-        script_trigger_event(v1->script, EVT_MSG_1497, v1, v1->entity_8->script);
+        script_trigger_event(v1->script, EVT_MSG_ENTITY_ATTACKED, v1, v1->entity_8->script);
         script_sleep(
             v1->script,
             v1->stats->reload_time - (v1->stats->reload_time * veterancy_reload_bonus[v1->veterancy_level] >> 8)
@@ -3850,7 +3850,7 @@ void entity_mode_418590(Entity *a1)
             v1->_DC_order = ENTITY_ORDER_MOVE;
             v1->sprite_x = v12;
             v1->sprite_y = v17;
-            v1->_E0_current_attack_target = 0;
+            v1->retaliation_target = 0;
             entity_mode_move_attack(v1);
         }
     }
@@ -3870,8 +3870,8 @@ void entity_4187F0(Entity *a1)
     v1 = a1;
     a1->script->event_handler = EventHandler_419CA0;
     entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->_A4_idx_in_tile);
-    script_trigger_event(v1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-    v2 = v1->_E0_current_attack_target;
+    script_trigger_event(v1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    v2 = v1->retaliation_target;
     v1->sprite_x = v2->sprite->x + v2->stru60.pstru4->x_offset;
     v3 = v2->stru60.pstru4->y_offset + v2->sprite->y;
     v4 = v1->sprite;
@@ -4070,8 +4070,8 @@ void entity_mode_418B30(Entity *a1)
     int v21; // [sp-Ch] [bp-1Ch]@21
 
     v1 = a1;
-    v2 = a1->_E0_current_attack_target;
-    if (!v2 || (v3 = v2->entity_id) == 0 || v3 != a1->_E0_current_attack_target_entity_id)
+    v2 = a1->retaliation_target;
+    if (!v2 || (v3 = v2->entity_id) == 0 || v3 != a1->retaliation_target_id)
     {
         v20 = a1->script;
         a1->destroyed = 1;
@@ -4097,14 +4097,14 @@ void entity_mode_418B30(Entity *a1)
         v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
         return;
     }
-    script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
-    v10 = v1->_E0_current_attack_target;
+    script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
+    v10 = v1->retaliation_target;
     if (v10)
     {
         v11 = v10->entity_id;
         if (v11)
         {
-            if (v11 == v1->_E0_current_attack_target_entity_id)
+            if (v11 == v1->retaliation_target_id)
             {
                 v12 = 0;
                 v13 = v10->stats->attach;
@@ -4133,7 +4133,7 @@ void entity_mode_418B30(Entity *a1)
                     sound_play(v16, 0, v21, 16, 0);
                 }
                 if (v15)
-                    v15->param = v1->_E0_current_attack_target;
+                    v15->param = v1->retaliation_target;
                 v17 = v1->script;
                 v1->destroyed = 1;
                 v17->script_type = SCRIPT_TYPE_INVALID;
@@ -4162,8 +4162,8 @@ void entity_mode_418D20(Entity *a1)
     Script *v13; // eax@13
 
     v1 = a1;
-    v2 = a1->_E0_current_attack_target;
-    if (v2 && (v3 = v2->entity_id) != 0 && v3 == a1->_E0_current_attack_target_entity_id)
+    v2 = a1->retaliation_target;
+    if (v2 && (v3 = v2->entity_id) != 0 && v3 == a1->retaliation_target_id)
     {
         v4 = a1->sprite;
         v5 = a1->sprite_x;
@@ -4180,10 +4180,10 @@ void entity_mode_418D20(Entity *a1)
             v1->sprite->y_speed = -entity_get_mobd_speed_y(v1);
             return;
         }
-        script_trigger_event(v1->script, EVT_MSG_SABOTAGE, v1, v1->_E0_current_attack_target->script);
+        script_trigger_event(v1->script, EVT_MSG_SABOTAGE, v1, v1->retaliation_target->script);
         v10 = v1->script;
         v1->destroyed = 1;
-        script_trigger_event_group(v10, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
+        script_trigger_event_group(v10, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
         v1->script->script_type = SCRIPT_TYPE_INVALID;
         v1->entity_id = 0;
     }
@@ -4215,19 +4215,19 @@ void entity_mode_418E90_leaving_repair_bay(Entity *a1)
         a1->script->event_handler = a1->event_handler;
         a1->sprite->x_speed = 0;
         a1->sprite->y_speed = 0;
-        v3 = a1->_E0_current_attack_target;
+        v3 = a1->retaliation_target;
         if (v3)
         {
             v4 = v3->entity_id;
             if (v4)
             {
-                if (v4 == v1->_E0_current_attack_target_entity_id && v3->script->script_type == SCRIPT_REPAIR_STATION_HANDLER)
+                if (v4 == v1->retaliation_target_id && v3->script->script_type == SCRIPT_REPAIR_STATION_HANDLER)
                     *((_DWORD *)v3->state + 2) = 0;
             }
         }
         if (v1->_DC_order == ENTITY_ORDER_MOVE)
         {
-            v1->_E0_current_attack_target = 0;
+            v1->retaliation_target = 0;
             v1->_E4_prev_attack_target = 0;
             v1->_134_param__unitstats_after_mobile_outpost_plant = 600;
             v1->SetMode(entity_mode_move_attack);
@@ -4258,14 +4258,14 @@ void entity_mode_418F60(Entity *a1)
     v2->x_speed = -64;
     v1->sprite->y_speed = 64;
     entity_load_move_mobd(v1);
-    v3 = v1->_E0_current_attack_target;
+    v3 = v1->retaliation_target;
     v1->_128_spawn_param = (void *)100;
     if (v3)
     {
         v4 = v3->entity_id;
         if (v4)
         {
-            if (v4 == v1->_E0_current_attack_target_entity_id)
+            if (v4 == v1->retaliation_target_id)
             {
                 v5 = v3->turret;
                 if (v5)
@@ -4294,8 +4294,8 @@ void entity_mode_418FE0_repairing_in_bay(Entity *a1)
 
     v1 = a1;
     v2 = 1;
-    v3 = a1->_E0_current_attack_target;
-    if (!v3 || (v4 = v3->entity_id) == 0 || v4 != v1->_E0_current_attack_target_entity_id)
+    v3 = a1->retaliation_target;
+    if (!v3 || (v4 = v3->entity_id) == 0 || v4 != v1->retaliation_target_id)
     {
         v1->hitpoints = 0;
         v1->destroyed = 1;
@@ -4346,14 +4346,14 @@ LABEL_20:
         v10->x_speed = -64;
         v1->sprite->y_speed = 64;
         entity_load_move_mobd(v1);
-        v11 = v1->_E0_current_attack_target;
+        v11 = v1->retaliation_target;
         v1->_128_spawn_param = (void *)100;
         if (v11)
         {
             v12 = v11->entity_id;
             if (v12)
             {
-                if (v12 == v1->_E0_current_attack_target_entity_id)
+                if (v12 == v1->retaliation_target_id)
                 {
                     v13 = v11->turret;
                     if (v13)
@@ -4377,8 +4377,8 @@ void entity_mode_419180_in_repairbay(Entity *a1)
 
     v1 = a1;
     a1->script->event_handler = EventHandler_419E80_unit_in_repairbay;
-    v2 = a1->_E0_current_attack_target;
-    if (v2 && (v3 = v2->entity_id) != 0 && v3 == a1->_E0_current_attack_target_entity_id)
+    v2 = a1->retaliation_target;
+    if (v2 && (v3 = v2->entity_id) != 0 && v3 == a1->retaliation_target_id)
     {
         v4 = (char *)a1->_128_spawn_param;
         a1->_128_spawn_param = v4 - 1;
@@ -4421,7 +4421,7 @@ void entity_mode_419230_arrive_at_repairbay(Entity *a1)
             v1->sprite,
             v1->stats->mobd_lookup_offset_move,
             _47D3C4_entity_mobd_lookup_ids[a1->GetCurrentAnimFrame() + 1]);
-        v3 = v1->_E0_current_attack_target;
+        v3 = v1->retaliation_target;
         v1->_128_spawn_param = (void *)100;
         v1->SetOrder(ENTITY_ORDER_0);
         v1->SetMode(entity_mode_419180_in_repairbay);
@@ -4589,7 +4589,7 @@ void entity_419560_on_death(Entity *a1)
     v2 = a1->script;
     a1->destroyed = 1;
     v2->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
-    script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
+    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
     v3 = v1->turret;
     if (v3)
     {
@@ -4598,7 +4598,7 @@ void entity_419560_on_death(Entity *a1)
         script_free_local_object(v1->script, v1->turret);
         v1->turret = 0;
     }
-    script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
+    script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v1->sprite->x_speed = 0;
     v1->sprite->y_speed = 0;
@@ -4670,7 +4670,7 @@ void entity_mode_419760_infantry_destroyed(Entity *a1)
 
     a1->SetMode(entity_mode_4197E0_infantry);
     a1->destroyed = 1;
-    script_trigger_event_group(a1->script, EVT_SHOW_UI_CONTROL, a1, SCRIPT_TYPE_39030);
+    script_trigger_event_group(a1->script, EVT_MSG_DESELECTED, a1, SCRIPT_TYPE_39030);
     entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->_A4_idx_in_tile);
     a1->script->event_handler = EventHandler_General_Scout;
 }
@@ -4692,10 +4692,6 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
     Script *v6; // ecx@15
     stru11unit *v7; // eax@16
     Entity *v8; // eax@26
-    UnitStat *v9; // ebx@34
-    int v10; // edi@34
-    int v11; // ecx@34
-    bool v12; // zf@34
     int v13; // ecx@38
     int v14; // ecx@38
     int v15; // edx@38
@@ -4705,16 +4701,16 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
     {
         switch (event)
         {
-        case EVT_MSG_1511_sidebar_click_category:
-            entity_410CB0_event1511(v4);
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
             break;
-        case EVT_SHOW_UI_CONTROL:
-            entity_410CD0_eventTextString(v4);
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
             break;
-        case EVT_ENTITY_ATTACK:
+        case EVT_CMD_ENTITY_ATTACK:
             entity_attack(v4, (_47CAF0_task_attachment1_attack_task *)param);
             break;
         case EVT_MSG_1528:
@@ -4724,17 +4720,17 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
             entity_41A060_evt1525(v4, param);
             break;
 
-        case EVT_ENTITY_MOVE:
+        case EVT_CMD_ENTITY_MOVE:
             entity_move(v4, (_47CAF0_task_attachment1_move_task *)param);
             break;
 
         case EVT_MSG_1526_infiltrate:                        // param -> Entity *
-            if (param != v4->_E0_current_attack_target || v4->_DC_order != ENTITY_ORDER_3)
+            if (param != v4->retaliation_target || v4->GetOrder() != ENTITY_ORDER_3)
             {
                 script_sleep(v4->script, 1);
-                v4->_DC_order = ENTITY_ORDER_3;
-                v4->_E0_current_attack_target = (Entity *)param;
-                v4->_E0_current_attack_target_entity_id = *((_DWORD *)param + 76);// ->entity_id
+                v4->SetOrder(ENTITY_ORDER_3);
+                v4->retaliation_target = (Entity *)param;
+                v4->retaliation_target_id = *((_DWORD *)param + 76);// ->entity_id
                 v4->_E4_prev_attack_target = 0;
                 v4->_134_param__unitstats_after_mobile_outpost_plant = 600;
                 v4->mode_arrive = entity_mode_418D20;
@@ -4775,10 +4771,10 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
             {
                 script_trigger_event(v4->script, EVT_MSG_1509_stru11, v4, *((Script **)param + 3));
             }
-            else if (!v4->_E0_current_attack_target && !v4->entity_8)
+            else if (!v4->retaliation_target && !v4->entity_8)
             {
-                v4->_E0_current_attack_target = (Entity *)*((_DWORD *)param + 70);
-                v4->_E0_current_attack_target_entity_id = *(_DWORD *)(*((_DWORD *)param + 70) + 304);
+                v4->retaliation_target = (Entity *)*((_DWORD *)param + 70);
+                v4->retaliation_target_id = *(_DWORD *)(*((_DWORD *)param + 70) + 304);
                 entity_mode_move_attack(v4);
             }
             break;
@@ -4802,33 +4798,32 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
             v4->SetMode(entity_419560_on_death);
             entity_check_special_mission_death_conditions(v4);
             break;
-        case EVT_MSG_DAMAGE:
-            entity_41A610_evt1503(v4, param);
+        case EVT_MSG_ENTITY_DO_DAMAGE:
+            entity_do_damage(v4, (Sprite *)param);
             entity_410710_status_bar(v4);
             break;
-        case EVT_MSG_1497:
-            entity_41A6D0_evt1497(v4, (Entity *)param);
+        case EVT_MSG_ENTITY_ATTACKED:
+            entity_on_attacked_default(v4, (Entity *)param);
             break;
-        case EVT_MSG_1505:
-            v9 = v4->stats;
-            v10 = (int)param + v4->field_94;
-            v4->field_94 = v10;
-            v11 = v4->veterancy_level;
-            v4->veterancy_level = v11 + v10 / v9->hitpoints;
-            v12 = v4->veterancy_level == v11;
-            v4->field_94 = v10 % v9->hitpoints;
-            if (!v12)
+        case EVT_MSG_RECEIVE_EXPERIENCE: {
+            v4->experience += (int)param;
+            if (v4->experience >= v4->stats->hitpoints) {
+                v4->veterancy_level += v4->experience / v4->stats->hitpoints;
+                v4->experience = v4->experience % v4->stats->hitpoints;
                 entity_410710_status_bar(v4);
-            if (v4->veterancy_level >= 3)
-                v4->veterancy_level = 2;
+
+                if (v4->veterancy_level >= 3)
+                    v4->veterancy_level = 2;
+            }
             break;
+        }
         case EVT_MSG_1546_repair_at_station:
             script_sleep(v4->script, 1);
             v4->_DC_order = ENTITY_ORDER_10;
-            v4->_E0_current_attack_target = (Entity *)param;
+            v4->retaliation_target = (Entity *)param;
             v13 = *((_DWORD *)param + 76);
             v4->_E4_prev_attack_target = 0;
-            v4->_E0_current_attack_target_entity_id = v13;
+            v4->retaliation_target_id = v13;
             v4->_134_param__unitstats_after_mobile_outpost_plant = 600;
             v4->mode_arrive = entity_mode_419230_arrive_at_repairbay;
             *(_DWORD *)(*((_DWORD *)param + 23) + 136) = 1;
@@ -4859,17 +4854,17 @@ void EventHandler_419CA0(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
     {
         switch (event)
         {
-        case EVT_MSG_1511_sidebar_click_category:
-            entity_410CB0_event1511(v4);
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
             break;
-        case EVT_SHOW_UI_CONTROL:
-            entity_410CD0_eventTextString(v4);
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
             break;
-        case EVT_MSG_DAMAGE:
-            entity_41A610_evt1503(v4, param);
+        case EVT_MSG_ENTITY_DO_DAMAGE:
+            entity_do_damage(v4, (Sprite *)param);
             break;
         default:
             return;
@@ -4886,10 +4881,10 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
     v4 = (Entity *)receiver->param;
     switch (event)
     {
-    case EVT_ENTITY_MOVE:
+    case EVT_CMD_ENTITY_MOVE:
         entity_41A9B0_unit(v4, param);
         break;
-    case EVT_ENTITY_ATTACK:
+    case EVT_CMD_ENTITY_ATTACK:
         if (v4->player_side == *(_DWORD *)param)
         {
             LOWORD_HEXRAYS(v4->field_2A4) = 2;
@@ -4898,17 +4893,17 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
             v4->_2A8_entity_id = v5->entity_id;
         }
         break;
-    case EVT_MSG_1511_sidebar_click_category:
-        entity_410CB0_event1511(v4);
+    case EVT_MSG_SELECTED:
+        entity_selected_default(v4);
         break;
-    case EVT_SHOW_UI_CONTROL:
-        entity_410CD0_eventTextString(v4);
+    case EVT_MSG_DESELECTED:
+        entity_deselected_default(v4);
         break;
     case EVT_MSG_SHOW_UNIT_HINT:
         entity_show_hint(v4);
         break;
-    case EVT_MSG_DAMAGE:
-        entity_41A610_evt1503(v4, param);
+    case EVT_MSG_ENTITY_DO_DAMAGE:
+        entity_do_damage(v4, (Sprite *)param);
         entity_410710_status_bar(v4);
         break;
     default:

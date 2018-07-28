@@ -1,6 +1,7 @@
 #include "src/Script.h"
 
 #include "src/kknd.h"
+#include "src/hexrays-defs.h"
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 #include "src/ScriptEvent.h"
@@ -648,7 +649,7 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(entity_mode_4035C0_building),
     MAKE_HANDLER_PTR(entity_mode_403650_building),
     MAKE_HANDLER_PTR(entity_mode_403720_on_prison_death__or__prolly_any_generic_building),
-    MAKE_HANDLER_PTR(entity_mode_building_default_on_death),
+    MAKE_HANDLER_PTR(entity_mode_building_on_death_default),
     MAKE_HANDLER_PTR(entity_4038B0),
     MAKE_HANDLER_PTR(entity_clanhall_on_upgrade_complete),
     MAKE_HANDLER_PTR(EventHandler_Clanhall),

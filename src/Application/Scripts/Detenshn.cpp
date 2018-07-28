@@ -26,7 +26,7 @@ void EventHandler_Prison(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
     v4 = (Entity *)receiver->param;
     if (!v4->destroyed)
     {
-        if (event == EVT_MSG_DAMAGE)
+        if (event == EVT_MSG_ENTITY_DO_DAMAGE)
         {
             if (current_level_idx == LEVEL_SURV_09_RESCUE_THE_COMMANDER)
                 entity_402E90_on_damage(v4, param, entity_mode_prison_on_death_surv09);
@@ -123,7 +123,7 @@ void entity_mode_prison_on_death(Entity *a1)
     Script *v2; // eax@1
 
     v1 = a1;
-    entity_mode_building_default_on_death(a1);
+    entity_mode_building_on_death_default(a1);
     v2 = v1->script;
     v1->_12C_prison_bunker_spawn_type = 10;
     v1->SetMode(entity_mode_prison_spawn_unit);
@@ -151,7 +151,7 @@ void entity_mode_prison_on_death_surv09(Entity *a1)
     Script *v2; // eax@1
 
     v1 = a1;
-    entity_mode_building_default_on_death(a1);
+    entity_mode_building_on_death_default(a1);
     v2 = v1->script;
     v1->SetMode(entity_mode_prison_spawn_unit_surv09);
     script_sleep(v2, 80);
@@ -167,15 +167,15 @@ void EventHandler_TechBunker(Script *receiver, Script *sender, enum SCRIPT_EVENT
     {
         switch (event)
         {
-        case EVT_MSG_DAMAGE:
+        case EVT_MSG_ENTITY_DO_DAMAGE:
             entity_402E90_on_damage(v4, param, entity_mode_407C60_on_death_tech_bunker);
             entity_410710_status_bar(v4);
             break;
-        case EVT_MSG_1511_sidebar_click_category:
-            entity_410CB0_event1511(v4);
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
             break;
-        case EVT_SHOW_UI_CONTROL:
-            entity_410CD0_eventTextString(v4);
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
@@ -478,8 +478,8 @@ void entity_mode_407C60_on_death_tech_bunker(Entity *a1)
     v3 = &v1->turret->sprite_task;
     if (v3)
         script_trigger_event(0, EVT_MSG_1500, 0, *v3);
-    script_trigger_event(v1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-    script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
+    script_trigger_event(v1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v4 = v1->sprite;
     v1->entity_id = 0;
@@ -507,7 +507,7 @@ void entity_mode_hut_on_death(Entity *a1)
 {
     entity_load_mobd_4(a1);
     a1->SetMode(entity_mode_407D10);
-    script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
+    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
 
     a1->destroyed = 1;
     entity_439120_add_explosion(a1);
@@ -532,15 +532,15 @@ void EventHandler_Hut(Script *receiver, Script *sender, enum SCRIPT_EVENT event,
     {
         switch (event)
         {
-        case EVT_MSG_DAMAGE:
+        case EVT_MSG_ENTITY_DO_DAMAGE:
             entity_402E90_on_damage(v4, param, entity_mode_hut_on_death);
             entity_410710_status_bar(v4);
             break;
-        case EVT_MSG_1511_sidebar_click_category:
-            entity_410CB0_event1511(v4);
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
             break;
-        case EVT_SHOW_UI_CONTROL:
-            entity_410CD0_eventTextString(v4);
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);

@@ -252,7 +252,7 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
         case EVT_MSG_DESTROY:
             entity_402E40_destroy(v5, entity_mode_researchlab_on_death);
             break;
-        case EVT_MSG_DAMAGE:
+        case EVT_MSG_ENTITY_DO_DAMAGE:
             entity_402E90_on_damage(v5, param, entity_mode_researchlab_on_death);
             entity_410520_update_healthbar_color(v5);
             break;
@@ -345,7 +345,7 @@ void entity_mode_researchlab_on_death(Entity *a1)
         stru38_list_427FD0(v2, 0);
         *v2 = 0;
     }
-    entity_mode_building_default_on_death(v1);
+    entity_mode_building_on_death_default(v1);
 }
 
 //----- (00438630) --------------------------------------------------------

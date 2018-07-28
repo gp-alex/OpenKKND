@@ -77,7 +77,7 @@ void _424CA0_script_47A3CC_evttrigger()
 void _424CC0_script_47A3CC_evttrigger()
 {
     if (script_47A3CC)
-        script_trigger_event(0, EVT_ENTITY_MOVE, 0, script_47A3CC);
+        script_trigger_event(0, EVT_CMD_ENTITY_MOVE, 0, script_47A3CC);
 }
 
 //----- (00424CE0) --------------------------------------------------------
@@ -639,7 +639,7 @@ void script_425400(Script *a1)
                     {
                         v3 = (void *)((unsigned int)v3 | 2);
                     }
-                    else if (i->event == EVT_ENTITY_MOVE)
+                    else if (i->event == EVT_CMD_ENTITY_MOVE)
                     {
                         v3 = (void *)((unsigned int)v3 | 1);
                     }
@@ -799,7 +799,7 @@ void entity_check_special_mission_death_conditions(Entity *victim)
     if (mission_accomplished)
     {
         if (script_47A3CC)
-            script_trigger_event(0, EVT_ENTITY_MOVE, 0, script_47A3CC);
+            script_trigger_event(0, EVT_CMD_ENTITY_MOVE, 0, script_47A3CC);
     }
     else if (mission_failed && script_47A3CC)
     {
@@ -1121,7 +1121,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
     {
         case MISSION_RESULT_ACCOMPLISHED: {
             if (script_47A3CC) {
-                script_trigger_event(0, EVT_ENTITY_MOVE, 0, script_47A3CC);
+                script_trigger_event(0, EVT_CMD_ENTITY_MOVE, 0, script_47A3CC);
             }
             break;
         };

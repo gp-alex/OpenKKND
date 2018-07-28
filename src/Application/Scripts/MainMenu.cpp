@@ -437,8 +437,8 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
                     v10 = stru29_list_first();
                     if (v9 & INPUT_KEYBOARD_RETURN_MASK && v10 != stru29_list_end())
                     {
-                        script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47C6D4_stru29->sprite->script);
-                        script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47C6D4_stru29->sprite->script);
+                        script_trigger_event(0, EVT_MSG_SELECTED, 0, _47C6D4_stru29->sprite->script);
+                        script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47C6D4_stru29->sprite->script);
                         v10 = stru29_list_first();
                     }
                     if (v9 & (INPUT_KEYBOARD_TAB_MASK | INPUT_KEYBOARD_ARROW_KEYS_MASK))
@@ -454,9 +454,9 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
                 if (i->event == EVT_MOUSE_HOVER)
                 {
                     if (v16.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
-                        script_trigger_event(v1, EVT_MSG_1511_sidebar_click_category, 0, (Script *)i->param);
+                        script_trigger_event(v1, EVT_MSG_SELECTED, 0, (Script *)i->param);
                     if (v16.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
-                        script_trigger_event(v1, EVT_SHOW_UI_CONTROL, 0, (Script *)i->param);
+                        script_trigger_event(v1, EVT_MSG_DESELECTED, 0, (Script *)i->param);
                 }
                 script_discard_event(i);
             }

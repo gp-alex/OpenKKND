@@ -82,7 +82,7 @@ void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIP
     stru24 *a3a; // [sp+14h] [bp+4h]@24
 
     v4 = (stru24 *)receiver->param;
-    if (event == EVT_SHOW_UI_CONTROL)
+    if (event == EVT_MSG_DESELECTED)
     {
         v48 = is_enemy(v4->_2A0_player_side, (Entity *)param) == 0;
         v49 = v4->_2A0_player_side;
@@ -1314,19 +1314,19 @@ LABEL_97:
                             v58 = v1->task;
                             v59 = v1->_2A0_player_side;
                             v1->field_344 = 1;
-                            script_trigger_event(task_ai_players[v59], EVT_MSG_1529_ai, (void *)1, v58);
+                            script_trigger_event(task_ai_players[v59], EVT_MSG_NEXT_CONSTRUCTION_STATE, (void *)1, v58);
                         }
                     }
                     else if (v1->field_344 < 2)
                     {
                         v57 = v1->_2A0_player_side;
                         v1->field_344 = 2;
-                        script_trigger_event(task_ai_players[v57], EVT_MSG_1529_ai, (void *)2, v54);
+                        script_trigger_event(task_ai_players[v57], EVT_MSG_NEXT_CONSTRUCTION_STATE, (void *)2, v54);
                     }
                 }
                 else
                 {
-                    script_trigger_event(task_ai_players[v1->_2A0_player_side], EVT_MSG_1529_ai, (void *)3, v1->task);
+                    script_trigger_event(task_ai_players[v1->_2A0_player_side], EVT_MSG_NEXT_CONSTRUCTION_STATE, (void *)3, v1->task);
                     v1->task = 0;
                 }
             }
@@ -1388,7 +1388,7 @@ LABEL_97:
                         v170 = v71;
                         i1 = v72;
 
-                        script_trigger_event(0, EVT_ENTITY_MOVE, &v172, v70->script);
+                        script_trigger_event(0, EVT_CMD_ENTITY_MOVE, &v172, v70->script);
                         v69->next->prev = v69->prev;
                         v69->prev->next = v69->next;
                         v69->next = v1->list_310_head;
@@ -1608,7 +1608,7 @@ LABEL_97:
                         kk->field_40 = v146;
                         v174 = v146;
                         for (kk->field_24 = 0; (void **)v145 != &kk->_C_next; v145 = v145->next)
-                            script_trigger_event(0, EVT_ENTITY_MOVE, param, *((Script **)v145->_C_next + 3));
+                            script_trigger_event(0, EVT_CMD_ENTITY_MOVE, param, *((Script **)v145->_C_next + 3));
                     }
                     else
                     {
@@ -1710,7 +1710,7 @@ LABEL_97:
                         nn->field_40 = v162;
                         v174 = v162;
                         for (nn->field_24 = 0; (void **)v161 != &nn->_C_next; v161 = v161->next)
-                            script_trigger_event(0, EVT_ENTITY_MOVE, param, *((Script **)v161->_C_next + 3));
+                            script_trigger_event(0, EVT_CMD_ENTITY_MOVE, param, *((Script **)v161->_C_next + 3));
                     }
                     else
                     {
@@ -1749,7 +1749,7 @@ LABEL_97:
                 v112->prev = (stru24_AttackerNode *)&v1->marshalling_nodes_list__evmission8_only_60;
                 v1->marshalling_nodes_list__evmission8_only_60->prev = v112;
                 v1->marshalling_nodes_list__evmission8_only_60 = v112;
-                script_trigger_event(0, EVT_ENTITY_MOVE, &v172, v112->entity->script);
+                script_trigger_event(0, EVT_CMD_ENTITY_MOVE, &v172, v112->entity->script);
                 v112 = v116;
             }
         }
@@ -1815,7 +1815,7 @@ LABEL_97:
                     v128->field_40 = v126;
                     v174 = v126;
                     for (v128->field_24 = 0; v129 != (_DWORD *)v130; v129 = (_DWORD *)*v129)
-                        script_trigger_event(0, EVT_ENTITY_MOVE, param, *(Script **)(v129[3] + 12));
+                        script_trigger_event(0, EVT_CMD_ENTITY_MOVE, param, *(Script **)(v129[3] + 12));
                     v131 = v1->field_24C;
                     v132 = (char *)&v1->field_168;
                     goto LABEL_219;
@@ -2188,7 +2188,7 @@ int sub_40AFC0(stru24 *a1, stru24_stru160 *a2, int a3, int a4)
     {
         do
         {
-            result = script_trigger_event(0, EVT_ENTITY_MOVE, &v7, *(Script **)(*(_DWORD *)(v4 + 12) + 12));
+            result = script_trigger_event(0, EVT_CMD_ENTITY_MOVE, &v7, *(Script **)(*(_DWORD *)(v4 + 12) + 12));
             v4 = *(_DWORD *)v4;
         } while ((char *)v4 != v5);
     }
@@ -2289,7 +2289,7 @@ stru24_EnemyNode **stru24_40B020(stru24 *a1, stru24_stru160 *a2)
         for (i = v14; v15 != v16; v15 = *(_DWORD *)v15)
             result = (stru24_EnemyNode **)script_trigger_event(
                 0,
-                EVT_ENTITY_ATTACK,
+                EVT_CMD_ENTITY_ATTACK,
                 &v21,
                 *(Script **)(*(_DWORD *)(v15 + 12) + 12));
     }
@@ -3473,7 +3473,7 @@ void EventHandler_42D6B0_evolved_mission8_ai(Script *receiver, Script *sender, e
     int v37; // [sp+18h] [bp+8h]@42
              // context -> stru24
     v4 = (stru24 *)receiver->param;
-    if (event == EVT_SHOW_UI_CONTROL)
+    if (event == EVT_MSG_DESELECTED)
     {
         v18 = *((_DWORD *)param + 5);
         if (v18 && (v19 = v4->_2A0_player_side, v18 != v19))
@@ -3874,7 +3874,7 @@ void EventHandler_42DC90_evolved_mission5_ai(Script *a1, Script *a2, enum SCRIPT
     stru24_stru40 *v14; // eax@32
                         // 40B720: context -> stru24
     v4 = (stru24 *)a1->param;
-    if (event == EVT_SHOW_UI_CONTROL)
+    if (event == EVT_MSG_DESELECTED)
     {
         v10 = param->player_side;
         if (v10 == 0)

@@ -68,7 +68,7 @@ void UNIT_Handler_Towers(Script *a1)
         goto LABEL_15;
     }
     if (v1->player_side == player_side)
-        script_trigger_event(v1->script, EVT_MSG_1529_ai, v1, task_mobd17_cursor);
+        script_trigger_event(v1->script, EVT_MSG_NEXT_CONSTRUCTION_STATE, v1, task_mobd17_cursor);
     sprite_4272E0_load_mobd_item(v1->sprite, v1->stats->mobd_lookup_offset_attack, 0);
     v1->SetMode(entity_mode_4474E0_towers);
     v1->ExecMode();
@@ -107,8 +107,8 @@ void entity_mode_tower_on_death(Entity *a1)
     v4 = v1->script;
     v1->destroyed = 1;
     v1->entity_id = 0;
-    script_trigger_event(v4, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-    script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
+    script_trigger_event(v4, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v5 = v1->script;
     v1->SetMode(entity_mode_tower_dead);
@@ -140,7 +140,21 @@ void entity_mode_tower_dead(Entity *a1)
     script_terminate(v3);
     entityRepo->Delete(v1);
 }
-// 47DCD0: using guessed type int num_players_towers;
+
+void tower_on_attacked(Entity *e, Entity *attacker) {
+    auto v5 = e->retaliation_target;
+    int v6 = v5->entity_id;
+    if (!v5 || v6 == 0 || v6 != e->retaliation_target_id)
+    {
+        auto v7 = &e->turret->sprite_task;
+        if (v7)
+        {
+            e->retaliation_target = attacker;
+            e->retaliation_target_id = attacker->entity_id;
+            script_trigger_event(e->script, EVT_CMD_ENTITY_ATTACK, 0, *v7);
+        }
+    }
+}
 
 //----- (00447600) --------------------------------------------------------
 void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
@@ -155,7 +169,7 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
     {
         switch (event)
         {
-        case EVT_MSG_1529_ai:
+        case EVT_MSG_NEXT_CONSTRUCTION_STATE:
             if (v4->IsMode(entity_mode_4474E0_towers))
             {
                 if (param == (void *)1)
@@ -175,27 +189,17 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
                 }
             }
             break;
-        case EVT_ENTITY_ATTACK:
-            entity_4477B0_towers(v4, (int)param);
+        case EVT_CMD_ENTITY_ATTACK:
+            tower_attack(v4, (int)param);
             break;
-        case EVT_MSG_1497:
-            v5 = v4->_E0_current_attack_target;
-            if (!v5 || (v6 = v5->entity_id) == 0 || v6 != v4->_E0_current_attack_target_entity_id)
-            {
-                v7 = &v4->turret->sprite_task;
-                if (v7)
-                {
-                    v4->_E0_current_attack_target = (Entity *)param;
-                    v4->_E0_current_attack_target_entity_id = *((_DWORD *)param + 76);
-                    script_trigger_event(v4->script, EVT_ENTITY_ATTACK, 0, *v7);
-                }
-            }
+        case EVT_MSG_ENTITY_ATTACKED:
+            tower_on_attacked(v4, (Entity *)param);
             break;
-        case EVT_MSG_1511_sidebar_click_category:
-            entity_410CB0_event1511(v4);
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
             break;
-        case EVT_SHOW_UI_CONTROL:
-            entity_410CD0_eventTextString(v4);
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
@@ -203,7 +207,7 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
         case EVT_MSG_DESTROY:
             entity_402E40_destroy(v4, entity_mode_tower_on_death);
             break;
-        case EVT_MSG_DAMAGE:
+        case EVT_MSG_ENTITY_DO_DAMAGE:
             entity_402E90_on_damage(v4, param, entity_mode_tower_on_death);
             entity_410710_status_bar(v4);
             break;
@@ -214,7 +218,7 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 }
 
 //----- (004477B0) --------------------------------------------------------
-void entity_4477B0_towers(Entity *a1, int a2)
+void tower_attack(Entity *a1, int a2)
 {
     Entity *v2; // esi@1
     int v3; // edi@1
@@ -232,10 +236,10 @@ void entity_4477B0_towers(Entity *a1, int a2)
         if (*(_DWORD *)a2 == v4)
         {
             v5 = *(Entity **)(a2 + 4);
-            if (v5->entity_id != v2->_E0_current_attack_target_entity_id)
+            if (v5->entity_id != v2->retaliation_target_id)
             {
-                v2->_E0_current_attack_target = v5;
-                v2->_E0_current_attack_target_entity_id = v5->entity_id;
+                v2->retaliation_target = v5;
+                v2->retaliation_target_id = v5->entity_id;
                 v6 = *(_DWORD *)(a2 + 4);
                 v7 = *(_DWORD *)(v6 + 20);
                 if (v7 && v7 != v4 && !is_enemy(v4, (Entity *)v6))
@@ -259,7 +263,7 @@ void entity_4477B0_towers(Entity *a1, int a2)
                         game_globals_cpu[0].cash[7 * v2->player_side + *(_DWORD *)(*(_DWORD *)(v3 + 4) + 20)] = 0;
                     }
                 }
-                script_trigger_event(v2->script, EVT_ENTITY_ATTACK, 0, v2->turret->sprite_task);
+                script_trigger_event(v2->script, EVT_CMD_ENTITY_ATTACK, 0, v2->turret->sprite_task);
             }
         }
     }
@@ -738,7 +742,7 @@ void EntityTowerAttachment_handler_447FA0(EntityTurret *a1)
             + (v2->damage_building
                 * veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
         v5->parent = v1->turret_sprite->parent;
-        script_trigger_event(v1->entity->script, EVT_MSG_1497, v1->entity, v1->_C_entity->script);
+        script_trigger_event(v1->entity->script, EVT_MSG_ENTITY_ATTACKED, v1->entity, v1->_C_entity->script);
     }
     v8 = v1->stats_attachment_point;
     v9 = v1->field_1C - 1;
@@ -905,11 +909,11 @@ void MessageHandler_TowersAttachment(Script *receiver, Script *sender, enum SCRI
 
     v4 = (EntityTurret *)receiver->param;
     v5 = v4->entity;
-    if (!v5->destroyed && event == EVT_ENTITY_ATTACK)
+    if (!v5->destroyed && event == EVT_CMD_ENTITY_ATTACK)
     {
         v4->handler = EntityTowerAttachment_handler_447CA0;
-        v4->_C_entity = v5->_E0_current_attack_target;
-        v4->_C_entity_idx = v5->_E0_current_attack_target->entity_id;
+        v4->_C_entity = v5->retaliation_target;
+        v4->_C_entity_idx = v5->retaliation_target->entity_id;
     }
 }
 

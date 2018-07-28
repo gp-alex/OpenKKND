@@ -130,7 +130,7 @@ void Game::Run() {
                     if (_47DCF4_wm_quit_received)
                         break;
                 }
-                current_level_idx = LEVEL_SURV_02_BUILD_AN_OUTPOST;
+                //%current_level_idx = LEVEL_SURV_02_BUILD_AN_OUTPOST;
                 GAME_PrepareLevel();
                 is_mission_running = true;
                 //create_script(196);

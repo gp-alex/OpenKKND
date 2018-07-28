@@ -98,8 +98,8 @@ void entity_oil_tanker_initialize(Entity *a1)
     }
     else
     {
-        script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-        script_trigger_event_group(0, EVT_SHOW_UI_CONTROL, a1, SCRIPT_TYPE_39030);
+        script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+        script_trigger_event_group(0, EVT_MSG_DESELECTED, a1, SCRIPT_TYPE_39030);
 
         a1->script->script_type = SCRIPT_TYPE_INVALID;
         a1->entity_id = 0;
@@ -649,6 +649,17 @@ void entity_mode_444D10_oiltanker(Entity *a1)
     }
 }
 
+void entity_on_attacked_tanker(Entity *a1) {
+    if (player_side == a1->player_side && a1->_12C_prison_bunker_spawn_type == 0)
+    {
+        a1->_12C_prison_bunker_spawn_type = 1000;
+        if (is_player_faction_evolved())
+            sound_play(SOUND_132, 0, _4690A8_unit_sounds_volume, 16, 0);
+        else
+            sound_play(SOUND_60, 0, _4690A8_unit_sounds_volume, 16, 0);
+    }
+}
+
 //----- (00444D60) --------------------------------------------------------
 void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
 {
@@ -680,11 +691,11 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
     {
         switch (event)
         {
-        case EVT_MSG_1511_sidebar_click_category:
-            entity_410CB0_event1511(v5);
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v5);
             break;
-        case EVT_SHOW_UI_CONTROL:
-            entity_410CD0_eventTextString(v5);
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v5);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v5);
@@ -700,7 +711,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
             entity_41A890_evt1528(v5);
             break;
 
-        case EVT_ENTITY_MOVE:
+        case EVT_CMD_ENTITY_MOVE:
             v9 = *((_DWORD *)v6 + 1);
             if (v9)
             {
@@ -720,19 +731,12 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
         case EVT_MSG_1509_stru11:
             entity_41A980_evt1509_unset_stru11(v5, param);
             break;
-        case EVT_MSG_DAMAGE:
-            entity_41A610_evt1503(v5, param);
+        case EVT_MSG_ENTITY_DO_DAMAGE:
+            entity_do_damage(v5, (Sprite *)param);
             entity_410640_tanker_status_bar(v5);
             break;
-        case EVT_MSG_1497:
-            if (player_side == v5->player_side && !v5->_12C_prison_bunker_spawn_type)
-            {
-                v5->_12C_prison_bunker_spawn_type = 1000;
-                if (is_player_faction_evolved())
-                    sound_play(SOUND_132, 0, _4690A8_unit_sounds_volume, 16, 0);
-                else
-                    sound_play(SOUND_60, 0, _4690A8_unit_sounds_volume, 16, 0);
-            }
+        case EVT_MSG_ENTITY_ATTACKED:
+            entity_on_attacked_tanker(v5);
             break;
         case EVT_MSG_COUNT_BUILDINGS_OF_THE_SAME_TYPE:
             if (!v4->destroyed && !entity_402AC0_is_mode_402AB0(v4))
@@ -944,16 +948,16 @@ void EventHandler_MobileDerrick(Script *receiver, Script *sender, enum SCRIPT_EV
     {
         switch (event)
         {
-        case EVT_MSG_1511_sidebar_click_category:
-            entity_410CB0_event1511(v4);
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
             break;
-        case EVT_SHOW_UI_CONTROL:
-            entity_410CD0_eventTextString(v4);
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
             break;
-        case EVT_ENTITY_MOVE:
+        case EVT_CMD_ENTITY_MOVE:
             entity_move(v4, (_47CAF0_task_attachment1_move_task *)param);
             break;
 
@@ -963,12 +967,12 @@ void EventHandler_MobileDerrick(Script *receiver, Script *sender, enum SCRIPT_EV
         case EVT_MSG_1509_stru11:
             entity_41A980_evt1509_unset_stru11(v4, param);
             break;
-        case EVT_MSG_DAMAGE:
-            entity_41A610_evt1503(v4, param);
+        case EVT_MSG_ENTITY_DO_DAMAGE:
+            entity_do_damage(v4, (Sprite *)param);
             entity_410710_status_bar(v4);
             break;
-        case EVT_MSG_1497:
-            entity_41A6D0_evt1497(v4, (Entity *)param);
+        case EVT_MSG_ENTITY_ATTACKED:
+            entity_on_attacked_default(v4, (Entity *)param);
             break;
         default:
             return;
@@ -1058,8 +1062,8 @@ void entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant(Entity *a1)
     v2 = a1->script;
     a1->destroyed = 1;
     v2->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
-    script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-    script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
+    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
     entity_40DEC0_boxd(v1, v1->sprite_map_x, v1->sprite_map_y, v1->_A4_idx_in_tile);
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v3 = v1->sprite;

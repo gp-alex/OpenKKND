@@ -18,14 +18,24 @@ using Engine::EntityFactory;
 using Engine::Infrastructure::EntityRepository;
 
 
+void entity_on_attacked_building(Entity *e) {
+    if (player_side == e->player_side && e->_12C_prison_bunker_spawn_type == 0)
+    {
+        e->_12C_prison_bunker_spawn_type = 2000;
+        if (is_player_faction_evolved())
+            sound_play(SOUND_129, 0, _4690A8_unit_sounds_volume, 16, 0);
+        else
+            sound_play(SOUND_20, 0, _4690A8_unit_sounds_volume, 16, 0);
+    }
+}
 //----- (00402F30) --------------------------------------------------------
 void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
 {
     void *v4; // ebp@1
-    void *v5; // esi@1
+    Entity *v5; // esi@1
     Script *v6; // ST00_4@14
-    int v7; // eax@24
-    int v8; // ecx@24
+    Entity_stru60_stru4 * v7; // eax@24
+    Sprite * v8; // ecx@24
     int v9; // edx@24
     int v10; // eax@24
     enum SOUND_ID v11; // ecx@27
@@ -33,57 +43,50 @@ void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum
     enum PLAYER_SIDE v13; // [sp-4h] [bp-10h]@24
 
     v4 = 0;
-    v5 = receiver->param;
+    v5 = (Entity *)receiver->param;
     if (sender)
         v4 = sender->param;
-    if (!*((_DWORD *)v5 + 35))
+    if (!v5->destroyed)
     {
-        if (*((void(**)(Entity *))v5 + 16) != entity_mode_402AB0 || event != EVT_MSG_1529_ai)
+        if (!v5->IsMode(entity_mode_402AB0) || event != EVT_MSG_NEXT_CONSTRUCTION_STATE)
         {
-            switch (0)
+            switch (event)
             {
             case EVT_MSG_DESTROY:
-                if (*((_DWORD *)v5 + 36) > 0)
+                if (v5->hitpoints > 0)
                 {
-                    v6 = (Script *)*((_DWORD *)v5 + 3);
-                    *((_DWORD *)v5 + 36) = 0;
+                    v6 = v5->script;
+                    v5->hitpoints = 0;
                     script_sleep(v6, 1);
-                    *((_DWORD *)v5 + 36) = 0;
-                    *((_DWORD *)v5 + 16) = (_DWORD)entity_mode_building_default_on_death;
-                    *((_DWORD *)v5 + 35) = 1;
+                    v5->hitpoints = 0;
+                    v5->SetMode(entity_mode_building_on_death_default);
+                    v5->destroyed = 1;
                 }
                 break;
             case EVT_MSG_1507_stru11:
-                entity_41A850_evt1507_mess_with_stru11((Entity *)receiver->param, param);
+                entity_41A850_evt1507_mess_with_stru11(v5, param);
                 break;
             case EVT_MSG_1509_stru11:
-                entity_41A980_evt1509_unset_stru11((Entity *)receiver->param, param);
+                entity_41A980_evt1509_unset_stru11(v5, param);
                 break;
-            case EVT_MSG_1497:
-                entity_41A6D0_evt1497((Entity *)receiver->param, (Entity *)param);
-                if (player_side == *((_DWORD *)v5 + 5) && !*((_DWORD *)v5 + 75))
-                {
-                    *((_DWORD *)v5 + 75) = 2000;
-                    if (is_player_faction_evolved())
-                        sound_play(SOUND_129, 0, _4690A8_unit_sounds_volume, 16, 0);
-                    else
-                        sound_play(SOUND_20, 0, _4690A8_unit_sounds_volume, 16, 0);
-                }
+            case EVT_MSG_ENTITY_ATTACKED:
+                entity_on_attacked_default(v5, (Entity *)param);
+                entity_on_attacked_building(v5);
                 break;
+
             case EVT_MSG_SABOTAGE:
-                entity_sabotage((Entity *)v5, param, entity_mode_building_default_on_death);
+                entity_sabotage(v5, param, entity_mode_building_on_death_default);
                 break;
-            case EVT_MSG_DAMAGE:
-                entity_402E90_on_damage((Entity *)v5, param, entity_mode_building_default_on_death);
-                entity_410520_update_healthbar_color((Entity *)v5);
+            case EVT_MSG_ENTITY_DO_DAMAGE:
+                entity_402E90_on_damage(v5, param, entity_mode_building_on_death_default);
+                entity_410520_update_healthbar_color(v5);
                 break;
             case EVT_MSG_PRODUCTION_READY:          // unit_stats_idx
-                *(_DWORD *)(*((_DWORD *)v5 + 23) + 136) = 1;
-                v7 = *((_DWORD *)v5 + 25);
-                v8 = *((_DWORD *)v5 + 23);
-                v9 = *(_DWORD *)(v8 + 16) + *(_DWORD *)(v7 + 4);
-                v10 = *(_DWORD *)(v8 + 20) + *(_DWORD *)(v7 + 8);
-                v13 = (PLAYER_SIDE)*((_DWORD *)v5 + 5);
+                v7 = v5->stru60.pstru4;
+                v8 = v5->sprite;
+                v9 = v8->x + v7->x_offset;
+                v10 = v8->y + v7->y_offset;
+                v13 = v5->player_side;
                 if (v13 == player_side)
                 {
                     if (spawn_unit((enum UNIT_ID)(int)param, v9, v10, v13))
@@ -112,17 +115,17 @@ void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum
                 }
                 break;
             case EVT_MSG_BUILDING_COMPLETE:
-                if (sender != receiver && *((_DWORD *)v4 + 5) == *((_DWORD *)v5 + 5))
+                if (sender != receiver && *((_DWORD *)v4 + 5) == v5->player_side)
                     script_trigger_event(receiver, EVT_MSG_COUNT_BUILDINGS_OF_THE_SAME_TYPE, 0, sender);
                 break;
             case EVT_MSG_COUNT_BUILDINGS_OF_THE_SAME_TYPE:
-                ++*(_WORD *)(*((_DWORD *)v5 + 8) + 12);
+                ++*((_WORD *)v5->state + 6);
                 break;
-            case EVT_MSG_1511_sidebar_click_category:
-                entity_410CB0_event1511((Entity *)receiver->param);
+            case EVT_MSG_SELECTED:
+                entity_selected_default((Entity *)receiver->param);
                 break;
-            case EVT_SHOW_UI_CONTROL:
-                entity_410CD0_eventTextString((Entity *)receiver->param);
+            case EVT_MSG_DESELECTED:
+                entity_deselected_default((Entity *)receiver->param);
                 break;
             case EVT_MSG_SHOW_UNIT_HINT:
                 entity_show_hint((Entity *)receiver->param);
@@ -133,15 +136,15 @@ void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum
         }
         else if (param == (void *)1)
         {
-            sprite_4272E0_load_mobd_item(*((Sprite **)v5 + 23), *(_DWORD *)(*((_DWORD *)v5 + 6) + 52), 1);
+            sprite_4272E0_load_mobd_item(v5->sprite, v5->stats->mobd_lookup_offset_attack, 1);
         }
         else if (param == (void *)2)
         {
-            sprite_4272E0_load_mobd_item(*((Sprite **)v5 + 23), *(_DWORD *)(*((_DWORD *)v5 + 6) + 52), 2);
+            sprite_4272E0_load_mobd_item(v5->sprite, v5->stats->mobd_lookup_offset_attack, 2);
         }
-        else if ((char *)param - 2 == (_BYTE *)1)
+        else if (param == (void *)3)
         {
-            *((_DWORD *)v5 + 16) = *((_DWORD *)v5 + 18);
+            v5->SetMode(v5->mode_arrive);
         }
     }
 }
@@ -380,7 +383,7 @@ void entity_mode_403720_on_prison_death__or__prolly_any_generic_building(Entity 
 }
 
 //----- (00403780) --------------------------------------------------------
-void entity_mode_building_default_on_death(Entity *a1)
+void entity_mode_building_on_death_default(Entity *a1)
 {
     Entity *v1; // esi@1
     EntityBuildingState *v2; // edi@2
@@ -418,8 +421,8 @@ void entity_mode_building_default_on_death(Entity *a1)
         script_deinit(v1->turret->sprite_task);
         script_free_local_object(v1->script, v1->turret);
     }
-    script_trigger_event(v1->script, EVT_SHOW_UI_CONTROL, 0u, task_mobd17_cursor);
-    script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
+    script_trigger_event(v1->script, EVT_MSG_DESELECTED, 0u, task_mobd17_cursor);
+    script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
     v6 = v1->script;
     if (v6->script_type == SCRIPT_POWER_STATION_HANDLER)
         script_trigger_event_group(v6, EVT_MSG_1539, v1, SCRIPT_TANKER_CONVOY_HANDLER);

@@ -67,7 +67,7 @@ Entity *EntityFactory::Create(Script *a1)
     }
     v1->field_110 = 0;
     v1->stru11_list_108 = (stru11unit *)&v1->stru11_list_104;
-    v1->field_94 = 0;
+    v1->experience = 0;
     v1->stru11_list_104 = (stru11unit *)&v1->stru11_list_104;
     v1->veterancy_level = 0;
     v1->entity_id = ++_47DCC4_entity_id_counter;
@@ -294,7 +294,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             v3->_88_dst_orientation = v2->entity_field_88;
             v3->destroyed = 0;
             v3->hitpoints = v2->entity_hitpoints;
-            v3->field_94 = v2->entity_field_94;
+            v3->experience = v2->entity_field_94;
             v3->veterancy_level = v2->entity_98_veterancy_damage_bonus_idx;
             v3->_9C_hp_regen_condition = v2->entity_9C_hp_regen_condition;
             v3->_A0_hp_regen_condition = v2->entity_A0_hp_regen_condition;
@@ -314,10 +314,10 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             v3->field_D8 = v2->field_D8;
             v3->_DC_order = (ENTITY_ORDER)v2->field_DC;
 
-            v3->_E0_current_attack_target = entityRepo->FindById(v2->entity_EC_outpost_clanhall_entity_id);
+            v3->retaliation_target = entityRepo->FindById(v2->entity_EC_outpost_clanhall_entity_id);
             v3->_E4_prev_attack_target = entityRepo->FindById(v2->entity_E4_entity_id);
             v3->_E8_entity = 0;
-            v3->_E0_current_attack_target_entity_id = v2->_E0_current_attack_target_entity_id;
+            v3->retaliation_target_id = v2->retaliation_target_id;
             v3->_E4_prev_attack_target_entity_id = v2->_E4_prev_attack_target_entity_id;
             v3->entity_118_entity_id = v2->entity_F4_entity_118_entity_id;
             v3->_E8_entity_id = 0;

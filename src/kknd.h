@@ -1731,7 +1731,7 @@ struct EntitySerialized
 	int field_DC;
 	int entity_EC_outpost_clanhall_entity_id;
 	int entity_E4_entity_id;
-	int _E0_current_attack_target_entity_id;
+	int retaliation_target_id;
 	int _E4_prev_attack_target_entity_id;
 	int entity_F4_entity_118_entity_id;
 	int entity_sprite_width_2;

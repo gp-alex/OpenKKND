@@ -3,7 +3,7 @@ UNIT ORDER (move)
 new mode = entity_mode_move_attack OR entity_mode_move_tanker
 	entity_move
 		EventHandler_Infantry			// infantry event handler
-			script_trigger_event(EVT_ENTITY_MOVE, dst_x, dst_y)
+			script_trigger_event(EVT_CMD_ENTITY_MOVE, dst_x, dst_y)
 				case stru209_TYPE_MOVE
 				script_evt39030_handler	// process user unit orders
 

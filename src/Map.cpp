@@ -172,10 +172,10 @@ void script_44A700_minimap(Script *a1)
     {
         if (_47CB58_minimap_sprite)
         {
-            script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v2->script);
+            script_trigger_event(0, EVT_MSG_SELECTED, 0, v2->script);
             script_trigger_event(0, EVT_MOUSE_HOVER, 0, v2->script);
             script_sleep(v1, 1);
-            script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, v2->script);
+            script_trigger_event(0, EVT_MSG_DESELECTED, 0, v2->script);
             script_trigger_event(0, EVT_MOUSE_HOVER, 0, v2->script);
         }
     }

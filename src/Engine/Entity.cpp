@@ -198,9 +198,9 @@ void entity_move(Entity *a1, _47CAF0_task_attachment1_move_task *a2)
                     script_sleep(a1->script, 1);
 
                     a1->_DC_order = ENTITY_ORDER_MOVE;
-                    a1->_E4_prev_attack_target = a1->_E0_current_attack_target;
-                    a1->_E4_prev_attack_target_entity_id = a1->_E0_current_attack_target_entity_id;
-                    a1->_E0_current_attack_target = nullptr;
+                    a1->_E4_prev_attack_target = a1->retaliation_target;
+                    a1->_E4_prev_attack_target_entity_id = a1->retaliation_target_id;
+                    a1->retaliation_target = nullptr;
                     a1->_134_param__unitstats_after_mobile_outpost_plant = 600;
 
                     a1->sprite_x_2 = map_adjust_entity_in_tile_x(a1, a2->dst_x);
@@ -232,11 +232,11 @@ void entity_attack(Entity *a1, _47CAF0_task_attachment1_attack_task *param)
     if (v4 == param->player_side)
     {
         v5 = param->target;
-        if (v5 == v3->_E0_current_attack_target)
+        if (v5 == v3->retaliation_target)
         {
             v3->_E4_prev_attack_target = 0;
             v3->_134_param__unitstats_after_mobile_outpost_plant = 600;
-            if (v3->entity_8 != v3->_E0_current_attack_target)
+            if (v3->entity_8 != v3->retaliation_target)
                 v3->entity_8 = 0;
         }
         else
@@ -264,8 +264,8 @@ void entity_attack(Entity *a1, _47CAF0_task_attachment1_attack_task *param)
             v3->pathing.field_50 = 0;
             script_sleep(v3->script, 1);
             v3->_DC_order = ENTITY_ORDER_ATTACK;
-            v3->_E0_current_attack_target = param->target;
-            v3->_E0_current_attack_target_entity_id = param->target->entity_id;
+            v3->retaliation_target = param->target;
+            v3->retaliation_target_id = param->target->entity_id;
             v3->_E4_prev_attack_target = 0;
             v3->_134_param__unitstats_after_mobile_outpost_plant = 600;
             v3->entity_8 = 0;

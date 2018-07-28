@@ -132,9 +132,8 @@ struct Entity
 
     inline void SetCurrentAnimFrame(int current_mobd_lookup_idx) {
         if (current_mobd_lookup_idx >= 256) {
-            InfrastructureDependencies::Resolve<Infrastructure::Log>()->Info("Entity::SetCurrentAnimFrame: %u", current_mobd_lookup_idx);
-            current_mobd_lookup_idx = 0;
-            __debugbreak();
+            InfrastructureDependencies::Resolve<Infrastructure::Log>()->Info("Entity[id=%u]::SetCurrentAnimFrame(%u): index out of bounds", entity_id, current_mobd_lookup_idx);
+            current_mobd_lookup_idx = this->current_mobd_lookup_idx;
         }
         this->current_mobd_lookup_idx = current_mobd_lookup_idx;
     }
@@ -170,7 +169,7 @@ public:
                                 // ORIENTATION_*
     int destroyed;
     int hitpoints;
-    int field_94;
+    int experience;
     int veterancy_level;   // 0, 1, 2
     int _9C_hp_regen_condition;
     int _A0_hp_regen_condition;
@@ -189,10 +188,10 @@ public:
     int field_D4;
     int field_D8;
     ENTITY_ORDER _DC_order;
-    Entity *_E0_current_attack_target;
+    Entity *retaliation_target;//retaliation_target;
     Entity *_E4_prev_attack_target;
     Entity *_E8_entity;
-    int _E0_current_attack_target_entity_id;
+    int retaliation_target_id;//retaliation_target_id;
     int _E4_prev_attack_target_entity_id;
     int entity_118_entity_id;
     int _E8_entity_id;

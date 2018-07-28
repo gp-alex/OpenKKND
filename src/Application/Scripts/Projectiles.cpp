@@ -156,7 +156,7 @@ void script_435D40_bombers_dmg(Sprite *a1, int a2)
         {
             LOBYTE_HEXRAYS(v6) = _40D860_prolly_sprite_distance(i, v2->sprite, v3);
             if (v6)
-                script_trigger_event(i->script, EVT_MSG_DAMAGE, i, v2->script);
+                script_trigger_event(i->script, EVT_MSG_ENTITY_DO_DAMAGE, i, v2->script);
         }
     }
 }
@@ -299,7 +299,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
                 {
                     LOBYTE_HEXRAYS(v32) = _40D860_prolly_sprite_distance(v2, v29->sprite, i);
                     if (v32)
-                        script_trigger_event(v2->script, EVT_MSG_DAMAGE, v2, v29->script);
+                        script_trigger_event(v2->script, EVT_MSG_ENTITY_DO_DAMAGE, v2, v29->script);
                 }
             }
         }
@@ -873,7 +873,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
                     {
                         LOBYTE_HEXRAYS(v49) = _40D860_prolly_sprite_distance(v1, v46->sprite, i);
                         if (v49)
-                            script_trigger_event(v1->script, EVT_MSG_DAMAGE, v1, v46->script);
+                            script_trigger_event(v1->script, EVT_MSG_ENTITY_DO_DAMAGE, v1, v46->script);
                     }
                 }
             }
@@ -1010,7 +1010,7 @@ void UNIT_DmgHandler_GORT(Script *a1)
         v1->x = v7;
         v1->y = v3->sprite->y + v3->stru60.ptr_0->y_offset + 2560;
         if (!v3->destroyed)
-            script_trigger_event(a1, EVT_MSG_DAMAGE, v1, v2->script);
+            script_trigger_event(a1, EVT_MSG_ENTITY_DO_DAMAGE, v1, v2->script);
         script_sleep(a1, 1);
     }
     sprite_list_remove(v1);
@@ -1150,7 +1150,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
         if (v16 >= 100)
             v16 = 99;
         if (kknd_rand_debug(__FILE__, __LINE__) % 100 < v16)
-            script_trigger_event(a1, EVT_MSG_DAMAGE, v2, v1->script);
+            script_trigger_event(a1, EVT_MSG_ENTITY_DO_DAMAGE, v2, v1->script);
     }
     script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v2);
@@ -1305,7 +1305,7 @@ void UNIT_DmgHandler_Bow(Script *a1)
     if (v18 >= 100)
         v18 = 99;
     if (kknd_rand_debug(__FILE__, __LINE__) % 100 < v18 && !v26->destroyed)
-        script_trigger_event(v17, EVT_MSG_DAMAGE, v1, v26->script);
+        script_trigger_event(v17, EVT_MSG_ENTITY_DO_DAMAGE, v1, v26->script);
     script_yield(v17, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
     --_47C048_unit_bomberdmg;

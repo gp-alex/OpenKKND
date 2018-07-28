@@ -41,7 +41,7 @@ void EventHandler_BeastEnclosure(Script *receiver, Script *sender, enum SCRIPT_E
         case EVT_MSG_DESTROY:
             entity_402E40_destroy(v6, entity_mode_beastenclosure_on_death);
             return;
-        case EVT_MSG_DAMAGE:
+        case EVT_MSG_ENTITY_DO_DAMAGE:
             entity_402E90_on_damage(v6, param, entity_mode_beastenclosure_on_death);
             entity_410520_update_healthbar_color(v6);
             return;
@@ -317,7 +317,7 @@ void entity_mode_beastenclosure_on_death(Entity *a1)
             *((_DWORD *)v2 + 4) = 0;
         }
     }
-    entity_mode_building_default_on_death(v1);
+    entity_mode_building_on_death_default(v1);
 }
 // 47733C: using guessed type int max_beastenclosure_level;
 
@@ -409,7 +409,7 @@ void MessageHandler_Blacksmith(Script *receiver, Script *sender, enum SCRIPT_EVE
         case EVT_MSG_DESTROY:
             entity_402E40_destroy((Entity *)v6, entity_mode_blacksmith_on_death);
             break;
-        case EVT_MSG_DAMAGE:
+        case EVT_MSG_ENTITY_DO_DAMAGE:
             entity_402E90_on_damage((Entity *)v6, param, entity_mode_blacksmith_on_death);
             entity_410520_update_healthbar_color((Entity *)v6);
             break;
@@ -577,5 +577,5 @@ void entity_mode_402870_blacksmith(Entity *a1)
 //----- (00402900) --------------------------------------------------------
 void entity_mode_blacksmith_on_death(Entity *a1)
 {
-    entity_mode_building_default_on_death(a1);
+    entity_mode_building_on_death_default(a1);
 }

@@ -197,10 +197,10 @@ void EventHandler_401B80(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 		v4->field_4 = 0;
 		v4->handler = Task_context_0_401A40;
 		break;
-	case EVT_MSG_1511_sidebar_click_category:
+	case EVT_MSG_SELECTED:
 		++v4->field_4;
 		break;
-	case EVT_SHOW_UI_CONTROL:
+	case EVT_MSG_DESELECTED:
 		v6 = v4->field_4;
 		if (v6 > 0)
 			v4->field_4 = v6 - 1;
@@ -320,7 +320,7 @@ DrawJob *entity_402BB0_set_arrive_handler(Entity *a1, void(*mode_arrive)(Entity 
 	mOde_arrive = mode_arrive;
 	sprite_4272E0_load_mobd_item(a1->sprite, a1->stats->mobd_lookup_offset_attack, 0);
 	if (v2->player_side == player_side)
-		script_trigger_event(v2->script, EVT_MSG_1529_ai, v2, task_mobd17_cursor);
+		script_trigger_event(v2->script, EVT_MSG_NEXT_CONSTRUCTION_STATE, v2, task_mobd17_cursor);
 	v4 = v2->sprite;
 	v2->mode_arrive = mOde_arrive;
 	v5 = v4->_54_inside_mobd_ptr4->field_18;
@@ -506,7 +506,7 @@ void entity_402E90_on_damage(Entity *a1, void *param, void(*on_death_mode)(Entit
 					{
 						v6 = *(Script **)(v5 + 12);
 						if (v6)
-							script_trigger_event(a1->script, EVT_MSG_1505, damage_amount, v6);
+							script_trigger_event(a1->script, EVT_MSG_RECEIVE_EXPERIENCE, damage_amount, v6);
 					}
 				}
 			}
@@ -701,7 +701,7 @@ void EventHandler_Clanhall(Script *receiver, Script *sender, enum SCRIPT_EVENT e
 			}
 		}
 		break;
-	case EVT_MSG_DAMAGE:
+	case EVT_MSG_ENTITY_DO_DAMAGE:
 		entity_402E90_on_damage(v4, param, entity_mode_clanhall_on_death);
 		entity_410520_update_healthbar_color(v4);
 		break;
@@ -998,7 +998,7 @@ void entity_mode_clanhall_on_death(Entity *a1)
 
 	v1 = a1;
 	entity_mode_clanhall_on_death_reset_production_options(a1);
-	entity_mode_building_default_on_death(v1);
+	entity_mode_building_on_death_default(v1);
 }
 
 //----- (00404510) --------------------------------------------------------
@@ -1539,8 +1539,8 @@ void entity_4054D0_tanker_convoy(Entity *a1)
 	if (entity_405750_tanker_convoy(a1))
 	{
 		v2 = v1->stats;
-		v1->_DC_order = ENTITY_ORDER_6_tanker;
-		v1->_E0_current_attack_target = 0;
+		v1->SetOrder(ENTITY_ORDER_6_tanker);
+		v1->retaliation_target = 0;
 		v1->_E4_prev_attack_target = 0;
 		v1->_134_param__unitstats_after_mobile_outpost_plant = 5;
 		v3 = (int)v1->state;
@@ -1577,15 +1577,15 @@ void EventHandler_TankerConvoy(Script *receiver, Script *sender, enum SCRIPT_EVE
 	{
 		switch (event)
 		{
-		case EVT_MSG_DAMAGE:
-			entity_41A610_evt1503(v4, param);
+		case EVT_MSG_ENTITY_DO_DAMAGE:
+			entity_do_damage(v4, (Sprite *)param);
 			entity_410710_status_bar(v4);
 			break;
-		case EVT_MSG_1511_sidebar_click_category:
-			entity_410CB0_event1511(v4);
+		case EVT_MSG_SELECTED:
+			entity_selected_default(v4);
 			break;
-		case EVT_SHOW_UI_CONTROL:
-			entity_410CD0_eventTextString(v4);
+		case EVT_MSG_DESELECTED:
+			entity_deselected_default(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
 			entity_show_hint(v4);
@@ -1596,8 +1596,8 @@ void EventHandler_TankerConvoy(Script *receiver, Script *sender, enum SCRIPT_EVE
 		case EVT_MSG_1509_stru11:
 			entity_41A980_evt1509_unset_stru11(v4, param);
 			break;
-		case EVT_MSG_1497:
-			entity_41A6D0_evt1497(v4, (Entity *)param);
+		case EVT_MSG_ENTITY_ATTACKED:
+			entity_on_attacked_default(v4, (Entity *)param);
 			break;
 		default:
 			return;
@@ -1740,8 +1740,8 @@ void UNIT_Handler_OilTankerConvoy(Script *a1)
 				v4->checkpoint = LOWORD_HEXRAYS(v2->param_1C);
 			entity_4056E0_tanker_convoy_update_checkpoint(v1->sprite->x, v4);
 
-			v1->_DC_order = ENTITY_ORDER_6_tanker;
-			v1->_E0_current_attack_target = 0;
+			v1->SetOrder(ENTITY_ORDER_6_tanker);
+			v1->retaliation_target = 0;
 			v1->_E4_prev_attack_target = 0;
 			v1->_134_param__unitstats_after_mobile_outpost_plant = 600;
 			v1->sprite_x_2 = map_adjust_entity_in_tile_x(v1, v4->x);
@@ -3078,6 +3078,17 @@ void UNIT_Handler_OilPatch(Script *a1)
 	sprite_list_remove(v1);
 }
 
+void entity_on_attacked_drillrig(Entity *e) {
+    if (player_side == e->player_side && e->_12C_prison_bunker_spawn_type == 0)
+    {
+        e->_12C_prison_bunker_spawn_type = 1500;
+        if (is_player_faction_evolved())
+            sound_play(SOUND_MUTE_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
+        else
+            sound_play(SOUND_SURV_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
+    }
+}
+
 //----- (00407FD0) --------------------------------------------------------
 void EventHandler_DrillRig(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
 {
@@ -3088,17 +3099,10 @@ void EventHandler_DrillRig(Script *receiver, Script *sender, enum SCRIPT_EVENT e
 	{
 		switch (event)
 		{
-		case EVT_MSG_1497:
-			if (player_side == v4->player_side && !v4->_12C_prison_bunker_spawn_type)
-			{
-				v4->_12C_prison_bunker_spawn_type = 1500;
-				if (is_player_faction_evolved())
-					sound_play(SOUND_MUTE_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
-				else
-					sound_play(SOUND_SURV_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
-			}
+		case EVT_MSG_ENTITY_ATTACKED:
+            entity_on_attacked_drillrig(v4);
 			break;
-		case EVT_MSG_DAMAGE:
+		case EVT_MSG_ENTITY_DO_DAMAGE:
 			entity_402E90_on_damage(v4, param, entity_mode_drillrig_on_death);
 			entity_410520_update_healthbar_color(v4);
 			break;
@@ -3238,7 +3242,7 @@ void entity_mode_drillrig_on_death(Entity *a1)
 	script_trigger_event_group(a1->script, EVT_MSG_1540, 0, SCRIPT_TANKER_CONVOY_HANDLER);
 
     a1->destroyed = 1;
-    a1->SetMode(entity_mode_building_default_on_death);
+    a1->SetMode(entity_mode_building_on_death_default);
     script_sleep(a1->script, 1);
 }
 
@@ -3736,7 +3740,7 @@ int sprite_40D8B0_dmg(Sprite *a1, int a2)
 										}
 										if (v19 >= v23)
 										{
-											result = script_trigger_event(v3->script, EVT_MSG_DAMAGE, v3, v18->script);
+											result = script_trigger_event(v3->script, EVT_MSG_ENTITY_DO_DAMAGE, v3, v18->script);
 											*v13 = *v12;
 											++v13;
 											++v23;
@@ -4079,7 +4083,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 					v6 = 1;
 				if (v8 == EVT_MSG_1514)
 					v4 = 1;
-				if (v8 == EVT_MSG_1511_sidebar_click_category)
+				if (v8 == EVT_MSG_SELECTED)
 					v5 = 1;
 				script_discard_event(i);
 			}
@@ -4106,7 +4110,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 						{
 							v9 = 1;
 						}
-						else if (v11 == EVT_SHOW_UI_CONTROL)
+						else if (v11 == EVT_MSG_DESELECTED)
 						{
 							v25 = 1;
 						}
@@ -4142,11 +4146,11 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 				v16 = k->event;
 				if (v16 == EVT_MSG_1548_sidebar)
 					v6 = 1;
-				if (v16 == EVT_MSG_1511_sidebar_click_category)
+				if (v16 == EVT_MSG_SELECTED)
 				{
 					v14 = 1;
 				}
-				else if (v16 == EVT_SHOW_UI_CONTROL)
+				else if (v16 == EVT_MSG_DESELECTED)
 				{
 					v26 = 1;
 				}
@@ -4194,7 +4198,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 						{
 							v19 = 1;
 						}
-						else if (v21 == EVT_SHOW_UI_CONTROL)
+						else if (v21 == EVT_MSG_DESELECTED)
 						{
 							v26 = 1;
 						}
@@ -4280,7 +4284,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 					v6 = 1;
 				if (v8 == EVT_MSG_1514)
 					v4 = 1;
-				if (v8 == EVT_MSG_1511_sidebar_click_category)
+				if (v8 == EVT_MSG_SELECTED)
 					v5 = 1;
 				script_discard_event(i);
 			}
@@ -4307,7 +4311,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 						{
 							v11 = 1;
 						}
-						else if (v13 == EVT_SHOW_UI_CONTROL || v13 == EVT_MSG_1513)
+						else if (v13 == EVT_MSG_DESELECTED || v13 == EVT_MSG_1513)
 						{
 							v9 = 1;
 						}
@@ -4345,11 +4349,11 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 					v18 = k->event;
 					if (v18 == EVT_MSG_1548_sidebar)
 						v6 = 1;
-					if (v18 == EVT_MSG_1511_sidebar_click_category)
+					if (v18 == EVT_MSG_SELECTED)
 					{
 						v16 = 1;
 					}
-					else if (v18 == EVT_SHOW_UI_CONTROL || v18 == EVT_MSG_1513)
+					else if (v18 == EVT_MSG_DESELECTED || v18 == EVT_MSG_1513)
 					{
 						v26 = 1;
 					}
@@ -4375,7 +4379,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 							{
 								v20 = 1;
 							}
-							else if (v22 == EVT_SHOW_UI_CONTROL || v22 == EVT_MSG_1513)
+							else if (v22 == EVT_MSG_DESELECTED || v22 == EVT_MSG_1513)
 							{
 								v26 = 1;
 							}
@@ -5604,7 +5608,7 @@ void entity_410BE0_status_bar(Entity *a1)
 }
 
 //----- (00410CB0) --------------------------------------------------------
-void entity_410CB0_event1511(Entity *a1)
+void entity_selected_default(Entity *a1)
 {
 	DrawJob *v1; // eax@1
 
@@ -5614,7 +5618,7 @@ void entity_410CB0_event1511(Entity *a1)
 }
 
 //----- (00410CD0) --------------------------------------------------------
-void entity_410CD0_eventTextString(Entity *a1)
+void entity_deselected_default(Entity *a1)
 {
 	DrawJob *v1; // eax@1
 
@@ -6179,19 +6183,19 @@ void EventHandler_419DF0_unit_repairing_in_bay(Script *receiver, Script *sender,
 	{
 		switch (event)
 		{
-		case EVT_MSG_1511_sidebar_click_category:
-			entity_410CB0_event1511(v4);
+		case EVT_MSG_SELECTED:
+			entity_selected_default(v4);
 			break;
-		case EVT_SHOW_UI_CONTROL:
-			entity_410CD0_eventTextString(v4);
+		case EVT_MSG_DESELECTED:
+			entity_deselected_default(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
 			entity_show_hint(v4);
 			break;
-		case EVT_MSG_DAMAGE:
+		case EVT_MSG_ENTITY_DO_DAMAGE:
 			entity_41A510_evt1503(v4, (int)param);
 			break;
-		case EVT_ENTITY_MOVE:
+		case EVT_CMD_ENTITY_MOVE:
 			entity_41A170_evt1524(v4, param);
 			break;
 		default:
@@ -6210,16 +6214,16 @@ void EventHandler_419E80_unit_in_repairbay(Script *receiver, Script *sender, enu
 	{
 		switch (event)
 		{
-		case EVT_MSG_1511_sidebar_click_category:
-			entity_410CB0_event1511(v4);
+		case EVT_MSG_SELECTED:
+			entity_selected_default(v4);
 			break;
-		case EVT_SHOW_UI_CONTROL:
-			entity_410CD0_eventTextString(v4);
+		case EVT_MSG_DESELECTED:
+			entity_deselected_default(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
 			entity_show_hint(v4);
 			break;
-		case EVT_MSG_DAMAGE:
+		case EVT_MSG_ENTITY_DO_DAMAGE:
 			entity_41A510_evt1503(v4, (int)param);
 			break;
 		default:
@@ -6238,15 +6242,15 @@ void entity_41A060_evt1525(Entity *a1, void *param)
     int param_y = v2[2];
 
 	if (a1->player_side == param_player_side
-		&& (a1->_DC_order != ENTITY_ORDER_9
+		&& (a1->GetOrder() != ENTITY_ORDER_9
 			|| !map_is_same_tile(param_x, a1->sprite_x_2)
 			|| !map_is_same_tile(param_y, a1->sprite_y_2)))
 	{
         script_sleep(a1->script, 1);
 
-		a1->_DC_order = ENTITY_ORDER_9;
+		a1->SetOrder(ENTITY_ORDER_9);
         a1->_134_param__unitstats_after_mobile_outpost_plant = 600;
-        a1->_E0_current_attack_target = 0;
+        a1->retaliation_target = 0;
         a1->_E4_prev_attack_target = 0;
 
         a1->sprite_x_2 = map_adjust_entity_in_tile_x(a1, param_x);
@@ -6289,12 +6293,12 @@ void entity_41A400_evt1547(Entity *a1, Entity *a2)
 
 	v2 = a1;
 	v3 = a2;
-	if (a2 != a1->_E0_current_attack_target)
+	if (a2 != a1->retaliation_target)
 	{
         script_sleep(a1->script, 1);
 		v2->_DC_order = ENTITY_ORDER_3;
-		v2->_E0_current_attack_target = v3;
-		v2->_E0_current_attack_target_entity_id = v3->entity_id;
+		v2->retaliation_target = v3;
+		v2->retaliation_target_id = v3->entity_id;
 		v2->_E4_prev_attack_target = 0;
 		v2->_134_param__unitstats_after_mobile_outpost_plant = 600;
 		v2->mode_arrive = entity_mode_418B30;
@@ -6315,8 +6319,8 @@ void entity_41A470_vehicle_repair_at_station(Entity *a1, Entity *a2)
 	v3 = a2;
     script_sleep(a1->script, 1);
 	v2->_DC_order = ENTITY_ORDER_10;
-	v2->_E0_current_attack_target = v3;
-	v2->_E0_current_attack_target_entity_id = v3->entity_id;
+	v2->retaliation_target = v3;
+	v2->retaliation_target_id = v3->entity_id;
 	v2->_E4_prev_attack_target = 0;
 	v2->_134_param__unitstats_after_mobile_outpost_plant = 600;
 	v2->mode_arrive = entity_mode_419230_arrive_at_repairbay;
@@ -6359,7 +6363,7 @@ void entity_41A510_evt1503(Entity *a1, int a2)
 				{
 					v6 = v5->script;
 					if (v6)
-						script_trigger_event(a1->script, EVT_MSG_1505, v4, v6);
+						script_trigger_event(a1->script, EVT_MSG_RECEIVE_EXPERIENCE, v4, v6);
 				}
 			}
 			v7 = v2->hitpoints - (_DWORD)v4;
@@ -6367,13 +6371,13 @@ void entity_41A510_evt1503(Entity *a1, int a2)
 			if (v7 <= 0)
 			{
                 script_sleep(v2->script, 1);
-				v8 = v2->_E0_current_attack_target;
+				v8 = v2->retaliation_target;
 				if (v8)
 				{
 					v9 = v8->entity_id;
 					if (v9)
 					{
-						if (v9 == v2->_E0_current_attack_target_entity_id
+						if (v9 == v2->retaliation_target_id
 							&& v8->script->script_type == SCRIPT_REPAIR_STATION_HANDLER)
 						{
 							*((_DWORD *)v8->state + 2) = 0;
@@ -6390,11 +6394,11 @@ void entity_41A510_evt1503(Entity *a1, int a2)
 }
 
 //----- (0041A610) --------------------------------------------------------
-void entity_41A610_evt1503(Entity *a1, void *a2)
+void entity_do_damage(Entity *a1, Sprite *a2)
 {
 	Entity *v2; // esi@1
 	UnitStat *v3; // eax@2
-	void *v4; // edi@3
+	int v4; // edi@3
 	Entity *v5; // eax@8
 	Script *v6; // eax@10
 	int v7; // eax@12
@@ -6404,19 +6408,19 @@ void entity_41A610_evt1503(Entity *a1, void *a2)
 	{
 		v3 = a1->stats;
 		if (v3->is_infantry)
-			v4 = (void *)*((_WORD *)a2 + 70);
+			v4 = a2->field_8C_infantry_damage;
 		else
-			v4 = (void *)(v3->speed ? *((_WORD *)a2 + 71) : (int)*((_WORD *)a2 + 72));
+			v4 = v3->speed ? a2->field_8E_vehicle_damage : a2->field_90_building_damage;
 		if (a1->hitpoints > 0)
 		{
-			v5 = (Entity *)*((_DWORD *)a2 + 32);
+			v5 = (Entity *)a2->_80_entity__stru29__sprite__initial_hitpoints;
 			if (v5)
 			{
-				if (v5->entity_id == *((_DWORD *)a2 + 33))
+				if (v5->entity_id == a2->field_84)
 				{
 					v6 = v5->script;
 					if (v6)
-						script_trigger_event(a1->script, EVT_MSG_1505, v4, v6);
+						script_trigger_event(a1->script, EVT_MSG_RECEIVE_EXPERIENCE, (void *)v4, v6);
 				}
 			}
 			v7 = v2->hitpoints - (_DWORD)v4;
@@ -6434,7 +6438,7 @@ void entity_41A610_evt1503(Entity *a1, void *a2)
 }
 
 //----- (0041A6D0) --------------------------------------------------------
-void entity_41A6D0_evt1497(Entity *a1, Entity *a2)
+void entity_on_attacked_default(Entity *a1, Entity *a2)
 {
 	Entity *v2; // esi@1
 	enum UNIT_ID v3; // eax@1
@@ -6494,10 +6498,10 @@ void entity_41A6D0_evt1497(Entity *a1, Entity *a2)
 	}
 	else
 	{
-		a1->_E0_current_attack_target = a2;
-		a1->_E0_current_attack_target_entity_id = a2->entity_id;
+		a1->retaliation_target = a2;
+		a1->retaliation_target_id = a2->entity_id;
 		a1->_E4_prev_attack_target = 0;
-		a1->_DC_order = ENTITY_ORDER_8;
+		a1->SetOrder(ENTITY_ORDER_8);
 		a1->entity_8 = 0;
 		entity_mode_move_attack(a1);
         script_sleep(v2->script, 1);
@@ -6536,16 +6540,16 @@ void entity_41A890_evt1528(Entity *a1)
 		v2 = entity_44CA70_find(a1, UNIT_STATS_MUTE_CLANHALL, a1->player_side);
 	if (v2)
 	{
-        a1->_DC_order = ENTITY_ORDER_4;
-        a1->_E0_current_attack_target = v2;
-        a1->_E0_current_attack_target_entity_id = v2->entity_id;
+        a1->SetOrder(ENTITY_ORDER_4);
+        a1->retaliation_target = v2;
+        a1->retaliation_target_id = v2->entity_id;
 		entity_mode_move_attack(a1);
 	}
 	else
 	{
         a1->sprite_x = map_adjust_entity_in_tile_x(a1, a1->sprite->x);
         a1->sprite_y = map_adjust_entity_in_tile_y(a1, a1->sprite->y);
-        a1->_DC_order = ENTITY_ORDER_MOVE;
+        a1->SetOrder(ENTITY_ORDER_MOVE);
 		entity_mode_move_attack(a1);
 	}
 }
@@ -6794,7 +6798,7 @@ bool _41B070_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				{
 					if (*(_DWORD *)(v9 + 20) != *(_DWORD *)(v7 + 20) || (v10 = *(_DWORD *)(v7 + 16), v10 >= 46) && v10 <= 72)
 					{
-						script_trigger_event(0, EVT_MSG_DAMAGE, v5, v6);
+						script_trigger_event(0, EVT_MSG_ENTITY_DO_DAMAGE, v5, v6);
 						v5->script->flags_20 |= SCRIPT_FLAGS_20_2;
 						v5->script->flags_24 |= v5->script->flags_20;
 					}
@@ -7889,7 +7893,7 @@ LABEL_9:
 	v4->entity_field_84 = v3->field_84;
 	v4->entity_field_88 = v3->_88_dst_orientation;
 	v4->entity_hitpoints = v3->hitpoints;
-	v4->entity_field_94 = v3->field_94;
+	v4->entity_field_94 = v3->experience;
 	v4->entity_98_veterancy_damage_bonus_idx = v3->veterancy_level;
 	v4->entity_9C_hp_regen_condition = v3->_9C_hp_regen_condition;
 	v4->entity_A0_hp_regen_condition = v3->_A0_hp_regen_condition;
@@ -7908,8 +7912,8 @@ LABEL_9:
 	v4->field_D4 = v3->field_D4;
 	v4->field_D8 = v3->field_D8;
 	v4->field_DC = v3->_DC_order;
-	v64 = v3->_E0_current_attack_target;
-	v65 = v3->_E0_current_attack_target_entity_id;
+	v64 = v3->retaliation_target;
+	v65 = v3->retaliation_target_id;
 	if (!v64)
 		goto LABEL_243;
 	if (v65 == -1)
@@ -7944,7 +7948,7 @@ LABEL_132:
 	v70 = v68->entity_id;
 LABEL_140:
 	v4->entity_E4_entity_id = v70;
-	v4->_E0_current_attack_target_entity_id = v3->_E0_current_attack_target_entity_id;
+	v4->retaliation_target_id = v3->retaliation_target_id;
 	v4->_E4_prev_attack_target_entity_id = v3->_E4_prev_attack_target_entity_id;
 	v4->entity_F4_entity_118_entity_id = v3->entity_118_entity_id;
 	v4->entity_sprite_width_2 = v3->sprite_x_2;
@@ -11116,7 +11120,7 @@ void EventHandler_MachineShop(Script *receiver, Script *sender, enum SCRIPT_EVEN
 		case EVT_MSG_DESTROY:
 			entity_402E40_destroy((Entity *)receiver->param, entity_mode_machineshop_on_death);
 			break;
-		case EVT_MSG_DAMAGE:
+		case EVT_MSG_ENTITY_DO_DAMAGE:
 			entity_402E90_on_damage(v4, param, entity_mode_machineshop_on_death);
 			entity_410520_update_healthbar_color(v4);
 			break;
@@ -11352,7 +11356,7 @@ void entity_mode_machineshop_on_death(Entity *a1)
 			v2->production_group = 0;
 		}
 	}
-	entity_mode_building_default_on_death(v1);
+	entity_mode_building_on_death_default(v1);
 }
 // 479FEC: using guessed type int max_machineshop_level;
 
@@ -13881,16 +13885,16 @@ void MessageHandler_MobileOutpost(Script *receiver, Script *sender, enum SCRIPT_
 	{
 		switch (event)
 		{
-		case EVT_MSG_1511_sidebar_click_category:
-			entity_410CB0_event1511(v4);
+		case EVT_MSG_SELECTED:
+			entity_selected_default(v4);
 			break;
-		case EVT_SHOW_UI_CONTROL:
-			entity_410CD0_eventTextString(v4);
+		case EVT_MSG_DESELECTED:
+			entity_deselected_default(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
 			entity_show_hint(v4);
 			break;
-		case EVT_ENTITY_MOVE:
+		case EVT_CMD_ENTITY_MOVE:
 			entity_move(v4, (_47CAF0_task_attachment1_move_task *)param);
 			break;
 
@@ -13900,12 +13904,12 @@ void MessageHandler_MobileOutpost(Script *receiver, Script *sender, enum SCRIPT_
 		case EVT_MSG_1509_stru11:
 			entity_41A980_evt1509_unset_stru11(v4, param);
 			break;
-		case EVT_MSG_DAMAGE:
-			entity_41A610_evt1503(v4, param);
+		case EVT_MSG_ENTITY_DO_DAMAGE:
+			entity_do_damage(v4, (Sprite *)param);
 			entity_410710_status_bar(v4);
 			break;
-		case EVT_MSG_1497:
-			entity_41A6D0_evt1497(v4, (Entity *)param);
+		case EVT_MSG_ENTITY_ATTACKED:
+			entity_on_attacked_default(v4, (Entity *)param);
 			break;
 		case EVT_MSG_1522_plan_building_construction:
 			entity_4279E0_mobile_outpost_clanhall_wagon_plant(v4);
@@ -13936,8 +13940,8 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 	{
         // plant successful - make outpost
 
-		script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-		entity_410CD0_eventTextString(a1);
+		script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+		entity_deselected_default(a1);
         a1->SetScriptEventHandler(MessageHandler_MobileOutpostEmpty);
 
 		if (a1->unit_id == UNIT_STATS_SURV_OUTPOST)
@@ -14796,7 +14800,7 @@ void script_42D030_sidebar_tooltips(Script *a1)
             script_wait_event(a1);
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
-				if (i->event == EVT_MSG_1511_sidebar_click_category)
+				if (i->event == EVT_MSG_SELECTED)
 				{
 					v3 = i->param;
 					v2 = 1;
@@ -14861,7 +14865,7 @@ void script_42D030_sidebar_tooltips(Script *a1)
                 script_wait_event(a1);
 				for (j = script_get_next_event(a1); j; j = script_get_next_event(a1))
 				{
-					if (j->event == EVT_SHOW_UI_CONTROL)
+					if (j->event == EVT_MSG_DESELECTED)
 						v12 = 1;
 					script_discard_event(j);
 				}
@@ -15301,7 +15305,7 @@ void stru24_42E030(stru24 *a1, Entity *a2)
 		v6 = v2->script;
 		v9 = v4;
 		v8 = v5;
-		script_trigger_event(0, EVT_ENTITY_ATTACK, &v8, v6);
+		script_trigger_event(0, EVT_CMD_ENTITY_ATTACK, &v8, v6);
 	}
 }
 
@@ -15354,14 +15358,14 @@ void stru24_42E070(stru24 *a1)
 	for (i = v1->list_40_30; (stru24_stru40 **)i != &v1->list_40_30; i = i->next)
 	{
 		v9 = i->_C__entity;
-		if (!v9->entity_8 && !v9->_E0_current_attack_target || v9->IsMode(entity_mode_default_idle))
+		if (!v9->entity_8 && !v9->retaliation_target || v9->IsMode(entity_mode_default_idle))
 		{
 			v10 = stru24_42DF40(v1, i->_C__entity, &a3);
 			if (v10)
 			{
 				v14.player_side = v1->_2A0_player_side;
                 v14.target = v10;
-				script_trigger_event(0, EVT_ENTITY_ATTACK, &v14, v9->script);
+				script_trigger_event(0, EVT_CMD_ENTITY_ATTACK, &v14, v9->script);
 			}
 		}
 	}
@@ -15593,7 +15597,7 @@ void EventHandler_Outpost(Script *receiver, Script *sender, enum SCRIPT_EVENT ev
 				}
 			}
 			break;
-		case EVT_MSG_DAMAGE:
+		case EVT_MSG_ENTITY_DO_DAMAGE:
 			entity_402E90_on_damage(v4, param, entity_mode_outpost_on_death);
 			entity_410520_update_healthbar_color(v4);
 			break;
@@ -15903,7 +15907,7 @@ void entity_mode_outpost_on_death(Entity *a1)
 
 	v1 = a1;
 	entity_mode_outpost_on_death_update_production(a1);
-	entity_mode_building_default_on_death(v1);
+	entity_mode_building_on_death_default(v1);
 }
 
 //----- (00431E60) --------------------------------------------------------
@@ -15998,9 +16002,9 @@ void script_431F10_ingame_menu(Script *a1)
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				v8 = i->event;
-				if (v8 > (int)EVT_MSG_1511_sidebar_click_category)
+				if (v8 > (int)EVT_MSG_SELECTED)
 				{
-					v9 = v8 - EVT_SHOW_UI_CONTROL;
+					v9 = v8 - EVT_MSG_DESELECTED;
 					if (v9)
 					{
 						if (v9 == 16)
@@ -16011,7 +16015,7 @@ void script_431F10_ingame_menu(Script *a1)
 						v17 = 0;
 					}
 				}
-				else if (v8 == EVT_MSG_1511_sidebar_click_category)
+				else if (v8 == EVT_MSG_SELECTED)
 				{
 					v17 = 1;
 				}
@@ -16355,7 +16359,7 @@ void script_432730_ingame_menu(Script *a1)
 					v6 = v5->event;
 					if (v6 != EVT_MOUSE_HOVER)
 					{
-						if (v6 == EVT_MSG_1511_sidebar_click_category)
+						if (v6 == EVT_MSG_SELECTED)
 							goto LABEL_8;
 						if (v6 == EVT_MSG_1528)
 							break;
@@ -16376,7 +16380,7 @@ void script_432730_ingame_menu(Script *a1)
 		} while (!v4);
 		if (v3)
 			break;
-		script_trigger_event(v1, EVT_MSG_1511_sidebar_click_category, &a1, receiver);
+		script_trigger_event(v1, EVT_MSG_SELECTED, &a1, receiver);
 	}
 	_47C668_ingame_menu_sprites[(int)a1] = 0;
 	sprite_list_remove(v2);
@@ -16429,7 +16433,7 @@ void script_432800_ingame_menu(Script *a1)
 		} while (!v4);
 		if (v3)
 			break;
-		script_trigger_event(v1, EVT_MSG_1511_sidebar_click_category, &a1, receiver);
+		script_trigger_event(v1, EVT_MSG_SELECTED, &a1, receiver);
 	}
 	_47C668_ingame_menu_sprites[(int)a1] = 0;
 	sprite_list_remove(v7);
@@ -16607,7 +16611,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 				{
 					switch (i->event)
 					{
-					case EVT_MSG_1511_sidebar_click_category:
+					case EVT_MSG_SELECTED:
 						v17 = *(_DWORD *)i->param;
 						if (v17 < 5)
 						{
@@ -16639,7 +16643,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 							--v23;
 						}
 						break;
-					case EVT_SHOW_UI_CONTROL:
+					case EVT_MSG_DESELECTED:
 						if (v23 >= 4)
 						{
 							if (v24 < 15)
@@ -16653,7 +16657,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 					case EVT_MSG_1549:
 						v15 = 1;
 						break;
-					case EVT_ENTITY_MOVE:
+					case EVT_CMD_ENTITY_MOVE:
 						v14 = 1;
 						break;
 					case EVT_MSG_1528:
@@ -16977,7 +16981,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 						v14 = 1;
 						a1a = 0;
 						break;
-					case EVT_ENTITY_MOVE:
+					case EVT_CMD_ENTITY_MOVE:
 						v7 = 2;
 						script_4321A0_ingame_menu(v1);
 						break;
@@ -17014,7 +17018,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 						if (v11)
 							v11->script->field_1C = 1;
 						break;
-					case EVT_ENTITY_ATTACK:
+					case EVT_CMD_ENTITY_ATTACK:
 						v7 = 3;
 						script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
 						_47C65C_render_string = render_string_create(
@@ -17144,7 +17148,7 @@ void script_433780_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000002, -92, v1, 1);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_MISSION_ARROW_SW, 0, 0))
 	{
-		script_trigger_event(a1, EVT_ENTITY_MOVE, 0, task_47C028);
+		script_trigger_event(a1, EVT_CMD_ENTITY_MOVE, 0, task_47C028);
         script_sleep(a1, 1);
 	}
 	v2 = a1->sprite;
@@ -17254,7 +17258,7 @@ void script_433A60_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000002, -92, v1, 7);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_828, 0, 0))
 	{
-		script_trigger_event(a1, EVT_ENTITY_ATTACK, 0, task_47C028);
+		script_trigger_event(a1, EVT_CMD_ENTITY_ATTACK, 0, task_47C028);
         script_sleep(a1, 1);
 	}
 	v2 = a1->sprite;
@@ -17413,7 +17417,7 @@ void script_433E60_ingame_menu(Script *a1)
 		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_5_RUNNING, 1, 0);
 		if (!v1)
 			break;
-		script_trigger_event(a1, EVT_ENTITY_MOVE, 0, receiver);
+		script_trigger_event(a1, EVT_CMD_ENTITY_MOVE, 0, receiver);
 	} while (v1);
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -17449,7 +17453,7 @@ void script_433F40_ingame_menu(Script *a1)
 	do
 	{
 		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_3_STILL, 2, 0);
-		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
+		script_trigger_event(a1, EVT_MSG_DESELECTED, 0, receiver);
 	} while (v1);
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -17525,7 +17529,7 @@ void script_434120_ingame_menu(Script *a1)
 	do
 	{
 		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_3_STILL, 2, 0);
-		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
+		script_trigger_event(a1, EVT_MSG_DESELECTED, 0, receiver);
 	} while (v1);
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -17604,7 +17608,7 @@ void script_434310_ingame_menu(Script *a1)
 	do
 	{
 		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_1728, 2, 1);
-		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
+		script_trigger_event(a1, EVT_MSG_DESELECTED, 0, receiver);
 	} while (v1);
 	v2 = a1->sprite;
 	sprite_list_remove((Sprite *)a1->param);
@@ -17704,9 +17708,9 @@ bool script_434500(Script *a1, int mobd_offset, int a3, int a4)
 		for (i = script_get_next_event(v4); i; i = script_get_next_event(v4))
 		{
 			v8 = i->event;
-			if (v8 > (int)EVT_MSG_1511_sidebar_click_category)
+			if (v8 > (int)EVT_MSG_SELECTED)
 			{
-				v9 = v8 - EVT_SHOW_UI_CONTROL;
+				v9 = v8 - EVT_MSG_DESELECTED;
 				if (v9)
 				{
 					if (v9 == 16)
@@ -17717,7 +17721,7 @@ bool script_434500(Script *a1, int mobd_offset, int a3, int a4)
 					v6 |= 8u;
 				}
 			}
-			else if (v8 == EVT_MSG_1511_sidebar_click_category)
+			else if (v8 == EVT_MSG_SELECTED)
 			{
 				v6 |= 4u;
 			}
@@ -17797,7 +17801,7 @@ void EventHandler_PowerStation(Script *receiver, Script *sender, enum SCRIPT_EVE
 	v4 = receiver;
 	v5 = sender;
 	v6 = (Entity *)receiver->param;
-	if (event == EVT_MSG_DAMAGE)
+	if (event == EVT_MSG_ENTITY_DO_DAMAGE)
 	{
 		entity_402E90_on_damage(v6, param, entity_mode_powerstation_on_death);
 		entity_410520_update_healthbar_color(v6);
@@ -17950,7 +17954,7 @@ void entity_mode_powerstation_on_death(Entity *a1)
 
 	v1 = a1;
 	script_trigger_event_group(a1->script, EVT_MSG_1539, 0, SCRIPT_TANKER_CONVOY_HANDLER);
-	entity_mode_building_default_on_death(v1);
+	entity_mode_building_on_death_default(v1);
 }
 
 //----- (00437DA0) --------------------------------------------------------
@@ -18453,7 +18457,7 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 			case EVT_MOUSE_HOVER:
                 stru29_list_443AE0_find_by_sprite(a1->sprite);
 				break;
-			case EVT_MSG_1511_sidebar_click_category:
+			case EVT_MSG_SELECTED:
 				v3 = 1;
 				break;
 			case EVT_MSG_1528:
@@ -18503,7 +18507,7 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 			{
 			case EVT_MOUSE_HOVER:
                 stru29_list_443AE0_find_by_sprite(a1->sprite);
-			case EVT_MSG_1511_sidebar_click_category:
+			case EVT_MSG_SELECTED:
 				v3 = 1;
 				break;
 			case EVT_MSG_1528:
@@ -18929,7 +18933,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v6 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -19076,7 +19080,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v4 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -19540,11 +19544,11 @@ void script_43E890_mobd45_modems(Script *a1)
 				if (v3 > 0)
 					--v3;
 				break;
-			case EVT_SHOW_UI_CONTROL:
+			case EVT_MSG_DESELECTED:
 				if (v3 < netz_modem_list_used - 10)
 					++v3;
 				break;
-			case EVT_MSG_1511_sidebar_click_category:
+			case EVT_MSG_SELECTED:
 				if (*(_DWORD *)j->param < netz_modem_list_used)
 					v12 = *(_DWORD *)j->param;
 				break;
@@ -19600,7 +19604,7 @@ void script_43EA90_mobd45(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v3 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -19645,7 +19649,7 @@ void script_43EB80_mobd45(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v3 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -19655,7 +19659,7 @@ void script_43EB80_mobd45(Script *a1)
 				script_discard_event(i);
 			}
 		} while (!v3);
-		script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47C664_ingame_menu_sprite->script);
+		script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47C664_ingame_menu_sprite->script);
 	}
 }
 
@@ -19692,7 +19696,7 @@ void script_43EC70_mobd45(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v4 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -19702,7 +19706,7 @@ void script_43EC70_mobd45(Script *a1)
 				script_discard_event(i);
 			}
 		} while (!v4);
-		script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, &a1, _47C664_ingame_menu_sprite->script);
+		script_trigger_event(0, EVT_MSG_SELECTED, &a1, _47C664_ingame_menu_sprite->script);
 	}
 }
 
@@ -20143,7 +20147,7 @@ void script_43F9E0_mobd45(Script *a1)
 				script_discard_event(i);
 			}
 		} while (!v4);
-		script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, &a1, _47C664_ingame_menu_sprite->script);
+		script_trigger_event(0, EVT_MSG_SELECTED, &a1, _47C664_ingame_menu_sprite->script);
 	}
 }
 
@@ -20260,7 +20264,7 @@ void script_43FAD0_mobd45_evt5(Script *a1)
 					{
 						if (i->event != EVT_MSG_MISSION_FAILED)
 						{
-							if (i->event == EVT_MSG_1511_sidebar_click_category)
+							if (i->event == EVT_MSG_SELECTED)
 							{
 								if (*(_DWORD *)i->param < dword_47C660)
 									dword_47C608 = *(_DWORD *)i->param;
@@ -20711,7 +20715,7 @@ void script_440810_mobd45(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v8 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -22028,7 +22032,7 @@ void script_442BB0_mobd46(Script *a1)
 							case EVT_MOUSE_HOVER:
                                 stru29_list_443AE0_find_by_sprite(a1->sprite);
                                 break;
-							case EVT_MSG_1511_sidebar_click_category:
+							case EVT_MSG_SELECTED:
 								v13 = 1;
 								break;
 							case EVT_MSG_1528:
@@ -22138,7 +22142,7 @@ void script_442BB0_mobd46(Script *a1)
 					case EVT_MOUSE_HOVER:
                         stru29_list_443AE0_find_by_sprite(v1->sprite);
 						break;
-					case EVT_MSG_1511_sidebar_click_category:
+					case EVT_MSG_SELECTED:
 						v26 = 1;
 						break;
 					case EVT_MSG_1528:
@@ -22351,9 +22355,9 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
 		{
 			v10 = i->event;
-			if (v10 > (int)EVT_MSG_1511_sidebar_click_category)
+			if (v10 > (int)EVT_MSG_SELECTED)
 			{
-				v12 = v10 - EVT_SHOW_UI_CONTROL;
+				v12 = v10 - EVT_MSG_DESELECTED;
 				if (v12)
 				{
 					v13 = v12 - 14;
@@ -22372,7 +22376,7 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 					v4 |= 4u;
 				}
 			}
-			else if (v10 == EVT_MSG_1511_sidebar_click_category)
+			else if (v10 == EVT_MSG_SELECTED)
 			{
 				if (!a3)
 					v4 |= 2u;
@@ -22452,9 +22456,9 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 		for (i = script_get_next_event(v4); i; i = script_get_next_event(v4))
 		{
 			v11 = i->event;
-			if ((int)v11 > (int)EVT_MSG_1511_sidebar_click_category)
+			if ((int)v11 > (int)EVT_MSG_SELECTED)
 			{
-				v13 = v11 - EVT_SHOW_UI_CONTROL;
+				v13 = v11 - EVT_MSG_DESELECTED;
 				if (v13)
 				{
 					v14 = v13 - 14;
@@ -22473,7 +22477,7 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 					v9 |= 4u;
 				}
 			}
-			else if (v11 == EVT_MSG_1511_sidebar_click_category)
+			else if (v11 == EVT_MSG_SELECTED)
 			{
 				v9 |= 2u;
 			}
@@ -22560,9 +22564,9 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 		for (i = script_get_next_event(v4); i; i = script_get_next_event(v4))
 		{
 			v11 = i->event;
-			if (v11 > (int)EVT_MSG_1511_sidebar_click_category)
+			if (v11 > (int)EVT_MSG_SELECTED)
 			{
-				v13 = v11 - EVT_SHOW_UI_CONTROL;
+				v13 = v11 - EVT_MSG_DESELECTED;
 				if (v13)
 				{
 					if (v13 == 14)
@@ -22573,7 +22577,7 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 					v9 |= 4u;
 				}
 			}
-			else if (v11 == EVT_MSG_1511_sidebar_click_category)
+			else if (v11 == EVT_MSG_SELECTED)
 			{
 				v9 |= 2u;
 			}
@@ -23405,8 +23409,8 @@ void sidebar_close_all() {
     {
         if (_47C990_production.sidebar_open_mask[v2])
         {
-            script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-            script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
+            script_trigger_event(0, EVT_MSG_SELECTED, 0, _47CA18_sidebar_production_buttons[v2]->task);
+            script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47CA18_sidebar_production_buttons[v2]->task);
         }
         //++v2;
     }
@@ -23627,7 +23631,7 @@ void sidebar_button_handler_446190_open(SidebarButton *a1)
 	do
 	{
 		if (v1 != &_47CA08_sidebar_buttons[1])
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, (*v1)->task);
+			script_trigger_event(0, EVT_MSG_DESELECTED, 0, (*v1)->task);
 		++v1;
 	} while (v1 <= &_47CA08_sidebar_buttons[1]);
 }
@@ -24381,7 +24385,7 @@ void sidebar_button_handler_help_open(SidebarButton *a1)
 	do
 	{
 		if (v1 != _47CA08_sidebar_buttons)
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, (*v1)->task);
+			script_trigger_event(0, EVT_MSG_DESELECTED, 0, (*v1)->task);
 		++v1;
 	} while ((int)v1 < (int) & _47CA10_sidebar_button_minimap);
 	script_trigger_event(0, EVT_MSG_SHOW_UNIT_HINT, 0, task_mobd17_cursor);
@@ -24530,7 +24534,7 @@ LABEL_10:
 	if (_47CA2C_should_airstrike_mess_with_sidebar)
 	{
 		script_trigger_event(0, EVT_MSG_1514, 0, _47CA08_sidebar_buttons[1]->task);
-		script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47C970_sidebar_task);
+		script_trigger_event(0, EVT_MSG_SELECTED, 0, _47C970_sidebar_task);
 	}
 	++UNIT_num_player_units;
 }
@@ -24548,11 +24552,11 @@ void _4471E0_send_sidebar_buttons_message()
 	do
 	{
 		if (v0 != -1)
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA08_sidebar_buttons[v0]->task);
+			script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47CA08_sidebar_buttons[v0]->task);
 		++v0;
 	} while (v0 < 2);
-	script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47C970_sidebar_task);
-	script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA08_sidebar_buttons[1]->task);
+	script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47C970_sidebar_task);
+	script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47CA08_sidebar_buttons[1]->task);
 	if (UNIT_num_player_units > 0)
 		--UNIT_num_player_units;
 }
@@ -24607,7 +24611,7 @@ void _447340_send_sidebar_buttons_message(int excluding_button_id)
 	{
         auto v3 = _47CA08_sidebar_buttons[i];
 		if (i != excluding_button_id)
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, v3->task);
+			script_trigger_event(0, EVT_MSG_DESELECTED, 0, v3->task);
 	}
 }
 
@@ -24929,12 +24933,12 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 	v1 = a1;
 	v2 = a1->entity;
 	if ((v2->GetOrder() == ENTITY_ORDER_ATTACK || v2->GetOrder() == ENTITY_ORDER_8)
-		&& entity_4488F0_is_in_firing_range(v2, v2->_E0_current_attack_target, v2->_E0_current_attack_target_entity_id)
-		&& sub_44CE40(v1->entity->player_side, v1->entity->_E0_current_attack_target))
+		&& entity_4488F0_is_in_firing_range(v2, v2->retaliation_target, v2->retaliation_target_id)
+		&& sub_44CE40(v1->entity->player_side, v1->entity->retaliation_target))
 	{
 		v4 = v1->entity;
-		v1->_C_entity = v4->_E0_current_attack_target;
-		v5 = v4->_E0_current_attack_target_entity_id;
+		v1->_C_entity = v4->retaliation_target;
+		v5 = v4->retaliation_target_id;
 		goto LABEL_9;
 	}
 	if (entity_4488F0_is_in_firing_range(v1->entity, v1->entity->_E4_prev_attack_target, v1->entity->_E4_prev_attack_target_entity_id)
@@ -25087,7 +25091,7 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 					+ (v4->damage_building
 						* veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
 				v7->parent = v1->turret_sprite->parent;
-				script_trigger_event(v1->entity->script, EVT_MSG_1497, v1->entity, v1->_C_entity->script);
+				script_trigger_event(v1->entity->script, EVT_MSG_ENTITY_ATTACKED, v1->entity, v1->_C_entity->script);
 				v10 = v1->stats_attachment_point;
 				v1->field_18 = v10->reload_time;
 				v11 = v1->field_1C - 1;
@@ -25102,14 +25106,14 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 			v13 = v12->_DC_order;
 			if (v13 == 2 || v13 == 8)
 			{
-				v14 = v12->_E0_current_attack_target;
+				v14 = v12->retaliation_target;
 				if (v1->_C_entity != v14)
 				{
-					if (entity_4488F0_is_in_firing_range(v12, v14, v12->_E0_current_attack_target_entity_id))
+					if (entity_4488F0_is_in_firing_range(v12, v14, v12->retaliation_target_id))
 					{
 						v15 = v1->entity;
-						v1->_C_entity = v15->_E0_current_attack_target;
-						v1->_C_entity_idx = v15->_E0_current_attack_target_entity_id;
+						v1->_C_entity = v15->retaliation_target;
+						v1->_C_entity_idx = v15->retaliation_target_id;
 						v1->handler = tower_attachment_handler_448B40;
 					}
 				}
@@ -25167,7 +25171,7 @@ void MessageHandler_task4_evt39030(Script *receiver, Script *sender, enum SCRIPT
 	_47CAF0_task_attachment1 *v5; // eax@2
 
 	v4 = (_47CAF0_task_attachment1 *)receiver->param;
-	if (event == EVT_SHOW_UI_CONTROL)
+	if (event == EVT_MSG_DESELECTED)
 	{
 		v5 = v4->next;
 		if (v4->next != v4)
@@ -25384,7 +25388,7 @@ void script_evt39030_handler(Script *a1)
             do
             {
                 if (v18->_8_script->event_handler)
-                    script_trigger_event(v1->owning_task, EVT_ENTITY_MOVE, &v1->move_task, v18->_8_script);
+                    script_trigger_event(v1->owning_task, EVT_CMD_ENTITY_MOVE, &v1->move_task, v18->_8_script);
                 v18 = v18->next;
             } while (v18 != v1);
         }
@@ -25402,7 +25406,7 @@ void script_evt39030_handler(Script *a1)
                 do
                 {
                     if (v20->_8_script->event_handler)
-                        script_trigger_event(v1->owning_task, EVT_ENTITY_ATTACK, &v1->attack_task, v20->_8_script);
+                        script_trigger_event(v1->owning_task, EVT_CMD_ENTITY_ATTACK, &v1->attack_task, v20->_8_script);
                     v20 = v20->next;
                 } while (v20 != v1);
             }
@@ -25446,7 +25450,7 @@ void script_evt39030_handler(Script *a1)
 		v23 = entityRepo->FindById(*(int *)((char *)v2 + 1));
         if (v23)
         {
-            script_trigger_event(a1, EVT_MSG_1529_ai, *(void **)((char *)v2 + 5), v23->script);
+            script_trigger_event(a1, EVT_MSG_NEXT_CONSTRUCTION_STATE, *(void **)((char *)v2 + 5), v23->script);
         }
         v2->type = stru209_TYPE_0;
 		break;
@@ -25472,7 +25476,7 @@ void script_evt39030_handler(Script *a1)
                 v25->hitpoints = v28;
             if (*(_WORD *)((char *)v2 + 5))
             {
-                v29 = v25->_E0_current_attack_target->turret;
+                v29 = v25->retaliation_target->turret;
                 if (v29)
                 {
                     v29->turret_sprite->_60_mobd_anim_speed = 0x8000000;
@@ -25480,7 +25484,7 @@ void script_evt39030_handler(Script *a1)
             }
             else
             {
-                v30 = v25->_E0_current_attack_target->turret;
+                v30 = v25->retaliation_target->turret;
                 if (v30)
                 {
                     v30->turret_sprite->_60_mobd_anim_speed = 0;
@@ -26326,7 +26330,7 @@ bool show_message_ex(Entity *a1, const char *text)
 {
     return script_trigger_event(
         a1 ? a1->script : nullptr,
-        EVT_SHOW_UI_CONTROL,
+        EVT_MSG_DESELECTED,
         (void *)text,
         pscript_show_message_ex
     );
@@ -26335,7 +26339,7 @@ bool show_message_ex(Entity *a1, const char *text)
 //----- (0044CB40) --------------------------------------------------------
 bool show_message(const char *text)
 {
-	return script_trigger_event(0, EVT_SHOW_UI_CONTROL, (void *)text, pscript_show_message);
+	return script_trigger_event(0, EVT_MSG_DESELECTED, (void *)text, pscript_show_message);
 }
 
 //----- (0044CB60) --------------------------------------------------------
@@ -26437,7 +26441,7 @@ void script_show_message_ex(Script *a1)
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
 		{
 			v5 = i->event;
-			if (v5 != EVT_MSG_1511_sidebar_click_category && v5 == EVT_SHOW_UI_CONTROL)
+			if (v5 != EVT_MSG_SELECTED && v5 == EVT_MSG_DESELECTED)
 			{
 				sender = i->sender;
 				text = (const char *)i->param;
@@ -26577,7 +26581,7 @@ void script_show_message(Script *a1)
 		v1 = 0;
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
 		{
-			if (i->event == EVT_SHOW_UI_CONTROL)
+			if (i->event == EVT_MSG_DESELECTED)
 			{
 				v5 = i->sender;
 				v2 = (const char *)i->param;

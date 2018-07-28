@@ -312,7 +312,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
     {
         while (1)
         {
-            script_trigger_event(task_mobd17_cursor, EVT_SHOW_UI_CONTROL, 0, v15->_8_task);
+            script_trigger_event(task_mobd17_cursor, EVT_MSG_DESELECTED, 0, v15->_8_task);
             yb = yb->next;
             if (yb == a1)
                 break;
@@ -348,7 +348,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
             v18->prev = (task_428940_attach__cursors_2 *)a1;
             a1->next->prev = (_428940_local *)v18;
             a1->next = (_428940_local *)v18;
-            script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v17);
+            script_trigger_event(0, EVT_MSG_SELECTED, 0, v17);
             v19 = (Entity *)v17->param;
             if (v19->player_side == player_side)
             {
@@ -711,7 +711,7 @@ LABEL_82:
         v2->_68_selected_moveable_entity_type = SELECTED_ENTITY_0;
         dword_468980 = -1;
         for (i = v2->next; i != v2; i = i->next)
-            script_trigger_event(task_mobd17_cursor, EVT_SHOW_UI_CONTROL, 0, i->_8_task);
+            script_trigger_event(task_mobd17_cursor, EVT_MSG_DESELECTED, 0, i->_8_task);
         if (v2->next != v2)
         {
             v2->prev->next = (_428940_local *)v2->ptr_10;
@@ -755,7 +755,7 @@ LABEL_82:
         {
             switch (v45)
             {
-            case EVT_MSG_1529_ai:
+            case EVT_MSG_NEXT_CONSTRUCTION_STATE:
                 v54 = stru13construct_list_free_pool;
                 v55 = j->param;
                 if (stru13construct_list_free_pool)
@@ -818,7 +818,7 @@ LABEL_82:
                     v2->_78_msg1522_param = v59;
                 }
                 break;
-            case EVT_SHOW_UI_CONTROL:
+            case EVT_MSG_DESELECTED:
                 v60 = stru13construct_list_47A638;
                 v61 = j->sender->param;
                 dword_468980 = -1;
@@ -1626,7 +1626,7 @@ void cursor_group_orders(_428940_local *a1)
                 v2->_68_selected_moveable_entity_type = SELECTED_ENTITY_0;
                 dword_468980 = -1;
                 for (i = v2->next; i != v2; i = i->next)
-                    script_trigger_event(task_mobd17_cursor, EVT_SHOW_UI_CONTROL, 0, i->_8_task);
+                    script_trigger_event(task_mobd17_cursor, EVT_MSG_DESELECTED, 0, i->_8_task);
                 if (v2->next != v2)
                 {
                     v2->prev->next = (_428940_local *)v2->ptr_10;
@@ -1646,7 +1646,7 @@ void cursor_group_orders(_428940_local *a1)
                     v83->prev = (task_428940_attach__cursors_2 *)v2;
                     v2->next->prev = (_428940_local *)v83;
                     v2->next = (_428940_local *)v83;
-                    script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, cursor_target->script);
+                    script_trigger_event(0, EVT_MSG_SELECTED, 0, cursor_target->script);
                     v84 = cursor_target->player_side == player_side;
                     v2->_38_are_owned_units_selected = v84;
                     if (v84)
@@ -1724,7 +1724,7 @@ void sub_4297D0(_428940_local *a1, int a2)
             v8 != v2;
             v8 = v8->next)
         {
-            script_trigger_event(task_mobd17_cursor, EVT_SHOW_UI_CONTROL, 0, v8->_8_task);
+            script_trigger_event(task_mobd17_cursor, EVT_MSG_DESELECTED, 0, v8->_8_task);
         }
         if (v2->next != v2)
         {
@@ -1752,7 +1752,7 @@ void sub_4297D0(_428940_local *a1, int a2)
                     v11->prev = (task_428940_attach__cursors_2 *)v2;
                     v2->next->prev = (_428940_local *)v11;
                     v2->next = (_428940_local *)v11;
-                    script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v11->_8_task);
+                    script_trigger_event(0, EVT_MSG_SELECTED, 0, v11->_8_task);
                     if (v9->player_side == player_side)
                         v2->_38_are_owned_units_selected = true;
 
@@ -1969,10 +1969,10 @@ void cursor_sidebar_handler(_428940_local *a1)
     if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
     {
         v3 = v1->_18_script;
-        script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v1->_18_script);
+        script_trigger_event(0, EVT_MSG_SELECTED, 0, v1->_18_script);
         while (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK))
             cursor_process_user_actions(v1, 0);
-        script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, v3);
+        script_trigger_event(0, EVT_MSG_DESELECTED, 0, v3);
     }
     if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK)
     {
@@ -1991,14 +1991,14 @@ void cursor_sidebar_handler(_428940_local *a1)
         if (!v1->_18_script || _47A5E0_mouse_input.cursor_dx_x256 || _47A5E0_mouse_input.cursor_dy_x256)
         {
             if (!dword_47A5A0)
-                script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47A734_sidebar_tooltips_task);
+                script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47A734_sidebar_tooltips_task);
             dword_47A5A0 = 10;
         }
         else if (dword_47A5A0 > 0 && !--dword_47A5A0)
         {
             v5 = v1->_18_script->sprite;
             if (v5)
-                script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, v5->param, _47A734_sidebar_tooltips_task);
+                script_trigger_event(0, EVT_MSG_SELECTED, v5->param, _47A734_sidebar_tooltips_task);
         }
     }
 }
@@ -2124,7 +2124,7 @@ void script_game_cursor_handler(Script *a1)
             dword_47A5A0 = 10;
             if (is_async_execution_supported)
                 goto LABEL_29;
-            script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47A734_sidebar_tooltips_task);
+            script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47A734_sidebar_tooltips_task);
         }
         if (!is_async_execution_supported)
         {
@@ -2206,7 +2206,7 @@ void script_game_cursor_handler(Script *a1)
                                                 v60->prev = &v62;
                                                 v62.next->prev = v60;
                                                 v62.next = v60;
-                                                script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v54->script);
+                                                script_trigger_event(0, EVT_MSG_SELECTED, 0, v54->script);
                                                 v61 = v54->player_side;
                                                 v62._38_are_owned_units_selected = v61 == player_side;
                                                 if (v61 == player_side)
