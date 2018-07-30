@@ -3700,7 +3700,7 @@ void entity_418290(Entity *a1)
     v1 = a1;
     a1->sprite->x_speed = 0;
     a1->sprite->y_speed = 0;
-    if (_47C048_unit_bomberdmg >= 200)
+    if (_47C048_num_attack_projectile_sprites >= 200)
     {
         a1->SetMode(entity_mode_418550);
         return;
@@ -3746,7 +3746,7 @@ void entity_418290(Entity *a1)
 void entity_mode_418550(Entity *a1)
 {
     --a1->pathing._2C_waypoint_map_x;
-    if (_47C048_unit_bomberdmg >= 200)
+    if (_47C048_num_attack_projectile_sprites >= 200)
         a1->pathing._2C_waypoint_map_x = 10;
     if (a1->pathing._2C_waypoint_map_x == 0)
         a1->SetMode(entity_mode_418590);
@@ -3802,9 +3802,9 @@ void entity_mode_418590(Entity *a1)
         entity_load_attack_mobd(v1, v3);
 
     v6 = v1->stats->dmg_source;
-    if (v6 && _47C048_unit_bomberdmg < 200)
+    if (v6 && _47C048_num_attack_projectile_sprites < 200)
     {
-        ++_47C048_unit_bomberdmg;
+        ++_47C048_num_attack_projectile_sprites;
         v7 = sprite_create_scripted(v6->mobd_id, v1->sprite, v6->dmg_handler, SCRIPT_COROUTINE, v1->stru60.ptr_0);
         v8 = v6->mobd_lookup_offset_flying;
         v9 = v7;
@@ -3855,7 +3855,7 @@ void entity_mode_418590(Entity *a1)
         }
     }
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (004187F0) --------------------------------------------------------
 void entity_4187F0(Entity *a1)
@@ -4908,5 +4908,65 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
         break;
     default:
         return;
+    }
+}
+
+
+//----- (00419DF0) --------------------------------------------------------
+void EventHandler_419DF0_unit_repairing_in_bay(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
+{
+    Entity *v4; // ecx@1
+
+    v4 = (Entity *)receiver->param;
+    if (!v4->destroyed)
+    {
+        switch (event)
+        {
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
+            break;
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
+            break;
+        case EVT_MSG_SHOW_UNIT_HINT:
+            entity_show_hint(v4);
+            break;
+        case EVT_MSG_ENTITY_DO_DAMAGE:
+            entity_41A510_evt1503(v4, (int)param);
+            break;
+        case EVT_CMD_ENTITY_MOVE:
+            entity_41A170_evt1524(v4, param);
+            break;
+        default:
+            return;
+        }
+    }
+}
+
+//----- (00419E80) --------------------------------------------------------
+void EventHandler_419E80_unit_in_repairbay(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
+{
+    Entity *v4; // ecx@1
+
+    v4 = (Entity *)receiver->param;
+    if (!v4->destroyed)
+    {
+        switch (event)
+        {
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
+            break;
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
+            break;
+        case EVT_MSG_SHOW_UNIT_HINT:
+            entity_show_hint(v4);
+            break;
+        case EVT_MSG_ENTITY_DO_DAMAGE:
+            entity_41A510_evt1503(v4, (int)param);
+            break;
+        default:
+            return;
+        }
     }
 }

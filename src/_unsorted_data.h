@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <list>
 
 #include "src/kknd.h"
@@ -630,7 +631,7 @@ extern int dword_47C018; // weak
 extern Script *receiver; // idb
 extern Script *task_47C028; // idb
 extern int dword_47C030; // weak
-extern int _47C048_unit_bomberdmg; // weak
+extern int _47C048_num_attack_projectile_sprites; // weak
 extern int _47C04C_num_explosions_max20; // weak
 extern stru175 _47C050_array[20];
 extern char byte_47C230[256]; // idb

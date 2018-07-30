@@ -567,8 +567,6 @@ bool entity_40DBF0_boxd_does_unit_fit(Entity *a1)
     }
     return 0;
 }
-// 478AAC: using guessed type int map_get_height();
-// 4793F8: using guessed type int map_get_width();
 
 //----- (0040DD00) --------------------------------------------------------
 bool entity_40DD00_boxd(Entity *a1)
@@ -585,7 +583,6 @@ bool entity_40DD00_boxd(Entity *a1)
     int v10; // edi@4
     int i; // ebp@4
     int v12; // esi@5
-    BOOL result; // eax@13
     unsigned int v14; // [sp+10h] [bp-Ch]@1
     Entity *a1a; // [sp+14h] [bp-8h]@1
     int v16; // [sp+18h] [bp-4h]@4
@@ -625,7 +622,7 @@ bool entity_40DD00_boxd(Entity *a1)
             if (v8 == 5)
                 break;
         }
-        result = 1;
+        return true;
     }
     else
     {
@@ -636,9 +633,8 @@ bool entity_40DD00_boxd(Entity *a1)
             if (v2 == v1)
                 goto LABEL_4;
         }
-        result = 0;
+        return false;
     }
-    return result;
 }
 
 //----- (0040DDD0) --------------------------------------------------------
@@ -1601,16 +1597,14 @@ int boxd_40ED00(Entity *a1, DataBoxd_stru0_per_map_unit *a2)
 bool boxd_40EDF0(DataBoxd_stru0_per_map_unit *a1, Entity *a2, Entity *a3)
 {
     Entity *v3; // eax@2
-    BOOL result; // eax@4
 
-    result = 1;
     if (a1->flags & 0x40)
     {
         v3 = a1->_4_entities[0];
         if (v3 != a2 && v3 != a3)
-            result = 0;
+            return false;
     }
-    return result;
+    return true;
 }
 
 //----- (0040EE10) --------------------------------------------------------
@@ -2325,23 +2319,16 @@ int boxd_41C060(int a1, Entity *a2, int a3, int a4, int *a5, int *a6, int *a7, i
 //----- (0041C130) --------------------------------------------------------
 bool boxd_41C130(int x, int y, int z, int w, Entity *entity)
 {
-    int v5; // esi@1
-    BOOL result; // eax@4
-
-    v5 = entity->stats->field_4C;
-    if (v5 == 128 || v5 == 512)
+    if (entity_is_infantry(entity) || entity_is_regular_vehicle(entity))
     {
-        result = boxd_41C190(x, y, z, w, entity);
+        return boxd_41C190(x, y, z, w, entity);
     }
     else if (entity_is_xl_vehicle(entity))
     {
-        result = boxd_41C250(x, y, z, w, entity);
+        return boxd_41C250(x, y, z, w, entity);
     }
-    else
-    {
-        result = 0;
-    }
-    return result;
+
+    return false;
 }
 
 //----- (0041C190) --------------------------------------------------------

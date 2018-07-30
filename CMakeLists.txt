@@ -25,10 +25,12 @@ set(PROJECT_VERSION "0.2.0")
 
 
 
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(CMAKE_CXX_FLAGS "-std=gnu++11 ${CMAKE_CXX_FLAGS}")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ ${CMAKE_CXX_FLAGS}")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    #debug include files
+    set(CMAKE_CXX_FLAGS "/showIncludes ${CMAKE_CXX_FLAGS}")
 endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
@@ -82,6 +84,19 @@ target_link_libraries(OpenKKND
 )
 
 
+set(COMPILE_OPTIONS_DEBUG "")
+set(COMPILE_OPTIONS_RELEASE "")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set(COMPILE_OPTIONS_DEBUG "-std=gnu++11 ${COMPILE_OPTIONS_DEBUG}")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  set(COMPILE_OPTIONS_DEBUG "-std=c++11 -stdlib=libc++ ${COMPILE_OPTIONS_DEBUG}")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+endif()
+
+target_compile_options(OpenKKND PUBLIC "$<$<CONFIG:DEBUG>:${COMPILE_OPTIONS_DEBUG}>")
+target_compile_options(OpenKKND PUBLIC "$<$<CONFIG:RELEASE>:${COMPILE_OPTIONS_RELEASE}>")
+
+
 # ----------------------
 # copy assets
 file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/assets" ASSETS_SRC_DIR)
@@ -90,5 +105,3 @@ add_custom_command(TARGET OpenKKND
     POST_BUILD
     COMMAND xcopy ${ASSETS_SRC_DIR} ${ASSETS_OUT_DIR} /S /E /Y /I
 )
-
-

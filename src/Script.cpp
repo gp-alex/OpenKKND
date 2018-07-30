@@ -1,7 +1,7 @@
 #include "src/Script.h"
 
-#include "src/kknd.h"
 #include "src/hexrays-defs.h"
+#include "src/kknd.h"
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 #include "src/ScriptEvent.h"

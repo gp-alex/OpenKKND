@@ -322,7 +322,7 @@ DrawJob *entity_402BB0_set_arrive_handler(Entity *a1, void(*mode_arrive)(Entity 
 	if (v2->player_side == player_side)
 		script_trigger_event(v2->script, EVT_MSG_NEXT_CONSTRUCTION_STATE, v2, task_mobd17_cursor);
 	v4 = v2->sprite;
-	v2->mode_arrive = mOde_arrive;
+	v2->mode_arrive = mode_arrive;
 	v5 = v4->_54_inside_mobd_ptr4->field_18;
 	if (v5)
 	{
@@ -3923,7 +3923,6 @@ bool sidebar_button_list_alloc()
 	int v1; // ecx@2
 	SidebarButton *v2; // eax@4
 	int v3; // ecx@5
-	BOOL result; // eax@7
 
 	v0 = (Sidebar *)malloc(0x4C0u);
 	sidebar_list = v0;
@@ -3957,14 +3956,13 @@ bool sidebar_button_list_alloc()
 		sidebar_button_list_4795A4 = (SidebarButton *)&sidebar_button_list_4795A0;
 		sidebar_button_list_item_width = 0x2000;
 		sidebar_button_list_sidebar_height = 0x2000;
-		result = 1;
+        return true;
 	}
 	else
 	{
-	LABEL_11:
-		result = 0;
+    LABEL_11:
+        return false;
 	}
-	return result;
 }
 
 //----- (0040F460) --------------------------------------------------------
@@ -4907,30 +4905,26 @@ void sidebar_list_free()
 }
 
 //----- (004103C0) --------------------------------------------------------
-bool stru2_list_alloc()
+bool stru2_list_alloc(const int num_stru2s = 16)
 {
-	stru2 *result; // eax@1
-	int v1; // edx@2
-
-	result = (stru2 *)malloc(0x180u);
-	stru2_list = result;
-	if (result)
+	if (stru2_list = new stru2[num_stru2s])
 	{
-		stru2_list_free_pool = result;
-		result->prev = (stru2 *)&stru2_list_free_pool;
-		v1 = 15;
-		do
+		stru2_list_free_pool = stru2_list;
+
+        auto stru2 = stru2_list;
+		stru2->prev = (stru2 *)&stru2_list_free_pool;
+		for (int i = 0; i < num_stru2s - 2; ++i)
 		{
-			--v1;
-			result->next = result + 1;
-			++result;
-		} while (v1);
-		result->next = (stru2 *)&stru2_list_free_pool;
+			stru2->next = stru2 + 1;
+			++stru2;
+		}
+        stru2->next = (stru2 *)&stru2_list_free_pool;
+
 		stru2_list_4795DC = (stru2 *)&stru2_list_4795D8;
 		stru2_list_4795D8 = (stru2 *)&stru2_list_4795D8;
-		result = (stru2 *)1;
+        return true;
 	}
-	return (BOOL)result;
+    return false;
 }
 
 //----- (00410410) --------------------------------------------------------
@@ -6089,148 +6083,6 @@ void stru26_stru27_free()
 	} while ((stru27 *)v2 != _479740_stru27_array);
 }
 
-//----- (00411420) --------------------------------------------------------
-int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
-{
-	int result; // eax@4
-	HWND v5; // eax@17
-	struct tagPOINT Point; // [sp+Ch] [bp-60h]@7
-	struct tagPOINT v7; // [sp+14h] [bp-58h]@7
-	RECT v8; // [sp+1Ch] [bp-50h]@7
-	struct tagPAINTSTRUCT Paint; // [sp+2Ch] [bp-40h]@5
-
-		switch (Msg)
-		{
-		case WM_ERASEBKGND:
-			return 1;
-		case WM_ACTIVATEAPP:
-			if (!is_render_window_initialized || global_fullscreen != 1)
-				goto LABEL_18;
-			if (wParam)
-			{
-				ShowWindow(hWnd, 3);
-				/*if (!RenderDD_initialized)
-				{
-					_431C40_on_WM_ACTIVATEAPP_software_render();
-					return DefWindowProcA(hWnd, Msg, wParam, lParam);
-				}*/
-			}
-			else if (GetForegroundWindow() != hWnd)
-			{
-				ShowWindow(hWnd, 6);
-				v5 = GetDesktopWindow();
-				SetForegroundWindow(v5);
-			}
-		LABEL_18:
-			result = DefWindowProcA(hWnd, Msg, wParam, lParam);
-			break;
-		case WM_KEYUP:
-		case WM_SYSKEYUP:
-			wnd_proc_pressed_key_id = -1;
-			return 0;
-		case WM_SYSCOMMAND:
-			if (wParam == 61760)
-				result = 0;
-			else
-				result = DefWindowProcA(hWnd, Msg, wParam, lParam);
-			return result;
-		case WM_KEYFIRST:
-		case WM_SYSKEYDOWN:
-			wnd_proc_pressed_key_id = wParam;
-			return 0;
-		case WM_CHAR:
-		case WM_DEADCHAR:
-		case WM_SYSCHAR:
-		case WM_SYSDEADCHAR:
-			return 0;
-
-        case WM_PAINT:
-            BeginPaint(hWnd, &Paint);
-            {
-                Point = *(struct tagPOINT *)&Paint.rcPaint.left;
-                v7 = *(struct tagPOINT *)&Paint.rcPaint.right;
-                ClientToScreen(hWnd, &Point);
-                ClientToScreen(hWnd, &v7);
-                *(struct tagPOINT *)&v8.left = Point;
-                *(struct tagPOINT *)&v8.right = v7;
-
-                render_on_wm_paint(&v8);
-            }
-            EndPaint(hWnd, &Paint);
-            result = 1;
-            break;
-
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            result = 0;
-            break;
-
-		default:
-            result = DefWindowProcA(hWnd, Msg, wParam, lParam);
-            break;
-		}
-
-    return result;
-}
-
-//----- (00419DF0) --------------------------------------------------------
-void EventHandler_419DF0_unit_repairing_in_bay(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
-{
-	Entity *v4; // ecx@1
-
-	v4 = (Entity *)receiver->param;
-	if (!v4->destroyed)
-	{
-		switch (event)
-		{
-		case EVT_MSG_SELECTED:
-			entity_selected_default(v4);
-			break;
-		case EVT_MSG_DESELECTED:
-			entity_deselected_default(v4);
-			break;
-		case EVT_MSG_SHOW_UNIT_HINT:
-			entity_show_hint(v4);
-			break;
-		case EVT_MSG_ENTITY_DO_DAMAGE:
-			entity_41A510_evt1503(v4, (int)param);
-			break;
-		case EVT_CMD_ENTITY_MOVE:
-			entity_41A170_evt1524(v4, param);
-			break;
-		default:
-			return;
-		}
-	}
-}
-
-//----- (00419E80) --------------------------------------------------------
-void EventHandler_419E80_unit_in_repairbay(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
-{
-	Entity *v4; // ecx@1
-
-	v4 = (Entity *)receiver->param;
-	if (!v4->destroyed)
-	{
-		switch (event)
-		{
-		case EVT_MSG_SELECTED:
-			entity_selected_default(v4);
-			break;
-		case EVT_MSG_DESELECTED:
-			entity_deselected_default(v4);
-			break;
-		case EVT_MSG_SHOW_UNIT_HINT:
-			entity_show_hint(v4);
-			break;
-		case EVT_MSG_ENTITY_DO_DAMAGE:
-			entity_41A510_evt1503(v4, (int)param);
-			break;
-		default:
-			return;
-		}
-	}
-}
 
 //----- (0041A060) --------------------------------------------------------
 void entity_41A060_evt1525(Entity *a1, void *param)
@@ -6809,58 +6661,55 @@ bool _41B070_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	return 0;
 }
 
+
+bool stru1_list_init(int window_width, int window_height, const int num_stru1s = 7) {
+    stru1_list = new stru1_draw_params[num_stru1s];
+    if (stru1_list)
+    {
+        for (int i = 0; i < num_stru1s; ++i) {
+            stru1_list[i].next = &stru1_list[i + 1];
+        }
+
+        stru1_list[6].next = nullptr;
+        stru1_list_free_pool = stru1_list;
+        default_stru1.prev = &default_stru1;
+        default_stru1.next = &default_stru1;
+        default_stru1.field_8 = 0;
+        default_stru1.anim_pos = 0x80000000;
+        default_stru1.clip_y = 0;
+        default_stru1.clip_x = 0;
+        default_stru1.clip_z = window_width;
+        default_stru1.clip_w = window_height;
+        default_stru1.field_20 = 0;
+        is_render_window_initialized = 1;
+
+        return true;
+    }
+    return false;
+}
+
 //----- (0041B0E0) --------------------------------------------------------
 bool LVL_SysInit()
 {
-	BOOL result; // eax@1
-
 	currently_running_lvl_sections = 0;
-	result = stru2_list_alloc();
-	if (result)
+	if (stru2_list_alloc())
 	{
         int window_width = 640;
-        int windiw_height = 480;
+        int window_height = 480;
         bool fullsreen = false;
 
-		result = render_create_window(window_width, windiw_height, 8, 1, fullsreen);
-        if (result) {
-            bool v10 = render_init_dd();
-            if (v10) {
-                auto v15 = (stru1_draw_params *)malloc(0xFCu);
-                stru1_list = v15;
-                if (v15)
-                {
-                    auto v16 = 0;
-                    do
-                    {
-                        v15[v16].next = &v15[v16 + 1];          // chain
-                                                                // [0] -> [1] -> [2] -> [3] -> [4] -> [5] -> [6]
-                        v15 = stru1_list;
-                        ++v16;
-                    } while (v16 < 6);
-                    stru1_list[6].next = 0;
-                    stru1_list_free_pool = stru1_list;
-                    default_stru1.prev = &default_stru1;
-                    default_stru1.next = &default_stru1;
-                    default_stru1.field_8 = 0;
-                    default_stru1.anim_pos = 0x80000000;
-                    default_stru1.clip_y = 0;
-                    default_stru1.clip_x = 0;
-                    default_stru1.clip_z = window_width;
-                    default_stru1.clip_w = windiw_height;
-                    default_stru1.field_20 = 0;
-                    is_render_window_initialized = 1;
-                }
-
-                if (is_render_window_initialized)
+        if (render_create_window(window_width, window_height, 8, 1, fullsreen)) {
+            if (render_init_dd()) {
+                if (stru1_list_init(window_width, window_height))
                 {
                     game_window_created = 1;
-                    result = sound_initialize() != 0;
+                    return sound_initialize() != false;
                 }
             }
         }
 	}
-	return result;
+
+	return false;
 }
 
 //----- (0041B140) --------------------------------------------------------
@@ -6912,10 +6761,6 @@ DataHunk *LVL_LoadLevel(const char *filename_)
 //----- (0041B1A0) --------------------------------------------------------
 bool LVL_RunLevel(DataHunk *lvl)
 {
-	BOOL result; // eax@1
-	DataSectionOffset *v2; // eax@2
-
-	result = 0;
 	_479DE8_boxd_initialized = 0;
 	_479DCC_cplc_initialized = 0;
 	_479DC0_render_string_list_initialized = 0;
@@ -6931,58 +6776,45 @@ bool LVL_RunLevel(DataHunk *lvl)
 	dword_479DBC = 0;
 	if (!currently_running_lvl_sections)
 	{
-		v2 = lvl->section_table;
 		currently_running_lvl = lvl;
-		currently_running_lvl_sections = v2;
-		result = script_list_alloc();
-		if (result)
+		currently_running_lvl_sections = lvl->section_table;
+		if (script_list_alloc())
 		{
 			is_task_list_initialized = 1;
-			result = timer_init(60u);
-			if (result)
+			if (timer_init(60u))
 			{
 				timer_initialized = 1;
-				result = array_479B98_array_479C60_init();
-				if (result)
+				if (array_479B98_array_479C60_init())
 				{
 					dword_479DBC = 1;
-					result = stru2_list_init_elements();
-					if (result)
+					if (stru2_list_init_elements())
 					{
 						stru2_list_elements_initialized = 1;
-						result = draw_list_alloc();
-						if (result)
+						if (draw_list_alloc())
 						{
 							draw_list_initialized = 1;
-							result = LVL_InitMapd();
-							if (result)
+							if (LVL_InitMapd())
 							{
 								_479DF0_mapd_initialized = 1;
-								result = sprite_list_alloc();
-								if (result)
+								if (sprite_list_alloc())
 								{
 									_479DD0_mobd_initialized = 1;
-									result = boxd_init();
-									if (result)
+									if (boxd_init())
 									{
 										_479DE8_boxd_initialized = 1;
-										result = cplc_init();
-										if (result)
+										if (cplc_init())
 										{
 											_479DCC_cplc_initialized = 1;
-											result = render_string_list_alloc();
-											if (result)
+											if (render_string_list_alloc())
 											{
 												_479DC0_render_string_list_initialized = 1;
-												result = stru1_init_anim();
-												if (result)
+												if (stru1_init_anim())
 												{
 													stru1_global_obj_anim_initialized = 1;
-													result = input_initialize();
-													if (result)
+													if (input_initialize())
 													{
 														input_initialized = 1;
-														result = 1;
+                                                        return true;
 													}
 												}
 											}
@@ -6996,21 +6828,8 @@ bool LVL_RunLevel(DataHunk *lvl)
 			}
 		}
 	}
-	return result;
+	return false;
 }
-// 479DB8: using guessed type int is_task_list_initialized;
-// 479DBC: using guessed type int dword_479DBC;
-// 479DC0: using guessed type int _479DC0_render_string_list_initialized;
-// 479DC4: using guessed type int draw_list_initialized;
-// 479DCC: using guessed type int _479DCC_cplc_initialized;
-// 479DD0: using guessed type int _479DD0_mobd_initialized;
-// 479DD4: using guessed type int timer_initialized;
-// 479DD8: using guessed type int input_initialized;
-// 479DE0: using guessed type int stru1_global_obj_anim_initialized;
-// 479DE4: using guessed type int game_window_created;
-// 479DE8: using guessed type int _479DE8_boxd_initialized;
-// 479DEC: using guessed type int stru2_list_elements_initialized;
-// 479DF0: using guessed type int _479DF0_mapd_initialized;
 
 //----- (0041B2E0) --------------------------------------------------------
 void LVL_Deinit()
@@ -7055,19 +6874,6 @@ void LVL_Deinit()
 	currently_running_lvl = 0;
 	currently_running_lvl_sections = 0;
 }
-// 479DB8: using guessed type int is_task_list_initialized;
-// 479DBC: using guessed type int dword_479DBC;
-// 479DC0: using guessed type int _479DC0_render_string_list_initialized;
-// 479DC4: using guessed type int draw_list_initialized;
-// 479DCC: using guessed type int _479DCC_cplc_initialized;
-// 479DD0: using guessed type int _479DD0_mobd_initialized;
-// 479DD4: using guessed type int timer_initialized;
-// 479DD8: using guessed type int input_initialized;
-// 479DE0: using guessed type int stru1_global_obj_anim_initialized;
-// 479DE4: using guessed type int game_window_created;
-// 479DE8: using guessed type int _479DE8_boxd_initialized;
-// 479DEC: using guessed type int stru2_list_elements_initialized;
-// 479DF0: using guessed type int _479DF0_mapd_initialized;
 
 //----- (0041B3F0) --------------------------------------------------------
 void GAME_Deinit()
@@ -7104,13 +6910,10 @@ void *LVL_FindSection(const char *name)
 			if (!currently_running_lvl_sections[++v3].ptr)
 				return 0;
 		}
-		result = currently_running_lvl_sections[v3].ptr;
+		return currently_running_lvl_sections[v3].ptr;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+
+    return nullptr;
 }
 
 //----- (0041B470) --------------------------------------------------------
@@ -7125,7 +6928,6 @@ bool LVL_SubstHunk(DataHunk *dst, DataHunk *src, const char *hunk)
 	DataSectionOffset *dst_hunk_name; // eax@8
 	DataSectionOffset *v10; // esi@8
 	void *v11; // ecx@10
-	BOOL result; // eax@11
 	DataSectionOffset *dst_hunk_tAble; // [sp+10h] [bp-4h]@1
 
 	src_hunk_name = src->section_table;
@@ -7159,13 +6961,9 @@ bool LVL_SubstHunk(DataHunk *dst, DataHunk *src, const char *hunk)
 				return 0;
 		}
 		dst_hunk_tAble[dst_hunk_idx].ptr = src_hunk_items;
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+    return false;
 }
 
 //----- (0041B510) --------------------------------------------------------
@@ -7535,44 +7333,34 @@ bool is_game_saving()
 {
 	return game_save_in_progress;
 }
-// 479FC0: using guessed type int game_save_in_progress;
 
 //----- (0041CAE0) --------------------------------------------------------
 bool _41CAE0_prepare_to_load_level(const char *a1, enum LEVEL_ID level)
 {
-	BOOL result; // eax@3
+    if (game_load_in_progress || game_save_in_progress) {
+        return false;
+    }
 
-	if (game_load_in_progress || game_save_in_progress)
-	{
-		result = 0;
-	}
-	else
-	{
-        strcpy(current_savegame_filename, a1);
-		game_saveload_level_idx = level;
-		game_load_in_progress = 1;
-        result = 1;
-	}
-	return result;
+    strcpy(current_savegame_filename, a1);
+    game_saveload_level_idx = level;
+    game_load_in_progress = 1;
+    return true;
 }
 
 //----- (0041CB30) --------------------------------------------------------
 bool _41CB30_prepare_to_save_level(const char *a1, enum LEVEL_ID level)
 {
-	BOOL result; // eax@3
-
 	if (game_load_in_progress || game_save_in_progress)
 	{
-		result = 0;
+        return false;
 	}
 	else
 	{
         strcpy(current_savegame_filename, a1);
-		result = 1;
 		game_saveload_level_idx = level;
 		game_save_in_progress = 1;
+        return true;
 	}
-	return result;
 }
 
 //----- (0041CB80) --------------------------------------------------------
@@ -7620,66 +7408,62 @@ OilDepositSaveStruct *GAME_Save_PackOilData(size_t *oil_data_size)
 //----- (0041CC20) --------------------------------------------------------
 int GAME_Load_UnpackOilData(OilDepositSaveStruct *a1)
 {
-	OilDepositSaveStruct *v1; // edi@1
-	OilDeposit *v2; // esi@2
-	Sprite *v3; // eax@6
-	int *v4; // edi@7
-	int v5; // eax@7
-	int v6; // edx@9
-	_DWORD *v7; // edi@9
-	int v8; // ecx@9
-	int v9; // edx@9
-	OilDeposit *v10; // eax@9
-	OilDeposit *v11; // ecx@9
-	int result; // eax@10
+    OilDepositSaveStruct *v1; // edi@1
+    OilDeposit *v2; // esi@2
+    Sprite *v3; // eax@6
+    int *v4; // edi@7
+    int v5; // eax@7
+    int v6; // edx@9
+    _DWORD *v7; // edi@9
+    int v8; // ecx@9
+    int v9; // edx@9
+    OilDeposit *v10; // eax@9
+    OilDeposit *v11; // ecx@9
 
-	v1 = a1;
-	if (a1->field_0 == -1)
-	{
-		result = 1;
-	}
-	else
-	{
-		while (1)
-		{
-			v2 = oilspot_list_free_pool;
-			if (oilspot_list_free_pool)
-				oilspot_list_free_pool = oilspot_list_free_pool->next;
-			else
-				v2 = 0;
-			if (!v2)
-				break;
-			v3 = sprite_create_scripted(MOBD_OIL_PATCH, 0, UNIT_Handler_OilPatch, SCRIPT_COROUTINE, 0);
-			v2->sprite = v3;
-			if (!v3)
-				break;
-			v4 = &v1->width_x256;
-			v3->script->param = v2;
-			v5 = *(v4 - 1);
-			v2->oil_left = v5;
-			if (v5 <= 0)
-				v2->sprite->drawjob->flags |= 0x40000000u;
-			v6 = *v4;
-			v7 = v4 + 1;
-			v2->sprite->x = v6;
-			v8 = *v7;
-			++v7;
-			v2->sprite->y = v8;
-			v9 = *v7;
-			v1 = (OilDepositSaveStruct *)(v7 + 1);
-			v2->drillrig_entity_id = v9;
-			v10 = oildeposit_list_end;
-			v11 = oildeposit_list_end->next;
-			v2->prev = oildeposit_list_end;
-			v2->next = v11;
-			v10->next->prev = v2;
-			v10->next = v2;
-			if (v1->field_0 == -1)
-				return 1;
-		}
-		result = 0;
-	}
-	return result;
+    v1 = a1;
+    if (a1->field_0 == -1)
+    {
+        return 1;
+    }
+
+    while (1)
+    {
+        v2 = oilspot_list_free_pool;
+        if (oilspot_list_free_pool)
+            oilspot_list_free_pool = oilspot_list_free_pool->next;
+        else
+            v2 = 0;
+        if (!v2)
+            break;
+        v3 = sprite_create_scripted(MOBD_OIL_PATCH, 0, UNIT_Handler_OilPatch, SCRIPT_COROUTINE, 0);
+        v2->sprite = v3;
+        if (!v3)
+            break;
+        v4 = &v1->width_x256;
+        v3->script->param = v2;
+        v5 = *(v4 - 1);
+        v2->oil_left = v5;
+        if (v5 <= 0)
+            v2->sprite->drawjob->flags |= 0x40000000u;
+        v6 = *v4;
+        v7 = v4 + 1;
+        v2->sprite->x = v6;
+        v8 = *v7;
+        ++v7;
+        v2->sprite->y = v8;
+        v9 = *v7;
+        v1 = (OilDepositSaveStruct *)(v7 + 1);
+        v2->drillrig_entity_id = v9;
+        v10 = oildeposit_list_end;
+        v11 = oildeposit_list_end->next;
+        v2->prev = oildeposit_list_end;
+        v2->next = v11;
+        v10->next->prev = v2;
+        v10->next = v2;
+        if (v1->field_0 == -1)
+            return 1;
+    }
+    return 0;
 }
 
 //----- (0041CCE0) --------------------------------------------------------
@@ -7692,7 +7476,6 @@ bool GAME_Save_PackEntity(Entity *entity, int save_data, int save_data_size)
 	int v7; // eax@3
 	int v8; // ecx@4
 	Script *v9; // esi@9
-	BOOL result; // eax@10
 	EntityTurret *v19; // eax@25
 	Script *v21; // edi@26
 	Entity *v29; // ecx@43
@@ -8226,7 +8009,6 @@ bool GAME_Save_PackSprite(Sprite *a1, SpriteSerialized *out)
 {
     DataMobdItem_stru0 **v2; // eax@1
 	DataMobdItem_stru0 *v3; // eax@4
-	BOOL result; // eax@5
 
 	out->mobd_idx = a1->mobd_id;
 	out->x = a1->x;
@@ -8245,15 +8027,13 @@ bool GAME_Save_PackSprite(Sprite *a1, SpriteSerialized *out)
 	{
 		out->_54_inside_mobd_ptr4 = (char *)v3 - (char *)currently_running_lvl_mobd[out->mobd_idx].items;
 		out->_60_mobd_anim_speed = a1->_60_mobd_anim_speed;
-		result = 1;
 	}
 	else
 	{
 		out->_54_inside_mobd_ptr4 = -1;
 		out->_60_mobd_anim_speed = a1->_60_mobd_anim_speed;
-		result = 1;
 	}
-	return result;
+    return true;
 }
 
 //----- (0041E8E0) --------------------------------------------------------
@@ -10344,117 +10124,114 @@ MiscSaveStruct *GAME_Save_PackMiscInfo(size_t *a1)
 //----- (00420E30) --------------------------------------------------------
 bool GAME_Load_UnpackMiscInfo(void *save_data)
 {
-	void *v1; // ebx@1
-	int v3; // ecx@1
-	_DWORD *v6; // esi@8
-	unsigned int v8; // eax@15
-	void(*v9)(Script *); // edx@17
-	BOOL result; // eax@20
+    void *v1; // ebx@1
+    int v3; // ecx@1
+    _DWORD *v6; // esi@8
+    unsigned int v8; // eax@15
+    void(*v9)(Script *); // edx@17
 
-	task_sidebar_attachment *v13; // esi@28
-	unsigned int v14; // eax@29
-	Script *v15; // eax@35
+    task_sidebar_attachment *v13; // esi@28
+    unsigned int v14; // eax@29
+    Script *v15; // eax@35
 
-	v1 = save_data;
-	memcpy(&_47A608_stru13_associated_array, (char *)save_data + 4, sizeof(_47A608_stru13_associated_array));
-	_47B3E0_unit_int_outpost_clanhall = *((_DWORD *)save_data + 12);
-	memcpy(&_47B3E0_outpost_levels, (char *)save_data + 52, sizeof(_47B3E0_outpost_levels));
-	max_outpost_level = *((_DWORD *)save_data + 22);
-	memcpy(&_477378_clanhall, (char *)save_data + 92, sizeof(_477378_clanhall));
-	max_clanhall_level = *((_DWORD *)save_data + 32);
-	memcpy(&_47739C_machineshop, (char *)save_data + 132, sizeof(_47739C_machineshop));
-	max_machineshop_level = *((_DWORD *)save_data + 42);
-	memcpy(&_477318_beastenclosure, (char *)save_data + 172, sizeof(_477318_beastenclosure));
-	max_beastenclosure_level = *((_DWORD *)save_data + 52);
-	memcpy(&_47C978_production, (char *)save_data + 212, sizeof(_47C978_production));
-	UNIT_num_player_units = *((_DWORD *)save_data + 59);
-	UNIT_num_nonplayer_units = *((_DWORD *)save_data + 60);
-	num_players_towers = *((_DWORD *)save_data + 61);
-	_4269B0_task_attachment__4_some_task_flags = *((_DWORD *)save_data + 93);
-	_47A3D0_unit = *((_DWORD *)save_data + 62);
-	_47A3D4_tanker_convoy_units_left = *((_DWORD *)save_data + 63);
-	_47A3D8_num_convoy_tankers_still_to_arrive = *((_DWORD *)save_data + 64);
+    v1 = save_data;
+    memcpy(&_47A608_stru13_associated_array, (char *)save_data + 4, sizeof(_47A608_stru13_associated_array));
+    _47B3E0_unit_int_outpost_clanhall = *((_DWORD *)save_data + 12);
+    memcpy(&_47B3E0_outpost_levels, (char *)save_data + 52, sizeof(_47B3E0_outpost_levels));
+    max_outpost_level = *((_DWORD *)save_data + 22);
+    memcpy(&_477378_clanhall, (char *)save_data + 92, sizeof(_477378_clanhall));
+    max_clanhall_level = *((_DWORD *)save_data + 32);
+    memcpy(&_47739C_machineshop, (char *)save_data + 132, sizeof(_47739C_machineshop));
+    max_machineshop_level = *((_DWORD *)save_data + 42);
+    memcpy(&_477318_beastenclosure, (char *)save_data + 172, sizeof(_477318_beastenclosure));
+    max_beastenclosure_level = *((_DWORD *)save_data + 52);
+    memcpy(&_47C978_production, (char *)save_data + 212, sizeof(_47C978_production));
+    UNIT_num_player_units = *((_DWORD *)save_data + 59);
+    UNIT_num_nonplayer_units = *((_DWORD *)save_data + 60);
+    num_players_towers = *((_DWORD *)save_data + 61);
+    _4269B0_task_attachment__4_some_task_flags = *((_DWORD *)save_data + 93);
+    _47A3D0_unit = *((_DWORD *)save_data + 62);
+    _47A3D4_tanker_convoy_units_left = *((_DWORD *)save_data + 63);
+    _47A3D8_num_convoy_tankers_still_to_arrive = *((_DWORD *)save_data + 64);
 
-	v3 = *((_DWORD *)save_data + 65);
-	entity_scout = entityRepo->FindById(v3);
-	if (entity_scout)
-	{
-		sprite_create_scripted(
+    v3 = *((_DWORD *)save_data + 65);
+    entity_scout = entityRepo->FindById(v3);
+    if (entity_scout)
+    {
+        sprite_create_scripted(
             MOBD_CURSORS, 0, script_426710_mission_objectives_draw_x_mark, SCRIPT_COROUTINE, 0
         );
-	}
+    }
 
-	v6 = (int *)((int)v1 + 264);
-	for (int i = 0; i < 4; ++i) {
+    v6 = (int *)((int)v1 + 264);
+    for (int i = 0; i < 4; ++i) {
         _47B3C0_player_outposts_clanhalls[i] = entityRepo->FindById(*v6);
-		++v6;
-	}
-	_47CA2C_should_airstrike_mess_with_sidebar = *((_DWORD *)v1 + 72);
-	v8 = *((_DWORD *)v1 + 86);
+        ++v6;
+    }
+    _47CA2C_should_airstrike_mess_with_sidebar = *((_DWORD *)v1 + 72);
+    v8 = *((_DWORD *)v1 + 86);
     v9 = (void(*)(Script *))get_handler(v8 - 1);
-	if (v9)
-	{
-		result = (BOOL)script_create_function(*((enum SCRIPT_TYPE *)v1 + 85), v9);
-		if (result)
-		{
-			*(_DWORD *)(result + 52) = (int)get_handler(*((_DWORD *)v1 + 87) - 1);
-			*(_DWORD *)(result + 32) = *((_DWORD *)v1 + 88);
-			*(_DWORD *)(result + 20) = *((_DWORD *)v1 + 89);
-			*(_DWORD *)(result + 36) = *((_DWORD *)v1 + 90);
-			*(_DWORD *)(result + 40) = *((_DWORD *)v1 + 91);
-			*(_DWORD *)(result + 44) = *((_DWORD *)v1 + 92);
-		}
-	}
-	else
-	{
-		result = 0;
-	}
-	_47C970_sidebar_task = (Script *)result;
-	if (result)
-	{
-		result = (BOOL)script_create_local_object((Script *)result, 20);
-		v13 = (task_sidebar_attachment *)result;
-		if (result)
-		{
-			*(_DWORD *)(result + 16) = (int)_47C970_sidebar_task;
-			v14 = *((_DWORD *)v1 + 73) - 1;
-			v13->handler = (void *)get_handler(v14);
-			if (v13->handler)
-			{
-				v13->field_4 = *((_DWORD *)v1 + 74);
-				result = (BOOL)GAME_Load_UnpackSprite((SpriteSerialized *)((char *)v1 + 300));
-				v13->_8_sprite = (Sprite *)result;
-				if (result)
-				{
-					v15 = v13->__47C970_sidebar_task;
-					v13->_C_sprite_sidebar = _47CA08_sidebar_buttons[1]->sprite;
-					v15->param = v13;
-					v13->__47C970_sidebar_task->sprite = v13->_8_sprite;
-					v13->_8_sprite->script = v13->__47C970_sidebar_task;
-					v13->_C_sprite_sidebar->field_88_unused = 1;
-					v13->_C_sprite_sidebar->x = 155648;
-					v13->_C_sprite_sidebar->field_88_unused = 1;
-					v13->_C_sprite_sidebar->y = 73728;
-					v13->_C_sprite_sidebar->z_index = 2;
-					v13->_8_sprite->field_88_unused = 1;
-					v13->_8_sprite->x = 156672;
-					v13->_8_sprite->field_88_unused = 1;
-					v13->_8_sprite->y = 79872;
-					v13->_8_sprite->z_index = 3;
-					v13->_8_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-					if (v13->field_4 <= 1)
-						v13->_8_sprite->drawjob->flags |= 0x40000000u;
-					if (v13->field_4 > 0)
-						script_trigger_event(0, EVT_MSG_1514, 0, _47CA08_sidebar_buttons[1]->task);
-					v13->_8_sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
-					v13->_8_sprite->drawjob->flags |= 0x10000000u;
-					sprite_4272E0_load_mobd_item(v13->_8_sprite, 2276, 0);
-					result = stru13construct_list_saveload_unpack((int)v1 + 376, *(_DWORD *)v1) != 0;
-				}
-			}
-		}
-	}
-	return result;
+    if (v9)
+    {
+        _47C970_sidebar_task = script_create_function(*((enum SCRIPT_TYPE *)v1 + 85), v9);
+        auto result = (long)_47C970_sidebar_task;
+        if (result)
+        {
+            *(_DWORD *)(result + 52) = (int)get_handler(*((_DWORD *)v1 + 87) - 1);
+            *(_DWORD *)(result + 32) = *((_DWORD *)v1 + 88);
+            *(_DWORD *)(result + 20) = *((_DWORD *)v1 + 89);
+            *(_DWORD *)(result + 36) = *((_DWORD *)v1 + 90);
+            *(_DWORD *)(result + 40) = *((_DWORD *)v1 + 91);
+            *(_DWORD *)(result + 44) = *((_DWORD *)v1 + 92);
+        }
+    }
+    else
+    {
+        _47C970_sidebar_task = 0;
+        return false;
+    }
+
+    v13 = (task_sidebar_attachment *)script_create_local_object(_47C970_sidebar_task, 20);
+    if (v13)
+    {
+        *(_DWORD *)((long)v13 + 16) = (int)_47C970_sidebar_task;
+        v14 = *((_DWORD *)v1 + 73) - 1;
+        v13->handler = (void *)get_handler(v14);
+        if (v13->handler)
+        {
+            v13->field_4 = *((_DWORD *)v1 + 74);
+            v13->_8_sprite = GAME_Load_UnpackSprite((SpriteSerialized *)((char *)v1 + 300));
+            if (v13->_8_sprite)
+            {
+                v15 = v13->__47C970_sidebar_task;
+                v13->_C_sprite_sidebar = _47CA08_sidebar_buttons[1]->sprite;
+                v15->param = v13;
+                v13->__47C970_sidebar_task->sprite = v13->_8_sprite;
+                v13->_8_sprite->script = v13->__47C970_sidebar_task;
+                v13->_C_sprite_sidebar->field_88_unused = 1;
+                v13->_C_sprite_sidebar->x = 155648;
+                v13->_C_sprite_sidebar->field_88_unused = 1;
+                v13->_C_sprite_sidebar->y = 73728;
+                v13->_C_sprite_sidebar->z_index = 2;
+                v13->_8_sprite->field_88_unused = 1;
+                v13->_8_sprite->x = 156672;
+                v13->_8_sprite->field_88_unused = 1;
+                v13->_8_sprite->y = 79872;
+                v13->_8_sprite->z_index = 3;
+                v13->_8_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+                if (v13->field_4 <= 1)
+                    v13->_8_sprite->drawjob->flags |= 0x40000000u;
+                if (v13->field_4 > 0)
+                    script_trigger_event(0, EVT_MSG_1514, 0, _47CA08_sidebar_buttons[1]->task);
+                v13->_8_sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
+                v13->_8_sprite->drawjob->flags |= 0x10000000u;
+                sprite_4272E0_load_mobd_item(v13->_8_sprite, 2276, 0);
+                return stru13construct_list_saveload_unpack((int)v1 + 376, *(_DWORD *)v1) != 0;
+            }
+        }
+    }
+
+    return false;
 }
 
 //----- (004211D0) --------------------------------------------------------
@@ -14304,7 +14081,6 @@ void stru37_stru38_list_free()
 //----- (004280A0) --------------------------------------------------------
 void script_4280A0_stru38_list__production_loop(Script *task)
 {
-	BOOL v1; // eax@1
 	stru38 *v2; // edi@1
 	stru37 *v3; // esi@2
 	int v4; // ebp@2
@@ -14324,11 +14100,9 @@ void script_4280A0_stru38_list__production_loop(Script *task)
 	stru37 **v18; // ecx@33
 	int v19; // eax@33
 	stru38 *v20; // eax@34
-	BOOL i; // [sp+0h] [bp-4h]@1
 
-	v1 = _44CDC0_sidebar_is_units_limit();
 	v2 = stru38_list_47A4B0;
-	for (i = v1; (stru38 **)v2 != &stru38_list_47A4B0; v2 = v2->next)
+	for (bool i = _44CDC0_sidebar_is_units_limit(); (stru38 **)v2 != &stru38_list_47A4B0; v2 = v2->next)
 	{
 		v3 = v2->pstru37;
 		v4 = 0;
@@ -14475,7 +14249,6 @@ bool stru13construct_list_alloc()
 {
 	stru13construct *v0; // eax@1
 	int v1; // ecx@2
-	BOOL result; // eax@4
 
 	memset(&_47A608_stru13_associated_array, 0, sizeof(_47A608_stru13_associated_array));
 	v0 = (stru13construct *)malloc(0x400u);
@@ -14493,13 +14266,9 @@ bool stru13construct_list_alloc()
 		stru13construct_list[31].next = 0;
 		stru13construct_list_47A638 = (stru13construct *)&stru13construct_list_47A638;
 		stru13construct_list_47A63C = (stru13construct *)&stru13construct_list_47A638;
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+    return false;
 }
 
 //----- (004287A0) --------------------------------------------------------
@@ -25067,9 +24836,9 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 				v1->stats_attachment_point->mobd_lookup_offset_attack,
 				_47D3C4_entity_mobd_lookup_ids[v2 + 1]);
 			v4 = v1->stats_attachment_point->dmg_source;
-			if (v4 && _47C048_unit_bomberdmg < 200 && !v1->field_18)
+			if (v4 && _47C048_num_attack_projectile_sprites < 200 && !v1->field_18)
 			{
-				++_47C048_unit_bomberdmg;
+				++_47C048_num_attack_projectile_sprites;
 				v5 = sprite_create_scripted(v4->mobd_id, v1->turret_sprite, v4->dmg_handler, SCRIPT_COROUTINE, v1->ptr_24);
 				v6 = v4->mobd_lookup_offset_flying;
 				v7 = v5;
@@ -25137,7 +24906,7 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 		v1->handler = tower_attachment_handler_4489B0;
 	}
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00448E90) --------------------------------------------------------
 void tower_attachment_handler_448E90(EntityTurret *a1)
@@ -25995,7 +25764,7 @@ int UNIT_Init()
 	int result; // eax@20
 
 	_47DCC4_entity_id_counter = 0;
-	_47C048_unit_bomberdmg = 0;
+	_47C048_num_attack_projectile_sprites = 0;
 	_4269B0_task_attachment__4_some_task_flags = 0;
 	UNIT_num_player_units = 0;
 	UNIT_num_nonplayer_units = 0;

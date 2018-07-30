@@ -1,6 +1,6 @@
 #pragma once
 
-#include <windows.h>
+//#include <windows.h>
 
 #include "src/hexrays-defs.h"
 #include "src/Render.h"

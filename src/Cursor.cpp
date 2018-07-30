@@ -2029,8 +2029,8 @@ void script_game_cursor_handler(Script *a1)
     DataMobdItem_stru1 *v19; // eax@56
     int v20; // ecx@57
     int v21; // edx@57
-    BOOL v22; // edi@57
-    BOOL v23; // edi@66
+    bool v22; // edi@57
+    bool v23; // edi@66
     UnitAttachmentPoint *v24; // eax@66
     Entity *v32; // esi@96
     enum UNIT_ID v33; // eax@98

@@ -717,9 +717,9 @@ void EntityTowerAttachment_handler_447FA0(EntityTurret *a1)
 
     v1 = a1;
     v2 = a1->stats_attachment_point->dmg_source;
-    if (v2 && _47C048_unit_bomberdmg < 200)
+    if (v2 && _47C048_num_attack_projectile_sprites < 200)
     {
-        ++_47C048_unit_bomberdmg;
+        ++_47C048_num_attack_projectile_sprites;
         v3 = sprite_create_scripted(v2->mobd_id, a1->turret_sprite, v2->dmg_handler, SCRIPT_COROUTINE, a1->ptr_24);
         v4 = v2->mobd_lookup_offset_flying;
         v5 = v3;
@@ -766,7 +766,7 @@ void EntityTowerAttachment_handler_447FA0(EntityTurret *a1)
             v1->handler = EntityTowerAttachment_handler_448160;
     }
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00448110) --------------------------------------------------------
 void EntityTowerAttachment_handler_448110(EntityTurret *a1)

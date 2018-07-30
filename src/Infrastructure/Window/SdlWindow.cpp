@@ -96,5 +96,4 @@ void SdlWindow::PeekMessages() {
 }
 
 void SdlWindow::WaitMessage() {
-
 }

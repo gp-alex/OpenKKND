@@ -309,9 +309,9 @@ void entity_mode_4016B0_aircraft(Entity *a1)
     else if (a1->_134_param__unitstats_after_mobile_outpost_plant)
     {
         v3 = a1->stats->dmg_source;
-        if (v3 && _47C048_unit_bomberdmg < 200)
+        if (v3 && _47C048_num_attack_projectile_sprites < 200)
         {
-            ++_47C048_unit_bomberdmg;
+            ++_47C048_num_attack_projectile_sprites;
             v4 = sprite_create_scripted(v3->mobd_id, a1->sprite, v3->dmg_handler, SCRIPT_FUNCTION, a1->stru60.ptr_0);
             v5 = v3->mobd_lookup_offset_flying;
             v6 = v4;
@@ -344,7 +344,7 @@ void entity_mode_4016B0_aircraft(Entity *a1)
         a1->SetMode(entity_mode_401800_aircraft);
     }
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (004017E0) --------------------------------------------------------
 void entity_yield_40_repeats(Entity *a1)
@@ -418,11 +418,11 @@ void Task_context_1_BomberDmgHandler_401D10(Task_context_1_BomberDmgHandler *a1)
     Task_context_1_BomberDmgHandler *v1; // esi@1
 
     v1 = a1;
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
     sprite_list_remove(a1->sprite);
     script_terminate(v1->task);
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00401D30) --------------------------------------------------------
 void Task_context_1_BomberDmgHandler_401D30(Task_context_1_BomberDmgHandler *a1)

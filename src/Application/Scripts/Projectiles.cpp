@@ -123,9 +123,9 @@ void UNIT_DmgHandler_Sapper(Script *a1)
     }
     script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00435CF0) --------------------------------------------------------
 void script_435CF0_rocket_dmg_handler(Script *a1)
@@ -314,7 +314,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
     }
     script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v2);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
 
 //----- (00436140) --------------------------------------------------------
@@ -351,9 +351,9 @@ void script_436140_flamethrower_dmg_handler(Script *a1)
     v9 = math_42D64D_vec_length_2d(v7, v6);
     script_sleep(a1, v9 / *(_DWORD *)(v3 + 16));
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00436250) --------------------------------------------------------
 void UNIT_DmgHandler_Flamethrower(Script *a1)
@@ -379,9 +379,9 @@ void UNIT_DmgHandler_Flamethrower(Script *a1)
     v5 = (Entity *)v1->parent->param;
     v2->sprite->field_88_unused = 1;
     v1->field_88_unused = 1;
-    while (!v2->destroyed && v5->entity_id && !v5->destroyed && _47C048_unit_bomberdmg < 200)
+    while (!v2->destroyed && v5->entity_id && !v5->destroyed && _47C048_num_attack_projectile_sprites < 200)
     {
-        ++_47C048_unit_bomberdmg;
+        ++_47C048_num_attack_projectile_sprites;
         v6 = v5->turret;
         if (v6)
         {
@@ -418,9 +418,9 @@ void UNIT_DmgHandler_Flamethrower(Script *a1)
         v2 = v12;
     }
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (004363C0) --------------------------------------------------------
 void script_4363C0_giant_bettle_dmg(Script *a1)
@@ -484,9 +484,9 @@ void script_4363C0_giant_bettle_dmg(Script *a1)
     sprite_40D8B0_dmg(v3, *(_DWORD *)(v11 + 32));
     script_yield(v1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v3);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00436530) --------------------------------------------------------
 void UNIT_DmgHandler_Beetle(Script *a1)
@@ -499,24 +499,20 @@ void UNIT_DmgHandler_Beetle(Script *a1)
     Sprite *v6; // eax@2
     Sprite *v7; // esi@2
     Script *v8; // ecx@2
-    UnitStat *v9; // ecx@2
-    int v10; // edx@2
-    int v11; // eax@2
-    int v12; // ecx@6
-    int v13; // edx@6
-    int v14; // eax@10
+    //int v12; // ecx@6
+    //int v13; // edx@6
+    //int v14; // eax@10
     Sprite *v15; // esi@14
     Script *v16; // edx@14
     int v17; // eax@16
     Entity *v18; // [sp+10h] [bp-24h]@1
-    int v19; // [sp+14h] [bp-20h]@2
-    int v20; // [sp+14h] [bp-20h]@8
-    int v21; // [sp+18h] [bp-1Ch]@4
-    int v22; // [sp+18h] [bp-1Ch]@6
+    //int v20; // [sp+14h] [bp-20h]@8
+    //int v21; // [sp+18h] [bp-1Ch]@4
+    //int v22; // [sp+18h] [bp-1Ch]@6
     int v23; // [sp+1Ch] [bp-18h]@1
     Sprite *v24; // [sp+20h] [bp-14h]@2
     int v25; // [sp+24h] [bp-10h]@1
-    int v26; // [sp+28h] [bp-Ch]@6
+    //int v26; // [sp+28h] [bp-Ch]@6
     int v27; // [sp+2Ch] [bp-8h]@1
     int v28; // [sp+30h] [bp-4h]@1
 
@@ -533,9 +529,9 @@ void UNIT_DmgHandler_Beetle(Script *a1)
     v23 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v28, v27);
     v25 = 0;
     sprite_408800_play_sound(v3->sprite, SOUND_ACID_SPIT_DMG, _4690A8_unit_sounds_volume, 0);
-    if (_47C048_unit_bomberdmg < 200)
+    if (_47C048_num_attack_projectile_sprites < 200)
     {
-        ++_47C048_unit_bomberdmg;
+        ++_47C048_num_attack_projectile_sprites;
         v6 = sprite_create_scripted(MOBD_MUTE_GIANT_BEETLE, v1->parent, script_4363C0_giant_bettle_dmg, SCRIPT_COROUTINE, v3->stru60.ptr_0);
         v7 = v6;
         v24 = v6;
@@ -543,36 +539,44 @@ void UNIT_DmgHandler_Beetle(Script *a1)
         v6->parent = v1->parent;
         v8->param = v18;
         v6->param = (void *)v2;
-        v9 = v3->stats;
-        v10 = veterancy_accuracy_bonus[v3->veterancy_level];
-        v11 = v10 + v9->accuracy;
-        v19 = v10 + v9->accuracy;
-        if (v11 >= 100)
-            v19 = 99;
-        v21 = v10 + v9->accuracy;
-        if (v11 >= 100)
-            v21 = 99;
-        v26 = 4 * (kknd_rand_debug(__FILE__, __LINE__) % (100 - v19) - (100 - v21) / 2);
-        v12 = veterancy_accuracy_bonus[v3->veterancy_level];
-        v13 = v3->stats->accuracy;
-        v22 = v12 + v13;
-        if (v12 + v13 >= 100)
-            v22 = 99;
-        v20 = v12 + v13;
-        if (v12 + v13 >= 100)
-            v20 = 99;
-        v14 = kknd_rand_debug(__FILE__, __LINE__);
-        v7->x_speed = v26 + *(_DWORD *)(v2 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v23 + 1]];
-        v7->y_speed = 4 * (v14 % (100 - v22) - (100 - v20) / 2)
-            - *(_DWORD *)(v2 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v23 + 1]];
+
+        int accuracy = v3->stats->accuracy + veterancy_accuracy_bonus[v3->veterancy_level];
+        if (accuracy >= 100) {
+            accuracy = 99;
+        }
+
+        //v9 = v3->stats;
+        //v10 = veterancy_accuracy_bonus[v3->veterancy_level];
+        //v11 = v10 + v9->accuracy;
+        //v19 = v10 + v9->accuracy;
+        //if (v11 >= 100)
+        //    v19 = 99;
+        //v21 = v10 + v9->accuracy;
+        //if (v11 >= 100)
+        //    v21 = 99;
+        //v26 = 4 * (kknd_rand_debug(__FILE__, __LINE__) % (100 - v19) - (100 - v21) / 2);
+        //v12 = veterancy_accuracy_bonus[v3->veterancy_level];
+        //v13 = v3->stats->accuracy;
+        //v22 = v12 + v13;
+        //if (v12 + v13 >= 100)
+        //    v22 = 99;
+        //v20 = v12 + v13;
+        //if (v12 + v13 >= 100)
+        //    v20 = 99;
+        int x_speed_bonus = 4 * (kknd_rand_2() % (100 - accuracy) - (100 - accuracy) / 2);
+        int y_speed_bonus = 4 * (kknd_rand_2() % (100 - accuracy) - (100 - accuracy) / 2);
+        //v14 = kknd_rand_2();
+        v7->x_speed = x_speed_bonus + *(_DWORD *)(v2 + 16) * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v23 + 1]];
+        v7->y_speed = y_speed_bonus - *(_DWORD *)(v2 + 16) * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v23 + 1]];
+
         script_sleep(a1, 2);
         do
         {
             if (v18->destroyed || v3->destroyed)
                 break;
-            if (_47C048_unit_bomberdmg < 200)
+            if (_47C048_num_attack_projectile_sprites < 200)
             {
-                ++_47C048_unit_bomberdmg;
+                ++_47C048_num_attack_projectile_sprites;
                 v15 = sprite_create_scripted(
                     MOBD_MUTE_GIANT_BEETLE,
                     v1->parent,
@@ -586,16 +590,13 @@ void UNIT_DmgHandler_Beetle(Script *a1)
                 v15->_80_entity__stru29__sprite__initial_hitpoints = v3;
                 v15->field_84 = v3->entity_id;
                 v15->field_8C_infantry_damage = *(_WORD *)(v2 + 20)
-                    + (*(_DWORD *)(v2 + 20)
-                        * veterancy_damage_bonus[v3->veterancy_level] >> 8);
+                    + (*(_DWORD *)(v2 + 20) * veterancy_damage_bonus[v3->veterancy_level] >> 8);
                 v15->field_8E_vehicle_damage = *(_WORD *)(v2 + 24)
-                    + (*(_DWORD *)(v2 + 24)
-                        * veterancy_damage_bonus[v3->veterancy_level] >> 8);
+                    + (*(_DWORD *)(v2 + 24) * veterancy_damage_bonus[v3->veterancy_level] >> 8);
                 v15->field_90_building_damage = *(_WORD *)(v2 + 28)
-                    + (*(_DWORD *)(v2 + 28)
-                        * veterancy_damage_bonus[v3->veterancy_level] >> 8);
-                v15->x_speed = v24->x_speed + 4 * (kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 64;
-                v15->y_speed = v24->y_speed + 4 * (kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 64;
+                    + (*(_DWORD *)(v2 + 28) * veterancy_damage_bonus[v3->veterancy_level] >> 8);
+                v15->x_speed = v24->x_speed + 4 * (kknd_rand_2() & 31) - 64;
+                v15->y_speed = v24->y_speed + 4 * (kknd_rand_2() & 31) - 64;
             }
             ++v25;
             script_sleep(a1, 2);
@@ -604,9 +605,9 @@ void UNIT_DmgHandler_Beetle(Script *a1)
         script_sleep(a1, v17 / *(_DWORD *)(v2 + 16) - 12);
     }
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (004368B0) --------------------------------------------------------
 void script_4368B0_plasma_tank_dmg_handler(Script *a1)
@@ -655,9 +656,9 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     sprite_40D8B0_dmg(v1, *(_DWORD *)(v12 + 32));
     script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (004369F0) --------------------------------------------------------
 void UNIT_DmgHandler_Mech(Script *a1)
@@ -889,7 +890,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
     }
     script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
 
 //----- (00436FB0) --------------------------------------------------------
@@ -901,9 +902,9 @@ void script_436FB0_dmg_handler(Script *a1)
     script_sleep(a1, 30);
     sprite_408800_play_sound(v1, SOUND_3, _4690A8_unit_sounds_volume, 0);
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00436FF0) --------------------------------------------------------
 void script_436FF0_rifle_dmg_handler(Script *a1)
@@ -956,9 +957,9 @@ void script_436FF0_rifle_dmg_handler(Script *a1)
         script_sleep(a1, 1);
     }
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (004370D0) --------------------------------------------------------
 void script_4370D0_gort_dmg_handler(Script *a1)
@@ -1014,9 +1015,9 @@ void UNIT_DmgHandler_GORT(Script *a1)
         script_sleep(a1, 1);
     }
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00437270) --------------------------------------------------------
 void UNIT_DmgHandler_Rifle(Script *a1)
@@ -1080,9 +1081,9 @@ void UNIT_DmgHandler_Rifle(Script *a1)
     {
         if (v3->turret)
         {
-            if (v3->unit_id != UNIT_STATS_SURV_AUTOCANNON_TANK && _47C048_unit_bomberdmg < 200)
+            if (v3->unit_id != UNIT_STATS_SURV_AUTOCANNON_TANK && _47C048_num_attack_projectile_sprites < 200)
             {
-                ++_47C048_unit_bomberdmg;
+                ++_47C048_num_attack_projectile_sprites;
                 v5 = sprite_create_scripted(
                     MOBD_EXPLOSIONS,
                     v3->turret->turret_sprite,
@@ -1099,9 +1100,9 @@ void UNIT_DmgHandler_Rifle(Script *a1)
                 sprite_4272E0_load_mobd_item(v5, 2184, _47D3C4_entity_mobd_lookup_ids[v3->turret->mobd_lookup_id + 1]);
             }
         }
-        else if (_47C048_unit_bomberdmg < 200)
+        else if (_47C048_num_attack_projectile_sprites < 200)
         {
-            ++_47C048_unit_bomberdmg;
+            ++_47C048_num_attack_projectile_sprites;
             v8 = sprite_create_scripted(MOBD_EXPLOSIONS, v3->sprite, script_436FF0_rifle_dmg_handler, SCRIPT_COROUTINE, v3->stru60.ptr_0);
             v9 = v8->script;
             v8->parent = v2->parent;
@@ -1154,7 +1155,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
     }
     script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v2);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
 
 //----- (00437690) --------------------------------------------------------
@@ -1218,9 +1219,9 @@ int sub_437690(Script *a1)
     v1->_60_mobd_anim_speed *= 2;
     script_sleep(a1, 30);
     sprite_list_remove(v1);
-    return _47C048_unit_bomberdmg-- - 1;
+    return _47C048_num_attack_projectile_sprites-- - 1;
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00437840) --------------------------------------------------------
 void UNIT_DmgHandler_Bow(Script *a1)
@@ -1308,7 +1309,7 @@ void UNIT_DmgHandler_Bow(Script *a1)
         script_trigger_event(v17, EVT_MSG_ENTITY_DO_DAMAGE, v1, v26->script);
     script_yield(v17, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }
 
 //----- (00437AD0) --------------------------------------------------------
@@ -1432,5 +1433,5 @@ void UNIT_DmgHandler_Projectile(Script *a1)
     }
     script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     sprite_list_remove(v1);
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
 }

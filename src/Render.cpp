@@ -1,3 +1,5 @@
+#include <Windows.h>
+
 #include "src/Render.h"
 
 #include "src/kknd.h"

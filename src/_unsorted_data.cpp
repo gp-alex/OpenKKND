@@ -6215,7 +6215,7 @@ int dword_47C018; // weak
 Script *receiver; // idb
 Script *task_47C028; // idb
 int dword_47C030; // weak
-int _47C048_unit_bomberdmg; // weak
+int _47C048_num_attack_projectile_sprites; // weak
 int _47C04C_num_explosions_max20; // weak
 stru175 _47C050_array[20];
 char byte_47C230[256]; // idb

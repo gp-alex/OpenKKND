@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Windows.h>
-#include <mmeapi.h>
-
 #include "src/hexrays-defs.h"
 #include "src/kknd.h"
 
