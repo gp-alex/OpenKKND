@@ -174,7 +174,6 @@ void Game::Run() {
         free(wait_lvl);
         sound_free_sounds();
         GAME_Deinit();
-        timeEndPeriod(1u);
     }
     else
     {

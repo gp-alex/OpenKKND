@@ -1,3 +1,5 @@
+#include <Windows.h>
+#include <mmeapi.h>
 #include <dsound.h>
 
 #include "src/Video.h"
