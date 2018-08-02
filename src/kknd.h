@@ -61,13 +61,6 @@ struct task_428940_attach__cursors;
 struct task_428940_attach__cursors_2;
 struct Entity;
 
-/* 63 */
-struct UnitNameId
-{
-	const char *unit_name;
-	int id;
-};
-
 enum class GAME_STATE : int {
     MainMenu = 0,
     Mission = 1,

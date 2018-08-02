@@ -6,8 +6,8 @@ public:
     virtual ~File() {}
     static File *open(const char *filename);
 
-    virtual int read(void *out_data, int num_bytes);
-    virtual void *read_hunk();
-    virtual int seek(unsigned long length, int dir);
-    virtual void close();
+    virtual int read(void *out_data, int num_bytes) = 0;
+    virtual void *read_hunk() = 0;
+    virtual int seek(unsigned long length, int dir) = 0;
+    virtual void close() {}
 };

@@ -1,4 +1,13 @@
 #include "src/kknd.h"
+#include "src/_unsorted_data.h"
+#include "src/Map.h"
+#include "src/ScriptEvent.h"
+
+#include "src/Engine/Entity.h"
+#include "src/Engine/EntityFactory.h"
+#include "src/Engine/Infrastructure/EntityRepository.h"
+
+using Engine::EntityFactory;
 
 
 
@@ -214,6 +223,7 @@ bool GAME_Save_PackEntity(Entity *entity, int save_data, int save_data_size)
     int v118; // esi@221
     char *v127; // [sp-4h] [bp-18h]@68
     EntityTurret *v128; // [sp+10h] [bp-4h]@25
+    bool result;
 
     v3 = entity;
     v4 = (EntitySerialized *)save_data;
@@ -1068,9 +1078,9 @@ void _4240E0_kknd_sve_read(const char *filename)
     int v7; // [sp+Ch] [bp-108h]@4
     char FileName[260]; // [sp+10h] [bp-104h]@1
 
-    wsprintfA(FileName, (LPCSTR)aSS, game_data_installation_dir, filename);
-    SetFileAttributesA(FileName, 0x80u);
-    v1 = fopen(FileName, aR);
+    sprintf(FileName, "%s\\%s", game_data_installation_dir, filename);
+    //SetFileAttributesA(FileName, FILE_ATTRIBUTE_NORMAL);
+    v1 = fopen(FileName, "r");
     if (v1)
     {
         fscanf(v1, "%03d", &v6);
@@ -1232,15 +1242,15 @@ void _4243C0_kknd_sve_update_last_level(const char *a1)
 
     a2 = 0;
     v6 = 0;
-    wsprintfA(filename, (LPCSTR)aSS, game_data_installation_dir, a1);
-    SetFileAttributesA(filename, 0x80u);
+    sprintf(filename, "%s\\%s", game_data_installation_dir, a1);
+    //SetFileAttributesA(filename, FILE_ATTRIBUTE_NORMAL);
 
     short _a2, _v6;
     _424270_kknd_sve_read(filename, &_a2, &_v6);
     a2 = _a2;
     v6 = _v6;
 
-    v1 = fopen(filename, (const char *)aW);
+    v1 = fopen(filename, "w");
     if (v1)
     {
         if ((unsigned __int16)current_surv_level <= (int)(unsigned __int16)a2)
@@ -1296,7 +1306,7 @@ bool _438740_save_lst()
             _41CAE0_prepare_to_load_level(byte_47C230, _47C050_array[v0].level_id))
         && (game_state = GAME_STATE::Mission,
             sprintf(byte_47C230, aSSave_lst, game_data_installation_dir),
-            SetFileAttributesA(byte_47C230, 0x80u),
+            //SetFileAttributesA(byte_47C230, 0x80u),
             v1 = fopen(byte_47C230, "w"),
             (v2 = v1) != 0))
     {
@@ -1330,8 +1340,8 @@ bool _438840_save_lst()
         && (sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_array_idx),
             _41CB30_prepare_to_save_level(byte_47C230, _47C050_array[v0].level_id))
         && (sprintf(byte_47C230, aSSave_lst, game_data_installation_dir),
-            SetFileAttributesA(byte_47C230, 0x80u),
-            v1 = fopen(byte_47C230, (const char *)aW),
+            //SetFileAttributesA(byte_47C230, 0x80u),
+            v1 = fopen(byte_47C230, "w"),
             (v2 = v1) != 0))
     {
         fprintf(v1, aActiveslotD, _47C050_array_idx);
@@ -1848,7 +1858,7 @@ LABEL_40:
         return all_data_ok;
     }
     all_data_ok = 0;
-    SetFileAttributesA(current_savegame_filename, 0x80u);
+    //SetFileAttributesA(current_savegame_filename, 0x80u);
     file = fopen(current_savegame_filename, "wb");
     fIle = file;
     if (!file)
@@ -1897,14 +1907,11 @@ LABEL_40:
     entity_offsets = (char *)entity_savE_data;
     entity_indices = (void *)(save + 4);
     for (auto v18 : entityRepo->FindAll()) {
-        if (!v18->destroyed)
-        {
-            if (fwrite(entity_indices, 1u, 4u, fIle) && fwrite(entity_offsets, 1u, *(_DWORD *)entity_indices, fIle))
-            {
+        if (!v18->destroyed) {
+            if (fwrite(entity_indices, 1u, 4u, fIle) && fwrite(entity_offsets, 1u, *(_DWORD *)entity_indices, fIle)) {
                 entity_offsets += *(_DWORD *)entity_indices;
                 entity_indices = (char *)entity_indices + 8;
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -1955,7 +1962,6 @@ LABEL_68:
     game_save_in_progress = 0;
     return 0;
 }
-// 479FC0: using guessed type int game_save_in_progress;
 
 //----- (004218B0) --------------------------------------------------------
 int GAME_Load()

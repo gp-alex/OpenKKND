@@ -122,28 +122,8 @@ extern char *aLoadgamestateF;
 extern char *aUnit_initFaile;
 extern char *aSpriteLoadFail;
 extern CustomMission custom_missions[20];
-extern UnitNameId unit_name_id_lut[66];
-extern char *aSS;
 extern char *aW;
-extern char *errmsg_could_not_open_file;
-extern char *errmsg_unrecognized_name;
-extern char aDamageToBuildi[20]; // weak
-extern char aDamageToVehicl[19]; // weak
-extern char aDamageToInfant[19]; // weak
-extern char aAccuracy[9]; // weak
-extern char aFiringVisualRa[20]; // weak
-extern char aTurningSpeed[14]; // weak
-extern char aVolleySize[12]; // weak
-extern char aReload2Time[13]; // weak
-extern char aReloadTime[12]; // weak
-extern char aSpeed[6]; // weak
-extern char aWarningUnitSIs[]; // idb
-extern char aHitpoints[10]; // weak
-extern char aProductionTime[16]; // weak
-extern char errmsg_unit_out_of_range[]; // idb
-extern char cost[5]; // weak
-extern char _4681EC_whitespace[]; // idb
-extern char asc_space[]; // idb
+
 
 extern stru52 stru_4681F8;
 extern stru52 stru_468210;
@@ -528,7 +508,6 @@ extern enum LEVEL_ID current_level_idx;
 extern __int16 current_mute_level; // weak
 extern __int16 current_surv_level; // weak
 extern int _47A2E4_mess_with_game_dir; // weak
-extern int nocd; // weak
 extern int debug_unit_stats_supplied; // weak
 extern int _4269B0_task_attachment__num_units_created_manually; // weak
 extern int _47A300_stru51_array__field_4__minus1_index[]; // weak

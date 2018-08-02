@@ -699,7 +699,7 @@ bool entity_initialize_order(Entity *a1)
     int v7; // eax@7
     int v8; // ebx@10
     int v9; // eax@10
-    BOOL result; // eax@13
+    int result; // eax@13
     int v11; // eax@14
     int v12; // ecx@14
     Sprite *v13; // edx@14
@@ -1379,7 +1379,7 @@ bool entity_414870_boxd(Entity *a1)
     int v10; // edi@1
     bool v11; // zf@10
     Sprite *v12; // eax@10
-    BOOL result; // eax@11
+    int result; // eax@11
     Sprite *v14; // eax@13
     int v15; // edx@13
     Sprite *v16; // eax@14

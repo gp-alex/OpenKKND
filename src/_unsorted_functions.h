@@ -371,7 +371,6 @@ char GAME_ParseCommandLine();
 void _4240E0_kknd_sve_read(const char *filename);
 void _424270_kknd_sve_read(const char *a1, _WORD *a2, _WORD *a3);
 void _4243C0_kknd_sve_update_last_level(const char *a1);
-bool _424560_parse_unit_stats_table(const char *filename);
 void UNIT_Handler_TechBunker_2(Script *a1);
 void script_424BF0_mobd_20_handler(Script *a1);
 void _424CA0_script_47A3CC_evttrigger();
@@ -401,7 +400,7 @@ void _426860_4269B0_task_attachment_handler(_4269B0_task_attachment *a1);
 void _4268B0_4269B0_task_attachment_handler(_4269B0_task_attachment *a1);
 void task_4269B0_mobd_20_handler(Script *a1);
 void drawjob_update_handler_426C40_mobd(Sprite *a1, DrawJob *a2);
-bool sprite_list_alloc();
+bool sprite_list_alloc(const int pool_size = 2000);
 void sprite_init_47A400();
 Sprite *sprite_create(enum MOBD_ID mobd_item_idx, Script *script, Sprite *parent);
 Sprite *sprite_create_scripted(enum MOBD_ID mobd_item_idx, Sprite *parent, void(*script)(Script *), enum SCRIPT_ROUTINE_TYPE task_type, Entity_stru_dmg_related *a5);
@@ -685,7 +684,7 @@ void entity_mode_444D10_oiltanker(Entity *a1);
 void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void _431C40_on_WM_ACTIVATEAPP_software_render(void *result);
 void coroutine_main();
-bool render_string_list_alloc();
+bool render_string_list_alloc(const int num_stru8s = 768, const int num_render_strings = 16);
 void render_string_445770(RenderString *a1, const char *text, DataMobdItem *custom_font); // idb
 RenderString *render_string_create(stru1_draw_params *a1, DataMobdItem *custom_font, int a3, int a4, int a5, int a6, int z_index, int a8, int a9); // idb
 void render_string_list_remove(RenderString *a1);

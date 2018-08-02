@@ -1,9 +1,10 @@
-#include "src/kknd.h"
+#include <windows.h>
 
+#include "src/kknd.h"
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
-#include "Infrastructure/Input.h"
+#include "src/Infrastructure/Input.h"
 
 /* 379 */
 struct VKeyMap
@@ -220,7 +221,7 @@ bool input_initialize()
 //----- (004283A0) --------------------------------------------------------
 bool input_4283A0_set_cursor_pos(__int16 x, __int16 y)
 {
-    BOOL result; // eax@2
+    int result; // eax@2
     int v5; // eax@5
     int v6; // [sp-8h] [bp-14h]@5
     struct tagPOINT Point; // [sp+4h] [bp-8h]@1

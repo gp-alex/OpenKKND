@@ -3,8 +3,10 @@
 #include "src/_unsorted_functions.h"
 #include "src/Map.h"
 #include "src/Pathfind.h"
+#include "src/stru31.h"
 
 #include "src/Infrastructure/Log.h"
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
 
 //----- (00422F60) --------------------------------------------------------

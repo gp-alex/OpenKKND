@@ -256,7 +256,7 @@ void Game::WaitScreen() {
 
     REND_SetRoutines();
 
-    if (nocd)
+    if (true)//if (nocd)
         strcpy(app_root_dir, ".");
     else
         sprintf(app_root_dir, aC, game_installation_drive_letter);

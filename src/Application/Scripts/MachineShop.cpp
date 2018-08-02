@@ -1,4 +1,15 @@
 #include "src/kknd.h"
+#include "src/_unsorted_data.h"
+#include "src/_unsorted_functions.h"
+#include "src/ScriptEvent.h"
+#include "src/Map.h"
+
+#include "src/Engine/Entity.h"
+#include "src/Engine/EntityFactory.h"
+
+using Engine::EntityFactory;
+
+
 
 //----- (00421E20) --------------------------------------------------------
 bool is_machine_shop_maxed()

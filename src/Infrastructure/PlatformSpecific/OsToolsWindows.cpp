@@ -107,7 +107,7 @@ void OsGetApplicationConfig(
 
         cbData = 4;
         int installation_type = 0;
-        if (!RegQueryValueExA(phkResult, "MinimumInstall", 0, &Type, (LPBYTE)&installation_type, &cbData) {
+        if (!RegQueryValueExA(phkResult, "MinimumInstall", 0, &Type, (LPBYTE)&installation_type, &cbData)) {
             *is_minimal_install = installation_type != 0;
         }
 

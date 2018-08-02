@@ -10,6 +10,9 @@
 
 #include "src/Engine/Entity.h"
 
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
+
+
 
 #pragma comment(lib, "Dsound.lib") // DirectSoundCreate
 
@@ -680,13 +683,11 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
     int v15; // [sp+0h] [bp-10h]@10
     const char *v16; // [sp+Ch] [bp-4h]@1
 
-
-    char cwd[1024];
     char name[1024];
     sprintf(
         name,
         "%s\\LEVELS\\%s",
-        _getcwd(cwd, sizeof(cwd)),
+        OsGetCurrentDirectory().c_str(),
         name_
     );
 

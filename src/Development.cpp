@@ -1,4 +1,5 @@
 #include "src/kknd.h"
+#include "src/_unsorted_data.h"
 
 #include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
@@ -14,6 +15,110 @@
 
 
 char global_console_argv[260];
+
+char *errmsg_could_not_open_file = "Error: could not open file %s\n";
+char *errmsg_unrecognized_name = "Warning: unrecognised name %s\n";
+char aDamageToBuildi[20] = "damage to buildings"; // weak
+char aDamageToVehicl[19] = "damage to vehicles"; // weak
+char aDamageToInfant[19] = "damage to infantry"; // weak
+char aAccuracy[9] = "accuracy"; // weak
+char aFiringVisualRa[20] = "firing/visual range"; // weak
+char aTurningSpeed[14] = "turning speed"; // weak
+char aVolleySize[12] = "volley size"; // weak
+char aReload2Time[13] = "reload2 time"; // weak
+char aReloadTime[12] = "reload time"; // weak
+char aSpeed[6] = "speed"; // weak
+char aWarningUnitSIs[] = "Warning: unit %s is a building, speed ignored\n"; // idb
+char aHitpoints[10] = "hitpoints"; // weak
+char aProductionTime[16] = "production time"; // weak
+char errmsg_unit_out_of_range[] = "Warning: unit %s %s out of range (%d - %d)\n"; // idb
+char cost[5] = "cost"; // weak
+char _4681EC_whitespace[] = " \t\r\n"; // idb
+
+
+bool _424560_parse_unit_stats_table(const char *filename);
+
+
+
+
+
+/* 63 */
+struct UnitNameId
+{
+    const char *unit_name;
+    int id;
+};
+
+UnitNameId unit_name_id_lut[66] =
+{
+{ "UNIT_SURV_INFANTRY", 0 },
+{ "UNIT_MUTE_BERSERKER", 1 },
+{ "UNIT_SURV_FLAMER", 2 },
+{ "UNIT_MUTE_PYRO", 3 },
+{ "UNIT_SURV_SWAT", 4 },
+{ "UNIT_MUTE_SHOTGUNNER", 5 },
+{ "UNIT_SURV_SAPPER", 6 },
+{ "UNIT_MUTE_RIOTER", 7 },
+{ "UNIT_SURV_ELPRESIDENTE", 8 },
+{ "UNIT_MUTE_KINGZOG", 9 },
+{ "UNIT_SURV_SABOTEUR", 10 },
+{ "UNIT_MUTE_VANDAL", 11 },
+{ "UNIT_SURV_TECHNICIAN", 12 },
+{ "UNIT_MUTE_TECHNICIAN", 13 },
+{ "UNIT_SURV_ROCKETLAUNCHER", 14 },
+{ "UNIT_MUTE_ROCKETLAUNCHER", 15 },
+{ "UNIT_SURV_SNIPER", 16 },
+{ "UNIT_MUTE_CRAZYHARRY", 17 },
+{ "UNIT_SURV_GENERAL", 18 },
+{ "UNIT_MUTE_LEADER", 19 },
+{ "UNIT_SURV_SCOUT", 20 },
+{ "UNIT_SURV_DERRICK", 21 },
+{ "UNIT_MUTE_DERRICK", 22 },
+{ "UNIT_SURV_TANKER", 23 },
+{ "UNIT_MUTE_TANKER", 24 },
+{ "UNIT_SURV_BIKE", 26 },
+{ "UNIT_MUTE_WOLF", 27 },
+{ "UNIT_SURV_PICKUP", 28 },
+{ "UNIT_MUTE_SIDECAR", 29 },
+{ "UNIT_SURV_ATV", 30 },
+{ "UNIT_MUTE_MONTRUCK", 31 },
+{ "UNIT_SURV_FLAMEATV", 32 },
+{ "UNIT_MUTE_SCORPION", 33 },
+{ "UNIT_SURV_ANACONDA", 34 },
+{ "UNIT_MUTE_MASTODON", 35 },
+{ "UNIT_SURV_BARAGECRAFT", 36 },
+{ "UNIT_MUTE_BEETLE", 37 },
+{ "UNIT_SURV_CANNONTANK", 38 },
+{ "UNIT_MUTE_CRAB", 39 },
+{ "UNIT_SURV_MOBILE_BASE", 40 },
+{ "UNIT_MUTE_MOBILE_BASE", 41 },
+{ "UNIT_MUTE_WASP", 43 },
+{ "UNIT_SURV_BOMBER", 44 },
+{ "UNIT_SURV_DRILLRIG", 46 },
+{ "UNIT_MUTE_DRILLRIG", 47 },
+{ "UNIT_SURV_POWERPLANT", 48 },
+{ "UNIT_MUTE_POWERPLANT", 49 },
+{ "UNIT_SURV_GUARDTOWER", 52 },
+{ "UNIT_MUTE_MACHGUNNEST", 53 },
+{ "UNIT_SURV_CANNONTOWER", 54 },
+{ "UNIT_MUTE_GRAPESHOT", 55 },
+{ "UNIT_SURV_MISSILEBATTERY", 56 },
+{ "UNIT_MUTE_ROTARYCANNON", 57 },
+{ "UNIT_SURV_OUTPOST", 58 },
+{ "UNIT_MUTE_CLANHALL", 59 },
+{ "UNIT_SURV_MACHINESHOP", 60 },
+{ "UNIT_MUTE_BLACKSMITH", 61 },
+{ "UNIT_MUTE_BEASTENCLOSURE", 62 },
+{ "UNIT_SURV_REPAIRBAY", 63 },
+{ "UNIT_MUTE_MENAGERIE", 64 },
+{ "UNIT_SURV_RESEARCHLAB", 65 },
+{ "UNIT_MUTE_ALCHEMYHALL", 66 },
+{ "UNIT_GORT", 74 },
+{ "UNIT_LASERTANK", 76 },
+{ "UNIT_SENTINEL", 77 },
+{ "UNIT_MECH", 78 }
+};
+
 
 //----- (00423ED0) --------------------------------------------------------
 char GAME_ParseCommandLine()
@@ -165,7 +270,7 @@ char GAME_ParseCommandLine()
                 v16 = -v15 - (v15 - 1);
             LABEL_52:
                 if (!v16)
-                    nocd = 1;
+                    int nocd = 1;
             }
             else
             {
@@ -222,7 +327,7 @@ bool _424560_parse_unit_stats_table(const char *filename)
     int v41; // eax@100
     UnitAttachmentPoint *v42; // ecx@103
     UnitDamageSource *v43; // ecx@104
-    BOOL result; // eax@110
+    int result; // eax@110
     char line[1024]; // [sp+8h] [bp-400h]@2
 
     v1 = filename;
@@ -234,7 +339,7 @@ bool _424560_parse_unit_stats_table(const char *filename)
         {
             do
             {
-                v4 = strtok(line, asc_space);
+                v4 = strtok(line, " \t");
                 v5 = unit_name_id_lut;
                 if (line[0] != '\n' && line[0] != '\r' && line[0] != ';')
                 {

@@ -7698,7 +7698,7 @@ void drawjob_update_handler_426C40_mobd(Sprite *a1, DrawJob *a2)
 }
 
 //----- (00426CB0) --------------------------------------------------------
-bool sprite_list_alloc(const int num_sprites = 2000)
+bool sprite_list_alloc(const int num_sprites)
 {
 	currently_running_lvl_mobd = (DataMobd *)LVL_FindSection((const char *)MOBD);
 	if (currently_running_lvl_mobd)
@@ -7710,7 +7710,7 @@ bool sprite_list_alloc(const int num_sprites = 2000)
             sprite_list_free_pool->prev = (Sprite *)&sprite_list_free_pool;
 			for (int i = 0; i < num_sprites - 1; ++i)
 			{
-                sprite_list[i].next = sprite_list + 1;
+                sprite_list[i].next = &sprite_list[i + 1];
 			}
             sprite_list[num_sprites - 1].next = (Sprite *)&sprite_list_free_pool;
 			sprite_list_47A4A4 = (Sprite *)&sprite_list_47A4A0;
@@ -16856,7 +16856,6 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 	v6->pstru7 = _4640E0_stru7_array;
 	return 1;
 }
-// 47A2F0: using guessed type int debug_unit_stats_supplied;
 
 //----- (00443570) --------------------------------------------------------
 int script_443570(Script *a1, int a2, int a3, int a4)
@@ -17331,7 +17330,7 @@ void coroutine_main()
 }
 
 //----- (00445690) --------------------------------------------------------
-bool render_string_list_alloc(const int num_stru8s = 768, const int num_render_strings = 16)
+bool render_string_list_alloc(const int num_stru8s, const int num_render_strings)
 {
 	if (stru8_list = new stru8[num_stru8s])
 	{

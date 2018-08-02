@@ -1,6 +1,9 @@
 #include <windows.h>
 
 #include "src/kknd.h"
+#include "src/_unsorted_data.h"
+
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
 
 //----- (00411420) --------------------------------------------------------
@@ -98,8 +101,10 @@ void message_pump()
 
     while (PeekMessageA(&msg, 0, 0, 0, PM_REMOVE))
     {
-        if (msg.message == WM_QUIT)
+        if (msg.message == WM_QUIT) {
+            extern bool _47DCF4_wm_quit_received;
             _47DCF4_wm_quit_received = true;
+        }
         TranslateMessage(&msg);
         DispatchMessageA(&msg);
     }
@@ -125,15 +130,16 @@ bool render_create_window(int width, int height, bool fullscreen)
     he1ght = height;
     w1dth = width;
 
-    if (bpp == 15)
+    /*if (bpp == 15)
     {
         bpp = 16;
     }
     else if (bpp != 8 && bpp != 16 && bpp != 24 && bpp != 32)
     {
         return false;
-    }
+    }*/
 
+    extern HWND global_hwnd;
     HWND v9 = FindWindowA("OpenKKNDWindowClass", "OpenKKND");
     if (v9)
     {
@@ -162,7 +168,7 @@ bool render_create_window(int width, int height, bool fullscreen)
 
                 DWORD global_wnd_style = WS_VISIBLE | WS_POPUP | WS_SYSMENU;
                 DWORD global_wnd_style_ex = WS_EX_APPWINDOW;
-                if (render_fullscreen == 1) {
+                if (fullscreen == 1) {
                     global_wnd_style_ex |= WS_EX_TOPMOST;
                 }
                 else {
@@ -171,9 +177,9 @@ bool render_create_window(int width, int height, bool fullscreen)
 
                 RECT global_wnd_rect;
                 global_wnd_rect.left = 0;
-                global_wnd_rect.right = render_width;
+                global_wnd_rect.right = width;
                 global_wnd_rect.top = 0;
-                global_wnd_rect.bottom = render_height;
+                global_wnd_rect.bottom = height;
                 AdjustWindowRect(&global_wnd_rect, global_wnd_style, 0);
                 global_wnd_rect.bottom -= global_wnd_rect.top;
                 global_wnd_rect.right -= global_wnd_rect.left;
