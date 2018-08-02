@@ -3,7 +3,6 @@
 #include "src/Engine/Entity.h"
 
 
-
 int _479DF0_mapd_initialized; // weak
 int dword_478AB0; // weak
 int _478BE8_map_info__see40E6E0[8];
@@ -2482,10 +2481,6 @@ UnitNameId unit_name_id_lut[66] =
 	{ "UNIT_SENTINEL", 77 },
 	{ "UNIT_MECH", 78 }
 };
-char *console_switch_nocd = "-nocd";
-char *console_switch_noblack = "-noblack";
-char *errmsg_no_stats_file_specified = "no stats file specified\n";
-char *console_switch_stats = "-stats";
 char *aSS = "%s\\%s";
 char *aW = "w";
 char *errmsg_could_not_open_file = "Error: could not open file %s\n";
@@ -5706,9 +5701,6 @@ int _47A1A4_custom_mission_briefing_line; // weak
 int _47A1A8_custom_mission_idx; // weak
 int _47A1AC_is_custom_surv_mission; // weak
 int _47A1B0_custom_mission_briefing_ui; // weak
-char global_console_argv[260];
-int dword_47A2BC; // weak
-char *global_cmd_line;
 GAME_STATE game_state = GAME_STATE::MainMenu;
 int netz_47A2C8; // weak
 enum LEVEL_ID current_level_idx;
@@ -5716,8 +5708,7 @@ __int16 current_mute_level; // weak
 __int16 current_surv_level; // weak
 int _47A2E4_mess_with_game_dir; // weak
 int nocd; // weak
-int _47A2EC_noblack; // weak
-int units_stats_parsed_from_argv; // weak
+int debug_unit_stats_supplied; // weak
 int _4269B0_task_attachment__num_units_created_manually; // weak
 int _47A300_stru51_array__field_4__minus1_index[5]; // weak
 stru51_tech_bunkers _47A300_stru51_tech_bunkers[14];

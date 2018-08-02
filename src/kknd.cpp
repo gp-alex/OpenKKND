@@ -5919,9 +5919,9 @@ bool stru27_array_initialize()
 		v1 = v31[1].data;
 		++v28;
 		++v31;
-		if ((tagRECT *)v31 != &global_wnd_rect)
-			continue;
-		break;
+        if (v28 >= 3) {
+            break;
+        }
 	}
 	return 1;
 }
@@ -6056,6 +6056,7 @@ void stru26_stru27_free()
 	stru26 *v2; // esi@5
 	int v3; // edi@6
 
+    int i = 0;
 	v0 = _479740_stru27_array;
 	do
 	{
@@ -6066,7 +6067,9 @@ void stru26_stru27_free()
 			v0 = (stru27 *)((char *)v0 + 4);
 			--v1;
 		} while (v1);
-	} while ((tagRECT *)v0 != &global_wnd_rect);
+	} while (++i < 3);
+
+    i = 0;
 	v2 = _4795F0_stru26_array;
 	do
 	{
@@ -6077,7 +6080,7 @@ void stru26_stru27_free()
 			v2 = (stru26 *)((char *)v2 + 4);
 			--v3;
 		} while (v3);
-	} while ((stru27 *)v2 != _479740_stru27_array);
+	} while (++i < 3);
 }
 
 
@@ -16776,7 +16779,7 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 			stru29 *v8 = (stru29 *)v3->sprite->_80_entity__stru29__sprite__initial_hitpoints; // stru29 for main menu sprites
 			if (v8 && v8->field_C & 2)
 			{
-				if (!dword_47C6EC || units_stats_parsed_from_argv)
+				if (!dword_47C6EC || debug_unit_stats_supplied)
 					v4 |= 0x20;
 				else
 					v4 &= ~0x20;
@@ -16853,7 +16856,7 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 	v6->pstru7 = _4640E0_stru7_array;
 	return 1;
 }
-// 47A2F0: using guessed type int units_stats_parsed_from_argv;
+// 47A2F0: using guessed type int debug_unit_stats_supplied;
 
 //----- (00443570) --------------------------------------------------------
 int script_443570(Script *a1, int a2, int a3, int a4)

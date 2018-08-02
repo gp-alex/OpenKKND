@@ -1889,7 +1889,7 @@ bool sub_40AB60(stru24_stru310 *a1)
     int v17; // edi@27
     int v18; // esi@28
     int v19; // edi@37
-    BOOL result; // eax@37
+    int result; // eax@37
     int v21; // ebp@38
     int v22; // esi@38
     int v23; // ecx@38
@@ -2529,7 +2529,7 @@ bool stru24_40B490(stru24 *a1, UNIT_ID a2, int *out_x, int *out_y)
     char *v34; // [sp+18h] [bp-14h]@1
     stru24 *v35; // [sp+1Ch] [bp-10h]@1
     int v36; // [sp+1Ch] [bp-10h]@21
-    BOOL v37; // [sp+20h] [bp-Ch]@1
+    int v37; // [sp+20h] [bp-Ch]@1
     int v38; // [sp+28h] [bp-4h]@2
 
     v35 = a1;

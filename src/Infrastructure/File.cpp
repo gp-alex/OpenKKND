@@ -1,12 +1,32 @@
-#include "Infrastructure/File.h"
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
 #include <list>
 
+#include "Infrastructure/File.h"
+
 #include "src/kknd.h"
+
+
+
+/* 248 */
+class StdioFile : public File {
+public:
+    StdioFile() : File() {}
+    virtual ~StdioFile() {}
+
+    int read(void *out_data, int num_bytes) override;
+    void *read_hunk() override;
+    int seek(unsigned long length, int dir) override;
+    void close() override;
+
+//protected:
+    FILE * handle;
+};
+
+
+
 
 std::list<File*> files;
 
@@ -23,7 +43,7 @@ class FilesWatchdog {
 FilesWatchdog files_watchdog;
 
 File *File::open(const char *filename) {
-  File *file = new File();
+    auto *file = new StdioFile();
   fopen_s(&file->handle, filename, "rb");
   if (file->handle) {
     files.push_back(file);
@@ -35,7 +55,7 @@ File *File::open(const char *filename) {
   return file;
 }
 
-int File::read(void *out_data, int num_bytes) {
+int StdioFile::read(void *out_data, int num_bytes) {
   return fread(out_data, 1, num_bytes, handle);
 }
 
@@ -55,7 +75,7 @@ T byte_swap(T x) {
   return dest.x;
 }
 
-void *File::read_hunk() {
+void *StdioFile::read_hunk() {
   char hunk_name[5] = {0};
   unsigned int num_bytes_read = fread(hunk_name, 4, 1, handle);
   if (num_bytes_read < 1) {
@@ -81,11 +101,11 @@ void *File::read_hunk() {
   return data;
 }
 
-int File::seek(size_t length, int dir) {
+int StdioFile::seek(unsigned long length, int dir) {
   return fseek(handle, length, dir);
 }
 
-void File::close() {
+void StdioFile::close() {
   files.remove(this);
   if (handle) {
     fclose(handle);

@@ -1,5 +1,3 @@
-#include <direct.h>
-
 #include <dsound.h>
 #include <process.h>    // _beginthread, _endthread
 

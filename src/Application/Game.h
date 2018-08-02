@@ -5,7 +5,6 @@
 #include "src/Application/GameConfig.h"
 
 #include "src/Infrastructure/Renderer/Renderer.h"
-
 #include "src/Infrastructure/Window/Window.h"
 
 namespace Application {

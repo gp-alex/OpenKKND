@@ -30,7 +30,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     #debug include files
-    set(CMAKE_CXX_FLAGS "/showIncludes ${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS " /showIncludes ${CMAKE_CXX_FLAGS} ")
+
+    #disable pesky warnings
+    set(CMAKE_CXX_FLAGS " /D_CRT_SECURE_NO_WARNINGS ${CMAKE_CXX_FLAGS} ")
 endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")

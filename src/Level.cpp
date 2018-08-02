@@ -1,6 +1,10 @@
 #include "src/kknd.h"
 #include "src/_unsorted_data.h"
 #include "src/_unsorted_functions.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
+
+#include "src/Infrastructure/Log.h"
 
 
 //----- (00422F60) --------------------------------------------------------

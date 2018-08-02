@@ -123,10 +123,6 @@ extern char *aUnit_initFaile;
 extern char *aSpriteLoadFail;
 extern CustomMission custom_missions[20];
 extern UnitNameId unit_name_id_lut[66];
-extern char *console_switch_nocd;
-extern char *console_switch_noblack;
-extern char *errmsg_no_stats_file_specified;
-extern char *console_switch_stats;
 extern char *aSS;
 extern char *aW;
 extern char *errmsg_could_not_open_file;
@@ -527,17 +523,13 @@ extern int _47A1A4_custom_mission_briefing_line; // weak
 extern int _47A1A8_custom_mission_idx; // weak
 extern int _47A1AC_is_custom_surv_mission; // weak
 extern int _47A1B0_custom_mission_briefing_ui; // weak
-extern char global_console_argv[260];
-extern int dword_47A2BC; // weak
-extern char *global_cmd_line;
 extern int netz_47A2C8; // weak
 extern enum LEVEL_ID current_level_idx;
 extern __int16 current_mute_level; // weak
 extern __int16 current_surv_level; // weak
 extern int _47A2E4_mess_with_game_dir; // weak
 extern int nocd; // weak
-extern int _47A2EC_noblack; // weak
-extern int units_stats_parsed_from_argv; // weak
+extern int debug_unit_stats_supplied; // weak
 extern int _4269B0_task_attachment__num_units_created_manually; // weak
 extern int _47A300_stru51_array__field_4__minus1_index[]; // weak
 extern stru51_tech_bunkers _47A300_stru51_tech_bunkers[14];

@@ -157,7 +157,7 @@ bool render_should_render()
             result = 1;
         }
     }
-    else
+    //else
     {
         result = 1;
     }

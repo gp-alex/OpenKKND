@@ -1,5 +1,19 @@
 #include "src/kknd.h"
 
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
+
+
+
+
+// -----------------------------
+// dev & debugging debuggin tools
+
+
+
+
+
+
+char global_console_argv[260];
 
 //----- (00423ED0) --------------------------------------------------------
 char GAME_ParseCommandLine()
@@ -22,11 +36,10 @@ char GAME_ParseCommandLine()
     bool v15; // cf@46
     int v16; // ecx@50
 
-    dword_47A2BC = 0;
-    v0 = GetCommandLineA();
+    v0 = (char *)OsGetCommandLine().c_str();
     v1 = v0;
     v2 = global_console_argv;
-    global_cmd_line = v0;
+    auto global_cmd_line = v0;
     for (i = *v0; *v1; i = *v1)
     {
         if (i == ' ')
@@ -76,11 +89,11 @@ char GAME_ParseCommandLine()
             global_cmd_line = ++v1;
         }
         *v6 = 0;
-        if (!strcmp(global_console_argv, (const char *)console_switch_stats))
+        if (!strcmp(global_console_argv, "-stats"))
         {
             if (*v1)
             {
-                printf((const char *)errmsg_no_stats_file_specified);
+                printf("no stats file specified\n");
                 exit(1);
             }
             while (1)
@@ -95,11 +108,11 @@ char GAME_ParseCommandLine()
             if (!v0)
                 exit(1);
             v1 = global_cmd_line;
-            units_stats_parsed_from_argv = 1;
+            debug_unit_stats_supplied = 1;
         }
         else
         {
-            v9 = (char **)console_switch_noblack;
+            v9 = (char **)"-noblack";
             v10 = global_console_argv;
             while (1)
             {
@@ -126,7 +139,7 @@ char GAME_ParseCommandLine()
         LABEL_43:
             if (v12)
             {
-                v13 = (char **)console_switch_nocd;
+                v13 = (char **)"-nocd";
                 v14 = global_console_argv;
                 while (1)
                 {
@@ -156,7 +169,7 @@ char GAME_ParseCommandLine()
             }
             else
             {
-                _47A2EC_noblack = 1;
+                //_47A2EC_noblack = 1;
             }
         }
     }

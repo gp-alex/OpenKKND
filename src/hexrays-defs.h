@@ -302,7 +302,7 @@ template<class T, class U> int8 __CFADD__(T x, U y)
 
 #define _UNKNOWN char
 
-ULONG_PTR
+
 #ifndef CONTAINING_RECORD
 #define CONTAINING_RECORD(address, type, field) ((type *)( \
                                                   (char *)(address) - \

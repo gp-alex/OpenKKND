@@ -35,6 +35,12 @@ std::string OsGetCurrentDirectory() {
     );
 }
 
+std::string OsGetCommandLine() {
+    return std::string(
+        GetCommandLineA()
+    );
+}
+
 void OsDebugString(const char *str) {
     printf("%s\n", str);
     OutputDebugStringA(str);
