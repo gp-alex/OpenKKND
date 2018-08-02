@@ -245,7 +245,7 @@ void Game::WaitScreen() {
     int v0; // eax@12
     int v5; // esi@24
 
-    GAME_ReadRegistry();
+    GAME_ReadAppConfiguration();
     _4240E0_kknd_sve_read(pKknd_sve);
     GAME_ParseCommandLine();
     if (!LVL_SysInit())
@@ -257,7 +257,7 @@ void Game::WaitScreen() {
     REND_SetRoutines();
 
     if (nocd)
-        strcpy(app_root_dir, a_);
+        strcpy(app_root_dir, ".");
     else
         sprintf(app_root_dir, aC, game_installation_drive_letter);
 

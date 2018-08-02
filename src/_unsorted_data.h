@@ -109,14 +109,8 @@ extern char aSS_0[]; // idb
 extern int prev_level_idx; // weak
 extern const char *pKknd_sve;
 extern char aC[3]; // idb
-extern char *reg_MinimumInstall;
-extern char *reg_DriveLetter;
-extern char *reg_GamePath;
-extern char a_[2]; // weak
 extern char *MOBD;
-extern char *aLvl_loadlevelS;
 extern char *aSLevelsSS;
-extern char *aSuperSpriteLoa;
 extern char *aSLevelsSSupspr;
 extern char intro_vbc[10]; // weak
 extern char *aSFmvMh_fmv_vbc;
@@ -475,16 +469,10 @@ extern stru2 *stru2_list_free_pool;
 extern stru2 *stru2_list;
 extern stru26 _4795F0_stru26_array[3];
 extern stru27 _479740_stru27_array[3];
-extern tagRECT global_wnd_rect; // idb
 extern void *render_locked_surface_ptr;
 extern unsigned int render_locked_surface_width_px; // idb
-extern int global_fullscreen; // weak
-extern int global_time_flows; // weak
 extern stru1_draw_params *stru1_list_free_pool;
-extern int global_wnd_height; // idb]
 extern stru1_draw_params *stru1_list;
-extern int global_wnd_width; // idb
-extern bool is_render_window_initialized; // 411760
 extern int timer_render_skips; // weak
 extern char palette_4798F8_sprt_aligned[512];
 extern stru1_draw_params *current_drawing_params;
@@ -527,7 +515,7 @@ extern int _47A01C_sound_id; // weak
 extern char game_data_root_dir[80]; // idb
 extern char game_data_installation_dir[256];
 extern DataHunk *wait_lvl;
-extern int is_minimal_install;
+extern bool is_minimal_install;
 extern DataHunk *sprites_lvl; // idb
 extern int dword_47A180; // weak
 extern int dword_47A184; // weak

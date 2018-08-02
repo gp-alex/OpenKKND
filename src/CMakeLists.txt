@@ -21,6 +21,9 @@ set(UNSORTED_SOURCES
     Video.cpp
     Map.cpp
     Pathfind.cpp
+    Development.cpp
+    Level.cpp
+    SaveLoad.cpp
 )
 
 set(UNSORTED_HEADERS

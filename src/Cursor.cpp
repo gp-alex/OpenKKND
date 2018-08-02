@@ -19,6 +19,8 @@ using Engine::Infrastructure::EntityRepository;
 
 #include "src/Infrastructure/Input.h"
 
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
+
 
 
 task_428940_attach__cursors *task_428940_attach__cursors_list;
@@ -161,7 +163,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
 	sprite_load_mobd(drag_frame_x, CURSOR_MOBD_OFFSET_DRAG_FRAME_X);
     drag_frame_x->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_cursors;
 
-    unsigned int i = GetTickCount() % (256 * 100);
+    unsigned int i = OsGetTime() % (256 * 100);
 
     UnitStat *stat = &unit_stats[UNIT_STATS_MUTE_MISSILE_CRAB];
     if (debug_click_crabs) {
@@ -233,7 +235,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
 
         if (debug_click_crabs) {
             //sprite_load_mobd(drag_frame_x, 1216);
-            unsigned int i = GetTickCount() % (256 * 20);
+            unsigned int i = OsGetTime() % (256 * 20);
             drag_frame_x->y -= 25 * 250;
             if (stat->mobd_lookup_offset_attack != -1)
             {
@@ -249,7 +251,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
             drag_frame_y->y = drag_frame_x->y;
             if (stat->mobd_lookup_offset_move != -1)
             {
-                unsigned int t = GetTickCount() % (15 * 1500);
+                unsigned int t = OsGetTime() % (15 * 1500);
 
                 static bool init_ = true;
                 bool rot_changed = false;

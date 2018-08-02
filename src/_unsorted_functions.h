@@ -1,8 +1,6 @@
 #pragma once
 #include "src/kknd.h"
 
-void log(const char *, ...);
-
 void stru28_list_free();
 void UNIT_AttachHandler_DockPoint(Script *self);
 void EntityTowerAttachment_handler_4010C0(EntityTurret *a1);
@@ -208,7 +206,7 @@ SidebarButton *sidebar_add_buttton_internal(Sidebar *a1, int mobd_lookup_table_o
 void sidebar_remove_button(Sidebar *a1, SidebarButton *a2); // idb
 void sidebar_list_remove(Sidebar *a1);
 void sidebar_list_free();
-bool stru2_list_alloc();
+bool stru2_list_alloc(const int num_stru2s = 16);
 stru2 *stru2_list_create(int hunk);
 int stru2_list_init_elements();
 void stru2_list_remove_elements();
@@ -358,7 +356,7 @@ void entity_mode_machineshop_on_death_no_default(Entity *); // idb
 void entity_mode_4223A0_machineshop(Entity *a1);
 void entity_mode_machineshop_on_death(Entity *); // idb
 void _4224B0_update_last_level();
-void GAME_ReadRegistry();
+void GAME_ReadAppConfiguration();
 bool GAME_ShowWait();
 void GAME_PrepareSuperLvl(int mapd_idx);
 void GAME_PrepareLevel();
@@ -428,7 +426,7 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1);
 void entity_427BB0_mobile_outpost_clanhall_planting(Entity *a1);
 void entity_mode_427BF0_mobile_outpost_clanhall_planting(Entity *a1);
 void entity_427C30_after_mobile_outpost_clanhall_wagon_plant(Entity *a1);
-bool stru37_stru38_list_alloc();
+bool stru37_stru38_list_alloc(const int num_stru37s = 100, const int num_stru38s = 100);
 void stru37_list_427D60_enqueue_item(int *pcash, int *pcost, int cost_per_time_step, Script *production_task, void *production_task_param, int a6); // idb
 void stru37_list_427D80_enqueue_item(int *pcash, int *pcost, int cost, int cost_per_time_step, Script *production_task, void *production_task_param, int a7); // idb
 void stru37_list_427E90_enqueue_infantry(int *pcash, int *pcost, int cost_per_time_step, Script *production_task, void *production_task_param, int a6); // idb

@@ -793,3 +793,178 @@ __int16 video_45A110(VideoFile *a1, VideoFileFrame *frame)
     }
     return v4;
 }
+
+
+//----- (00422AA0) --------------------------------------------------------
+// id:
+//     0  ->  MelbourneHouse & Intro
+//     1  ->  Mission Briefing
+int VIDEO_Play(int id)
+{
+    int v1; // esi@1
+    char **v2; // edi@5
+               //char *v3; // eax@16
+    int result; // eax@17
+                //char *v5; // eax@18
+    DataHunk *v6; // eax@18
+    DataHunk *v7; // ebp@18
+    DataMapdItem *v8; // ecx@23
+    stru1_draw_params *v9; // esi@25
+    stru1_draw_params *v10; // edi@25
+    RenderString *v11; // ebx@25
+    KeyboardInput keyboard_input; // [sp+10h] [bp-1B8h]@9
+    char a1[80]; // [sp+24h] [bp-1A4h]@7
+    char v14[80]; // [sp+74h] [bp-154h]@7
+                  //char v15[260]; // [sp+C4h] [bp-104h]@16
+    return 1;
+    v1 = id;
+    VIDEO_IsAllocated();
+    stru1_408480_reset_animation();
+    stru1_set_animation(0, 0, 0x80000000, 0);
+    RENDER_SetViewportAndClear();
+    if (!v1)
+    {
+        draw_list_alloc();
+        REND_DirectDrawClearScreen(1);
+        sprintf(a1, (const char *)aSFmvMh_fmv_vbc, app_root_dir);
+        if (VIDEO_ReadAndAllocDrawJob(a1, 0, 0, 100) == 1 && !VIDEO_IsVideoInvalid())
+        {
+            while (1)
+            {
+                input_update_keyboard();
+                input_get_keyboard_state(&keyboard_input);
+                if (keyboard_input.just_pressed_keys_mask)
+                    break;
+                VIDEO_DoFrame();
+                draw_list_update_and_draw();
+                TimedMessagePump();
+                if (VIDEO_IsVideoInvalid())
+                    goto LABEL_37;
+            }
+            VIDEO_free();
+        }
+    LABEL_37:
+        stru1_set_animation(0, 0, 0x80000000, 0);
+        sprintf(a1, (const char *)aSFmvS, app_root_dir, intro_vbc);
+        if (VIDEO_ReadAndAllocDrawJob(a1, 0, 0, 100) != 1 || VIDEO_IsVideoInvalid())
+            goto LABEL_43;
+        while (1)
+        {
+            input_update_keyboard();
+            input_get_keyboard_state(&keyboard_input);
+            if (keyboard_input.just_pressed_keys_mask)
+                goto LABEL_42;
+            VIDEO_DoFrame();
+            draw_list_update_and_draw();
+            TimedMessagePump();
+            if (VIDEO_IsVideoInvalid())
+                goto LABEL_43;
+        }
+    }
+    if (v1 != 1)
+    {
+        if (v1 != 2 || _47A18C_probably_play_outro_movie != 1)
+            goto LABEL_44;
+        _47A18C_probably_play_outro_movie = 0;
+        v2 = (char **)aSurvout_vbc;
+        if (current_level_idx != 14)
+            v2 = (char **)aEvolvout_vbc;
+        strcpy(v14, (const char *)v2);
+        draw_list_alloc();
+        sprintf(a1, (const char *)aSFmvS, app_root_dir, v14);
+        if (VIDEO_ReadAndAllocDrawJob(a1, 0, 0, 100) != 1 || VIDEO_IsVideoInvalid())
+        {
+        LABEL_43:
+            draw_list_free();
+        LABEL_44:
+            VIDEO_free();
+            return 1;
+        }
+        while (1)
+        {
+            input_update_keyboard();
+            input_get_keyboard_state(&keyboard_input);
+            if (keyboard_input.just_pressed_keys_mask)
+                break;
+            VIDEO_DoFrame();
+            draw_list_update_and_draw();
+            TimedMessagePump();
+            if (VIDEO_IsVideoInvalid())
+                goto LABEL_43;
+        }
+    LABEL_42:
+        VIDEO_free();
+        goto LABEL_43;
+    }
+    if (current_level_idx >= LEVEL_SURV_16 && current_level_idx <= LEVEL_MUTE_25 || is_game_loading())
+        goto LABEL_44;
+    if (!sprites_lvl)
+    {
+        sprites_lvl = LVL_LoadLevel("sprites.lvl");
+        if (!sprites_lvl)
+            return 0;
+    }
+
+    v6 = LVL_LoadLevel(fmv_lvl);
+    v7 = v6;
+    if (!v6)
+        return 0;
+    result = LVL_SubstHunk(v6, sprites_lvl, (const char *)MOBD);
+    if (result)
+    {
+        result = LVL_RunLevel(v7);
+        if (result)
+        {
+            render_default_stru1->field_8 &= 0xBFFFFFFF;
+            render_default_stru1->clip_z = render_width;
+            render_default_stru1->clip_y = 0;
+            render_default_stru1->clip_w = render_height;
+            if (current_level_idx >= LEVEL_MUTE_01)
+            {
+                _47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
+                v8 = &LVL_FindMapd()->items[0];
+            }
+            else
+            {
+                _47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
+                v8 = &LVL_FindMapd()->items[1];
+            }
+            _40E400_set_palette(v8->GetPalette());
+            render_copy_palette(&_477990_video_palette, GetSysPalette());
+            sprite_47A400.pstru7 = array_466028;
+            cplc_select(0);
+            cplc_406320();
+            sprintf(v14, (const char *)aSFmvS, app_root_dir, levels[current_level_idx].vbc_filename);
+            v9 = render_create_stru1(0, 38, 31, 320, 240);
+            v10 = render_create_stru1(0, 240, 313, 160, 128);
+            v11 = render_string_create(0, currently_running_lvl_mobd[26].items, 400, 40, 25, 28, 90, 8, 8);
+            VIDEO_ReadAndAllocDrawJob_2(v14, v9, v10, v11, 320, 240, 100);
+            if (!VIDEO_IsVideoInvalid())
+            {
+                while (1)
+                {
+                    input_update_keyboard();
+                    input_get_keyboard_state(&keyboard_input);
+                    if (keyboard_input.just_pressed_keys_mask)
+                        break;
+                    _4393F0_call_mapd();
+                    VIDEO_DoFrame();
+                    draw_list_update_and_draw();
+                    TimedMessagePump();
+                    if (VIDEO_IsVideoInvalid())
+                        goto LABEL_30;
+                }
+                VIDEO_free();
+            }
+        LABEL_30:
+            render_string_list_remove(v11);
+            render_remove_stru1(v10);
+            render_remove_stru1(v9);
+            bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
+            LVL_Deinit();
+            free(v7);
+            goto LABEL_44;
+        }
+    }
+    return result;
+}

@@ -1053,7 +1053,7 @@ bool script_list_alloc(int coroutine_stack_size)
 }
 
 //----- (00445210) --------------------------------------------------------
-Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size)
+Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*task_main)(Script *), int stack_size)
 {
     Script *v3; // esi@1
 
@@ -1062,17 +1062,17 @@ Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *),
     {
         script_list_free_pool = script_list_free_pool->next;
 
-        memset(v3, SCRIPT_COROUTINE, sizeof(Script));
+        memset(v3, 0, sizeof(Script));
         v3->script_type = type;
         v3->routine_type = SCRIPT_COROUTINE;
 
-        auto coroutine = couroutine_create(coroutine_main, get_handler_name(handler));
+        auto coroutine = couroutine_create(coroutine_main, get_handler_name(task_main));
         v3->handler = (void(*)(Script *))coroutine;
-        v3->debug_handler_name = get_handler_name(handler);
+        v3->debug_handler_name = get_handler_name(task_main);
 
         if (coroutine)
         {
-            task_creation_handler = handler;
+            task_creation_handler = task_main;
             task_creation_handler_arg = v3;
 
             script_execute_list_prepend(v3);

@@ -11,6 +11,8 @@
 
 #include "src/Engine/Entity.h"
 
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
+
 
 
 HWND global_hwnd = nullptr;
@@ -45,8 +47,6 @@ int(*j_render_4349A0_draw_tile_32x32)(void *pixels, int x, int y); // idb
 int _478A14_prev_stru1_palette_entries; // weak
 COLORREF sys_colors[25];
 void(*j_render_434BD0)(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
-int render_height; // idb
-int render_width; // idb
 void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
 int render_478A94; // weak
 int j_render_nullsub_1; // weak
@@ -59,10 +59,16 @@ int render_clip_w; // weak
 int render_clip_z; // weak
 int render_clip_x; // weak
 int render_clip_y; // weak
+int render_width = 0;
+int render_height = 0;
+int render_bpp;
+bool render_fullscreen;
 
+void render_sw_free_palette();
 HPALETTE _431B60_create_palette(Palette *a1, int num_entries); // idb
 void _40E430_update_palette(unsigned int a1);
 
+bool stru1_list_init(int window_width, int window_height, const int num_stru1s = 7);
 
 
 
@@ -82,133 +88,43 @@ void SetSysPalette(Palette *pal) {
 int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam); // idb
 
 
-//----- (00411760) --------------------------------------------------------
-bool render_create_window(int width, int height, int bpp, int run, bool fullscreen)
+//----- (00431920) --------------------------------------------------------
+bool render_sw_initialize()
 {
-    int he1ght; // ebx@1
-    int w1dth; // ebp@1
-    BOOL result; // eax@2
-    BOOL v10; // eax@6
-    DWORD v11; // eax@11
-    LONG v12; // eax@13
-    int v13; // ST18_4@13
-    HWND v14; // eax@13
-    stru1_draw_params *v15; // eax@19
-    int v16; // ecx@21
-    WNDCLASSEXA v17; // [sp+10h] [bp-30h]@8
-
-    he1ght = height;
-    w1dth = width;
-    if (is_render_window_initialized)
-        return false;
-
-    if (bpp == 15)
-    {
-        bpp = 16;
-    }
-    else if (bpp != 8 && bpp != 16 && bpp != 24 && bpp != 32)
-    {
-        return false;
-    }
-    int global_wnd_bpp = bpp;
-    global_wnd_width = width;
-    global_wnd_height = height;
-    global_time_flows = run;
-    global_fullscreen = fullscreen;
-
-    HWND v9 = FindWindowA("OpenKKNDWindowClass", "OpenKKND");
-    if (v9)
-    {
-        SetForegroundWindow(v9);
-        v10 = 0;
-    }
-    else
-    {
-        ShowCursor(0);
-        if (!global_hwnd)
-        {
-            v17.style = 8;
-            v17.hInstance = GetModuleHandle(nullptr);
-            v17.lpszClassName = "KKNDXtremeMainWindowClass";
-            v17.lpfnWndProc = (WNDPROC)WndProc;
-            v17.cbSize = 48;
-            v17.hIcon = LoadIconA(v17.hInstance, (LPCSTR)0x65);
-            v17.cbClsExtra = 0;
-            v17.cbWndExtra = 0;
-            v17.hIconSm = LoadIconA(v17.hInstance, (LPCSTR)0x65);
-            v17.hCursor = 0;
-            v17.lpszMenuName = 0;
-            v17.hbrBackground = (HBRUSH)GetStockObject(5);
-            if (RegisterClassExA(&v17))
-            {
-
-                DWORD global_wnd_style = WS_VISIBLE | WS_POPUP | WS_SYSMENU;
-                DWORD global_wnd_style_ex = WS_EX_APPWINDOW;
-                if (global_fullscreen == 1)
-                {
-                    global_wnd_style_ex |= WS_EX_TOPMOST;
-                }
-                else
-                {
-                    global_wnd_style |= WS_DLGFRAME | WS_BORDER | WS_GROUP;
-                }
-                global_wnd_rect.left = 0;
-                global_wnd_rect.right = global_wnd_width;
-                global_wnd_rect.top = 0;
-                global_wnd_rect.bottom = global_wnd_height;
-                AdjustWindowRect(&global_wnd_rect, global_wnd_style, 0);
-                global_wnd_rect.bottom -= global_wnd_rect.top;
-                global_wnd_rect.right -= global_wnd_rect.left;
-                global_wnd_rect.top = 0;
-                global_wnd_rect.left = 0;
-                v12 = GetSystemMetrics(0) - global_wnd_rect.right;
-                global_wnd_rect.right += v12;
-                v13 = global_wnd_rect.right - (v12 + global_wnd_rect.left);
-                global_wnd_rect.left += v12;
-                v14 = CreateWindowExA(
-                    global_wnd_style_ex,
-                    "KKNDXtremeMainWindowClass",
-                    "KKND Xtreme",
-                    global_wnd_style,
-                    global_wnd_rect.left,
-                    global_wnd_rect.top,
-                    v13,
-                    global_wnd_rect.bottom - global_wnd_rect.top,
-                    0,
-                    0,
-                    v17.hInstance,
-                    0);
-                global_hwnd = v14;
-                if (v14)
-                {
-                    UpdateWindow(v14);
-                }
-
-                return v14 != nullptr;
-            }
-        }
-    }
-
-    return false;
+    //if (render_bpp == 8)
+    render_sw_hdc = GetDC(global_hwnd);
+    return true;
 }
+
 
 //----- (00411A50) --------------------------------------------------------
 bool render_init_dd()
 {   
-    //----- (00431920) --------------------------------------------------------
-    //void render_sw_initialize()
-    {
-	    //if (global_wnd_bpp == 8)
-		    render_sw_hdc = GetDC(global_hwnd);
-    }
-
     return true;
 }
+
+bool render_init(int width, int height, int bpp, bool fullscreen) {
+    render_width = width;
+    render_height = height;
+    render_bpp = bpp;
+    render_fullscreen = fullscreen;
+
+    game_window_created = false;
+    if (render_sw_initialize() && render_init_dd()) {
+        if (stru1_list_init(width, height)) {
+            game_window_created = true;
+        }
+    }
+
+    return game_window_created;
+}
+
 
 //----- (00411FE0) --------------------------------------------------------
 void render_cleanup_dd()
 {
 }
+
 
 //----- (00412190) --------------------------------------------------------
 bool render_should_render()
@@ -217,7 +133,7 @@ bool render_should_render()
     bool v1; // sf@4
     unsigned __int8 v2; // of@4
 
-    if (global_time_flows)
+    //if (render_is_target_available)
     {
         if (timer_time < timeGetTime())
         {
@@ -253,10 +169,10 @@ stru1_draw_params *render_create_stru1(int a1, int clip_x, int clip_y, int clip_
 {
     stru1_draw_params *result; // eax@5
 
-    if (clip_x < global_wnd_width
-        && clip_y < global_wnd_height
-        && clip_z + clip_x <= global_wnd_width
-        && clip_w + clip_y <= global_wnd_height
+    if (clip_x < render_width
+        && clip_y < render_height
+        && clip_z + clip_x <= render_width
+        && clip_w + clip_y <= render_height
         && (result = stru1_list_free_pool) != 0)
     {
         stru1_list_free_pool = stru1_list_free_pool->next;
@@ -323,7 +239,7 @@ void render_draw_list(DrawJobList *list)
     /*if (list && render_default_stru1 && pdds_primary)
     {
         restore_palettes = 0;
-        if (pdds_primary->IsLost() == 0x887601C2 && global_fullscreen == 1)
+        if (pdds_primary->IsLost() == 0x887601C2 && render_fullscreen == 1)
             restore_palettes = 1;
         v3 = pdds_primary;
         if (pdds_primary)
@@ -340,7 +256,7 @@ void render_draw_list(DrawJobList *list)
         }
         if (v4)
         {
-            if (global_fullscreen == 1
+            if (render_fullscreen == 1
                 || ((v6 = pdds_backbuffer) != 0 ? ((v8 = pdds_backbuffer->IsLost(), v8 != 0x887601C2) ? (v7 = v8 == 0) : (v7 = v6->Restore() == 0)) : (v7 = 0),
                     v7))
             {
@@ -476,7 +392,7 @@ void render_draw_list(DrawJobList *list)
 
                     /*if (!pdds_backbuffer->Unlock(ddsd_primary.lpSurface))
                     {
-                        if (global_fullscreen == 1)
+                        if (render_fullscreen == 1)
                         {
                             if (fullscreen_flip_or_blt)
                             {
@@ -484,10 +400,10 @@ void render_draw_list(DrawJobList *list)
                             }
                             else
                             {
-                                v12.bottom = global_wnd_height;
+                                v12.bottom = render_height;
                                 v12.top = 0;
                                 v12.left = 0;
-                                v12.right = global_wnd_width;
+                                v12.right = render_width;
                                 memset(&v16, 0, sizeof(v16));
                                 v16.dwSize = 100;
                                 v16.dwDDFX = 8;
@@ -501,8 +417,8 @@ void render_draw_list(DrawJobList *list)
                         }
                         else
                         {
-                            v14.x = global_wnd_width;
-                            v14.y = global_wnd_height;
+                            v14.x = render_width;
+                            v14.y = render_height;
                             Point.x = 0;
                             Point.y = 0;
                             ClientToScreen(global_hwnd, &Point);
@@ -510,9 +426,9 @@ void render_draw_list(DrawJobList *list)
                             v12.top = 0;
                             v12.left = 0;
                             *(struct tagPOINT *)&v15.left = Point;
-                            v12.right = global_wnd_width;
+                            v12.right = render_width;
                             *(struct tagPOINT *)&v15.right = v14;
-                            v12.bottom = global_wnd_height;
+                            v12.bottom = render_height;
                             memset(&v16, 0, sizeof(v16));
                             v16.dwSize = 100;
                             v16.dwDDFX = 8;
@@ -556,7 +472,7 @@ int render_call_draw_handler_mode2(DrawJobDetails *a1)
 //----- (00412610) --------------------------------------------------------
 void render_cleanup()
 {
-    if (is_render_window_initialized == 1)
+    //if (is_render_window_initialized == 1)
     {
         render_cleanup_dd();
         render_sw_free_palette();
@@ -1017,7 +933,7 @@ void REND_DirectDrawClearScreen(int a2)
 
     v2 = a2;
 
-    if (global_fullscreen == 1)
+    if (render_fullscreen == 1)
     {
         pdds_primary->EnumAttachedSurfaces(0, EnumAttachedSurfacesCallback);
     }
@@ -3864,13 +3780,15 @@ void draw_list_free()
 }
 
 
-void render_on_wm_paint(struct tagRECT *a1)
+void render_on_wm_paint(long left, long top, long right, long bottom)
 {
-    /*if (pdds_primary)
+    RECT rc = { left, top, right, bottom };
+    /*
+    if (pdds_primary)
     {
         if (pdds_backbuffer)
         {
-            pdds_primary->Blt(a1, pdds_backbuffer, a1, 0, 0);
+            pdds_primary->Blt(a1, pdds_backbuffer, &rc, 0, 0);
         }
     }*/
 }
@@ -3881,7 +3799,7 @@ void render_sw_free_palette()
 {
     /*HPALETTE v0; // eax@3
 
-    if (global_wnd_bpp == 8)
+    if (render_bpp == 8)
     {
         if (render_sw_default_palette)
         {
@@ -3908,7 +3826,7 @@ void _431980_update_primary_palette(Palette *pal)
     int v11; // [sp+400h] [bp-4h]@14
 
     /*v1 = pal->entires;
-    if (global_wnd_bpp == 8)
+    if (render_bpp == 8)
     {
         dword_47C018 = 0;
         dword_468FD4 = 1;
@@ -3918,7 +3836,7 @@ void _431980_update_primary_palette(Palette *pal)
             render_copy_palette(&_47B408_palette_entries, pal);
         else
             v1 = _47B408_palette_entries.entires;
-        if (global_fullscreen == 1)
+        if (render_fullscreen == 1)
         {
             v3 = (char *)&RenderDD_primary_palette_values[0].peGreen;
             v4 = &v1->peBlue;
@@ -4057,7 +3975,7 @@ void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
     PaletteEntry *v12 = v12_.entires; // [sp+0h] [bp-404h]@19
     int v13; // [sp+400h] [bp-4h]@19
 
-    /*if (global_wnd_bpp == 8)
+    /*if (render_bpp == 8)
     {
         v1 = dword_468FDC << 8;
         for (i = 0; i < v1; ++i)
@@ -4078,7 +3996,7 @@ void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
             render_copy_palette(&_47B408_palette_entries, &palette_47BC10);
         else
             v4 = _47B408_palette_entries.entires;
-        if (global_fullscreen == 1)
+        if (render_fullscreen == 1)
         {
             v5 = (char *)&RenderDD_primary_palette_values[0].peGreen;
             v6 = &v4->peBlue;
@@ -4262,7 +4180,7 @@ void _40E560_flip_gdi_update_syscolors()
     int v12; // [sp+14h] [bp-68h]@7
     COLORREF aRgbValues[25]; // [sp+18h] [bp-64h]@13
 
-    if (global_fullscreen == 1)
+    if (render_fullscreen == 1)
     {
         if (_465680_get_sys_colors)
         {
@@ -4323,7 +4241,7 @@ void _40E560_flip_gdi_update_syscolors()
 //----- (0040E6B0) --------------------------------------------------------
 void _40E6B0_set_sys_colors()
 {
-    if (global_fullscreen == 1)
+    if (render_fullscreen == 1)
     {
         SetSysColors(25, &sys_colors_elements, sys_colors);
         _431980_update_primary_palette(GetSysPalette());
@@ -4468,4 +4386,31 @@ void _408550_multi_pal()
     }
     render_copy_palette(palette_4778A4, &palette_477490);
     _40E400_set_palette(&palette_477490);
+}
+
+
+
+bool stru1_list_init(int window_width, int window_height, const int num_stru1s) {
+    stru1_list = new stru1_draw_params[num_stru1s];
+    if (stru1_list)
+    {
+        for (int i = 0; i < num_stru1s; ++i) {
+            stru1_list[i].next = &stru1_list[i + 1];
+        }
+
+        stru1_list[6].next = nullptr;
+        stru1_list_free_pool = stru1_list;
+        default_stru1.prev = &default_stru1;
+        default_stru1.next = &default_stru1;
+        default_stru1.field_8 = 0;
+        default_stru1.anim_pos = 0x80000000;
+        default_stru1.clip_y = 0;
+        default_stru1.clip_x = 0;
+        default_stru1.clip_z = window_width;
+        default_stru1.clip_w = window_height;
+        default_stru1.field_20 = 0;
+
+        return true;
+    }
+    return false;
 }

@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "src/Infrastructure/Renderer/Renderer.h"
-
 #include "src/Infrastructure/Window/Window.h"
 
 extern std::shared_ptr<Infrastructure::Renderer> gRenderer;
@@ -27,11 +26,11 @@ struct DrawJob;
 struct DrawJobList;
 struct DrawJobDetails;
 
-bool render_create_window(int width, int height, int bpp, int run, bool fullscreen);
-bool render_init_dd();
-void render_cleanup_dd();
+bool render_init(int width, int height, int bpp, bool fullscreen);
+bool render_create_window(int width, int height, bool fullscreen);
+void render_cleanup();
 bool render_should_render();
-void render_on_wm_paint(struct tagRECT *);
+void render_on_wm_paint(long left, long top, long right, long bottom);
 stru1_draw_params *render_create_stru1(int a1, int clip_x, int clip_y, int clip_z, int clip_w); // idb
 void render_remove_stru1(stru1_draw_params *a1);
 bool render_dd_is_primary_surface_lost();
@@ -72,8 +71,6 @@ void draw_list_update(DrawJobList *list);
 void draw_list_z_order(DrawJobList *list);
 void draw_list_free();
 void _40E400_set_palette(Palette *palette);
-void render_sw_initialize();
-void render_sw_free_palette();
 void _431980_update_primary_palette(Palette *palette_entries);
 void _408410_dim_palette();
 void sub_408460();

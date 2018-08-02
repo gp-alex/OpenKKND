@@ -20,6 +20,7 @@ set(APPLICATION_SOURCES
 	Scripts/Towers.cpp
 	Scripts/Upgrade.cpp
 	Scripts/Vehicles.cpp
+	Scripts/MachineShop.cpp
 )
 
 set(APPLICATION_HEADERS

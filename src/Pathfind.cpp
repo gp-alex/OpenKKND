@@ -990,7 +990,6 @@ bool boxd_40E6E0()
     int v2; // edi@2
     int v3; // eax@2
     DataBoxd_stru0_per_map_unit *v4; // eax@2
-    BOOL result; // eax@3
     int v6; // esi@4
     int v7; // ecx@5
     int v8; // eax@6
@@ -1049,7 +1048,7 @@ bool boxd_40E6E0()
         v4 = (DataBoxd_stru0_per_map_unit *)malloc(24 * map_get_width() * v3);
         _478AA8_boxd_stru0_array = v4;
         if (!v4)
-            return 0;
+            return false;
         tiles = v1->map_tiles;
         v6 = 0;
         if (map_get_width() * map_get_height() > 0)
@@ -1172,7 +1171,7 @@ bool boxd_40E6E0()
         _4793F8_map_width = 0;
         _478AA8_boxd_stru0_array = 0;
     }
-    result = 1;
+
     _478BE8_map_info__see40E6E0[0] = -map_get_width();
     _478BE8_map_info__see40E6E0[1] = 1 - map_get_width();
     _478BE8_map_info__see40E6E0[3] = map_get_width() + 1;
@@ -1181,7 +1180,7 @@ bool boxd_40E6E0()
     _478BE8_map_info__see40E6E0[4] = map_get_width();
     _478BE8_map_info__see40E6E0[6] = -1;
     _478BE8_map_info__see40E6E0[7] = -1 - map_get_width();
-    return result;
+    return true;
 }
 
 //----- (0040EA20) --------------------------------------------------------
