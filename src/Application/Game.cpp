@@ -53,7 +53,7 @@ void Game::Run() {
 
     int window_width = 640;
     int window_height = 480;
-    bool fullscreen = true;
+    bool fullscreen = false;
 
     auto windowObserver = std::make_shared<GameWindowObserver>(shared_from_this());
     auto windowConfig = WindowConfigFactory().Create(

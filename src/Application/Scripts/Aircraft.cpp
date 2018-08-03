@@ -215,7 +215,7 @@ void entity_401530_aircraft(Entity *a1, int a2)
     v4 = a1->script;
     a1->destroyed = 1;
     v4->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
-    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
     v5 = v2->turret;
     if (v5)
     {

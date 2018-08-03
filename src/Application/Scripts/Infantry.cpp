@@ -3870,7 +3870,7 @@ void entity_4187F0(Entity *a1)
     v1 = a1;
     a1->script->event_handler = EventHandler_419CA0;
     entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->_A4_idx_in_tile);
-    script_trigger_event(v1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    script_trigger_event(v1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
     v2 = v1->retaliation_target;
     v1->sprite_x = v2->sprite->x + v2->stru60.pstru4->x_offset;
     v3 = v2->stru60.pstru4->y_offset + v2->sprite->y;
@@ -4331,7 +4331,7 @@ void entity_mode_418FE0_repairing_in_bay(Entity *a1)
                 goto LABEL_18;
             }
         LABEL_19:
-            script_trigger_event(v1->script, EVT_MSG_1510, v1, task_mobd17_cursor);
+            script_trigger_event(v1->script, EVT_MSG_1510, v1, game_cursor_script);
             goto LABEL_20;
         }
     }
@@ -4589,7 +4589,7 @@ void entity_419560_on_death(Entity *a1)
     v2 = a1->script;
     a1->destroyed = 1;
     v2->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
-    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
     v3 = v1->turret;
     if (v3)
     {

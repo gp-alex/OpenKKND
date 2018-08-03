@@ -60,4 +60,37 @@ bool input_428470(__int16 a1);
 
 
 
+
+inline bool mouse_lbutton_just_pressed() {
+    MouseInput state;
+    input_get_mouse_state(&state);
+    return state.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK;
+}
+
+inline bool mouse_lbutton_just_released() {
+    MouseInput state;
+    input_get_mouse_state(&state);
+    return state.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK;
+}
+
+
+inline bool mouse_rbutton_is_pressed() {
+    MouseInput state;
+    input_get_mouse_state(&state);
+    return state.pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK;
+}
+
+inline bool mouse_rbutton_just_pressed() {
+    MouseInput state;
+    input_get_mouse_state(&state);
+    return state.just_pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK;
+}
+
+inline bool mouse_rbutton_just_released() {
+    MouseInput state;
+    input_get_mouse_state(&state);
+    return state.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK;
+}
+
+
 extern MouseInput _47A5E0_mouse_input; // idb;

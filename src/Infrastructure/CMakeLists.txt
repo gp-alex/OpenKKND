@@ -21,6 +21,8 @@ target_sources(Infrastructure
         "${CMAKE_CURRENT_LIST_DIR}/Input.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/Log.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/Netz.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/InputWindowObserver.h"
+        "${CMAKE_CURRENT_LIST_DIR}/InputWindowObserver.cpp"
 )
 
 target_link_libraries(

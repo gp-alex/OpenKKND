@@ -98,7 +98,7 @@ void entity_oil_tanker_initialize(Entity *a1)
     }
     else
     {
-        script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+        script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
         script_trigger_event_group(0, EVT_MSG_DESELECTED, a1, SCRIPT_TYPE_39030);
 
         a1->script->script_type = SCRIPT_TYPE_INVALID;
@@ -1062,7 +1062,7 @@ void entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant(Entity *a1)
     v2 = a1->script;
     a1->destroyed = 1;
     v2->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
-    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
     script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
     entity_40DEC0_boxd(v1, v1->sprite_map_x, v1->sprite_map_y, v1->_A4_idx_in_tile);
     v1->script->script_type = SCRIPT_TYPE_INVALID;

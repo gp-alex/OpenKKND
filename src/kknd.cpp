@@ -320,7 +320,7 @@ DrawJob *entity_402BB0_set_arrive_handler(Entity *a1, void(*mode_arrive)(Entity 
 	mOde_arrive = mode_arrive;
 	sprite_4272E0_load_mobd_item(a1->sprite, a1->stats->mobd_lookup_offset_attack, 0);
 	if (v2->player_side == player_side)
-		script_trigger_event(v2->script, EVT_MSG_NEXT_CONSTRUCTION_STATE, v2, task_mobd17_cursor);
+		script_trigger_event(v2->script, EVT_MSG_NEXT_CONSTRUCTION_STATE, v2, game_cursor_script);
 	v4 = v2->sprite;
 	v2->mode_arrive = mode_arrive;
 	v5 = v4->_54_inside_mobd_ptr4->field_18;
@@ -8511,7 +8511,7 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 	{
         // plant successful - make outpost
 
-		script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+		script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
 		entity_deselected_default(a1);
         a1->SetScriptEventHandler(MessageHandler_MobileOutpostEmpty);
 
@@ -10567,8 +10567,8 @@ void script_431F10_ingame_menu(Script *a1)
 		}
 		if (v17)
 		{
-			task_mobd17_cursor->sprite->field_88_unused = 1;
-			v10 = task_mobd17_cursor->sprite->x;
+			game_cursor_script->sprite->field_88_unused = 1;
+			v10 = game_cursor_script->sprite->x;
 			v3->x = v10;
 			v11 = v1->x;
 			if (v10 < v11 || (v11 += 0x8000, v10 > v11))
@@ -11396,7 +11396,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 		{
 			a1a = 0;
 			is_async_execution_supported = 0;
-			script_trigger_event(v1, EVT_MSG_1533, 0, task_mobd17_cursor);
+			script_trigger_event(v1, EVT_MSG_1533, 0, game_cursor_script);
 			sub_408460();
 			sprite_load_mobd(v3, 60);
 		}
@@ -11405,7 +11405,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 			if (dword_47C030)
 			{
 				dword_47C030 = 0;
-				script_trigger_event(v1, EVT_MSG_1533, 0, task_mobd17_cursor);
+				script_trigger_event(v1, EVT_MSG_1533, 0, game_cursor_script);
 				sprite_load_mobd(v3, 60);
 			}
 			a1a = 0;
@@ -11435,7 +11435,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 			break;
 		if (!is_async_execution_supported)
 		{
-			script_trigger_event(v1, EVT_MSG_1532, 0, task_mobd17_cursor);
+			script_trigger_event(v1, EVT_MSG_1532, 0, game_cursor_script);
 			while (!is_async_execution_supported)
                 script_sleep(v1, 1);
 			if (dword_47050C == 1)
@@ -11608,7 +11608,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 		v3 = v15;
 	}
 	is_async_execution_supported = v2;
-	script_trigger_event(v1, EVT_MSG_1532, 0, task_mobd17_cursor);
+	script_trigger_event(v1, EVT_MSG_1532, 0, game_cursor_script);
 	goto LABEL_26;
 }
 
@@ -17914,7 +17914,7 @@ void sidebar_button_handler_order_unit_click(SidebarButton *a1)
 		(int *)&game_globals_per_player + player_side,
 			&v1->_14_pcost,
 			(v1->cost << 8) / v1->production_time_x60,
-			task_mobd17_cursor,
+			game_cursor_script,
 			v1,
 			v1->field_2C);
 }
@@ -18061,7 +18061,7 @@ void sidebar_button_handler_446190_open(SidebarButton *a1)
 {
 	SidebarButton **v1; // esi@1
 
-	script_trigger_event(0, EVT_MSG_1519, 0, task_mobd17_cursor);
+	script_trigger_event(0, EVT_MSG_1519, 0, game_cursor_script);
 	v1 = _47CA08_sidebar_buttons;
 	do
 	{
@@ -18074,7 +18074,7 @@ void sidebar_button_handler_446190_open(SidebarButton *a1)
 //----- (004461E0) --------------------------------------------------------
 void sidebar_button_handler_4461E0_close(SidebarButton *a1)
 {
-	script_trigger_event(0, EVT_MSG_1520, 0, task_mobd17_cursor);
+	script_trigger_event(0, EVT_MSG_1520, 0, game_cursor_script);
 }
 
 //----- (00446200) --------------------------------------------------------
@@ -18131,7 +18131,7 @@ void sidebar_button_handler_order_building_click(SidebarButton *a1)
 			_47C788_building_planner.field_4 = v4;
 			_47C788_building_planner.field_8 = v5;
 			_47C788_building_planner.cost = unit_stats[v6].cost;
-			script_trigger_event(0, EVT_MSG_1522_plan_building_construction, &_47C788_building_planner, task_mobd17_cursor);
+			script_trigger_event(0, EVT_MSG_1522_plan_building_construction, &_47C788_building_planner, game_cursor_script);
 		}
 	}
 	else
@@ -18823,13 +18823,13 @@ void sidebar_button_handler_help_open(SidebarButton *a1)
 			script_trigger_event(0, EVT_MSG_DESELECTED, 0, (*v1)->task);
 		++v1;
 	} while ((int)v1 < (int) & _47CA10_sidebar_button_minimap);
-	script_trigger_event(0, EVT_MSG_SHOW_UNIT_HINT, 0, task_mobd17_cursor);
+	script_trigger_event(0, EVT_MSG_SHOW_UNIT_HINT, 0, game_cursor_script);
 }
 
 //----- (00446E50) --------------------------------------------------------
 void sidebar_button_handler_help_close(SidebarButton *a1)
 {
-	script_trigger_event(0, EVT_MSG_1516, 0, task_mobd17_cursor);
+	script_trigger_event(0, EVT_MSG_1516, 0, game_cursor_script);
 }
 
 //----- (00446E90) --------------------------------------------------------
@@ -20490,7 +20490,7 @@ int UNIT_Init()
 		v4->reload2_time = 0;
 		v4 = (UnitAttachmentPoint *)((char *)v4 + 100);
 	} while ((int)v4 <= (int)&unit_stats[78].attach);
-	task_mobd17_cursor = 0;
+	game_cursor_script = 0;
 	_438B40_reset_explosions();
 	entity_scout = 0;
 	dword_47A3DC = 0;

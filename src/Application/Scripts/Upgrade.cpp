@@ -225,7 +225,7 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
             }
             break;
         case EVT_MSG_PRODUCTION_READY:
-            script_trigger_event(receiver, EVT_MSG_UPGRADE_COMPLETE, *((void **)param + 76), task_mobd17_cursor);
+            script_trigger_event(receiver, EVT_MSG_UPGRADE_COMPLETE, *((void **)param + 76), game_cursor_script);
             if (v5->player_side == player_side)
             {
                 show_message_ex(0, aUpgradeComplete);

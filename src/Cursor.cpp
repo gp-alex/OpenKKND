@@ -200,7 +200,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
     }
 
     // while dragging
-    while (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK))
+    while (!mouse_lbutton_just_released())
     {
         if (a1->_70_sprite->x < x)
         {
@@ -314,7 +314,7 @@ void cursor_drag_selection(_428940_local *a1, int x, int y)
     {
         while (1)
         {
-            script_trigger_event(task_mobd17_cursor, EVT_MSG_DESELECTED, 0, v15->_8_task);
+            script_trigger_event(game_cursor_script, EVT_MSG_DESELECTED, 0, v15->_8_task);
             yb = yb->next;
             if (yb == a1)
                 break;
@@ -540,9 +540,9 @@ LABEL_27:
     {
         dword_47A6FC = (_47A700_input.pressed_keys_mask & INPUT_KEYBOARD_MENU_MASK) != 0 ? 0x38 : 0;
     }
-    if (_47A5E0_mouse_input.pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK && dword_47A6F0 < 100)
+    if (mouse_rbutton_is_pressed() && dword_47A6F0 < 100)
         ++dword_47A6F0;
-    if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK)
+    if (mouse_rbutton_just_pressed())
     {
         v2->field_4C = 1;
         v2->cursor_x = _47A5E0_mouse_input.cursor_x_x256;
@@ -556,7 +556,7 @@ LABEL_27:
         v22 = _47A700_input.pressed_keys_mask;
         v21 = is_async_execution_supported;
     }
-    if (v2->field_4C && (v21 || _47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK))
+    if (v2->field_4C && (v21 || mouse_rbutton_just_released()))
     {
         v2->field_4C = 0;
         if (dword_47A6F0 < 10)
@@ -699,7 +699,7 @@ LABEL_82:
         _47C380_mapd.mapd_cplc_render_x = v32;
         v23 = 0;
     }
-    if (_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK
+    if (mouse_rbutton_just_released()
         && is_async_execution_supported == v23
         && _47A5E0_mouse_input.cursor_x_x256 < (render_width - 32) << 8
         && v2->field_58 < 4096
@@ -713,7 +713,7 @@ LABEL_82:
         v2->_68_selected_moveable_entity_type = SELECTED_ENTITY_0;
         dword_468980 = -1;
         for (i = v2->next; i != v2; i = i->next)
-            script_trigger_event(task_mobd17_cursor, EVT_MSG_DESELECTED, 0, i->_8_task);
+            script_trigger_event(game_cursor_script, EVT_MSG_DESELECTED, 0, i->_8_task);
         if (v2->next != v2)
         {
             v2->prev->next = (_428940_local *)v2->ptr_10;
@@ -991,13 +991,13 @@ bool cursor_check_click(_428940_local *a1)
 
     bool move_order_issued = true;
 
-    if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
+    if (mouse_lbutton_just_pressed())
     {
         v2 = a1->_70_sprite;
         v4 = 0;
         v5 = v2->x;
         v11 = v2->y;
-        if (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK))
+        if (!mouse_lbutton_just_released())
         {
             while (1)
             {
@@ -1023,7 +1023,7 @@ bool cursor_check_click(_428940_local *a1)
                 {
                     cursor_load_mobd(a1, CURSOR_MOBD_OFFSET_DEFAULT);
                 }
-                if (_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
+                if (mouse_lbutton_just_released())
                     return true;
             }
         }
@@ -1428,7 +1428,7 @@ void cursor_group_orders(_428940_local *a1)
         if (!v2->_38_are_owned_units_selected || !v2->_40_is_infantry_or_vehicle_selected)
         {
             cursor_load_mobd(a1, CURSOR_MOBD_OFFSET_DEFAULT);
-            if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
+            if (mouse_lbutton_just_pressed())
             {
                 cursor_drag_selection(v2, v2->_70_sprite->x, v2->_70_sprite->y);
             }
@@ -1628,7 +1628,7 @@ void cursor_group_orders(_428940_local *a1)
                 v2->_68_selected_moveable_entity_type = SELECTED_ENTITY_0;
                 dword_468980 = -1;
                 for (i = v2->next; i != v2; i = i->next)
-                    script_trigger_event(task_mobd17_cursor, EVT_MSG_DESELECTED, 0, i->_8_task);
+                    script_trigger_event(game_cursor_script, EVT_MSG_DESELECTED, 0, i->_8_task);
                 if (v2->next != v2)
                 {
                     v2->prev->next = (_428940_local *)v2->ptr_10;
@@ -1726,7 +1726,7 @@ void sub_4297D0(_428940_local *a1, int a2)
             v8 != v2;
             v8 = v8->next)
         {
-            script_trigger_event(task_mobd17_cursor, EVT_MSG_DESELECTED, 0, v8->_8_task);
+            script_trigger_event(game_cursor_script, EVT_MSG_DESELECTED, 0, v8->_8_task);
         }
         if (v2->next != v2)
         {
@@ -1968,18 +1968,18 @@ void cursor_sidebar_handler(_428940_local *a1)
     v1 = a1;
     cursor_load_mobd(a1, CURSOR_MOBD_OFFSET_DEFAULT);
 
-    if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK)
+    if (mouse_lbutton_just_pressed())
     {
         v3 = v1->_18_script;
         script_trigger_event(0, EVT_MSG_SELECTED, 0, v1->_18_script);
-        while (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK))
+        while (!mouse_lbutton_just_released())
             cursor_process_user_actions(v1, 0);
         script_trigger_event(0, EVT_MSG_DESELECTED, 0, v3);
     }
-    if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK)
+    if (mouse_rbutton_just_pressed())
     {
         v4 = v1->_18_script;
-        while (!(_47A5E0_mouse_input.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK))
+        while (!mouse_rbutton_just_released())
             cursor_process_user_actions(v1, 0);
         script_trigger_event(0, EVT_MSG_1513, 0, v4);
         if (v1->field_28)
@@ -2051,6 +2051,7 @@ void script_game_cursor_handler(Script *a1)
     Sprite *v63[20]; // [sp+8Ch] [bp-50h]@35
 
     a1->field_1C = 1;
+    game_cursor_script = a1;
     dword_477890 = 0;
     dword_477894 = 0;
     dword_477898 = 0;
@@ -2088,7 +2089,6 @@ void script_game_cursor_handler(Script *a1)
     v62.next = &v62;
     v62.prev = &v62;
     v62._14_task = a1;
-    task_mobd17_cursor = a1;
     ptr_47A6EC = &v62;
     v62._18_script = 0;
     v62._1C_cursor_target_ai = nullptr;
@@ -2220,7 +2220,7 @@ void script_game_cursor_handler(Script *a1)
                                     else if (_47A5E0_mouse_input.cursor_x_x256 < (render_width - 32) << 8)
                                     {
                                         cursor_load_mobd(&v62, CURSOR_MOBD_OFFSET_DEFAULT);
-                                        if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && !is_async_execution_supported)
+                                        if (mouse_lbutton_just_pressed() && !is_async_execution_supported)
                                         {
                                             v62._70_sprite->field_88_unused = 1;
                                             cursor_drag_selection(&v62, v62._70_sprite->x, v62._70_sprite->y);
@@ -2411,7 +2411,7 @@ void script_game_cursor_handler(Script *a1)
                 }
                 if (v62._18_script)
                 {
-                    v15 = _47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK;
+                    v15 = mouse_lbutton_just_pressed();
                     v16 = 1;
                     cursor_sidebar_handler(&v62);
                     if (v15)
@@ -2456,9 +2456,9 @@ void script_game_cursor_handler(Script *a1)
                     cursor_load_mobd(&v62, CURSOR_MOBD_OFFSET_DENIED);
                 }
 
-                if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && v22)
+                if (mouse_lbutton_just_pressed() && v22)
                     break;
-                if (_47A5E0_mouse_input.just_pressed_buttons_mask & INPUT_MOUSE_RBUTTON_MASK)
+                if (mouse_rbutton_just_pressed())
                     goto LABEL_75;
             }
             v23 = 1;
@@ -2495,9 +2495,9 @@ void script_game_cursor_handler(Script *a1)
         LABEL_75:
             sprite_list_remove(v10);
             sub_42C9C0(v63);
-            cursor_load_mobd(&v62, 12);
+            cursor_load_mobd(&v62, CURSOR_MOBD_OFFSET_DEFAULT);
             if (is_async_execution_supported)
-                cursor_load_mobd(&v62, 12);
+                cursor_load_mobd(&v62, CURSOR_MOBD_OFFSET_DEFAULT);
             else
                 v62.field_2C = 0;
         }

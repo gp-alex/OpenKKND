@@ -68,7 +68,7 @@ void UNIT_Handler_Towers(Script *a1)
         goto LABEL_15;
     }
     if (v1->player_side == player_side)
-        script_trigger_event(v1->script, EVT_MSG_NEXT_CONSTRUCTION_STATE, v1, task_mobd17_cursor);
+        script_trigger_event(v1->script, EVT_MSG_NEXT_CONSTRUCTION_STATE, v1, game_cursor_script);
     sprite_4272E0_load_mobd_item(v1->sprite, v1->stats->mobd_lookup_offset_attack, 0);
     v1->SetMode(entity_mode_4474E0_towers);
     v1->ExecMode();
@@ -107,7 +107,7 @@ void entity_mode_tower_on_death(Entity *a1)
     v4 = v1->script;
     v1->destroyed = 1;
     v1->entity_id = 0;
-    script_trigger_event(v4, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    script_trigger_event(v4, EVT_MSG_DESELECTED, 0, game_cursor_script);
     script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v5 = v1->script;

@@ -5648,10 +5648,9 @@ stru37 *stru37_list_47A500;
 stru37 *stru37_list_47A504;
 stru37 *stru37_list;
 stru37 *stru37_list_free_pool;
-int input_mouse_window_losing_focus_reset_to_defaults; // weak
 int dword_47A5A0; // weak
 char byte_47A5A8[56];
-Script *task_mobd17_cursor; // idb
+Script *game_cursor_script; // idb
 stru13_stru0 _47A608_stru13_associated_array; // weak
 stru13construct *stru13construct_list_47A638;
 stru13construct *stru13construct_list_47A63C;

@@ -52,16 +52,29 @@ void SdlWindow::SetHeight(int height) {
 }
 
 void SdlWindow::SetFullscreen() {
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-
-    #if defined(FIX_WINDOWS_BLOCKING_WINDOW)
+    #if !defined(_DEBUG) || defined(_RELEASE)
+        SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    #else
     {
-        SDL_SysWMinfo info;
-        SDL_VERSION(&info.version);
+        SDL_MaximizeWindow(window);
+        #if defined(FIX_WINDOWS_BLOCKING_WINDOW)
+        {
+            SDL_SysWMinfo info;
+            SDL_VERSION(&info.version);
 
-        if (SDL_GetWindowWMInfo(window, &info)) {
-            auto hwnd = info.info.win.window;
-            SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+            if (SDL_GetWindowWMInfo(window, &info)) {
+                auto hwnd = info.info.win.window;
+
+                SetWindowLongPtrA(hwnd, GWL_STYLE, WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_GROUP);
+                SetWindowLongPtrA(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
+
+                ShowWindow(hwnd, SW_MAXIMIZE);
+                SetWindowPos(
+                    hwnd, HWND_NOTOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0
+                );
+                UpdateWindow(hwnd);
+            }
+        #endif
         }
     }
     #endif
@@ -103,8 +116,39 @@ void SdlWindow::WaitMessage() {
 void SdlWindow::MessageProcessor(SDL_Event &e) {
     switch (e.type) {
         case SDL_QUIT: {
-            if (observer) {
+            for (auto observer : observerList) {
                 observer->OnClose();
+            }
+            break;
+        }
+
+        case SDL_MOUSEMOTION: {
+            for (auto observer : observerList) {
+                observer->OnMouseMove(
+                    e.motion.x, e.motion.y,
+                    e.motion.xrel, e.motion.yrel,
+                    e.motion.state & SDL_BUTTON_LMASK,
+                    e.motion.state & SDL_BUTTON_RMASK
+                );
+            }
+            break;
+        }
+
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP: {
+            int x = e.button.x;
+            int y = e.button.y;
+            int numClicks = e.button.clicks;
+            bool pressed = e.button.state == SDL_PRESSED;
+
+            if (e.button.button == SDL_BUTTON_LEFT) {
+                for (auto observer : observerList) {
+                    observer->OnMouseLeftButton(pressed);
+                }
+            } else if (e.button.button == SDL_BUTTON_RIGHT) {
+                for (auto observer : observerList) {
+                    observer->OnMouseRightButton(pressed);
+                }
             }
             break;
         }
@@ -113,5 +157,5 @@ void SdlWindow::MessageProcessor(SDL_Event &e) {
 
 
 void SdlWindow::AddObserver(std::shared_ptr<WindowObserver> observer) {
-    this->observer = observer;
+    observerList.push_back(observer);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <list>
 
 #include <SDL2/SDL.h>
 
@@ -48,7 +49,9 @@ namespace Infrastructure {
 
         std::shared_ptr<const WindowConfig> config = nullptr;
         std::shared_ptr<Log> log = nullptr;
-        std::shared_ptr<WindowObserver> observer;
+
+        typedef std::list<std::shared_ptr<WindowObserver>> ObserverList;
+        ObserverList observerList;
 
         SDL_Window *window = nullptr;
     };

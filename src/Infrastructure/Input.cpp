@@ -1,10 +1,16 @@
 #include <windows.h>
 
+#include "src/Infrastructure/Input.h"
+
 #include "src/kknd.h"
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 
-#include "src/Infrastructure/Input.h"
+#include "src/Infrastructure/InputWindowObserver.h"
+
+using Infrastructure::InputWindowObserver;
+
+
 
 /* 379 */
 struct VKeyMap
@@ -108,6 +114,8 @@ MouseInput input_mouse; // weak
 int num_mouse_buttons; // weak
 int input_47A58C; // weak
 __int16 word_47A590; // weak
+int input_mouse_window_losing_focus_reset_to_defaults; // weak
+std::shared_ptr<InputWindowObserver> inputObserver;
 
 
 void input_reset_keyboard()
@@ -197,6 +205,11 @@ bool input_get_keyboard_state(KeyboardInput *state)
 //----- (00428310) --------------------------------------------------------
 bool input_initialize()
 {
+    if (!inputObserver) {
+        inputObserver = std::make_shared<InputWindowObserver>();
+        gWindow->AddObserver(inputObserver);
+    }
+
     input_mouse.just_pressed_buttons_mask = 0;
     input_mouse.pressed_buttons_mask = 0;
     input_mouse.just_released_buttons_mask = 0;
@@ -222,8 +235,6 @@ bool input_initialize()
 bool input_4283A0_set_cursor_pos(__int16 x, __int16 y)
 {
     int result; // eax@2
-    int v5; // eax@5
-    int v6; // [sp-8h] [bp-14h]@5
     struct tagPOINT Point; // [sp+4h] [bp-8h]@1
 
     extern HWND global_hwnd;
@@ -332,4 +343,5 @@ int input_update_mouse()
         result = 0;
     }
     return result;
+    return 1;
 }

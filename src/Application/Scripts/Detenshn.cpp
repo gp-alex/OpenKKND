@@ -478,7 +478,7 @@ void entity_mode_407C60_on_death_tech_bunker(Entity *a1)
     v3 = &v1->turret->sprite_task;
     if (v3)
         script_trigger_event(0, EVT_MSG_1500, 0, *v3);
-    script_trigger_event(v1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    script_trigger_event(v1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
     script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v4 = v1->sprite;
@@ -507,7 +507,7 @@ void entity_mode_hut_on_death(Entity *a1)
 {
     entity_load_mobd_4(a1);
     a1->SetMode(entity_mode_407D10);
-    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, task_mobd17_cursor);
+    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
 
     a1->destroyed = 1;
     entity_439120_add_explosion(a1);

@@ -1045,7 +1045,7 @@ bool GAME_Load_UnpackProductionInfo(void *a1)
                         &v19->_14_pcost,
                         v19->cost,
                         (v20 << 8) / v19->production_time_x60,
-                        task_mobd17_cursor,
+                        game_cursor_script,
                         v19,
                         v19->field_2C);
                 v19->field_1C = 0;
@@ -2002,7 +2002,7 @@ int GAME_Load()
     v1 = sprite_list_find_by_mobd_id(MOBD_CURSORS);
     if (!v1
         || (v2 = v1->script) == 0
-        || (task_mobd17_cursor = v2,
+        || (game_cursor_script = v2,
             UNIT_num_player_units = 0,
             UNIT_num_nonplayer_units = 0,
             v3 = fopen(current_savegame_filename, "rb"),

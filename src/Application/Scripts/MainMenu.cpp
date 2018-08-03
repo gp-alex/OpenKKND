@@ -453,9 +453,9 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
             {
                 if (i->event == EVT_MOUSE_HOVER)
                 {
-                    if (v16.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
+                    if (mouse_lbutton_just_pressed() && i->param && !dword_4778A0)
                         script_trigger_event(v1, EVT_MSG_SELECTED, 0, (Script *)i->param);
-                    if (v16.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
+                    if (mouse_lbutton_just_released() && i->param && !dword_4778A0)
                         script_trigger_event(v1, EVT_MSG_DESELECTED, 0, (Script *)i->param);
                 }
                 script_discard_event(i);

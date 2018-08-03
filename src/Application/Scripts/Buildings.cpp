@@ -421,7 +421,7 @@ void entity_mode_building_on_death_default(Entity *a1)
         script_deinit(v1->turret->sprite_task);
         script_free_local_object(v1->script, v1->turret);
     }
-    script_trigger_event(v1->script, EVT_MSG_DESELECTED, 0u, task_mobd17_cursor);
+    script_trigger_event(v1->script, EVT_MSG_DESELECTED, 0u, game_cursor_script);
     script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
     v6 = v1->script;
     if (v6->script_type == SCRIPT_POWER_STATION_HANDLER)

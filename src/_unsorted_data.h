@@ -538,10 +538,9 @@ extern stru37 *stru37_list_47A500;
 extern stru37 *stru37_list_47A504;
 extern stru37 *stru37_list;
 extern stru37 *stru37_list_free_pool;
-extern int input_mouse_window_losing_focus_reset_to_defaults; // weak
 extern int dword_47A5A0; // weak
 extern char byte_47A5A8[56];
-extern Script *task_mobd17_cursor; // idb
+extern Script *game_cursor_script; // idb
 extern stru13_stru0 _47A608_stru13_associated_array; // weak
 extern stru13construct *stru13construct_list_47A638;
 extern stru13construct *stru13construct_list_47A63C;
