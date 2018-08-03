@@ -8,11 +8,12 @@
 #include "src/Infrastructure/Window/Window.h"
 
 namespace Application {
-    class Game {
+    class Game : public std::enable_shared_from_this<Game> {
     typedef Infrastructure::Renderer Renderer;
     typedef Infrastructure::Window Window;
     public:
         void Run();
+        void Exit();
 
     private:
         void WaitScreen();

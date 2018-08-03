@@ -3,14 +3,17 @@
 #include "src/Infrastructure/Window/WindowFactory.h"
 
 #include "src/Infrastructure/Window/SdlWindow.h"
+#include "src/Infrastructure/Window/WindowObserver.h"
 
 using Infrastructure::WindowFactory;
 using Infrastructure::Window;
 using Infrastructure::SdlWindow;
 using Infrastructure::WindowConfig;
+using Infrastructure::WindowObserver;
 
 std::shared_ptr<Window> WindowFactory::CreateSdlWindow(
-    std::shared_ptr<const WindowConfig> config
+    std::shared_ptr<const WindowConfig> config,
+    std::shared_ptr<WindowObserver> observer
 ) {
     static bool _sdl2_winitialized = false;
     if (!_sdl2_winitialized) {
@@ -26,6 +29,10 @@ std::shared_ptr<Window> WindowFactory::CreateSdlWindow(
     if (window) {
         if (!window->Initialize()) {
             window = nullptr;
+        }
+
+        if (observer) {
+            window->AddObserver(observer);
         }
     }
 

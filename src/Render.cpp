@@ -269,11 +269,12 @@ void render_draw_list(DrawJobList *list)
                 if (!pdds_backbuffer->Lock(&stru_465810, &ddsd_primary, 1, 0))
                 {
                     render_locked_surface_width_px = ddsd_primary.dwWidth;*/
-                    render_locked_surface_width_px = 640;
+                    render_locked_surface_width_px = render_width;
 
                     // 8/16 bpp are hardcoded, introduce a walkaround for ordinary bpp
                     //static auto pixels_8bpp = new unsigned char[ddsd_primary.dwWidth * ddsd_primary.dwHeight];
-                    static auto pixels_8bpp = new unsigned char[640 * 480];
+                    auto pixels_8bpp = new unsigned char[render_width * render_height];
+                    auto pixels_32bpp = new unsigned int[render_width * render_height];
 
                     //render_locked_surface_ptr = ddsd_primary.lpSurface;
                     render_locked_surface_ptr = pixels_8bpp;
@@ -315,13 +316,9 @@ void render_draw_list(DrawJobList *list)
                         }
                     }*/
 
-
-
-                    static auto pixels_32bpp = new unsigned int[640 * 480];
-
-                    for (int y = 0; y < 480; ++y)
+                    for (int y = 0; y < render_height; ++y)
                     {
-                        for (int x = 640 - 1; x >= 0; --x)
+                        for (int x = render_width - 1; x >= 0; --x)
                         {
                             auto c = pixels_8bpp[render_locked_surface_width_px * y + x];
 
@@ -339,7 +336,7 @@ void render_draw_list(DrawJobList *list)
                                 b = render_current_palette->entires[c].peBlue;
                             }
 
-                            pixels_32bpp[y * 640 + x] = RGB(b, g, r);
+                            pixels_32bpp[y * render_width + x] = RGB(b, g, r);
                             //SetPixel(render_sw_hdc, x, y, RGB(r, g, b));
                             //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (r << 16) | (g << 8) | b;
                         }
@@ -348,7 +345,7 @@ void render_draw_list(DrawJobList *list)
                     static HDC dc_backbuffer = CreateCompatibleDC(nullptr);
                     static HBITMAP hbm_backbuffer = nullptr;
                     if (hbm_backbuffer == nullptr) {
-                        hbm_backbuffer = CreateCompatibleBitmap(render_sw_hdc, 640, 480);
+                        hbm_backbuffer = CreateCompatibleBitmap(render_sw_hdc, render_width, render_height);
                         DeleteObject(SelectObject(dc_backbuffer, hbm_backbuffer));
                     }
 
@@ -362,10 +359,10 @@ void render_draw_list(DrawJobList *list)
                     bmpInfoHeader.biClrImportant = 0;
                     bmpInfoHeader.biClrUsed = 0;
                     bmpInfoHeader.biCompression = BI_RGB;
-                    bmpInfoHeader.biHeight = -480;
-                    bmpInfoHeader.biWidth = 640;
+                    bmpInfoHeader.biHeight = -render_height;
+                    bmpInfoHeader.biWidth = render_width;
                     bmpInfoHeader.biPlanes = 1;
-                    bmpInfoHeader.biSizeImage = 640 * 480 * 4;
+                    bmpInfoHeader.biSizeImage = render_width * render_height * 4;
 
                     ZeroMemory(&bmpInfo, sizeof(bmpInfo));
                     bmpInfo.bmiHeader = bmpInfoHeader;
@@ -374,20 +371,23 @@ void render_draw_list(DrawJobList *list)
                     bmpInfo.bmiColors->rgbRed = 0;
                     bmpInfo.bmiColors->rgbReserved = 0;
 
-                    SetDIBitsToDevice(render_sw_hdc, 0, 0, 640, 480, 0, 0, 0, 480, pixels_32bpp, &bmpInfo, DIB_RGB_COLORS);
+                    SetDIBitsToDevice(
+                        render_sw_hdc, 0, 0, render_width, render_height, 0, 0, 0, render_height,
+                        pixels_32bpp, &bmpInfo, DIB_RGB_COLORS
+                    );
 
-                    for (int i = 0; i < 640 * 480; ++i) {
+                    for (int i = 0; i < render_width * render_height; ++i) {
                         pixels_32bpp[i] |= 0xFF000000;
                     }
 
                     gRenderer->ClearTarget(64, 64, 64);
-                    gRenderer->DrawImageCentered(640, 480, pixels_32bpp);
+                    gRenderer->DrawImageCentered(render_width, render_height, pixels_32bpp);
                     gRenderer->Present();
 
 
 
-                    //delete[] pixels_8bpp;
-                    //delete[] rgb32bits;
+                    delete[] pixels_8bpp;
+                    delete[] pixels_32bpp;
 
 
                     /*if (!pdds_backbuffer->Unlock(ddsd_primary.lpSurface))

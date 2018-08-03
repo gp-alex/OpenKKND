@@ -1,4 +1,4 @@
-#if defined(WIN32)
+#if defined(_WINDOWS)
     #define FIX_WINDOWS_BLOCKING_WINDOW
 #endif
 
@@ -7,11 +7,10 @@
     #include <SDL2/SDL_syswm.h>
 #endif
 
-#include <SDL2/SDL.h>
-
 #include "src/Infrastructure/Window/SdlWindow.h"
 
 using Infrastructure::SdlWindow;
+using Infrastructure::WindowObserver;
     
 bool SdlWindow::Initialize() {
     window = SDL_CreateWindow(
@@ -68,6 +67,9 @@ void SdlWindow::SetFullscreen() {
     #endif
 }
 
+void SdlWindow::SetWindowed() {
+}
+
 int SdlWindow::GetWidth() const {
     int w, h;
     SDL_GetWindowSize(window, &w, &h);
@@ -80,20 +82,36 @@ int SdlWindow::GetHeight() const {
     return h;
 }
 
-void SdlWindow::PeekMessages() {
-    //Event handler
+void SdlWindow::PeekMessageSingle() {
     SDL_Event e;
+    if (SDL_PollEvent(&e) != 0) {
+        MessageProcessor(e);
+    }
+}
 
-    //Handle events on queue
-    while (SDL_PollEvent(&e) != 0)
-    {
-        //User requests quit
-        if (e.type == SDL_QUIT)
-        {
-            //quit = true;
-        }
+void SdlWindow::PeekMessageAll() {
+    SDL_Event e;
+    while (SDL_PollEvent(&e) != 0) {
+        MessageProcessor(e);
     }
 }
 
 void SdlWindow::WaitMessage() {
+}
+
+
+void SdlWindow::MessageProcessor(SDL_Event &e) {
+    switch (e.type) {
+        case SDL_QUIT: {
+            if (observer) {
+                observer->OnClose();
+            }
+            break;
+        }
+    }
+}
+
+
+void SdlWindow::AddObserver(std::shared_ptr<WindowObserver> observer) {
+    this->observer = observer;
 }

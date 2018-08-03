@@ -17,6 +17,10 @@ using Application::Game;
 #include "src/Map.h"
 #include "src/Pathfind.h"
 
+#include "src/Application/GameWindowObserver.h"
+
+using Application::GameWindowObserver;
+
 #include "src/Engine/Entity.h"
 
 #include "src/Infrastructure/File.h"
@@ -51,8 +55,11 @@ void Game::Run() {
     int window_height = 480;
     bool fullscreen = true;
 
-    auto windowConfig = WindowConfigFactory().Create("Open Krush Kill `n' Destroy", window_width, window_height);
-    window = WindowFactory().CreateSdlWindow(windowConfig);
+    auto windowObserver = std::make_shared<GameWindowObserver>(shared_from_this());
+    auto windowConfig = WindowConfigFactory().Create(
+        "Open Krush Kill `n' Destroy", window_width, window_height
+    );
+    window = WindowFactory().CreateSdlWindow(windowConfig, windowObserver);
     ::gWindow = window;
 
     auto rendererConfig = RendererConfigFactory().Create("SDL2", window, window_width, window_height, fullscreen);
@@ -61,7 +68,7 @@ void Game::Run() {
 
     renderer->ClearTarget(0, 0, 0);
     renderer->Present();
-    window->PeekMessages();
+    window->PeekMessageAll();
 
     WaitScreen();
 
@@ -302,4 +309,9 @@ void Game::Terminate() {
     netz_deinit();
     GAME_Deinit();
     exit(-1);
+}
+
+
+void Game::Exit() {
+    Terminate();
 }

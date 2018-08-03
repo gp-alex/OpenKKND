@@ -5,27 +5,9 @@ add_subdirectory(Renderer)
 add_subdirectory(Window)
 
 
-#set(INFRASTRUCTURE_SOURCES
-#	DependencyInjection.cpp
-#	File.cpp
-#	Input.cpp
-#	Log.cpp
-#    Netz.cpp
-#)
-
-#set(INFRASTRUCTURE_HEADERS
-#	DependencyInjection.h
-#	File.h
-#    Input.h
-#	Log.h
-#    Netz.h
-#)
-
-
-#add_library(Infrastructure STATIC ${INFRASTRUCTURE_SOURCES} ${INFRASTRUCTURE_HEADERS})
-
 
 add_library(Infrastructure "")
+
 target_sources(Infrastructure
     INTERFACE
         "${CMAKE_CURRENT_LIST_DIR}/DependencyInjection.h"

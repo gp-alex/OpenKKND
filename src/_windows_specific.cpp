@@ -95,10 +95,9 @@ int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 //----- (0044D560) --------------------------------------------------------
 void message_pump()
 {
+    gWindow->PeekMessageAll();
+
     MSG msg;
-
-    gWindow->PeekMessages();
-
     while (PeekMessageA(&msg, 0, 0, 0, PM_REMOVE))
     {
         if (msg.message == WM_QUIT) {
