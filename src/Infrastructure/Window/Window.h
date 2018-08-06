@@ -24,11 +24,22 @@ namespace Infrastructure {
         // appearance
         virtual void SetFullscreen() = 0;
         virtual void SetWindowed() = 0;
+
+        // behaviour
+        virtual bool GetIsActive() const = 0;
         
         // messaging
         virtual void PeekMessageSingle() = 0;
         virtual void PeekMessageAll() = 0;
         virtual void WaitMessage() = 0;
+
+        // input
+        virtual int GetMouseX() const = 0;
+        virtual void SetMouseX(int x) = 0;
+        virtual int GetMouseY() const = 0;
+        virtual void SetMouseY(int y) = 0;
+        virtual bool GetMousePressed(int button) const = 0;
+        virtual bool GetKeyPressedWindowsTmpHack(int vk) const = 0;
 
         // misc
         virtual void *GetApiHandle() const = 0;

@@ -44,6 +44,7 @@ std::string OsGetCommandLine() {
 void OsDebugString(const char *str) {
     printf("%s\n", str);
     OutputDebugStringA(str);
+    OutputDebugStringA("\n");
 }
 
 

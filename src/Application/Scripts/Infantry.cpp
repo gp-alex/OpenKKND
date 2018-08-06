@@ -3823,7 +3823,7 @@ void entity_mode_418590(Entity *a1)
             + (v6->damage_vehicle * veterancy_damage_bonus[v1->veterancy_level] >> 8);
         v9->field_90_building_damage = LOWORD_HEXRAYS(v6->damage_building)
             + (v6->damage_building * veterancy_damage_bonus[v1->veterancy_level] >> 8);
-        script_trigger_event(v1->script, EVT_MSG_ENTITY_ATTACKED, v1, v1->entity_8->script);
+        script_trigger_event(v1->script, MSG_ATTACKED, v1, v1->entity_8->script);
         script_sleep(
             v1->script,
             v1->stats->reload_time - (v1->stats->reload_time * veterancy_reload_bonus[v1->veterancy_level] >> 8)
@@ -4696,6 +4696,8 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
     int v14; // ecx@38
     int v15; // edx@38
 
+    log("EventHandler_Infantry(%u)", event);
+
     v4 = (Entity *)receiver->param;
     if (!v4->destroyed)
     {
@@ -4798,14 +4800,14 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
             v4->SetMode(entity_419560_on_death);
             entity_check_special_mission_death_conditions(v4);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_do_damage(v4, (Sprite *)param);
             entity_410710_status_bar(v4);
             break;
-        case EVT_MSG_ENTITY_ATTACKED:
+        case MSG_ATTACKED:
             entity_on_attacked_default(v4, (Entity *)param);
             break;
-        case EVT_MSG_RECEIVE_EXPERIENCE: {
+        case MSG_RECEIVE_EXPERIENCE: {
             v4->experience += (int)param;
             if (v4->experience >= v4->stats->hitpoints) {
                 v4->veterancy_level += v4->experience / v4->stats->hitpoints;
@@ -4863,7 +4865,7 @@ void EventHandler_419CA0(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_do_damage(v4, (Sprite *)param);
             break;
         default:
@@ -4902,7 +4904,7 @@ void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EV
     case EVT_MSG_SHOW_UNIT_HINT:
         entity_show_hint(v4);
         break;
-    case EVT_MSG_ENTITY_DO_DAMAGE:
+    case CMD_APPLY_DAMAGE:
         entity_do_damage(v4, (Sprite *)param);
         entity_410710_status_bar(v4);
         break;
@@ -4931,7 +4933,7 @@ void EventHandler_419DF0_unit_repairing_in_bay(Script *receiver, Script *sender,
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_41A510_evt1503(v4, (int)param);
             break;
         case EVT_CMD_ENTITY_MOVE:
@@ -4962,7 +4964,7 @@ void EventHandler_419E80_unit_in_repairbay(Script *receiver, Script *sender, enu
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_41A510_evt1503(v4, (int)param);
             break;
         default:

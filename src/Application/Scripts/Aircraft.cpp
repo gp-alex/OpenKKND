@@ -80,7 +80,7 @@ void EventHandler_Aircraft(Script *receiver, Script *sender, enum SCRIPT_EVENT e
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             if (param)
             {
                 v5 = v4->hitpoints;

@@ -84,7 +84,6 @@ extern char *Caption;
 extern unsigned __int8 palette_465848_sprt[256];
 extern int _465948_per_mobd_lookup_idx[16];
 extern int input_465A80_wndprockey_map[256];
-extern int input_465FE8[16];
 extern stru7 array_466028[7];
 extern int _466098_cost_multiplier[4];
 extern const char *slvs[2];
@@ -154,7 +153,6 @@ extern stru50 _4687D0_stru50_array[20];
 extern DataCplcItem_ptr1_stru20 _4688E0_DataCplcItem_ptr1_stru20_clanhall; // weak
 extern DataCplcItem_ptr1_stru20 _468910_DataCplcItem_ptr1_stru20_outpost; // weak
 
-extern int dword_468940[]; // weak
 extern int dword_468980; // weak
 extern int dword_468984; // weak
 extern char aSD[]; // idb

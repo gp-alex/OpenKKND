@@ -506,7 +506,7 @@ void entity_402E90_on_damage(Entity *a1, void *param, void(*on_death_mode)(Entit
 					{
 						v6 = *(Script **)(v5 + 12);
 						if (v6)
-							script_trigger_event(a1->script, EVT_MSG_RECEIVE_EXPERIENCE, damage_amount, v6);
+							script_trigger_event(a1->script, MSG_RECEIVE_EXPERIENCE, damage_amount, v6);
 					}
 				}
 			}
@@ -701,7 +701,7 @@ void EventHandler_Clanhall(Script *receiver, Script *sender, enum SCRIPT_EVENT e
 			}
 		}
 		break;
-	case EVT_MSG_ENTITY_DO_DAMAGE:
+	case CMD_APPLY_DAMAGE:
 		entity_402E90_on_damage(v4, param, entity_mode_clanhall_on_death);
 		entity_410520_update_healthbar_color(v4);
 		break;
@@ -1577,7 +1577,7 @@ void EventHandler_TankerConvoy(Script *receiver, Script *sender, enum SCRIPT_EVE
 	{
 		switch (event)
 		{
-		case EVT_MSG_ENTITY_DO_DAMAGE:
+		case CMD_APPLY_DAMAGE:
 			entity_do_damage(v4, (Sprite *)param);
 			entity_410710_status_bar(v4);
 			break;
@@ -1596,7 +1596,7 @@ void EventHandler_TankerConvoy(Script *receiver, Script *sender, enum SCRIPT_EVE
 		case EVT_MSG_1509_stru11:
 			entity_41A980_evt1509_unset_stru11(v4, param);
 			break;
-		case EVT_MSG_ENTITY_ATTACKED:
+		case MSG_ATTACKED:
 			entity_on_attacked_default(v4, (Entity *)param);
 			break;
 		default:
@@ -3099,10 +3099,10 @@ void EventHandler_DrillRig(Script *receiver, Script *sender, enum SCRIPT_EVENT e
 	{
 		switch (event)
 		{
-		case EVT_MSG_ENTITY_ATTACKED:
+		case MSG_ATTACKED:
             entity_on_attacked_drillrig(v4);
 			break;
-		case EVT_MSG_ENTITY_DO_DAMAGE:
+		case CMD_APPLY_DAMAGE:
 			entity_402E90_on_damage(v4, param, entity_mode_drillrig_on_death);
 			entity_410520_update_healthbar_color(v4);
 			break;
@@ -3740,7 +3740,7 @@ int sprite_40D8B0_dmg(Sprite *a1, int a2)
 										}
 										if (v19 >= v23)
 										{
-											result = script_trigger_event(v3->script, EVT_MSG_ENTITY_DO_DAMAGE, v3, v18->script);
+											result = script_trigger_event(v3->script, CMD_APPLY_DAMAGE, v3, v18->script);
 											*v13 = *v12;
 											++v13;
 											++v23;
@@ -6215,7 +6215,7 @@ void entity_41A510_evt1503(Entity *a1, int a2)
 				{
 					v6 = v5->script;
 					if (v6)
-						script_trigger_event(a1->script, EVT_MSG_RECEIVE_EXPERIENCE, v4, v6);
+						script_trigger_event(a1->script, MSG_RECEIVE_EXPERIENCE, v4, v6);
 				}
 			}
 			v7 = v2->hitpoints - (_DWORD)v4;
@@ -6272,7 +6272,7 @@ void entity_do_damage(Entity *a1, Sprite *a2)
 				{
 					v6 = v5->script;
 					if (v6)
-						script_trigger_event(a1->script, EVT_MSG_RECEIVE_EXPERIENCE, (void *)v4, v6);
+						script_trigger_event(a1->script, MSG_RECEIVE_EXPERIENCE, (void *)v4, v6);
 				}
 			}
 			v7 = v2->hitpoints - (_DWORD)v4;
@@ -6650,7 +6650,7 @@ bool _41B070_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				{
 					if (*(_DWORD *)(v9 + 20) != *(_DWORD *)(v7 + 20) || (v10 = *(_DWORD *)(v7 + 16), v10 >= 46) && v10 <= 72)
 					{
-						script_trigger_event(0, EVT_MSG_ENTITY_DO_DAMAGE, v5, v6);
+						script_trigger_event(0, CMD_APPLY_DAMAGE, v5, v6);
 						v5->script->flags_20 |= SCRIPT_FLAGS_20_2;
 						v5->script->flags_24 |= v5->script->flags_20;
 					}
@@ -8475,11 +8475,11 @@ void MessageHandler_MobileOutpost(Script *receiver, Script *sender, enum SCRIPT_
 		case EVT_MSG_1509_stru11:
 			entity_41A980_evt1509_unset_stru11(v4, param);
 			break;
-		case EVT_MSG_ENTITY_DO_DAMAGE:
+		case CMD_APPLY_DAMAGE:
 			entity_do_damage(v4, (Sprite *)param);
 			entity_410710_status_bar(v4);
 			break;
-		case EVT_MSG_ENTITY_ATTACKED:
+		case MSG_ATTACKED:
 			entity_on_attacked_default(v4, (Entity *)param);
 			break;
 		case EVT_MSG_1522_plan_building_construction:
@@ -10140,7 +10140,7 @@ void EventHandler_Outpost(Script *receiver, Script *sender, enum SCRIPT_EVENT ev
 				}
 			}
 			break;
-		case EVT_MSG_ENTITY_DO_DAMAGE:
+		case CMD_APPLY_DAMAGE:
 			entity_402E90_on_damage(v4, param, entity_mode_outpost_on_death);
 			entity_410520_update_healthbar_color(v4);
 			break;
@@ -12331,7 +12331,7 @@ void EventHandler_PowerStation(Script *receiver, Script *sender, enum SCRIPT_EVE
 	v4 = receiver;
 	v5 = sender;
 	v6 = (Entity *)receiver->param;
-	if (event == EVT_MSG_ENTITY_DO_DAMAGE)
+	if (event == CMD_APPLY_DAMAGE)
 	{
 		entity_402E90_on_damage(v6, param, entity_mode_powerstation_on_death);
 		entity_410520_update_healthbar_color(v6);
@@ -19526,7 +19526,7 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 					+ (v4->damage_building
 						* veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
 				v7->parent = v1->turret_sprite->parent;
-				script_trigger_event(v1->entity->script, EVT_MSG_ENTITY_ATTACKED, v1->entity, v1->_C_entity->script);
+				script_trigger_event(v1->entity->script, MSG_ATTACKED, v1->entity, v1->_C_entity->script);
 				v10 = v1->stats_attachment_point;
 				v1->field_18 = v10->reload_time;
 				v11 = v1->field_1C - 1;

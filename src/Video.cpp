@@ -28,11 +28,7 @@ DetailedDrawHandler_VideoPlayer _477948_video_draw_details;
 int _477970_video_header_field_6; // weak
 int _477974_video_header_field_8; // weak
 DrawJob *video_477978_draw_job;
-_UNKNOWN video_477DE4_dsb_waveformatex; // weak
-_UNKNOWN unk_477982; // weak
-__int64 qword_477984; // weak
-_UNKNOWN unk_47798C; // weak
-_UNKNOWN unk_47798E; // weak
+WAVEFORMATEX video_477DE4_dsb_waveformatex; // weak
 int dword_477940; // weak
 int dword_477944; // weak
 Palette _477990_video_palette; // idb
@@ -361,22 +357,19 @@ void VIDEO_40D090(VideoFile *a1)
     v3 = ((_BYTE)v2 != 8) + 1;
     if (BYTE1(v2) & 1)
         v3 *= 2;
-    video_477DE4_dsb_waveformatex = 0;
-    video_477DE4_dsb_waveformatex = 1;
-    qword_477984 = 0i64;
-    unk_47798C = 0;
-    unk_477982 = (unsigned __int16)(((v1->header.field_18 & 0x100) != 0) + 1);
-    LODWORD(qword_477984) = v1->header._14_looks_like_fps;
-    unk_47798C = v3;
-    HIDWORD(qword_477984) = v1->header._14_looks_like_fps * v3;
-    unk_47798E = (unsigned __int8)v1->header.field_18 != 8 ? 16 : 8;
-
+    memset(&video_477DE4_dsb_waveformatex, 0, sizeof(video_477DE4_dsb_waveformatex));
+    video_477DE4_dsb_waveformatex.wFormatTag = 1;
+    *(_DWORD *)&video_477DE4_dsb_waveformatex.nChannels = (unsigned __int16)(((v1->header.field_18 & 0x100) != 0) + 1);
+    video_477DE4_dsb_waveformatex.nSamplesPerSec = v1->header._14_looks_like_fps;
+    video_477DE4_dsb_waveformatex.nBlockAlign = v3;
+    video_477DE4_dsb_waveformatex.nAvgBytesPerSec = v1->header._14_looks_like_fps * v3;
+    video_477DE4_dsb_waveformatex.wBitsPerSample = (unsigned __int8)v1->header.field_18 != 8 ? 16 : 8;
 
     video_477DE4_dsb_desc.dwReserved = 0;
     video_477DE4_dsb_desc.dwSize = 20;
     video_477DE4_dsb_desc.dwFlags = 0;
     video_477DE4_dsb_desc.dwBufferBytes = 0x10000;
-    video_477DE4_dsb_desc.lpwfxFormat = (LPWAVEFORMATEX)&video_477DE4_dsb_waveformatex;
+    video_477DE4_dsb_desc.lpwfxFormat = &video_477DE4_dsb_waveformatex;
     if (pds
         && S_OK == pds->CreateSoundBuffer(&video_477DE4_dsb_desc, &video_477DE4_dsb, 0)
         && S_OK == video_477DE4_dsb->Lock(0, 0x10000, (LPVOID *)&v4, &v7, &v6, &v5, 0))

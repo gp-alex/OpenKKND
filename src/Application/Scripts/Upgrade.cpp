@@ -252,7 +252,7 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
         case EVT_MSG_DESTROY:
             entity_402E40_destroy(v5, entity_mode_researchlab_on_death);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_402E90_on_damage(v5, param, entity_mode_researchlab_on_death);
             entity_410520_update_healthbar_color(v5);
             break;

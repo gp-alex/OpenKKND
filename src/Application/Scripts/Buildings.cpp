@@ -69,7 +69,7 @@ void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum
             case EVT_MSG_1509_stru11:
                 entity_41A980_evt1509_unset_stru11(v5, param);
                 break;
-            case EVT_MSG_ENTITY_ATTACKED:
+            case MSG_ATTACKED:
                 entity_on_attacked_default(v5, (Entity *)param);
                 entity_on_attacked_building(v5);
                 break;
@@ -77,7 +77,7 @@ void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum
             case EVT_MSG_SABOTAGE:
                 entity_sabotage(v5, param, entity_mode_building_on_death_default);
                 break;
-            case EVT_MSG_ENTITY_DO_DAMAGE:
+            case CMD_APPLY_DAMAGE:
                 entity_402E90_on_damage(v5, param, entity_mode_building_on_death_default);
                 entity_410520_update_healthbar_color(v5);
                 break;

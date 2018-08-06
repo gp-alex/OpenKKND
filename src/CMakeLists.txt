@@ -18,8 +18,6 @@ set(UNSORTED_SOURCES
     ScriptEvent.cpp
 	stru29.cpp
 	stru31.cpp
-    Sound.cpp
-    Video.cpp
     Map.cpp
     Pathfind.cpp
     Development.cpp
@@ -40,14 +38,27 @@ set(UNSORTED_HEADERS
 	ScriptEvent.h
 	stru29.h
 	stru31.h
-    Sound.h
-    Video.h
     Map.h
     Pathfind.h
 )
 
+add_library(Unsorted STATIC ${UNSORTED_SOURCES} ${UNSORTED_HEADERS})
+
+add_library(Audio "")
+add_library(Video "")
 if(WIN32)
+    target_sources(Audio
+        INTERFACE
+            "${CMAKE_CURRENT_LIST_DIR}/Sound.h"
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/Sound.cpp"
+    )
+
+    target_sources(Video
+        INTERFACE
+            "${CMAKE_CURRENT_LIST_DIR}/Video.h"
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/Video.cpp"
+    )
 else()
 endif()
-
-add_library(Unsorted STATIC ${UNSORTED_SOURCES} ${UNSORTED_HEADERS})

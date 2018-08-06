@@ -82,6 +82,8 @@ target_link_libraries(OpenKKND
     Application
     Engine
     Infrastructure
+    Audio
+    Video
     Unsorted
     ${SDL2_LIBRARY} ${SDL2_MAIN}
 )

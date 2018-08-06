@@ -1031,25 +1031,7 @@ int input_465A80_wndprockey_map[256] =
 	0,
 	0
 };
-int input_465FE8[16] =
-{
-	-1,
-	0,
-	4,
-	-1,
-	6,
-	7,
-	5,
-	6,
-	2,
-	1,
-	3,
-	2,
-	-1,
-	0,
-	4,
-	-1
-};
+
 stru7 array_466028[7] =
 {
 	{ 0, 5, NULL, NULL },
@@ -2573,7 +2555,6 @@ DataCplcItem_ptr1_stru20 _468910_DataCplcItem_ptr1_stru20_outpost =
 	0,
 	0
 }; // weak
-int dword_468940[] = { -1 }; // weak
 int dword_468980 = -1; // weak
 int dword_468984 = -1; // weak
 char aSD[] = "%s $%d"; // idb

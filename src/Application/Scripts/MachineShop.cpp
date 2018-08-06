@@ -106,7 +106,7 @@ void EventHandler_MachineShop(Script *receiver, Script *sender, enum SCRIPT_EVEN
         case EVT_MSG_DESTROY:
             entity_402E40_destroy((Entity *)receiver->param, entity_mode_machineshop_on_death);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_402E90_on_damage(v4, param, entity_mode_machineshop_on_death);
             entity_410520_update_healthbar_color(v4);
             break;

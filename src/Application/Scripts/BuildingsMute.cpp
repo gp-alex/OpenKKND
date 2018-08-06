@@ -41,7 +41,7 @@ void EventHandler_BeastEnclosure(Script *receiver, Script *sender, enum SCRIPT_E
         case EVT_MSG_DESTROY:
             entity_402E40_destroy(v6, entity_mode_beastenclosure_on_death);
             return;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_402E90_on_damage(v6, param, entity_mode_beastenclosure_on_death);
             entity_410520_update_healthbar_color(v6);
             return;
@@ -409,7 +409,7 @@ void MessageHandler_Blacksmith(Script *receiver, Script *sender, enum SCRIPT_EVE
         case EVT_MSG_DESTROY:
             entity_402E40_destroy((Entity *)v6, entity_mode_blacksmith_on_death);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_402E90_on_damage((Entity *)v6, param, entity_mode_blacksmith_on_death);
             entity_410520_update_healthbar_color((Entity *)v6);
             break;

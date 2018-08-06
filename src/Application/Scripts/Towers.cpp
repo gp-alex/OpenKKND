@@ -192,7 +192,7 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
         case EVT_CMD_ENTITY_ATTACK:
             tower_attack(v4, (int)param);
             break;
-        case EVT_MSG_ENTITY_ATTACKED:
+        case MSG_ATTACKED:
             tower_on_attacked(v4, (Entity *)param);
             break;
         case EVT_MSG_SELECTED:
@@ -207,7 +207,7 @@ void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
         case EVT_MSG_DESTROY:
             entity_402E40_destroy(v4, entity_mode_tower_on_death);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_402E90_on_damage(v4, param, entity_mode_tower_on_death);
             entity_410710_status_bar(v4);
             break;
@@ -742,7 +742,7 @@ void EntityTowerAttachment_handler_447FA0(EntityTurret *a1)
             + (v2->damage_building
                 * veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
         v5->parent = v1->turret_sprite->parent;
-        script_trigger_event(v1->entity->script, EVT_MSG_ENTITY_ATTACKED, v1->entity, v1->_C_entity->script);
+        script_trigger_event(v1->entity->script, MSG_ATTACKED, v1->entity, v1->_C_entity->script);
     }
     v8 = v1->stats_attachment_point;
     v9 = v1->field_1C - 1;

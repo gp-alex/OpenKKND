@@ -143,11 +143,11 @@ void SdlWindow::MessageProcessor(SDL_Event &e) {
 
             if (e.button.button == SDL_BUTTON_LEFT) {
                 for (auto observer : observerList) {
-                    observer->OnMouseLeftButton(pressed);
+                    observer->OnMouseLeftButton(x, y, pressed);
                 }
             } else if (e.button.button == SDL_BUTTON_RIGHT) {
                 for (auto observer : observerList) {
-                    observer->OnMouseRightButton(pressed);
+                    observer->OnMouseRightButton(x, y, pressed);
                 }
             }
             break;
@@ -158,4 +158,53 @@ void SdlWindow::MessageProcessor(SDL_Event &e) {
 
 void SdlWindow::AddObserver(std::shared_ptr<WindowObserver> observer) {
     observerList.push_back(observer);
+}
+
+int SdlWindow::GetMouseX() const {
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    return x;
+}
+
+int SdlWindow::GetMouseY() const {
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    return y;
+}
+
+void SdlWindow::SetMouseX(int x) {
+    int y = GetMouseY();
+    SDL_WarpMouseInWindow(window, x, y);
+}
+
+void SdlWindow::SetMouseY(int y) {
+    int x = GetMouseX();
+    SDL_WarpMouseInWindow(window, x, y);
+}
+
+bool SdlWindow::GetMousePressed(int button) const {
+    return SDL_GetRelativeMouseState(nullptr, nullptr) & SDL_BUTTON(button);
+}
+
+bool SdlWindow::GetIsActive() const {
+    int activeFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS;
+    return (SDL_GetWindowFlags(window) & activeFlags) == activeFlags;
+}
+
+bool SdlWindow::GetScancodePressed(int scancode) const {
+    auto state = SDL_GetKeyboardState(nullptr);
+    return state[scancode] != 0;
+}
+
+bool SdlWindow::GetKeyPressedWindowsTmpHack(int vk) const {
+    #if defined(_WINDOWS)
+    {
+        int scan = MapVirtualKey(vk, MAPVK_VK_TO_VSC);
+        return GetScancodePressed(scan);
+    }
+    #else
+    {
+        throw 42;
+    }
+    #endif
 }

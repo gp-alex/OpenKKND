@@ -26,7 +26,7 @@ void EventHandler_Prison(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
     v4 = (Entity *)receiver->param;
     if (!v4->destroyed)
     {
-        if (event == EVT_MSG_ENTITY_DO_DAMAGE)
+        if (event == CMD_APPLY_DAMAGE)
         {
             if (current_level_idx == LEVEL_SURV_09_RESCUE_THE_COMMANDER)
                 entity_402E90_on_damage(v4, param, entity_mode_prison_on_death_surv09);
@@ -167,7 +167,7 @@ void EventHandler_TechBunker(Script *receiver, Script *sender, enum SCRIPT_EVENT
     {
         switch (event)
         {
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_402E90_on_damage(v4, param, entity_mode_407C60_on_death_tech_bunker);
             entity_410710_status_bar(v4);
             break;
@@ -532,7 +532,7 @@ void EventHandler_Hut(Script *receiver, Script *sender, enum SCRIPT_EVENT event,
     {
         switch (event)
         {
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_402E90_on_damage(v4, param, entity_mode_hut_on_death);
             entity_410710_status_bar(v4);
             break;

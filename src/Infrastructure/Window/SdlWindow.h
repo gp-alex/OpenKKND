@@ -34,6 +34,17 @@ namespace Infrastructure {
         virtual void SetFullscreen() override;
         virtual void SetWindowed() override;
 
+        // behaviour
+        virtual bool GetIsActive() const override;
+
+        // input
+        virtual int GetMouseX() const override;
+        virtual void SetMouseX(int x) override;
+        virtual int GetMouseY() const override;
+        virtual void SetMouseY(int y) override;
+        virtual bool GetMousePressed(int button) const override;
+        virtual bool GetKeyPressedWindowsTmpHack(int vk) const override;
+
         // messaging
         virtual void PeekMessageSingle() override;
         virtual void PeekMessageAll() override;
@@ -46,6 +57,8 @@ namespace Infrastructure {
 
     private:
         void MessageProcessor(SDL_Event &e);
+
+        bool GetScancodePressed(int scancode) const;
 
         std::shared_ptr<const WindowConfig> config = nullptr;
         std::shared_ptr<Log> log = nullptr;

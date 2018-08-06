@@ -731,11 +731,11 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
         case EVT_MSG_1509_stru11:
             entity_41A980_evt1509_unset_stru11(v5, param);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_do_damage(v5, (Sprite *)param);
             entity_410640_tanker_status_bar(v5);
             break;
-        case EVT_MSG_ENTITY_ATTACKED:
+        case MSG_ATTACKED:
             entity_on_attacked_tanker(v5);
             break;
         case EVT_MSG_COUNT_BUILDINGS_OF_THE_SAME_TYPE:
@@ -967,11 +967,11 @@ void EventHandler_MobileDerrick(Script *receiver, Script *sender, enum SCRIPT_EV
         case EVT_MSG_1509_stru11:
             entity_41A980_evt1509_unset_stru11(v4, param);
             break;
-        case EVT_MSG_ENTITY_DO_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_do_damage(v4, (Sprite *)param);
             entity_410710_status_bar(v4);
             break;
-        case EVT_MSG_ENTITY_ATTACKED:
+        case MSG_ATTACKED:
             entity_on_attacked_default(v4, (Entity *)param);
             break;
         default:

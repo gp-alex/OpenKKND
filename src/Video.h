@@ -132,10 +132,5 @@ extern DetailedDrawHandler_VideoPlayer _477948_video_draw_details;
 extern int _477970_video_header_field_6; // weak
 extern int _477974_video_header_field_8; // weak
 extern DrawJob *video_477978_draw_job;
-extern _UNKNOWN video_477DE4_dsb_waveformatex; // weak
-extern _UNKNOWN unk_477982; // weak
-extern __int64 qword_477984; // weak
-extern _UNKNOWN unk_47798C; // weak
-extern _UNKNOWN unk_47798E; // weak
 extern int dword_477944; // weak
 extern Palette _477990_video_palette; // idb
