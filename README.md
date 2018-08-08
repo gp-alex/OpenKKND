@@ -10,3 +10,6 @@ Code refactoring is underway.
 5. Set poject output to your KKnD installation folder
 6. Build using any CMake-compatible IDE or command line (Visual Studio will do)
 7. Run
+
+# Status badges
+[![Coverity Status](https://scan.coverity.com/projects/16433/badge.svg)](https://scan.coverity.com/projects/openkknd)
