@@ -3495,7 +3495,7 @@ void TimedMessagePump()
 		if ((int)(timer_time - v0) > 0)
 			OsThreadSleep(timer_time - v0);
 		timer_time += timer_delta_ms;
-		message_pump();
+        gWindow->PeekMessageAll();
 	}
 }
 
@@ -6673,7 +6673,7 @@ bool LVL_SysInit()
         int window_height = 480;
         bool fullsreen = false;
 
-        if (render_create_window(window_width, window_height, fullsreen)) {
+        /*if (render_create_window(window_width, window_height, fullsreen))*/ {
             if (render_init(window_width, window_height, 8, fullsreen)) {
                 return sound_initialize() != false;
             }

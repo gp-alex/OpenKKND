@@ -287,7 +287,8 @@ void Game::WaitScreen() {
     _47A010_mapd_item_being_drawn[0] = 0;
     _47A010_mapd_item_being_drawn[1] = 0;
     _47A010_mapd_item_being_drawn[2] = 0;
-    message_pump();
+    gWindow->PeekMessageAll();
+
     if (!LVL_RunLevel(wait_lvl))
     {
         log("Wait LVL_RunLevel() failed\n");

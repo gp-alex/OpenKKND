@@ -803,7 +803,6 @@ void script_show_message(Script *a1);
 int entity_44D000_boxd(Entity *a1);
 _DWORD *boxd_44D250(_DWORD *a1, _DWORD *a2, int a3, Entity *a4, int *a5);
 bool boxd_44D340(int *out_x, int *out_y, int a3, Entity *a1, int *out_idx);
-void message_pump();
 int nullsub_4();
 FILE *j_fopen_weirdmode_3(const char *a1);
 _BYTE *sub_45A48E(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8);

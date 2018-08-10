@@ -27,7 +27,6 @@ struct DrawJobList;
 struct DrawJobDetails;
 
 bool render_init(int width, int height, int bpp, bool fullscreen);
-bool render_create_window(int width, int height, bool fullscreen);
 void render_cleanup();
 bool render_should_render();
 void render_on_wm_paint(long left, long top, long right, long bottom);

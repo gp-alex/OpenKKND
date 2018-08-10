@@ -467,7 +467,7 @@ void input_update_mouse()
         input_mouse.just_pressed_buttons_mask = ~input_47A58C & input_mouse.pressed_buttons_mask;
         input_mouse.just_released_buttons_mask = ~input_mouse.pressed_buttons_mask & input_47A58C;
         input_47A58C = input_mouse.pressed_buttons_mask;
-    } /*else if (input_mouse_window_losing_focus_reset_to_defaults) {
+    } else if (input_mouse_window_losing_focus_reset_to_defaults) {
         input_mouse_window_losing_focus_reset_to_defaults = 0;
         input_mouse.just_released_buttons_mask = input_mouse.just_pressed_buttons_mask | input_mouse.pressed_buttons_mask;
         input_mouse.just_pressed_buttons_mask = 0;
@@ -479,9 +479,9 @@ void input_update_mouse()
         input_mouse._C_unused = 0;
         input_mouse_prev_buttons_mask = 0;
         input_47A58C = 0;
-    }*/
+    }
 
-    DebugMouseInput(&input_mouse);
+    //DebugMouseInput(&input_mouse);
 }
 
 

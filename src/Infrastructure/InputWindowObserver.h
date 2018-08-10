@@ -1,9 +1,9 @@
 #pragma once
 
-#include "src/Infrastructure/Window/WindowObserver.h"
+#include "src/Infrastructure/Window/InputObserver.h"
 
 namespace Infrastructure {
-    class InputWindowObserver : public WindowObserver {
+    class InputWindowObserver : public InputObserver {
     public:
         inline InputWindowObserver() {}
 

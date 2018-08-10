@@ -10,6 +10,7 @@
 #include "src/Infrastructure/Window/SdlWindow.h"
 
 using Infrastructure::SdlWindow;
+using Infrastructure::InputObserver;
 using Infrastructure::WindowObserver;
     
 bool SdlWindow::Initialize() {
@@ -126,14 +127,14 @@ void SdlWindow::WaitMessage() {
 void SdlWindow::MessageProcessor(SDL_Event &e) {
     switch (e.type) {
         case SDL_QUIT: {
-            for (auto observer : observerList) {
+            for (auto observer : windowObservers) {
                 observer->OnClose();
             }
             break;
         }
 
         case SDL_MOUSEMOTION: {
-            for (auto observer : observerList) {
+            for (auto observer : inputObservers) {
                 observer->OnMouseMove(
                     e.motion.x, e.motion.y,
                     e.motion.xrel, e.motion.yrel,
@@ -152,11 +153,11 @@ void SdlWindow::MessageProcessor(SDL_Event &e) {
             bool pressed = e.button.state == SDL_PRESSED;
 
             if (e.button.button == SDL_BUTTON_LEFT) {
-                for (auto observer : observerList) {
+                for (auto observer : inputObservers) {
                     observer->OnMouseLeftButton(x, y, pressed);
                 }
             } else if (e.button.button == SDL_BUTTON_RIGHT) {
-                for (auto observer : observerList) {
+                for (auto observer : inputObservers) {
                     observer->OnMouseRightButton(x, y, pressed);
                 }
             }
@@ -167,7 +168,11 @@ void SdlWindow::MessageProcessor(SDL_Event &e) {
 
 
 void SdlWindow::AddObserver(std::shared_ptr<WindowObserver> observer) {
-    observerList.push_back(observer);
+    windowObservers.push_back(observer);
+}
+
+void SdlWindow::AddObserver(std::shared_ptr<InputObserver> observer) {
+    inputObservers.push_back(observer);
 }
 
 int SdlWindow::GetMouseX() const {

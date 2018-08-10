@@ -44,8 +44,6 @@ int j_render_nullsub_1; // weak
 Palette _47B408_palette_entries;
 Palette RenderDD_primary_palette_values;
 Palette palette_47BC10;
-//HPALETTE render_sw_palette;
-//HPALETTE render_sw_default_palette; // idb
 int render_clip_w; // weak
 int render_clip_z; // weak
 int render_clip_x; // weak
@@ -55,8 +53,6 @@ int render_height = 0;
 int render_bpp;
 bool render_fullscreen;
 
-void render_sw_free_palette();
-//HPALETTE _431B60_create_palette(Palette *a1, int num_entries); // idb
 void _40E430_update_palette(unsigned int a1);
 
 bool stru1_list_init(int window_width, int window_height, const int num_stru1s = 7);
@@ -75,21 +71,6 @@ void SetSysPalette(Palette *pal) {
 }
 
 
-//----- (00431920) --------------------------------------------------------
-bool render_sw_initialize()
-{
-    //if (render_bpp == 8)
-    //render_sw_hdc = GetDC(global_hwnd);
-    return true;
-}
-
-
-//----- (00411A50) --------------------------------------------------------
-bool render_init_dd()
-{   
-    return true;
-}
-
 bool render_init(int width, int height, int bpp, bool fullscreen) {
     render_width = width;
     render_height = height;
@@ -97,19 +78,11 @@ bool render_init(int width, int height, int bpp, bool fullscreen) {
     render_fullscreen = fullscreen;
 
     game_window_created = false;
-    if (render_sw_initialize() && render_init_dd()) {
-        if (stru1_list_init(width, height)) {
-            game_window_created = true;
-        }
+    if (stru1_list_init(width, height)) {
+        game_window_created = true;
     }
 
     return game_window_created;
-}
-
-
-//----- (00411FE0) --------------------------------------------------------
-void render_cleanup_dd()
-{
 }
 
 
@@ -222,175 +195,54 @@ void render_execute_draw_list(DrawJobList *list) {
 //----- (004122D0) --------------------------------------------------------
 void render_draw_list(DrawJobList *list)
 {
-    int restore_palettes; // ebx@4
-    int v4; // eax@8
-    //HRESULT v5; // eax@9
-    int v7; // eax@15
-    //HRESULT v8; // eax@16
-    DrawJob *i; // esi@25
-    MapdScrlImage *v10; // eax@26
-    int(*v11)(DrawJobDetails *, int); // eax@27
-    //RECT v12; // [sp+44h] [bp-94h]@34
-    //POINT Point; // [sp+54h] [bp-84h]@35
-    //POINT v14; // [sp+5Ch] [bp-7Ch]@35
-    //RECT v15; // [sp+64h] [bp-74h]@35
+    if (list && render_default_stru1) {
 
-    if (list && render_default_stru1)
-    /*if (list && render_default_stru1 && pdds_primary)
-    {
-        restore_palettes = 0;
-        if (pdds_primary->IsLost() == 0x887601C2 && render_fullscreen == 1)
-            restore_palettes = 1;
-        v3 = pdds_primary;
-        if (pdds_primary)
+        render_locked_surface_width_px = render_width;
+
+        // 8/16 bpp are hardcoded, introduce a walkaround for ordinary bpp
+        //static auto pixels_8bpp = new unsigned char[ddsd_primary.dwWidth * ddsd_primary.dwHeight];
+        auto pixels_8bpp = new unsigned char[render_width * render_height];
+        auto pixels_32bpp = new unsigned int[render_width * render_height];
+
+        //render_locked_surface_ptr = ddsd_primary.lpSurface;
+        render_locked_surface_ptr = pixels_8bpp;
+
+        render_execute_draw_list(list);
+
+
+        for (int y = 0; y < render_height; ++y)
         {
-            v5 = pdds_primary->IsLost();
-            if (v5 == 0x887601C2)
-                v4 = v3->Restore() == 0;
-            else
-                v4 = v5 == 0;
-        }
-        else
-        {
-            v4 = 0;
-        }
-        if (v4)
-        {
-            if (render_fullscreen == 1
-                || ((v6 = pdds_backbuffer) != 0 ? ((v8 = pdds_backbuffer->IsLost(), v8 != 0x887601C2) ? (v7 = v8 == 0) : (v7 = v6->Restore() == 0)) : (v7 = 0),
-                    v7))
+            for (int x = render_width - 1; x >= 0; --x)
             {
-                if (restore_palettes)
+                auto c = pixels_8bpp[render_locked_surface_width_px * y + x];
+
+                //auto p = (unsigned char *)ddsd_primary.lpSurface;
+                //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (c << 16) | (c << 8) | c;
+
+                int r, g, b;
+                r = c;
+                g = c;
+                b = c;
+                if (render_current_palette)
                 {
-                    pdds_primary->SetPalette(pddpal_primary);
-                    pddpal_primary->SetEntries(0, 0, 256, RenderDD_primary_palette_values);
+                    r = render_current_palette->entires[c].peRed;
+                    g = render_current_palette->entires[c].peGreen;
+                    b = render_current_palette->entires[c].peBlue;
                 }
-                _40E430_update_palette(render_default_stru1->anim_pos);
-                if (!pdds_backbuffer->Lock(&stru_465810, &ddsd_primary, 1, 0))
-                {
-                    render_locked_surface_width_px = ddsd_primary.dwWidth;*/
-                    render_locked_surface_width_px = render_width;
 
-                    // 8/16 bpp are hardcoded, introduce a walkaround for ordinary bpp
-                    //static auto pixels_8bpp = new unsigned char[ddsd_primary.dwWidth * ddsd_primary.dwHeight];
-                    auto pixels_8bpp = new unsigned char[render_width * render_height];
-                    auto pixels_32bpp = new unsigned int[render_width * render_height];
+                pixels_32bpp[y * render_width + x] = 0xFF000000 | b | (g << 8) | (r << 16);
 
-                    //render_locked_surface_ptr = ddsd_primary.lpSurface;
-                    render_locked_surface_ptr = pixels_8bpp;
-
-                    render_execute_draw_list(list);
-
-                    // convert 8bpp to target bpp (32 here)
-                    /*for (int y = 0; y < ddsd_primary.dwHeight; ++y)
-                    {
-                        for (int x = render_locked_surface_width_px - 1; x >= 0; --x)
-                        {
-                            auto c = pixels_8bpp[render_locked_surface_width_px * y + x];
-
-                            auto p = (unsigned char *)ddsd_primary.lpSurface;
-                            //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (c << 16) | (c << 8) | c;
-
-                            int r, g, b;
-                            r = c;
-                            g = c;
-                            b = c;
-                            if (render_current_palette)
-                            {
-                                r = render_current_palette[c].peRed;
-                                g = render_current_palette[c].peGreen;
-                                b = render_current_palette[c].peBlue;
-                            }
-
-                            *(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (r << 16) | (g << 8) | b;
-                        }
-                    }*/
-
-                    for (int y = 0; y < render_height; ++y)
-                    {
-                        for (int x = render_width - 1; x >= 0; --x)
-                        {
-                            auto c = pixels_8bpp[render_locked_surface_width_px * y + x];
-
-                            //auto p = (unsigned char *)ddsd_primary.lpSurface;
-                            //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (c << 16) | (c << 8) | c;
-
-                            int r, g, b;
-                            r = c;
-                            g = c;
-                            b = c;
-                            if (render_current_palette)
-                            {
-                                r = render_current_palette->entires[c].peRed;
-                                g = render_current_palette->entires[c].peGreen;
-                                b = render_current_palette->entires[c].peBlue;
-                            }
-
-                            pixels_32bpp[y * render_width + x] = 0xFF000000 | b | (g << 8) | (r << 16);
-                            //SetPixel(render_sw_hdc, x, y, RGB(r, g, b));
-                            //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (r << 16) | (g << 8) | b;
-                        }
-                    }
-
-                    gRenderer->ClearTarget(64, 64, 64);
-                    gRenderer->DrawImageCentered(render_width, render_height, pixels_32bpp);
-                    gRenderer->Present();
-
-
-
-                    delete[] pixels_8bpp;
-                    delete[] pixels_32bpp;
-
-
-                    /*if (!pdds_backbuffer->Unlock(ddsd_primary.lpSurface))
-                    {
-                        if (render_fullscreen == 1)
-                        {
-                            if (fullscreen_flip_or_blt)
-                            {
-                                pdds_primary->Flip(0, 0);
-                            }
-                            else
-                            {
-                                v12.bottom = render_height;
-                                v12.top = 0;
-                                v12.left = 0;
-                                v12.right = render_width;
-                                memset(&v16, 0, sizeof(v16));
-                                v16.dwSize = 100;
-                                v16.dwDDFX = 8;
-                                pdds_primary->Blt(
-                                    &v12,
-                                    pdds_backbuffer,
-                                    &v12,
-                                    DDBLT_WAIT | DDBLT_DDFX | DDBLT_ASYNC,
-                                    &v16);
-                            }
-                        }
-                        else
-                        {
-                            v14.x = render_width;
-                            v14.y = render_height;
-                            Point.x = 0;
-                            Point.y = 0;
-                            ClientToScreen(global_hwnd, &Point);
-                            ClientToScreen(global_hwnd, &v14);
-                            v12.top = 0;
-                            v12.left = 0;
-                            *(struct tagPOINT *)&v15.left = Point;
-                            v12.right = render_width;
-                            *(struct tagPOINT *)&v15.right = v14;
-                            v12.bottom = render_height;
-                            memset(&v16, 0, sizeof(v16));
-                            v16.dwSize = 100;
-                            v16.dwDDFX = 8;
-                            pdds_primary->Blt(&v15, pdds_backbuffer, &v12, DDBLT_WAIT | DDBLT_DDFX | DDBLT_ASYNC, &v16);
-                        }
-                    }
-                }
             }
         }
-    }*/
+
+        gRenderer->ClearTarget(64, 64, 64);
+        gRenderer->DrawImageCentered(render_width, render_height, pixels_32bpp);
+        gRenderer->Present();
+
+
+        delete[] pixels_8bpp;
+        delete[] pixels_32bpp;
+    }
 }
 
 //----- (004125D0) --------------------------------------------------------
@@ -426,10 +278,6 @@ void render_cleanup()
 {
     //if (is_render_window_initialized == 1)
     {
-        render_cleanup_dd();
-        render_sw_free_palette();
-        //ShowWindow(global_hwnd, 0);
-        //UpdateWindow(global_hwnd);
         free(stru1_list);
     }
 }
@@ -3744,22 +3592,6 @@ void render_on_wm_paint(long left, long top, long right, long bottom)
     }*/
 }
 
-
-//----- (00431940) --------------------------------------------------------
-void render_sw_free_palette()
-{
-    /*HPALETTE v0; // eax@3
-
-    if (render_bpp == 8)
-    {
-        if (render_sw_default_palette)
-        {
-            v0 = SelectPalette(render_sw_hdc, render_sw_default_palette, 0);
-            DeleteObject(v0);
-        }
-        render_sw_palette = 0;
-    }*/
-}
 
 //----- (00431980) --------------------------------------------------------
 void _431980_update_primary_palette(Palette *pal)

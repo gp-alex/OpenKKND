@@ -502,7 +502,7 @@ LABEL_27:
     script_yield_any_trigger(v2->cursor_task, 1);
 
     input_get_mouse_state(&_47A5E0_mouse_input);
-DebugMouseInput(&_47A5E0_mouse_input);
+//DebugMouseInput(&_47A5E0_mouse_input);
     input_get_keyboard_state(&_47A700_input);
     v21 = is_async_execution_supported;
     v22 = _47A700_input.pressed_keys_mask;
@@ -1988,7 +1988,8 @@ void cursor_sidebar_handler(CursorHandler *a1)
 }
 
 
-class GameCursor : public Infrastructure::WindowObserver {
+// test
+class GameCursor : public Infrastructure::InputObserver {
 public:
     CursorHandler v62;
     GameCursor(CursorHandler *v62) {
