@@ -418,8 +418,8 @@ bool sound_initialize()
     if (DirectSoundCreate(0, &pds, 0))
         return 1;
 
-    extern HWND global_hwnd;
-    if (pds->SetCooperativeLevel(global_hwnd, 1))
+    HWND hwnd = (HWND)gWindow->GetHwnd();
+    if (pds->SetCooperativeLevel(hwnd, 1))
     {
         pds->Release();
         pds = 0;

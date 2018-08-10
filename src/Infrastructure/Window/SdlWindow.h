@@ -39,9 +39,8 @@ namespace Infrastructure {
 
         // input
         virtual int GetMouseX() const override;
-        virtual void SetMouseX(int x) override;
         virtual int GetMouseY() const override;
-        virtual void SetMouseY(int y) override;
+        virtual void SetMousePos(int x, int y) override;
         virtual bool GetMousePressed(int button) const override;
         virtual bool GetKeyPressedWindowsTmpHack(int vk) const override;
 
@@ -51,9 +50,10 @@ namespace Infrastructure {
         virtual void WaitMessage() override;
 
         // misc
-        virtual void *GetApiHandle() const {
+        virtual void *GetApiHandle() const override {
             return window;
         };
+        virtual void *GetHwnd() const override;
 
     private:
         void MessageProcessor(SDL_Event &e);

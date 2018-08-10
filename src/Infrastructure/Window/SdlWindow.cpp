@@ -70,7 +70,7 @@ void SdlWindow::SetFullscreen() {
 
                 ShowWindow(hwnd, SW_MAXIMIZE);
                 SetWindowPos(
-                    hwnd, HWND_NOTOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0
+                    hwnd, HWND_NOTOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SW_SHOW
                 );
                 UpdateWindow(hwnd);
             }
@@ -78,6 +78,16 @@ void SdlWindow::SetFullscreen() {
         }
     }
     #endif
+}
+
+void *SdlWindow::GetHwnd() const {
+    SDL_SysWMinfo info;
+    SDL_VERSION(&info.version);
+
+    if (SDL_GetWindowWMInfo(window, &info)) {
+        return info.info.win.window;
+    }
+    return nullptr;
 }
 
 void SdlWindow::SetWindowed() {
@@ -172,13 +182,7 @@ int SdlWindow::GetMouseY() const {
     return y;
 }
 
-void SdlWindow::SetMouseX(int x) {
-    int y = GetMouseY();
-    SDL_WarpMouseInWindow(window, x, y);
-}
-
-void SdlWindow::SetMouseY(int y) {
-    int x = GetMouseX();
+void SdlWindow::SetMousePos(int x, int y) {
     SDL_WarpMouseInWindow(window, x, y);
 }
 

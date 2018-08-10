@@ -25,6 +25,7 @@ using Application::GameWindowObserver;
 
 #include "src/Infrastructure/File.h"
 #include "src/Infrastructure/Input.h"
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
 #include "src/Infrastructure/Renderer/RendererConfigFactory.h"
 #include "src/Infrastructure/Renderer/RendererFactory.h"
@@ -54,6 +55,8 @@ void Game::Run() {
     int window_width = 640;
     int window_height = 480;
     bool fullscreen = false;
+
+    OsShowCursor(false);
 
     auto windowObserver = std::make_shared<GameWindowObserver>(shared_from_this());
     auto windowConfig = WindowConfigFactory().Create(

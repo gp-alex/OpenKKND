@@ -12857,7 +12857,7 @@ LABEL_21:
 	v8 = v4 + a1->y;
 	v1->field_88_unused = 1;
 	v1->y = v8;
-	input_4283A0_set_cursor_pos(v7 >> 8, v8 >> 8);
+	input_set_mouse_pos(v7 >> 8, v8 >> 8);
 }
 
 //----- (0043C040) --------------------------------------------------------
@@ -13401,7 +13401,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 		v11 = v10->y >> 8;
 		v12 = v10->x >> 8;
 		v10->field_88_unused = 1;
-		input_4283A0_set_cursor_pos(v12, v11);
+		input_set_mouse_pos(v12, v11);
 		dword_47C6C4 = 0;
 		v13 = 0;
 		do
@@ -13565,7 +13565,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 		v16 = v15->y >> 8;
 		v17 = v15->x >> 8;
 		v15->field_88_unused = 1;
-		input_4283A0_set_cursor_pos(v17, v16);
+		input_set_mouse_pos(v17, v16);
 		dword_47C6C4 = 0;
 		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->x = 86016;
@@ -15183,7 +15183,7 @@ void script_440810_mobd45(Script *a1)
 		v13 = v12->y >> 8;
 		v14 = v12->x >> 8;
 		v12->field_88_unused = 1;
-		input_4283A0_set_cursor_pos(v14, v13);
+		input_set_mouse_pos(v14, v13);
 		v15 = 0;
 		dword_47C6C4 = 0;
 		do
@@ -16176,7 +16176,7 @@ void script_4421F0_mobd45_evt8(Script *a1)
 		v9 = v8->y >> 8;
 		v10 = v8->x >> 8;
 		v8->field_88_unused = 1;
-		input_4283A0_set_cursor_pos(v10, v9);
+		input_set_mouse_pos(v10, v9);
 		dword_47C6C4 = 0;
 		sprite_release_mobd_item(_47C664_ingame_menu_sprite);
 	}
@@ -16279,7 +16279,7 @@ __debugbreak(); // what isn this script?
 		do
 			v3 = (void *)script_443780(a1, 1840, dword_47C6EC, 0);
 		while (!v3);
-		_40E560_flip_gdi_update_syscolors();
+		//_40E560_flip_gdi_update_syscolors();
 		OsShowCursor(true);
 		v5 = netz_42F8E0(1);
 		OsShowCursor(false);
@@ -16342,7 +16342,7 @@ __debugbreak(); // what isn this script?
 		v5 = (void *)netz_42F8E0(0);
 		netz_47A934 = 1;
 
-		_40E560_flip_gdi_update_syscolors();
+		//_40E560_flip_gdi_update_syscolors();
 		OsShowCursor(true);
 		netz_42F9C0(0, 0);
 		v7 = netz_42F9E0(0);

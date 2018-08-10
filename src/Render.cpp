@@ -1,5 +1,3 @@
-#include <Windows.h>
-
 #include "src/Render.h"
 
 #include "src/kknd.h"
@@ -14,19 +12,12 @@
 #include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
 
-
-HWND global_hwnd = nullptr;
-HDC render_sw_hdc = nullptr; // idb
-
 const bool debug_outline_tiles = true;
 extern bool is_mission_running;
 extern Entity *debug_pathing_entity;
 
 
 Palette *render_current_palette = nullptr;
-RECT stru_465810 = { 0, 0, 640, 480 };
-RECT _46BB40_enum_attached_surfaces_blt_rect = { 0, 0, 640, 480 };
-RECT _46BB50_blt_rect = { 0, 0, 640, 480 };
 Palette palette_477490;
 Palette *palette_4778A4;
 int j_render_nullsub_2; // weak
@@ -45,7 +36,7 @@ void(*j_render_draw_cursor_434A00)(void *pixels, int x, int y, int w, int h); //
 int render_478A0C; // weak
 int(*j_render_4349A0_draw_tile_32x32)(void *pixels, int x, int y); // idb
 int _478A14_prev_stru1_palette_entries; // weak
-COLORREF sys_colors[25];
+//COLORREF sys_colors[25];
 void(*j_render_434BD0)(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
 void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
 int render_478A94; // weak
@@ -53,8 +44,8 @@ int j_render_nullsub_1; // weak
 Palette _47B408_palette_entries;
 Palette RenderDD_primary_palette_values;
 Palette palette_47BC10;
-HPALETTE render_sw_palette;
-HPALETTE render_sw_default_palette; // idb
+//HPALETTE render_sw_palette;
+//HPALETTE render_sw_default_palette; // idb
 int render_clip_w; // weak
 int render_clip_z; // weak
 int render_clip_x; // weak
@@ -65,7 +56,7 @@ int render_bpp;
 bool render_fullscreen;
 
 void render_sw_free_palette();
-HPALETTE _431B60_create_palette(Palette *a1, int num_entries); // idb
+//HPALETTE _431B60_create_palette(Palette *a1, int num_entries); // idb
 void _40E430_update_palette(unsigned int a1);
 
 bool stru1_list_init(int window_width, int window_height, const int num_stru1s = 7);
@@ -84,15 +75,11 @@ void SetSysPalette(Palette *pal) {
 }
 
 
-
-int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam); // idb
-
-
 //----- (00431920) --------------------------------------------------------
 bool render_sw_initialize()
 {
     //if (render_bpp == 8)
-    render_sw_hdc = GetDC(global_hwnd);
+    //render_sw_hdc = GetDC(global_hwnd);
     return true;
 }
 
@@ -129,15 +116,15 @@ void render_cleanup_dd()
 //----- (00412190) --------------------------------------------------------
 bool render_should_render()
 {
-    BOOL result; // eax@3
+    bool result; // eax@3
     bool v1; // sf@4
     unsigned __int8 v2; // of@4
 
     //if (render_is_target_available)
     {
-        if (timer_time < timeGetTime())
+        if (timer_time < OsGetPrecisionTime())
         {
-            if (timer_time < timeGetTime())
+            if (timer_time < OsGetPrecisionTime())
             {
                 if (++timer_render_skips < 4)
                 {
@@ -145,7 +132,7 @@ bool render_should_render()
                 }
                 else
                 {
-                    timer_time = timeGetTime();
+                    timer_time = OsGetPrecisionTime();
                     timer_render_skips = 0;
                     return 1;
                 }
@@ -219,21 +206,34 @@ bool render_dd_is_primary_surface_lost()
     return result;*/
 }
 
+void render_execute_draw_list(DrawJobList *list) {
+    render_first_drawing_item = 1;
+
+    for (auto i = list->next; i != (DrawJob *)list; i = i->next)
+    {
+        auto img = (MapdScrlImage *)i->job_details.image;
+        if (img && img->on_draw_handler)
+        {
+            img->on_draw_handler(&i->job_details, 0);
+        }
+    }
+}
+
 //----- (004122D0) --------------------------------------------------------
 void render_draw_list(DrawJobList *list)
 {
     int restore_palettes; // ebx@4
     int v4; // eax@8
-    HRESULT v5; // eax@9
+    //HRESULT v5; // eax@9
     int v7; // eax@15
-    HRESULT v8; // eax@16
+    //HRESULT v8; // eax@16
     DrawJob *i; // esi@25
     MapdScrlImage *v10; // eax@26
     int(*v11)(DrawJobDetails *, int); // eax@27
-    RECT v12; // [sp+44h] [bp-94h]@34
-    POINT Point; // [sp+54h] [bp-84h]@35
-    POINT v14; // [sp+5Ch] [bp-7Ch]@35
-    RECT v15; // [sp+64h] [bp-74h]@35
+    //RECT v12; // [sp+44h] [bp-94h]@34
+    //POINT Point; // [sp+54h] [bp-84h]@35
+    //POINT v14; // [sp+5Ch] [bp-7Ch]@35
+    //RECT v15; // [sp+64h] [bp-74h]@35
 
     if (list && render_default_stru1)
     /*if (list && render_default_stru1 && pdds_primary)
@@ -279,17 +279,7 @@ void render_draw_list(DrawJobList *list)
                     //render_locked_surface_ptr = ddsd_primary.lpSurface;
                     render_locked_surface_ptr = pixels_8bpp;
 
-                    render_first_drawing_item = 1;
-                    for (i = list->next; i != (DrawJob *)list; i = i->next)
-                    {
-                        v10 = (MapdScrlImage *)i->job_details.image;
-                        if (v10)
-                        {
-                            v11 = v10->on_draw_handler;
-                            if (v11)
-                                v11(&i->job_details, 0);
-                        }
-                    }
+                    render_execute_draw_list(list);
 
                     // convert 8bpp to target bpp (32 here)
                     /*for (int y = 0; y < ddsd_primary.dwHeight; ++y)
@@ -336,48 +326,10 @@ void render_draw_list(DrawJobList *list)
                                 b = render_current_palette->entires[c].peBlue;
                             }
 
-                            pixels_32bpp[y * render_width + x] = RGB(b, g, r);
+                            pixels_32bpp[y * render_width + x] = 0xFF000000 | b | (g << 8) | (r << 16);
                             //SetPixel(render_sw_hdc, x, y, RGB(r, g, b));
                             //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (r << 16) | (g << 8) | b;
                         }
-                    }
-
-                    static HDC dc_backbuffer = CreateCompatibleDC(nullptr);
-                    static HBITMAP hbm_backbuffer = nullptr;
-                    if (hbm_backbuffer == nullptr) {
-                        hbm_backbuffer = CreateCompatibleBitmap(render_sw_hdc, render_width, render_height);
-                        DeleteObject(SelectObject(dc_backbuffer, hbm_backbuffer));
-                    }
-
-                    BITMAPINFO bmpInfo = { 0 };
-                    BITMAPINFOHEADER bmpInfoHeader = { 0 };
-                    BITMAP ImageBitmap;
-                    void *bits;
-
-                    bmpInfoHeader.biSize = sizeof(BITMAPINFOHEADER);
-                    bmpInfoHeader.biBitCount = 32;
-                    bmpInfoHeader.biClrImportant = 0;
-                    bmpInfoHeader.biClrUsed = 0;
-                    bmpInfoHeader.biCompression = BI_RGB;
-                    bmpInfoHeader.biHeight = -render_height;
-                    bmpInfoHeader.biWidth = render_width;
-                    bmpInfoHeader.biPlanes = 1;
-                    bmpInfoHeader.biSizeImage = render_width * render_height * 4;
-
-                    ZeroMemory(&bmpInfo, sizeof(bmpInfo));
-                    bmpInfo.bmiHeader = bmpInfoHeader;
-                    bmpInfo.bmiColors->rgbBlue = 0;
-                    bmpInfo.bmiColors->rgbGreen = 0;
-                    bmpInfo.bmiColors->rgbRed = 0;
-                    bmpInfo.bmiColors->rgbReserved = 0;
-
-                    SetDIBitsToDevice(
-                        render_sw_hdc, 0, 0, render_width, render_height, 0, 0, 0, render_height,
-                        pixels_32bpp, &bmpInfo, DIB_RGB_COLORS
-                    );
-
-                    for (int i = 0; i < render_width * render_height; ++i) {
-                        pixels_32bpp[i] |= 0xFF000000;
                     }
 
                     gRenderer->ClearTarget(64, 64, 64);
@@ -476,8 +428,8 @@ void render_cleanup()
     {
         render_cleanup_dd();
         render_sw_free_palette();
-        ShowWindow(global_hwnd, 0);
-        UpdateWindow(global_hwnd);
+        //ShowWindow(global_hwnd, 0);
+        //UpdateWindow(global_hwnd);
         free(stru1_list);
     }
 }
@@ -3576,7 +3528,7 @@ bool draw_list_update_and_draw()
     DrawJob *v0; // eax@2
     DrawJob *v1; // ecx@2
     DrawJob *v2; // edx@5
-    BOOL result; // eax@10
+    bool result; // eax@10
 
     if (render_should_render())
     {
@@ -3782,8 +3734,7 @@ void draw_list_free()
 
 void render_on_wm_paint(long left, long top, long right, long bottom)
 {
-    RECT rc = { left, top, right, bottom };
-    /*
+    /*RECT rc = { left, top, right, bottom };
     if (pdds_primary)
     {
         if (pdds_backbuffer)
@@ -3820,7 +3771,7 @@ void _431980_update_primary_palette(Palette *pal)
     int v5; // eax@11
     _BYTE *v6; // ecx@14
     int v7; // eax@14
-    HPALETTE v8; // esi@16
+    //HPALETTE v8; // esi@16
     int v9; // [sp-Ch] [bp-410h]@4
     _BYTE v10[1024]; // [sp+0h] [bp-404h]@14
     int v11; // [sp+400h] [bp-4h]@14
@@ -3890,7 +3841,7 @@ void _431980_update_primary_palette(Palette *pal)
 }
 
 //----- (00431B60) --------------------------------------------------------
-HPALETTE _431B60_create_palette(Palette *pal, int num_entries)
+/*HPALETTE _431B60_create_palette(Palette *pal, int num_entries)
 {
     PaletteEntry *v2; // ebx@1
     int v3; // ecx@1
@@ -3956,7 +3907,7 @@ HPALETTE _431B60_create_palette(Palette *pal, int num_entries)
         --v12;
     } while (v12);
     return CreatePalette(&v15.plpal);
-}
+}*/
 
 //----- (00431C40) --------------------------------------------------------
 void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
@@ -3969,7 +3920,7 @@ void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
     BYTE *v6; // eax@14
     PaletteEntry *v8; // ecx@19
     int v9; // eax@19
-    HPALETTE v10; // esi@21
+    //HPALETTE v10; // esi@21
     int v11; // [sp-Ch] [bp-410h]@9
     Palette v12_; // [sp+0h] [bp-404h]@19
     PaletteEntry *v12 = v12_.entires; // [sp+0h] [bp-404h]@19
@@ -4070,18 +4021,18 @@ void _40E400_set_palette(Palette *palette)
 void _40E430_update_palette(unsigned int a1)
 {
     unsigned int v1; // esi@1
-    PALETTEENTRY *v2; // edx@7
-    PALETTEENTRY *v3; // eax@7
+    PaletteEntry *v2; // edx@7
+    PaletteEntry *v3; // eax@7
     int v4; // edi@7
-    BYTE *v5; // edx@8
-    BYTE *v6; // eax@8
+    unsigned char *v5; // edx@8
+    unsigned char *v6; // eax@8
     __int16 v7; // cx@8
     unsigned int v8; // ecx@10
-    BYTE *v9; // edx@13
-    BYTE *v10; // eax@13
+    unsigned char *v9; // edx@13
+    unsigned char *v10; // eax@13
     unsigned int v11; // ecx@13
-    BYTE *v12; // edx@16
-    BYTE *v13; // eax@16
+    unsigned char *v12; // edx@16
+    unsigned char *v13; // eax@16
     unsigned int v14; // ecx@16
 
     v1 = a1 >> 23;
@@ -4098,8 +4049,8 @@ void _40E430_update_palette(unsigned int a1)
             }
             else
             {
-                v2 = (PALETTEENTRY *)sys;
-                v3 = (PALETTEENTRY *)&palette_4785F0;
+                v2 = sys->entires;
+                v3 = palette_4785F0.entires;
                 v4 = 256;
                 if (a1 > 0x100)
                 {
@@ -4124,8 +4075,8 @@ void _40E430_update_palette(unsigned int a1)
                             *v13 = -1;
                         else
                             *v13 = v14;
-                        v2 = (PALETTEENTRY *)(v12 + 2);
-                        v3 = (PALETTEENTRY *)(v13 + 2);
+                        v2 = (PaletteEntry *)(v12 + 2);
+                        v3 = (PaletteEntry *)(v13 + 2);
                         --v4;
                     } while (v4);
                 }
@@ -4138,9 +4089,9 @@ void _40E430_update_palette(unsigned int a1)
                         v6 = &v3->peGreen;
                         *v6++ = (unsigned __int16)(v1 * *v5++) >> 8;
                         v7 = *v5;
-                        v2 = (PALETTEENTRY *)(v5 + 2);
+                        v2 = (PaletteEntry *)(v5 + 2);
                         *v6 = (unsigned __int16)(v1 * v7) >> 8;
-                        v3 = (PALETTEENTRY *)(v6 + 2);
+                        v3 = (PaletteEntry *)(v6 + 2);
                         --v4;
                     } while (v4);
                 }
@@ -4163,7 +4114,7 @@ void RENDER_SetViewportAndClear()
 }
 
 //----- (0040E560) --------------------------------------------------------
-void _40E560_flip_gdi_update_syscolors()
+/*void _40E560_flip_gdi_update_syscolors()
 {
     unsigned int v0; // esi@3
     unsigned int v1; // eax@6
@@ -4236,14 +4187,14 @@ void _40E560_flip_gdi_update_syscolors()
         } while (v1 < 0x64);
         SetSysColors(25, &sys_colors_elements, aRgbValues);
     }
-}
+}*/
 
 //----- (0040E6B0) --------------------------------------------------------
 void _40E6B0_set_sys_colors()
 {
     if (render_fullscreen == 1)
     {
-        SetSysColors(25, &sys_colors_elements, sys_colors);
+        //SetSysColors(25, &sys_colors_elements, sys_colors);
         _431980_update_primary_palette(GetSysPalette());
     }
 }

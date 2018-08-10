@@ -5,6 +5,7 @@
 #include "src/_unsorted_data.h"
 
 #include "src/Infrastructure/InputWindowObserver.h"
+#include "src/Infrastructure/Log.h"
 
 using Infrastructure::InputWindowObserver;
 
@@ -46,7 +47,7 @@ VKeyMap vkey_map[25] =
     { 0, 0 }
 };
 
-// define window virtual keys
+// define windows virtual keys
 #if !defined(_INC_WINDOWS)
 
 /*
@@ -389,15 +390,15 @@ bool input_initialize()
 }
 
 //----- (004283A0) --------------------------------------------------------
-bool input_4283A0_set_cursor_pos(__int16 x, __int16 y)
+bool input_set_mouse_pos(int x, int y)
 {
     if (input_mouse_window_losing_focus_reset_to_defaults)
     {
-        gWindow->SetMouseX(x);
-        gWindow->SetMouseY(y);
+        log("input_set_mouse_pos(x = %d, y = %d)", x, y);
+        gWindow->SetMousePos(x, y);
 
-        input_mouse.cursor_x_x256 = x << 8;
-        input_mouse.cursor_y_x256 = y << 8;
+        input_mouse.cursor_x_x256 = x * 256;
+        input_mouse.cursor_y_x256 = y * 256;
         return 1;
     }
 
@@ -430,6 +431,7 @@ void input_update_mouse()
 {
     if (gWindow->GetIsActive()) {
         input_mouse_window_losing_focus_reset_to_defaults = 1;
+        input_mouse._C_unused = 0;
         input_mouse.pressed_buttons_mask = 0;
         if (gWindow->GetMousePressed(1)) {
             input_mouse.pressed_buttons_mask |= INPUT_MOUSE_LBUTTON_MASK;
@@ -440,22 +442,13 @@ void input_update_mouse()
         if (gWindow->GetMousePressed(3)) {
             input_mouse.pressed_buttons_mask |= INPUT_MOUSE_RBUTTON_MASK;
         }
-        //if (((unsigned __int16)GetAsyncKeyState(VK_LBUTTON) >> 8) & 0x80)
-        //    input_mouse.pressed_buttons_mask |= INPUT_MOUSE_LBUTTON_MASK;
-        //if (((unsigned __int16)GetAsyncKeyState(VK_RBUTTON) >> 8) & 0x80)
-        //    input_mouse.pressed_buttons_mask |= INPUT_MOUSE_RBUTTON_MASK;
-        //if (num_mouse_buttons == 3 && ((unsigned __int16)GetAsyncKeyState(VK_MBUTTON) >> 8) & 0x80)
-        //    input_mouse.pressed_buttons_mask |= INPUT_MOUSE_MBUTTON_MASK;
 
         input_mouse.just_pressed_buttons_mask = input_mouse.pressed_buttons_mask & ~input_mouse_prev_buttons_mask;
         input_mouse.just_released_buttons_mask = ~input_mouse.pressed_buttons_mask & input_mouse_prev_buttons_mask;
         input_mouse_prev_buttons_mask = input_mouse.pressed_buttons_mask;
 
-        //GetCursorPos(&Point);
-        //ScreenToClient(global_hwnd, &Point);
         int mouse_x = 256 * gWindow->GetMouseX();
         int mouse_y = 256 * gWindow->GetMouseY();
-        input_mouse._C_unused = 0;
         input_mouse.cursor_dx_x256 = mouse_x - input_mouse.cursor_x_x256;
         input_mouse.cursor_x_x256 = mouse_x;
         input_mouse.cursor_dy_x256 = mouse_y - input_mouse.cursor_y_x256;
@@ -474,19 +467,19 @@ void input_update_mouse()
         input_mouse.just_pressed_buttons_mask = ~input_47A58C & input_mouse.pressed_buttons_mask;
         input_mouse.just_released_buttons_mask = ~input_mouse.pressed_buttons_mask & input_47A58C;
         input_47A58C = input_mouse.pressed_buttons_mask;
-    } else if (input_mouse_window_losing_focus_reset_to_defaults) {
+    } /*else if (input_mouse_window_losing_focus_reset_to_defaults) {
         input_mouse_window_losing_focus_reset_to_defaults = 0;
         input_mouse.just_released_buttons_mask = input_mouse.just_pressed_buttons_mask | input_mouse.pressed_buttons_mask;
         input_mouse.just_pressed_buttons_mask = 0;
         input_mouse.pressed_buttons_mask = 0;
-        input_mouse.cursor_x_x256 = 0x14000;
-        input_mouse.cursor_y_x256 = 0xF000;
+        input_mouse.cursor_x_x256 = (640 / 2) * 256;
+        input_mouse.cursor_y_x256 = (480 / 2) * 256;
         input_mouse.cursor_dx_x256 = 0;
         input_mouse.cursor_dy_x256 = 0;
         input_mouse._C_unused = 0;
         input_mouse_prev_buttons_mask = 0;
         input_47A58C = 0;
-    }
+    }*/
 
     DebugMouseInput(&input_mouse);
 }

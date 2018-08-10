@@ -500,6 +500,7 @@ void cursor_process_user_actions(CursorHandler *a1, int a2)
     }
 LABEL_27:
     script_yield_any_trigger(v2->cursor_task, 1);
+
     input_get_mouse_state(&_47A5E0_mouse_input);
 DebugMouseInput(&_47A5E0_mouse_input);
     input_get_keyboard_state(&_47A700_input);
@@ -540,7 +541,7 @@ DebugMouseInput(&_47A5E0_mouse_input);
         if (dword_47A6F0 < 10)
             _447340_send_sidebar_buttons_message(-1);
         dword_47A6F0 = 0;
-        input_4283A0_set_cursor_pos(v2->cursor_x >> 8, v2->cursor_y >> 8);
+        input_set_mouse_pos(v2->cursor_x >> 8, v2->cursor_y >> 8);
         v24 = v2->cursor_x;
         v21 = is_async_execution_supported;
         _47A5E0_mouse_input.cursor_x_x256 = v2->cursor_x;
@@ -609,7 +610,10 @@ DebugMouseInput(&_47A5E0_mouse_input);
         v31 = a1a;
         goto LABEL_71;
     }
-    _47C380_mapd.mapd_cplc_render_x += 2 * _47A5E0_mouse_input.cursor_dx_x256 - dword_477898;
+
+
+    // right mouse buttoon drag - bugged
+    /*_47C380_mapd.mapd_cplc_render_x += 2 * _47A5E0_mouse_input.cursor_dx_x256 - dword_477898;
     if (_47C380_mapd.mapd_cplc_render_x >= 0)
     {
         v25 = a1a;
@@ -630,7 +634,7 @@ DebugMouseInput(&_47A5E0_mouse_input);
     else
     {
         _47C380_mapd.mapd_cplc_render_y = 0;
-    }
+    }*/
     v2->_70_sprite->field_88_unused = 1;
     v2->_70_sprite->x = v2->cursor_x + _47C380_mapd.mapd_cplc_render_x;
     v2->_70_sprite->field_88_unused = 1;
@@ -652,7 +656,7 @@ DebugMouseInput(&_47A5E0_mouse_input);
         v28 = -v28;
     if (v28 > v2->field_5C)
         v2->field_5C = v28;
-    input_4283A0_set_cursor_pos((unsigned int)render_width >> 1, (unsigned int)render_height >> 1);
+    input_set_mouse_pos((unsigned int)render_width >> 1, (unsigned int)render_height >> 1);
 LABEL_82:
     if ((dword_477890 || dword_477894) && is_async_execution_supported == v23 && dword_477890)
     {

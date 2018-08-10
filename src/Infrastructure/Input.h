@@ -44,6 +44,19 @@ struct MouseInput
     int cursor_y_x256;
     int cursor_dx_x256;
     int cursor_dy_x256;
+
+    inline float GetCursorX() const {
+        return (float)cursor_x_x256 / 256.0f;
+    }
+    inline float GetCursorY() const {
+        return (float)cursor_y_x256 / 256.0f;
+    }
+    inline float GetCursorDx() const {
+        return (float)cursor_dx_x256 / 256.0f;
+    }
+    inline float GetCursorDy() const {
+        return (float)cursor_dy_x256 / 256.0f;
+    }
 };
 
 #pragma pack(pop)
@@ -60,7 +73,7 @@ void input_update_mouse();
 bool input_get_mouse_state(MouseInput *a1);
 bool input_get_cursor_state(MouseInput *a1); // same as mouse state but separate MouseInput stru used in CursorHandler
 
-bool input_4283A0_set_cursor_pos(__int16 x, __int16 y);
+bool input_set_mouse_pos(int x, int y);
 bool input_428470(__int16 a1);
 
 

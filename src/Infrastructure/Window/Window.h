@@ -35,13 +35,13 @@ namespace Infrastructure {
 
         // input
         virtual int GetMouseX() const = 0;
-        virtual void SetMouseX(int x) = 0;
         virtual int GetMouseY() const = 0;
-        virtual void SetMouseY(int y) = 0;
+        virtual void SetMousePos(int x, int y) = 0;
         virtual bool GetMousePressed(int button) const = 0;
         virtual bool GetKeyPressedWindowsTmpHack(int vk) const = 0;
 
         // misc
         virtual void *GetApiHandle() const = 0;
+        virtual void *GetHwnd() const = 0; // tmp windows hack
     };
 };

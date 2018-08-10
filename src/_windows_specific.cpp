@@ -126,6 +126,8 @@ bool render_create_window(int width, int height, bool fullscreen)
     int v16; // ecx@21
     WNDCLASSEXA v17; // [sp+10h] [bp-30h]@8
 
+    return true;
+
     he1ght = height;
     w1dth = width;
 
@@ -138,7 +140,7 @@ bool render_create_window(int width, int height, bool fullscreen)
         return false;
     }*/
 
-    extern HWND global_hwnd;
+    //extern HWND global_hwnd;
     HWND v9 = FindWindowA("OpenKKNDWindowClass", "OpenKKND");
     if (v9)
     {
@@ -147,8 +149,8 @@ bool render_create_window(int width, int height, bool fullscreen)
     }
     else
     {
-        OsShowCursor(false);
-        if (!global_hwnd)
+        //OsShowCursor(false);
+        //if (!global_hwnd)
         {
             v17.style = 8;
             v17.hInstance = GetModuleHandle(nullptr);
@@ -201,7 +203,7 @@ bool render_create_window(int width, int height, bool fullscreen)
                     0,
                     v17.hInstance,
                     0);
-                global_hwnd = v14;
+                //global_hwnd = v14;
                 if (v14)
                 {
                     UpdateWindow(v14);
