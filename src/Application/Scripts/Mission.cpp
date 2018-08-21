@@ -1,20 +1,21 @@
 #include "src/kknd.h"
-
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
+#include "src/Sound.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 
-#include "Engine/Entity.h"
-#include "Engine/EntityFactory.h"
+#include "src/Engine/Entity.h"
+#include "src/Engine/EntityFactory.h"
 
 using Engine::EntityFactory;
 
-#include "Engine/Infrastructure/EntityRepository.h"
+#include "src/Engine/Infrastructure/EntityRepository.h"
 
 using Engine::Infrastructure::EntityRepository;
 
@@ -76,7 +77,7 @@ void _424CA0_script_47A3CC_evttrigger()
 void _424CC0_script_47A3CC_evttrigger()
 {
     if (script_47A3CC)
-        script_trigger_event(0, EVT_ENTITY_MOVE, 0, script_47A3CC);
+        script_trigger_event(0, EVT_CMD_ENTITY_MOVE, 0, script_47A3CC);
 }
 
 //----- (00424CE0) --------------------------------------------------------
@@ -524,7 +525,7 @@ void script_4252C0(Script *a1, void *param)
     v2 = a1;
     v10 = param;
     a1->field_1C = 1;
-    is_coroutine_list_initialization_failed = 1;
+    is_async_execution_supported = 1;
     while (sub_408400())
         script_sleep(v2, 1);
     v3 = sprite_create(MOBD_MISSION_OUTCOME_MODAL, 0, 0);
@@ -638,7 +639,7 @@ void script_425400(Script *a1)
                     {
                         v3 = (void *)((unsigned int)v3 | 2);
                     }
-                    else if (i->event == EVT_ENTITY_MOVE)
+                    else if (i->event == EVT_CMD_ENTITY_MOVE)
                     {
                         v3 = (void *)((unsigned int)v3 | 1);
                     }
@@ -798,7 +799,7 @@ void entity_check_special_mission_death_conditions(Entity *victim)
     if (mission_accomplished)
     {
         if (script_47A3CC)
-            script_trigger_event(0, EVT_ENTITY_MOVE, 0, script_47A3CC);
+            script_trigger_event(0, EVT_CMD_ENTITY_MOVE, 0, script_47A3CC);
     }
     else if (mission_failed && script_47A3CC)
     {
@@ -1120,7 +1121,7 @@ void script_425BE0_check_special_victory_conditions(Script *a1)
     {
         case MISSION_RESULT_ACCOMPLISHED: {
             if (script_47A3CC) {
-                script_trigger_event(0, EVT_ENTITY_MOVE, 0, script_47A3CC);
+                script_trigger_event(0, EVT_CMD_ENTITY_MOVE, 0, script_47A3CC);
             }
             break;
         };
@@ -1281,7 +1282,7 @@ void script_425F50_stru48_stru51_tech_bunkers(Script *a1)
                     v9 = *(_DWORD *)v5 - *((_DWORD *)v4 - 1);
                 else
                     v9 = *((_DWORD *)v4 - 1) - *(_DWORD *)v5;
-                v10 = math_42D64D_prolly_vec_length(v9 >> 8, v8 >> 8);
+                v10 = math_42D64D_vec_length_2d(v9 >> 8, v8 >> 8);
                 *v6 = v10;
                 if (v71 < v10)
                     v71 = v10;

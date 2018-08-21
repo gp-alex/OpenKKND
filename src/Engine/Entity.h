@@ -1,6 +1,11 @@
 #pragma once
 
-#include "kknd.h"
+#include "src/kknd.h"
+
+#include "src/Infrastructure/DependencyInjection.h"
+#include "src/Infrastructure/Log.h"
+
+
 
 
 struct Script;
@@ -67,7 +72,7 @@ enum ENTITY_ORDER : int
 
 #define ORIENTATION_N   0       // north
 #define ORIENTATION_NNE 16      // north-north-east
-#define ORIENTATION_NE  32
+#define ORIENTATION_NE  32      // north-east
 #define ORIENTATION_E   64      // east
 #define ORIENTATION_SE  96      // south-east
 #define ORIENTATION_SSE 112     // south-south-east
@@ -79,7 +84,7 @@ enum ENTITY_ORDER : int
 #define ORIENTATION_NNW 240     // north-north-west
 
 /* 307 */
-typedef void(*EntityMode)(struct Entity *);
+typedef void (*EntityMode)(struct Entity *);
 struct Entity
 {
     bool IsTanker() const {
@@ -90,12 +95,50 @@ struct Entity
         return stats->is_infantry;
     }
 
+    inline void SetScriptEventHandler(ScriptEventHandler eventHandler) {
+        script->SetEventHandler(eventHandler);
+    }
+
     void SetMode(EntityMode mode);
     bool IsMode(EntityMode mode) const;
     void ExecMode();
     int ModeHandlerId() const;
 
     void SetReturnModeFromMode();
+
+    inline void SetReturnMode(EntityMode mode) {
+        this->mode_return = mode;
+    }
+    inline void SetTurnReturnMode(EntityMode mode) {
+        this->mode_turn_return = mode;
+    }
+
+    inline void SetOrder(ENTITY_ORDER order) {
+        this->_DC_order = order;
+    }
+
+    inline ENTITY_ORDER GetOrder() {
+        return this->_DC_order;
+    }
+
+    inline int GetFiringRange() const {
+        return this->stats->firing_range;
+    }
+
+
+    inline int GetCurrentAnimFrame() const {
+        return current_mobd_lookup_idx;
+    }
+
+    inline void SetCurrentAnimFrame(int current_mobd_lookup_idx) {
+        if (current_mobd_lookup_idx >= 256) {
+            InfrastructureDependencies::Resolve<Infrastructure::Log>()->Info("Entity[id=%u]::SetCurrentAnimFrame(%u): index out of bounds", entity_id, current_mobd_lookup_idx);
+            current_mobd_lookup_idx = this->current_mobd_lookup_idx;
+        }
+        this->current_mobd_lookup_idx = current_mobd_lookup_idx;
+    }
+
+
 
     Entity *next;
     Entity *prev;
@@ -126,11 +169,11 @@ public:
                                 // ORIENTATION_*
     int destroyed;
     int hitpoints;
-    int field_94;
-    int _98_465610_accuracy_dmg_bonus_idx;
+    int experience;
+    int veterancy_level;   // 0, 1, 2
     int _9C_hp_regen_condition;
     int _A0_hp_regen_condition;
-    int _A4_idx_in_tile;
+    int _A4_idx_in_tile;  // ENTITY_TILE_POSITION_*
     int sprite_map_x;
     int sprite_map_y;
     int sprite_x;
@@ -145,10 +188,10 @@ public:
     int field_D4;
     int field_D8;
     ENTITY_ORDER _DC_order;
-    Entity *_E0_current_attack_target;
+    Entity *retaliation_target;//retaliation_target;
     Entity *_E4_prev_attack_target;
     Entity *_E8_entity;
-    int _E0_current_attack_target_entity_id;
+    int retaliation_target_id;//retaliation_target_id;
     int _E4_prev_attack_target_entity_id;
     int entity_118_entity_id;
     int _E8_entity_id;
@@ -204,11 +247,6 @@ public:
 void entity_drag_selection_init(int y, int x, int z, int w);
 Script *entity_drag_selection_get_next_entity();
 
-int entity_get_dx(Entity *entity);
-int entity_get_dy(Entity *entity);
-int entity_transform_x(Entity *entity, int x);
-int entity_transform_y(Entity *entity, int y);
-
 
 
 bool entity_is_building(Entity *unit);
@@ -223,6 +261,8 @@ bool is_bomber(UNIT_ID unitId);
 bool entity_is_21st_century(Entity *entity);
 
 bool entity_is_xl_vehicle(Entity *entity);
+bool entity_is_regular_vehicle(Entity *entity);
+bool entity_is_infantry(Entity *entity);
 
 void entity_load_attack_mobd(Entity *entity);
 void entity_load_attack_mobd(Entity *entity, int idx);
@@ -231,6 +271,7 @@ void entity_load_move_mobd(Entity *entity, int idx);
 void entity_load_idle_mobd(Entity *entity);
 void entity_load_idle_mobd(Entity *entity, int idx);
 void entity_load_mobd_4(Entity *entity);
+int entity_advance_rotation(Entity *entity, int dst, int step);
 
 int entity_get_mobd_speed_x(Entity *entity);
 int entity_get_mobd_speed_y(Entity *entity);

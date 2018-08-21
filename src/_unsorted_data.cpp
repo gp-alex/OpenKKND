@@ -1,10 +1,21 @@
 #include "src/_unsorted_data.h"
-#include "src/_unsorted_functions.h"
-
 #include "src/Render.h"
+#include "src/Engine/Entity.h"
 
-#include "Engine/Entity.h"
 
+int _479DF0_mapd_initialized; // weak
+int dword_478AB0; // weak
+int _478BE8_map_info__see40E6E0[8];
+char byte_478C08; // weak
+int dword_478FF4; // weak
+int dword_47952C; // weak
+int dword_47953C; // weak
+int currently_running_lvl_mapd_num_items; // weak
+Mapd_stru0 _47C380_mapd;
+int currently_running_lvl_mapd_valid; // weak
+int _47C390_mapd; // weak
+DataMapd *currently_running_lvl_mapd;
+Bitmap *_47A010_mapd_item_being_drawn[3];
 _UNKNOWN loc_45D19B; // weak
 _UNKNOWN loc_45D1A4; // weak
 _UNKNOWN loc_45D267; // weak
@@ -12,7 +23,6 @@ int sys_colors_elements = 0;
 int kknd_sve_array_463070[15] = { 35, 62, 93, 42, 54, 12, 65, 89, 21, 30, 210, 87, 55, 66, 42 };
 int kknd_sve_array_4630AC[15] = { 77, 24, 84, 36, 20, 43, 72, 20, 5, 89, 189, 233, 91, 21, 13 };
 int dword_4630E8 = 2273464000; // weak
-GUID netz_463DE0 = { 2638611840u, 43042u, 4559u,{ 150u, 12u, 0u, 128u, 199u, 83u, 78u, 130u } };
 char asc_464068[4] = "#:\\"; // weak
 BasicProductionOption mute_default_buildings[6] =
 {
@@ -442,8 +452,10 @@ char aWarningOutOfTa[] = "Warning: out of tanker nodes"; // idb
 char aWarningOutOfBu[] = "Warning: out of building nodes"; // idb
 char aWarningOutOfEnemyNodes[] = "Warning: out of enemy nodes"; // idb
 char aEnemyaiCreatur[] = "EnemyAI: Creature ID unknown"; // idb
-int _465610_damage_multipliers[12] = { 0, 51, 102, 0, 0, 38, 76, 0, 0, 1200, 600, 0 };
-int _465640_accuracy_bonus[4] = { 0, 10, 20, 0 };
+int veterancy_damage_bonus[3] = { 0, 51, 102 };
+int veterancy_reload_bonus[3] = { 0, 38, 76 };
+int veterancy_regeneration_rate[3] =  { 0, 1200, 600 };
+int veterancy_accuracy_bonus[3] = { 0, 10, 20 };
 stru201_displaymode _465650_display_modes[3] =
 {
 	{ { 'M', 'O', 'D', 'E', 'X', '\0', '\0', '\0' }, 0, 0 },
@@ -451,6 +463,8 @@ stru201_displaymode _465650_display_modes[3] =
 	{ "640", 0, 0 }
 };
 int _465680_get_sys_colors = 1; // weak
+
+//ENTITY_TILE_POSITION_*
 int dword_465688[32] =
 {
 	4, 	4, 	4, 	4, 	4, 	4, 	4, 	4, 	4,
@@ -478,8 +492,6 @@ unsigned __int8 _465804_stru26_stru27_initializer[4] = { 164u, 169u, 145u, 223u 
 stru1_draw_params default_stru1;
 stru1_draw_params *render_default_stru1 = &default_stru1;
 int render_first_drawing_item = 1; // weak
-RECT stru_465810 = { 0, 0, 640, 480 };
-char *aFailedToSetupDirectdraw = "Failed to setup DirectDraw";
 char *Caption = "Error";
 unsigned __int8 palette_465848_sprt[256] =
 {
@@ -759,7 +771,6 @@ int _465948_per_mobd_lookup_idx[16] =
 	4294964400,
 	4294965729
 };
-enum SOUND_ID _465988_sounds[5] = { SOUND_174, SOUND_175, SOUND_176, SOUND_177, SOUND_178 };
 
 int input_465A80_wndprockey_map[256] =
 {
@@ -1020,25 +1031,7 @@ int input_465A80_wndprockey_map[256] =
 	0,
 	0
 };
-int input_465FE8[16] =
-{
-	-1,
-	0,
-	4,
-	-1,
-	6,
-	7,
-	5,
-	6,
-	2,
-	1,
-	3,
-	2,
-	-1,
-	0,
-	4,
-	-1
-};
+
 stru7 array_466028[7] =
 {
 	{ 0, 5, NULL, NULL },
@@ -2366,17 +2359,8 @@ char aSS_0[] = "%s (%s)"; // idb
 int prev_level_idx = -1; // weak
 const char *pKknd_sve = "kknd.sve";
 char aC[3] = "%c"; // idb
-char *reg_MinimumInstall = "MinimumInstall";
-char *reg_DriveLetter = "DriveLetter";
-char *reg_GamePath = "GamePath";
-char a_[2] = "."; // weak
-char *aS = "%s";
-char *aLvl_runlevelFa = "LVL_RunLevel() failed\n";
-char *aLvl_substhunkF = "LVL_SubstHunk( ) failed\n";
 char *MOBD = "MOBD";
-char *aLvl_loadlevelS = "LVL_LoadLevel(%s) failed\n";
 char *aSLevelsSS = "%s\\LEVELS\\%s\\%s";
-char *aSuperSpriteLoa = "super sprite load failed\n";
 char *aSLevelsSSupspr = "%s\\LEVELS\\%s\\supspr.lvl";
 char intro_vbc[10] = "intro.vbc"; // weak
 char *aSFmvMh_fmv_vbc = "%s\\FMV\\mh_fmv.vbc";
@@ -2386,7 +2370,6 @@ char *aEvolvout_vbc = "evolvout.vbc";
 char *aSurvout_vbc = "survout.vbc";
 char *aLoadgamestateF = "LoadGameState() failed\n";
 char *aUnit_initFaile = "UNIT_Init() failed\n";
-char *aSLevelsS = "%s\\LEVELS\\%s";
 char *aSpriteLoadFail = "sprite load failed\n";
 CustomMission custom_missions[20] =
 {
@@ -2411,100 +2394,7 @@ CustomMission custom_missions[20] =
 	{ /*&off_46C860*/nullptr, "mb_s09.wav" },
 	{ /*&off_46C888*/nullptr, "mb_s10.wav" }
 };
-UnitNameId unit_name_id_lut[66] =
-{
-	{ "UNIT_SURV_INFANTRY", 0 },
-	{ "UNIT_MUTE_BERSERKER", 1 },
-	{ "UNIT_SURV_FLAMER", 2 },
-	{ "UNIT_MUTE_PYRO", 3 },
-	{ "UNIT_SURV_SWAT", 4 },
-	{ "UNIT_MUTE_SHOTGUNNER", 5 },
-	{ "UNIT_SURV_SAPPER", 6 },
-	{ "UNIT_MUTE_RIOTER", 7 },
-	{ "UNIT_SURV_ELPRESIDENTE", 8 },
-	{ "UNIT_MUTE_KINGZOG", 9 },
-	{ "UNIT_SURV_SABOTEUR", 10 },
-	{ "UNIT_MUTE_VANDAL", 11 },
-	{ "UNIT_SURV_TECHNICIAN", 12 },
-	{ "UNIT_MUTE_TECHNICIAN", 13 },
-	{ "UNIT_SURV_ROCKETLAUNCHER", 14 },
-	{ "UNIT_MUTE_ROCKETLAUNCHER", 15 },
-	{ "UNIT_SURV_SNIPER", 16 },
-	{ "UNIT_MUTE_CRAZYHARRY", 17 },
-	{ "UNIT_SURV_GENERAL", 18 },
-	{ "UNIT_MUTE_LEADER", 19 },
-	{ "UNIT_SURV_SCOUT", 20 },
-	{ "UNIT_SURV_DERRICK", 21 },
-	{ "UNIT_MUTE_DERRICK", 22 },
-	{ "UNIT_SURV_TANKER", 23 },
-	{ "UNIT_MUTE_TANKER", 24 },
-	{ "UNIT_SURV_BIKE", 26 },
-	{ "UNIT_MUTE_WOLF", 27 },
-	{ "UNIT_SURV_PICKUP", 28 },
-	{ "UNIT_MUTE_SIDECAR", 29 },
-	{ "UNIT_SURV_ATV", 30 },
-	{ "UNIT_MUTE_MONTRUCK", 31 },
-	{ "UNIT_SURV_FLAMEATV", 32 },
-	{ "UNIT_MUTE_SCORPION", 33 },
-	{ "UNIT_SURV_ANACONDA", 34 },
-	{ "UNIT_MUTE_MASTODON", 35 },
-	{ "UNIT_SURV_BARAGECRAFT", 36 },
-	{ "UNIT_MUTE_BEETLE", 37 },
-	{ "UNIT_SURV_CANNONTANK", 38 },
-	{ "UNIT_MUTE_CRAB", 39 },
-	{ "UNIT_SURV_MOBILE_BASE", 40 },
-	{ "UNIT_MUTE_MOBILE_BASE", 41 },
-	{ "UNIT_MUTE_WASP", 43 },
-	{ "UNIT_SURV_BOMBER", 44 },
-	{ "UNIT_SURV_DRILLRIG", 46 },
-	{ "UNIT_MUTE_DRILLRIG", 47 },
-	{ "UNIT_SURV_POWERPLANT", 48 },
-	{ "UNIT_MUTE_POWERPLANT", 49 },
-	{ "UNIT_SURV_GUARDTOWER", 52 },
-	{ "UNIT_MUTE_MACHGUNNEST", 53 },
-	{ "UNIT_SURV_CANNONTOWER", 54 },
-	{ "UNIT_MUTE_GRAPESHOT", 55 },
-	{ "UNIT_SURV_MISSILEBATTERY", 56 },
-	{ "UNIT_MUTE_ROTARYCANNON", 57 },
-	{ "UNIT_SURV_OUTPOST", 58 },
-	{ "UNIT_MUTE_CLANHALL", 59 },
-	{ "UNIT_SURV_MACHINESHOP", 60 },
-	{ "UNIT_MUTE_BLACKSMITH", 61 },
-	{ "UNIT_MUTE_BEASTENCLOSURE", 62 },
-	{ "UNIT_SURV_REPAIRBAY", 63 },
-	{ "UNIT_MUTE_MENAGERIE", 64 },
-	{ "UNIT_SURV_RESEARCHLAB", 65 },
-	{ "UNIT_MUTE_ALCHEMYHALL", 66 },
-	{ "UNIT_GORT", 74 },
-	{ "UNIT_LASERTANK", 76 },
-	{ "UNIT_SENTINEL", 77 },
-	{ "UNIT_MECH", 78 }
-};
-char *console_switch_nocd = "-nocd";
-char *console_switch_noblack = "-noblack";
-char *errmsg_no_stats_file_specified = "no stats file specified\n";
-char *console_switch_stats = "-stats";
-char *aSS = "%s\\%s";
 char *aW = "w";
-char *errmsg_could_not_open_file = "Error: could not open file %s\n";
-char *errmsg_unrecognized_name = "Warning: unrecognised name %s\n";
-char aDamageToBuildi[20] = "damage to buildings"; // weak
-char aDamageToVehicl[19] = "damage to vehicles"; // weak
-char aDamageToInfant[19] = "damage to infantry"; // weak
-char aAccuracy[9] = "accuracy"; // weak
-char aFiringVisualRa[20] = "firing/visual range"; // weak
-char aTurningSpeed[14] = "turning speed"; // weak
-char aVolleySize[12] = "volley size"; // weak
-char aReload2Time[13] = "reload2 time"; // weak
-char aReloadTime[12] = "reload time"; // weak
-char aSpeed[6] = "speed"; // weak
-char aWarningUnitSIs[] = "Warning: unit %s is a building, speed ignored\n"; // idb
-char aHitpoints[10] = "hitpoints"; // weak
-char aProductionTime[16] = "production time"; // weak
-char errmsg_unit_out_of_range[] = "Warning: unit %s %s out of range (%d - %d)\n"; // idb
-char cost[5] = "cost"; // weak
-char _4681EC_whitespace[] = " \t\r\n"; // idb
-char asc_space[] = " \t"; // idb
 
 stru52 stru_4681F8 = { UNIT_STATS_MUTE_BERSERKER, UNIT_STATS_MUTE_SHOTGUNNER, UNIT_STATS_MUTE_SHOTGUNNER, UNIT_STATS_MUTE_SHOTGUNNER, UNIT_STATS_MUTE_BERSERKER, UNIT_INVALID };
 stru52 stru_468210 = { UNIT_STATS_MUTE_BERSERKER, UNIT_STATS_MUTE_SHOTGUNNER, UNIT_STATS_MUTE_BIKE_AND_SIDECAR, UNIT_STATS_MUTE_DIRE_WOLF, UNIT_INVALID, UNIT_STATS_SURV_RIFLEMAN };
@@ -2665,45 +2555,8 @@ DataCplcItem_ptr1_stru20 _468910_DataCplcItem_ptr1_stru20_outpost =
 	0,
 	0
 }; // weak
-int dword_468940[] = { -1 }; // weak
 int dword_468980 = -1; // weak
 int dword_468984 = -1; // weak
-enum SOUND_ID _468988_sound_ids[4] = { SOUND_69, SOUND_53, SOUND_51, SOUND_50 };
-enum SOUND_ID _468998_sound_ids[4] = { SOUND_139, SOUND_116, SOUND_142, SOUND_140 };
-enum SOUND_ID _4689A8_sound_ids[2] = { SOUND_181, SOUND_182 };
-enum SOUND_ID _4689B0_sound_ids[4] = { SOUND_179, SOUND_180, SOUND_185, SOUND_0 };
-enum SOUND_ID _4689C0_sound_ids[22] =
-{
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_182,
-	SOUND_183,
-	SOUND_184,
-	SOUND_186
-};
-enum SOUND_ID _468A18_sound_ids[2] = { SOUND_78, SOUND_85 };
-enum SOUND_ID _468A20_sound_ids[2] = { SOUND_156, SOUND_158 };
-enum SOUND_ID _468A28_sound_ids[4] = { SOUND_68, SOUND_49, SOUND_43, SOUND_0 };
-enum SOUND_ID _468A38_sound_ids[4] = { SOUND_133, SOUND_131, SOUND_91, SOUND_0 };
-enum SOUND_ID _468A48_sound_ids[2] = { SOUND_76, SOUND_85 };
-enum SOUND_ID _468A50_sound_ids[2] = { SOUND_154, SOUND_148 };
-enum SOUND_ID _468A58_sound_id = SOUND_69;
 char aSD[] = "%s $%d"; // idb
 char aSS_1[] = "%s: %s"; // idb
 unsigned __int8 _468A6C_mobd_lookups[68] =
@@ -2883,11 +2736,7 @@ char asc_46BB14[18] = "                 ";
 char aD_1[] = "%d:"; // idb
 char aD_0[5] = " %d:"; // weak
 char aD[6] = "  %d:"; // weak
-RECT _46BB40_enum_attached_surfaces_blt_rect = { 0, 0, 640, 480 };
-RECT _46BB50_blt_rect = { 0, 0, 640, 480 };
 int _46BB60_dmg_handler_mobd_offsets[3] = { 332, 364, 388 };
-enum SOUND_ID _46BB70_dmg_handler_sounds[3] = { SOUND_RIFLE_FIRE_2, SOUND_RIFLE_FIRE_3, SOUND_RIFLE_FIRE_4 };
-enum SOUND_ID _46BB80_dmg_handler_sounds[2] = { SOUND_GENERIC_PROJECTILE_DMG, SOUND_GENERIC_PROJECTILE_DMG_2 };
 char aSGameD_sav[] = "%s\\game%d.sav"; // idb
 char aSlotDSD[] = "Slot %d = %s %d\n"; // idb
 char aActiveslotD[] = "ActiveSlot=%d\n"; // idb
@@ -2898,12 +2747,6 @@ int dword_46BC40[8] = { 10, 4294967251, 4294967241, 4294967261, 0, 25, 35, 40 };
 int dword_46BC60[9] = { 0, 40, 80, 120, 292, 448, 620, 660, 700 };
 int dword_46BC84[5] = { 736, 748, 772, 792, 760 };
 int dword_46BC98[8] = { 496, 496, 496, 496, 276, 220, 72, 144 };
-char aSoun[] = "SOUN"; // idb
-char shared_slv_filename[] = "sound.slv"; // idb
-char aData[5] = "data"; // weak
-char fmt[5] = "fmt "; // weak
-char WAVE[5] = "WAVE"; // weak
-char RIFF[5] = "RIFF"; // weak
 int render_43B4A6_46BD04 = 0; // weak
 __int16 word_46BD08 = 0; // weak
 int dword_46BD0A = 0; // weak
@@ -3061,14 +2904,6 @@ int dword_470510[] = { 2, 2, 2, 2, 2, 2, 2, 2 }; // weak
 char aCouldnTCreat_0[] = "Couldn't create new building"; // idb
 char aWaitingForServ[] = "waiting for server packet"; // idb
 char aWaitingForPlay[] = "waiting for player packet"; // idb
-
-int dword_470588[] = { 1, 0, 0, 0xC0000000 };
-int dword_470598 = 0; // weak
-int dword_47059C = 0; // weak
-int *_4705A8_minimap_smthn = dword_470588; // weak
-
-MobdSprtImage _47CBA0_MobdSprtImage_fog_of_war;
-DataMobdItem_stru0 _4705B0_minimap = { 0, 0, 0, &_47CBA0_MobdSprtImage_fog_of_war, NULL, SOUND_0, NULL }; // weak
 
 
 UnitDamageSource dmg_rifle = { MOBD_EXPLOSIONS, UNIT_DmgHandler_Rifle, -1, 0x14C, 0, 40, 30, 15, 0x20, 0 };
@@ -5574,430 +5409,16 @@ char *ddraw_dll_filename = "ddraw.dll";
 char aRbwbrBwB[] = "rbwbr+bw+b"; // idb
 int dword_476AC0 = 0; // weak
 int dword_476AC4 = 0; // weak
-/*int(*off_476AC8[196])() =
-{
-	&sub_45A556,
-	&sub_45A594,
-	&sub_45A5D2,
-	&sub_45A610,
-	&sub_45A64E,
-	&sub_45A68C,
-	&sub_45A6CA,
-	&sub_45A708,
-	&sub_45A746,
-	&sub_45A784,
-	&sub_45A7C2,
-	&sub_45A800,
-	&sub_45A83E,
-	&sub_45A87C,
-	&sub_45A8BA,
-	&sub_45A8F8,
-	&sub_45A936,
-	&sub_45A974,
-	&sub_45A9B2,
-	&sub_45A9F0,
-	&sub_45AA2E,
-	&sub_45AA6C,
-	&sub_45AAAA,
-	&sub_45AAE8,
-	&sub_45AB26,
-	&sub_45AB64,
-	&sub_45ABA2,
-	&sub_45ABE0,
-	&sub_45AC1E,
-	&sub_45AC5C,
-	&sub_45AC9A,
-	&sub_45ACD8,
-	&sub_45AD16,
-	&sub_45AD54,
-	&sub_45AD92,
-	&sub_45ADD0,
-	&sub_45AE0E,
-	&sub_45AE4C,
-	&sub_45AE8A,
-	&sub_45AEC8,
-	&sub_45AF06,
-	&sub_45AF44,
-	&sub_45AF82,
-	&sub_45AFC0,
-	&sub_45AFFE,
-	&sub_45B03C,
-	&sub_45B07A,
-	&sub_45B0B8,
-	&sub_45B0F6,
-	&sub_45B134,
-	&sub_45B172,
-	&sub_45B1B0,
-	&sub_45B1EE,
-	&sub_45B22C,
-	&sub_45B26A,
-	&sub_45B2A8,
-	&sub_45B2E6,
-	&sub_45B324,
-	&sub_45B362,
-	&sub_45B3A0,
-	&sub_45B3DE,
-	&sub_45B41C,
-	&sub_45B45A,
-	&sub_45B498,
-	&sub_45C459,
-	&sub_45C48C,
-	&sub_45C4B9,
-	&sub_45C4F6,
-	&sub_45C51B,
-	&sub_45C558,
-	&sub_45C57E,
-	&sub_45C5A3,
-	&sub_45C5E1,
-	&sub_45C620,
-	&sub_45C65B,
-	&sub_45C695,
-	&sub_45C6C2,
-	&sub_45C6EF,
-	&sub_45C717,
-	&sub_45C73F,
-	&sub_45C76C,
-	&sub_45C799,
-	&sub_45C7C8,
-	&sub_45C7F7,
-	&sub_45C824,
-	&sub_45C86C,
-	&sub_45C891,
-	&sub_45C8B6,
-	&sub_45C8DB,
-	&sub_45C918,
-	&sub_45C948,
-	&sub_45C985,
-	&sub_45C9B6,
-	&sub_45C9E9,
-	&sub_45CA21,
-	&sub_45CA59,
-	&sub_45CA98,
-	&sub_45CACB,
-	&sub_45CAF8,
-	&sub_45CB2A,
-	&sub_45CB59,
-	&sub_45CB8A,
-	&sub_45CBC7,
-	&sub_45CBF9,
-	&sub_45CC2C,
-	&sub_45CC54,
-	&sub_45CC81,
-	&sub_45CCA8,
-	&sub_45CCC9,
-	&sub_45CD06,
-	&sub_45CD33,
-	&sub_45CD61,
-	&sub_45CD9E,
-	&sub_45CDCD,
-	&sub_45CE00,
-	&sub_45CE33,
-	&sub_45CE61,
-	&sub_45CEA3,
-	&sub_45CED4,
-	&sub_45CF0B,
-	&sub_45CF4C,
-	&sub_45CF87,
-	&sub_45CFBA,
-	&sub_45CFEA,
-	&sub_45D01C,
-	&sub_45D057,
-	&sub_45D098,
-	&sub_45D0D0,
-	&sub_45B4D6,
-	&sub_45B51C,
-	&sub_45B54A,
-	&sub_45B58B,
-	&sub_45B5C1,
-	&sub_45B606,
-	&sub_45B63B,
-	&sub_45B67C,
-	&sub_45B6AE,
-	&sub_45B6E0,
-	&sub_45B716,
-	&sub_45B74C,
-	&sub_45B78D,
-	&sub_45B7CD,
-	&sub_45B80B,
-	&sub_45B84A,
-	&sub_45B88A,
-	&sub_45B8C9,
-	&sub_45B906,
-	&sub_45B944,
-	&sub_45B972,
-	&sub_45B9BE,
-	&sub_45B9F4,
-	&sub_45BA2A,
-	&sub_45BA6F,
-	&sub_45BAB4,
-	&sub_45BAEE,
-	&sub_45BB31,
-	&sub_45BB6A,
-	&sub_45BBA9,
-	&sub_45BBEA,
-	&sub_45BC2B,
-	&sub_45BC6A,
-	&sub_45BCB0,
-	&sub_45BCF0,
-	&sub_45BD34,
-	&sub_45BD72,
-	&sub_45BDAB,
-	&sub_45BDEE,
-	&sub_45BE26,
-	&sub_45BE65,
-	&sub_45BEA7,
-	&sub_45BEE9,
-	&sub_45BF29,
-	&sub_45BF69,
-	&sub_45BFAC,
-	&sub_45BFE3,
-	&sub_45C019,
-	&sub_45C05C,
-	&sub_45C091,
-	&sub_45C0D0,
-	&sub_45C10F,
-	&sub_45C145,
-	&sub_45C179,
-	&sub_45C1BA,
-	&sub_45C1FD,
-	&sub_45C241,
-	&sub_45C284,
-	&sub_45C2C7,
-	&sub_45C30A,
-	&sub_45C34B,
-	&sub_45C38E,
-	&sub_45C3D2,
-	&sub_45C417,
-	&sub_45A3C4,
-	&sub_45A3E7,
-	&sub_45A43F,
-	&sub_45A460
-}; // weak*/
-//int(*off_476DC8[4])() = { &sub_45A3C4, &sub_45A3E7, &sub_45A43F, &sub_45A460 }; // weak
 int dword_476DD8 = 0; // weak
 int dword_476DDC = 0; // weak
 __int16 word_476DE0[] = { 0 }; // weak
 int dword_476FE0 = 0; // weak
-/*int(*off_476FE4[196])() =
-{
-	&sub_45D4D0,
-	&sub_45D511,
-	&sub_45D55A,
-	&sub_45D5CB,
-	&sub_45D612,
-	&sub_45D65F,
-	&sub_45D6A6,
-	&sub_45D6FF,
-	&sub_45D757,
-	&sub_45D7AF,
-	&sub_45D80D,
-	&sub_45D86B,
-	&sub_45D8BD,
-	&sub_45D90F,
-	&sub_45D964,
-	&sub_45D9B9,
-	&sub_45DA14,
-	&sub_45DA6F,
-	&sub_45DACA,
-	&sub_45DB25,
-	&sub_45DB6E,
-	&sub_45DBAB,
-	&sub_45DBF2,
-	&sub_45DC39,
-	&sub_45DC86,
-	&sub_45DCDF,
-	&sub_45DD24,
-	&sub_45DD83,
-	&sub_45DDC8,
-	&sub_45DE2D,
-	&sub_45DE8F,
-	&sub_45DEF1,
-	&sub_45DF62,
-	&sub_45DFA3,
-	&sub_45DFFE,
-	&sub_45E03F,
-	&sub_45E09A,
-	&sub_45E0DF,
-	&sub_45E13E,
-	&sub_45E183,
-	&sub_45E1E8,
-	&sub_45E22B,
-	&sub_45E274,
-	&sub_45E2B7,
-	&sub_45E306,
-	&sub_45E365,
-	&sub_45E3B7,
-	&sub_45E409,
-	&sub_45E468,
-	&sub_45E4BA,
-	&sub_45E51F,
-	&sub_45E584,
-	&sub_45E5D6,
-	&sub_45E61B,
-	&sub_45E669,
-	&sub_45E6B9,
-	&sub_45E714,
-	&sub_45E772,
-	&sub_45E7C5,
-	&sub_45E813,
-	&sub_45E866,
-	&sub_45E8C4,
-	&sub_45E91F,
-	&sub_45E96F,
-	&sub_45FF85,
-	&sub_45FFDC,
-	&sub_46001B,
-	&sub_46006B,
-	&sub_4600A8,
-	&sub_4600FF,
-	&sub_46013E,
-	&sub_460199,
-	&sub_4601EE,
-	&sub_460245,
-	&sub_46029F,
-	&sub_4602F7,
-	&sub_46033E,
-	&sub_460386,
-	&sub_4603D0,
-	&sub_460419,
-	&sub_46045E,
-	&sub_4604A4,
-	&sub_4604EC,
-	&sub_460533,
-	&sub_460572,
-	&sub_4605E5,
-	&sub_460622,
-	&sub_46065F,
-	&sub_4606B6,
-	&sub_46070D,
-	&sub_460758,
-	&sub_4607AB,
-	&sub_4607F8,
-	&sub_46084F,
-	&sub_4608A5,
-	&sub_4608FB,
-	&sub_46094D,
-	&sub_4609A4,
-	&sub_4609E9,
-	&sub_460A40,
-	&sub_460A87,
-	&sub_460AD3,
-	&sub_460B27,
-	&sub_460B75,
-	&sub_460BCD,
-	&sub_460C16,
-	&sub_460C5F,
-	&sub_460CA8,
-	&sub_460CF3,
-	&sub_460D46,
-	&sub_460D88,
-	&sub_460DCC,
-	&sub_460E20,
-	&sub_460E65,
-	&sub_460EBD,
-	&sub_460F14,
-	&sub_460F57,
-	&sub_460FB2,
-	&sub_461002,
-	&sub_461057,
-	&sub_4610B3,
-	&sub_46110F,
-	&sub_461166,
-	&sub_4611B4,
-	&sub_46120B,
-	&sub_461268,
-	&sub_4612C3,
-	&sub_461318,
-	&sub_45E9D1,
-	&sub_45EA30,
-	&sub_45EA71,
-	&sub_45EAC5,
-	&sub_45EB08,
-	&sub_45EB78,
-	&sub_45EBB9,
-	&sub_45EC25,
-	&sub_45EC7C,
-	&sub_45ECD2,
-	&sub_45ED25,
-	&sub_45ED79,
-	&sub_45EDCD,
-	&sub_45EE20,
-	&sub_45EE71,
-	&sub_45EEC3,
-	&sub_45EF10,
-	&sub_45EF5C,
-	&sub_45EFA6,
-	&sub_45EFF1,
-	&sub_45F032,
-	&sub_45F0A9,
-	&sub_45F0EC,
-	&sub_45F12F,
-	&sub_45F19F,
-	&sub_45F20F,
-	&sub_45F25F,
-	&sub_45F2C1,
-	&sub_45F30F,
-	&sub_45F36D,
-	&sub_45F3CD,
-	&sub_45F42D,
-	&sub_45F47F,
-	&sub_45F4DE,
-	&sub_45F52B,
-	&sub_45F588,
-	&sub_45F5D3,
-	&sub_45F622,
-	&sub_45F684,
-	&sub_45F6D1,
-	&sub_45F72F,
-	&sub_45F781,
-	&sub_45F7DC,
-	&sub_45F82C,
-	&sub_45F885,
-	&sub_45F8E7,
-	&sub_45F92E,
-	&sub_45F973,
-	&sub_45F9D5,
-	&sub_45FA19,
-	&sub_45FA77,
-	&sub_45FAD5,
-	&sub_45FB1B,
-	&sub_45FB74,
-	&sub_45FBC8,
-	&sub_45FC27,
-	&sub_45FC8A,
-	&sub_45FCEC,
-	&sub_45FD4B,
-	&sub_45FDA1,
-	&sub_45FDFE,
-	&sub_45FE60,
-	&sub_45FEC3,
-	&sub_45FF24,
-	&sub_45D108,
-	&sub_45D147,
-	&sub_45D25B,
-	&sub_45D2C1
-}; // weak*/
-//int(*off_4772E4[4])() = { &sub_45D108, &sub_45D147, &sub_45D25B, &sub_45D2C1 }; // weak
-//int(*off_4772E8[3])() = { &sub_45D147, &sub_45D25B, &sub_45D2C1 }; // weak
-//int(*off_4772EC[2])() = { &sub_45D25B, &sub_45D2C1 }; // weak
-//int(*off_4772F0)() = &sub_45D2C1; // weak
 int __477318_beastenclosure_negindex[] = { 0 }; // weak
 stru15unit _477318_beastenclosure = { { 0, 0, 0, 0, 0 }, 0, 0, 0, 0 };
 int max_beastenclosure_level = 0; // weak
 int dword_477358 = 0; // weak
 stru15unit _477378_clanhall = { { 0, 0, 0, 0, 0 }, 0, 0, 0, 0 };
 int max_clanhall_level = 0; // weak
-int _4773A0_boxd_item0_num_things = 0; // weak
-DataBoxd *currently_running_lvl_boxd = NULL;
-Boxd_stru0 *_4773A8_boxd_parray = NULL;
-int _4773AC_boxd_item0_map_x_scale = 0; // weak
-Boxd_stru0 **_4773B0_boxd_item0_things = NULL;
-int _4773B4_boxd_item0_map_num_y_tiles = 0; // weak
-int _4773B8_boxd_item0_map_y_scale = 0; // weak
-int currently_running_lvl_boxd_valid = 0; // weak
-Boxd_stru0 *_4773C0_boxd_array = NULL;
-BoxdTile **_4773C4_boxd_item0_map_tiles = NULL;
-int _4773C8_boxd_item0_map_num_x_tiles = 0; // weak
 char byte_4773D0[68] =
 {
 	'\0',
@@ -6077,13 +5498,11 @@ OilDeposit *oilspot_list_head;
 OilDeposit *oildeposit_list_end;
 OilDeposit *oilspot_list;
 OilDeposit *oilspot_list_free_pool;
-PALETTEENTRY palette_477490[256];
 int dword_477890;
 int dword_477894;
 int dword_477898; // weak
 int dword_47789C; // weak
 int dword_4778A0; // weak
-PALETTEENTRY *palette_4778A4;
 int dword_4778A8; // weak
 int dword_4778AC; // weak
 int __4778C0_stru1_anim_length; // weak
@@ -6096,74 +5515,10 @@ int _4778C8_singleplayer_available_units_denom; // weak
 Script *task_ai_players[7];
 _UNKNOWN unk_4778EC; // weak
 stru24 *cpu_player_scripts_attached_stru24s[7];
-int dword_477940; // weak
-int dword_477944; // weak
-DetailedDrawHandler_VideoPlayer _477948_video_draw_details;
-int _477970_video_header_field_6; // weak
-int _477974_video_header_field_8; // weak
-DrawJob *video_477978_draw_job;
-_UNKNOWN video_477DE4_dsb_waveformatex; // weak
-_UNKNOWN unk_477982; // weak
-__int64 qword_477984; // weak
-_UNKNOWN unk_47798C; // weak
-_UNKNOWN unk_47798E; // weak
-PALETTEENTRY stru_477990; // idb
-DetailedDrawHandler_VideoPlayer stru_477D90; // weak
-int dword_477DB8; // weak
-int dword_477DBC; // weak
-DrawJob *video_477DC0;
-int video_477DC4_current_sound_position; // weak
-int dword_477DC8; // weak
-DSBUFFERDESC video_477DE4_dsb_desc; // weak
-IDirectSoundBuffer *video_477DE4_dsb;
-VideoFile *video;
-int video_477DEC_is_sound_playing; // weak
-int video_477DF0; // weak
-int dword_477DF4; // weak
-char video_477DF8_subtitles[756];
-int video_4780EC; // weak
-int video_4780F0; // weak
-int video_4780F4; // weak
-RenderString *video_4780F8_subtitles;
 int timer_delta_updated; // weak
 int timer_delta_ms; // weak
 int timer_time; // weak
 Entity *dword_478108[300];
-int j_render_nullsub_2; // weak
-int j_render_434B70; // weak
-PALETTEENTRY *ppalette_4785C0;
-int j_render_434A90; // weak
-int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
-PALETTEENTRY *_4785DC_syscolors_palette_entries;
-void (*j_render_4349D0_draw_tile_32x32)(void *pixels, int x, int y); // idb
-int(*j_render_4351A0_draw)(void *pixels, int x, int y, int w, int h); // idb
-PALETTEENTRY palette_4785F0[256]; // weak
-void(*p_render_set_clip)(int, int, int, int);
-void(*j_render_434C60)(unsigned __int8 *pixels, unsigned __int8 *palette, int x, int y, int w, int h); // idb
-int(*j_render_435320)(void *pixels, int x, int y, int w, int h);
-void(*j_render_draw_tile)(void *data, int image_off_x, int image_off_y, int image_x_size, int image_y_size);
-void(*j_render_draw_cursor_434A00)(void *pixels, int x, int y, int w, int h); // idb
-int render_478A0C; // weak
-int(*j_render_4349A0_draw_tile_32x32)(void *pixels, int x, int y); // idb
-int _478A14_prev_stru1_palette_entries; // weak
-COLORREF sys_colors[25];
-void(*j_render_434BD0)(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
-int render_height; // idb
-int render_width; // idb
-void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
-int render_478A94; // weak
-int j_render_nullsub_1; // weak
-DataBoxd_stru0_per_map_unit *_478AA8_boxd_stru0_array;
-int _478AAC_map_height; // weak
-int dword_478AB0; // weak
-int _478AB4_map_width_shl_13; // weak
-int _478BE8_map_info__see40E6E0[8];
-char byte_478C08; // weak
-int _478FF0_map_height_shl_13; // weak
-int dword_478FF4; // weak
-int _4793F8_map_width; // weak
-int dword_47952C; // weak
-int dword_47953C; // weak
 Sidebar *stru22_list_479548;
 Sidebar *stru22_list_47954C;
 Sidebar *sidebar_list;
@@ -6180,27 +5535,10 @@ stru2 *stru2_list_free_pool;
 stru2 *stru2_list;
 stru26 _4795F0_stru26_array[3];
 stru27 _479740_stru27_array[3];
-tagRECT global_wnd_rect; // idb
 void *render_locked_surface_ptr;
-DDPIXELFORMAT pixelformat_primary;
-DWORD global_wnd_style; // idb
-int global_wnd_bpp; // weak
 unsigned int render_locked_surface_width_px; // idb
-DDSURFACEDESC ddsd_primary;
-int global_fullscreen; // weak
-int global_time_flows; // weak
 stru1_draw_params *stru1_list_free_pool;
-int global_wnd_height; // idb
-DWORD global_wnd_style_ex; // idb
 stru1_draw_params *stru1_list;
-int fullscreen_flip_or_blt; // weak
-int global_wnd_width; // idb
-bool is_render_window_initialized; // 411760
-IDirectDraw *pdd;
-IDirectDrawPalette *pddpal_primary;
-IDirectDrawClipper *pddclipper;
-HWND global_hwnd; // idb
-int RenderDD_initialized; // weak
 int timer_render_skips; // weak
 char palette_4798F8_sprt_aligned[512];
 stru1_draw_params *current_drawing_params;
@@ -6227,8 +5565,6 @@ int stru1_global_obj_anim_initialized; // weak
 int game_window_created; // weak
 int _479DE8_boxd_initialized; // weak
 int stru2_list_elements_initialized; // weak
-int _479DF0_mapd_initialized; // weak
-__int16 stru2_list_initialized; // weak
 char current_savegame_filename[256];
 char byte_479EF8[192]; // idb
 char str[128];
@@ -6241,12 +5577,11 @@ int max_machineshop_level; // weak
 char app_root_dir[20]; // idb
 DataHunk *current_level_lvl; // idb
 char game_installation_drive_letter; // weak
-Bitmap *_47A010_mapd_item_being_drawn[3];
 int _47A01C_sound_id; // weak
 char game_data_root_dir[80]; // idb
 char game_data_installation_dir[256];
 DataHunk *wait_lvl;
-int is_minimal_install;
+bool is_minimal_install;
 DataHunk *sprites_lvl; // idb
 int dword_47A180; // weak
 int dword_47A184; // weak
@@ -6258,18 +5593,13 @@ int _47A1A4_custom_mission_briefing_line; // weak
 int _47A1A8_custom_mission_idx; // weak
 int _47A1AC_is_custom_surv_mission; // weak
 int _47A1B0_custom_mission_briefing_ui; // weak
-char global_console_argv[260];
-int dword_47A2BC; // weak
-char *global_cmd_line;
 GAME_STATE game_state = GAME_STATE::MainMenu;
 int netz_47A2C8; // weak
 enum LEVEL_ID current_level_idx;
 __int16 current_mute_level; // weak
 __int16 current_surv_level; // weak
 int _47A2E4_mess_with_game_dir; // weak
-int nocd; // weak
-int _47A2EC_noblack; // weak
-int units_stats_parsed_from_argv; // weak
+int debug_unit_stats_supplied; // weak
 int _4269B0_task_attachment__num_units_created_manually; // weak
 int _47A300_stru51_array__field_4__minus1_index[5]; // weak
 stru51_tech_bunkers _47A300_stru51_tech_bunkers[14];
@@ -6299,10 +5629,9 @@ stru37 *stru37_list_47A500;
 stru37 *stru37_list_47A504;
 stru37 *stru37_list;
 stru37 *stru37_list_free_pool;
-int input_mouse_window_losing_focus_reset_to_defaults; // weak
 int dword_47A5A0; // weak
 char byte_47A5A8[56];
-Script *task_mobd17_cursor; // idb
+Script *game_cursor_script; // idb
 stru13_stru0 _47A608_stru13_associated_array; // weak
 stru13construct *stru13construct_list_47A638;
 stru13construct *stru13construct_list_47A63C;
@@ -6347,21 +5676,11 @@ int _47B3E0_unit_int_outpost_clanhall; // weak
 int __47B3E0_outpost_levels_negindex[5]; // weak
 stru15unit _47B3E0_outpost_levels;
 int max_outpost_level; // weak
-PALETTEENTRY _47B408_palette_entries[256];
-PALETTEENTRY RenderDD_primary_palette_values[256];
-HDC render_sw_hdc; // idb
-PALETTEENTRY palette_47BC10[256];
-HPALETTE render_sw_palette;
-HPALETTE render_sw_default_palette; // idb
 int dword_47C018; // weak
 Script *receiver; // idb
 Script *task_47C028; // idb
 int dword_47C030; // weak
-int render_clip_w; // weak
-int render_clip_z; // weak
-int render_clip_x; // weak
-int render_clip_y; // weak
-int _47C048_unit_bomberdmg; // weak
+int _47C048_num_attack_projectile_sprites; // weak
 int _47C04C_num_explosions_max20; // weak
 stru175 _47C050_array[20];
 char byte_47C230[256]; // idb
@@ -6378,28 +5697,6 @@ Bitmap *bitmap_list_47C364;
 void(*mapd_j_4391D0_handler)(Mapd_stru0 *, void *);
 Bitmap *bitmap_list_free_pool;
 void(*j_drawjob_update_handler_mapd_menu)(Bitmap *param, DrawJob *job);
-int currently_running_lvl_mapd_num_items; // weak
-Mapd_stru0 _47C380_mapd;
-int currently_running_lvl_mapd_valid; // weak
-int _47C390_mapd; // weak
-DataMapd *currently_running_lvl_mapd;
-int sound_list_end; // weak
-Sound *sound_list_free_pool;
-Sound *sound_list_47C3D4;
-sound_stru_2 **_47C4E0_sounds;
-LPDIRECTSOUND pds; // idb
-int _47C4E8_num_sounds; // weak
-int sound_volumes[16];
-Sound *sound_list_head;
-int sound_pans[16];
-int Sound_47C578[16];
-Sound *sound_list;
-int _47C5C0_can_sound; // weak
-int sound_list_last_id; // weak
-void *faction_slv; // idb
-BOOL sound_initialized;
-int dword_47C5D0; // weak
-int _47C5D4_sound_threaded_snd_id; // idb
 DrawJobList draw_list_47C5D8; // idb
 DrawJob *draw_list_free_pool;
 DrawJobList draw_list_47C5E8; // idb
@@ -6441,7 +5738,7 @@ Script *script_execute_list;
 Script *script_list_47C714;
 size_t coroutine_default_stack_size; // idb
 Script *task_creation_handler_arg;
-__int16 is_coroutine_list_initialization_failed; // weak
+__int16 is_async_execution_supported; // weak
 Script *script_list;
 int stru8_list_size; // weak
 int stru8_list_allocated; // weak
@@ -6515,41 +5812,7 @@ _DWORD dword_47CB14; // idb
 int dword_47CB18; // weak
 int dword_47CB1C; // weak
 int dword_47CB20; // weak
-MapdScrlImageTile *fog_of_war_tile_15;
-int __478AAC_map_height_plus4; // weak
-MapdScrlImage *fog_of_war_scrl_source;
-int __478AAC_map_height_x2; // weak
-MapdScrlImageTile *fog_of_war_tile_1;
-MapdScrlImageTile *fog_of_war_tile_10;
-MapdScrlImageTile *fog_of_war_tile_14;
-MapdScrlImageTile *fog_of_war_tile_4;
-MapdScrlImage *map_fog_of_war_scrl;
-int dword_47CB4C; // weak
-char byte_47CB50[8];
-Sprite *_47CB58_minimap_sprite;
-MapdScrlImageTile *fog_of_war_tile_11;
-MapdScrlImageTile *fog_of_war_tile_7;
-MapdScrlImageTile *fog_of_war_tile_3;
-int dword_47CB68; // weak
-int dword_47CB6C; // weak
-MapdScrlImageTile *fog_of_war_tile_13;
-void *_47CB74_fow_map_x2; // idb
-MapdScrlImageTile *fog_of_war_tile_6;
-int __4793F8_map_width_x2; // weak
-int __4793F8_map_width_plus4; // weak
-MapdScrlImageTile *fog_of_war_tile_8;
-void *_47CB88_fow_map_x2; // idb
-DrawHandlerData_Units *_47CB8C_fow;
-MapdScrlImageTile *fog_of_war_tile_5;
-MapdScrlImageTile *fog_of_war_tile_12;
-void *_47CB98_fow_map_x2;
-int dword_47CBAC; // weak
-Bitmap *fog_of_war_bitmap;
-MapdScrlImageTile **map_fog_of_war_scrl_tiles;
-MapdScrlImageTile *fog_of_war_tile_9;
-MapdScrlImageTile *fog_of_war_tile_2;
 int _47CBC0_fow[256];
-int dword_47CFC0; // weak
 int __47CFC4_mobd_lookup_speeds[256];
 int _47D3C4_entity_mobd_lookup_ids[257];
 unsigned __int8 player_sprite_palette_tmp[256];
@@ -6574,7 +5837,4 @@ int UNIT_num_nonplayer_units; // weak
 int num_players_towers; // weak
 void *entity_default_stru60_ptr;
 int dword_47DCE8; // weak
-HINSTANCE global_hinstance; // idb
-int global_win32_nCmdShow; // idb
 bool _47DCF4_wm_quit_received = false; // weak
-VideoFileFrame *video_47F434_frame;

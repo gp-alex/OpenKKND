@@ -15,42 +15,31 @@ ScriptEvent *script_event_list;
 //----- (004237F0) --------------------------------------------------------
 bool script_event_list_alloc()
 {
-    ScriptEvent *result; // eax@1
-    int v1; // ecx@2
-
-    result = (ScriptEvent *)malloc(0x3E80u);
-    script_event_list = result;
-    if (result)
+    script_event_list = (ScriptEvent *)malloc(0x3E80u);
+    if (script_event_list)
     {
-        v1 = 0;
+        int v1 = 0;
         do
         {
-            result[v1].next = &result[v1 + 1];
-            result = script_event_list;
+            script_event_list[v1].next = &script_event_list[v1 + 1];
             ++v1;
         } while (v1 < 999);
         script_event_list[999].next = 0;
         script_event_list_free_pool = script_event_list;
-        result = (ScriptEvent *)1;
     }
-    return (BOOL)result;
+    return script_event_list != nullptr;
 }
 
 //----- (00423840) --------------------------------------------------------
 bool script_trigger_event(Script *sender, enum SCRIPT_EVENT event, void *param, Script *receiver)
 {
-    ScriptEvent *result; // eax@1
-    void(*event_handler)(Script *, Script *, enum SCRIPT_EVENT, void *); // edi@2
-
-    if (receiver->routine_type == SCRIPT_FUNCTION && (event_handler = receiver->event_handler) != 0)
-    {
-        event_handler(receiver, sender, event, param);
-    }
-    else
-    {
-        result = script_event_list_free_pool;
+    if (receiver->routine_type == SCRIPT_FUNCTION && receiver->event_handler) {
+        receiver->event_handler(receiver, sender, event, param);
+    } else {
+        ScriptEvent *result = script_event_list_free_pool;
         if (!script_event_list_free_pool)
             return false;
+
         script_event_list_free_pool = script_event_list_free_pool->next;
         result->next = 0;
         result->sender = 0;

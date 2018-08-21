@@ -190,7 +190,7 @@ int netz_430670(int a1);
 int j_netz_430670(int a1);
 int netz_430690();
 int j_netz_430690();
-BOOL __stdcall DirectPlayEnumerateACallback(LPGUID lpguidSP, LPSTR lpSPName, DWORD dwMajorVersion, DWORD dwMinorVersion, LPVOID lpContext); // idb
+bool __stdcall DirectPlayEnumerateACallback(void *lpguidSP, char *lpSPName, __int32 dwMajorVersion, __int32 dwMinorVersion, void *lpContext); // idb
 int netz_create_direct_play(int a1);
 bool netz_430910_dplay();
 bool __stdcall netz_4309A0(int a1, int a2, char a3, int a4);
@@ -203,7 +203,7 @@ int netz_430DA0(unsigned int a1);
 char *netz_get_error_string(int error_code); // idb
 
 void script_449820_netz(Script *); // idb
-bool netz_449E00(_DWORD *a1, unsigned int a2, const char *a3);
+bool netz_449E00(int *a1, unsigned int a2, const char *a3);
 void netz_449FF0();
 void netz_44A160(char a1, char *a2, int a3);
 void *netz_44A220(char a1, char *a2, int a3);

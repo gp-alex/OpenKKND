@@ -1,7 +1,8 @@
 #pragma once
 
-#pragma pack(push, 1)
+#include "src/Script.h"
 
+struct Entity;
 
 enum SELECTED_ENTITY_TYPE : __int32
 {
@@ -16,41 +17,6 @@ enum SELECTED_ENTITY_TYPE : __int32
     SELECTED_ENTITY_COMBAT_INFANTRY = 9,
 };
 
-/* 435 */
-struct _428940_local
-{
-    _428940_local *next;
-    _428940_local *prev;
-    Script *_8_task;
-    task_428940_attach__cursors_2 *pstru2;
-    task_428940_attach__cursors_2 *ptr_10;
-    Script *_14_task;
-    Script *_18_script;
-    Script *_1C_cursor_target_ai;
-    int _20_load_mobd_item_offset;
-    int field_24;
-    int field_28;
-    int field_2C;
-    int field_30;
-    int _34_is_cursor_over_impassible_terrain;
-    int _38_are_owned_units_selected;
-    int _3C_is_single_unit_selected;
-    int _40_is_infantry_or_vehicle_selected;
-    int _44_is_combat_unit_selected;
-    enum UNIT_ID _48_highest_ranking_selected_unit;
-    int field_4C;
-    int cursor_x;
-    int cursor_y;
-    int field_58;
-    int field_5C;
-    int field_60;
-    int field_64;
-    Entity *_68_selected_moveable_entity;
-    SELECTED_ENTITY_TYPE _68_selected_moveable_entity_type;
-    Sprite *_70_sprite;
-    Sprite *_74_sprite;
-    void *_78_msg1522_param;
-};
 
 
 enum stru209_TYPE : __int8
@@ -82,6 +48,10 @@ enum stru209_TYPE : __int8
     stru209_TYPE_26_destroy = 26,
     stru209_TYPE_SWEAR_ALLEGIANCE = 27,
 };
+
+
+
+#pragma pack(push, 1)
 struct stru209
 {
     stru209_TYPE type;
@@ -90,7 +60,22 @@ struct stru209
     int param3;
     char _is_free;
 };
+#pragma pack(pop)
+
+
+/* 422 */
+#pragma pack(push, 1)
+struct task_428940_attach__cursors_2
+{
+    task_428940_attach__cursors_2 *next;
+    task_428940_attach__cursors_2 *prev;
+    Script *_8_task;
+};
+#pragma pack(pop)
+
+
 /* 421 */
+#pragma pack(push, 1)
 struct task_428940_attach__cursors
 {
     task_428940_attach__cursors *next;
@@ -98,18 +83,51 @@ struct task_428940_attach__cursors
     char field_12;
     char field_13;
 };
+#pragma pack(pop)
 
-/* 422 */
-struct task_428940_attach__cursors_2
+/* 435 */
+#pragma pack(push, 1)
+struct CursorHandler
 {
-    task_428940_attach__cursors_2 *next;
-    task_428940_attach__cursors_2 *prev;
+    CursorHandler *next;
+    CursorHandler *prev;
     Script *_8_task;
+    task_428940_attach__cursors_2 *pstru2;
+    task_428940_attach__cursors_2 *ptr_10;
+    Script *cursor_task;
+    Script *_18_script;
+    Script *cursor_target_ai;
+    int _20_load_mobd_item_offset;
+    int field_24;
+    int field_28;
+    int field_2C;
+    int field_30;
+    int _34_is_cursor_over_impassible_terrain;
+    int _38_are_owned_units_selected;
+    int _3C_is_single_unit_selected;
+    int _40_is_infantry_or_vehicle_selected;
+    int _44_is_combat_unit_selected;
+    enum UNIT_ID _48_highest_ranking_selected_unit;
+    int field_4C;
+    int cursor_x;
+    int cursor_y;
+    int field_58;
+    int field_5C;
+    int field_60;
+    int field_64;
+    Entity *_68_selected_moveable_entity;
+    SELECTED_ENTITY_TYPE _68_selected_moveable_entity_type;
+    Sprite *_70_sprite;
+    Sprite *_74_sprite;
+    void *_78_msg1522_param;
 };
-
 #pragma pack(pop)
 
 
+
+
+
+#define CURSOR_MOBD_0                               0
 #define CURSOR_MOBD_OFFSET_DEFAULT                  12  // default arrow
 #define CURSOR_MOBD_OFFSET_HELP                     24  // bright help arrow
 #define CURSOR_MOBD_OFFSET_HELP_2                   36  // dim help arrow
@@ -150,10 +168,10 @@ struct task_428940_attach__cursors_2
 #define CURSOR_MOBD_OFFSET_1752                     1752
 #define CURSOR_MOBD_OFFSET_1764                     1764
 
-void cursor_drag_selection(_428940_local *a1, int x, int y); // idb
-void cursor_on_unit_selection(_428940_local *a1, Entity *a2);
-void cursor_on_unit_group_selection(_428940_local *a1);
-void cursor_classify_selected_unit(_428940_local *a1, Entity *entity);
+void cursor_drag_selection(CursorHandler *a1, int x, int y); // idb
+void cursor_on_unit_selection(CursorHandler *a1, Entity *a2);
+void cursor_on_unit_group_selection(CursorHandler *a1);
+void cursor_classify_selected_unit(CursorHandler *a1, Entity *entity);
 
 
 void script_game_cursor_handler(Script *a1); // idb
@@ -165,14 +183,14 @@ void _428940_list_return(task_428940_attach__cursors *item);
 stru209 *_47A660_list_get();
 void _428940_list_do_stuff(stru209 *a1);
 
-void sub_4297D0(_428940_local *a1, int a2);
-void cursor_load_mobd(_428940_local *a1, int offset); // idb
-bool cursor_check_click(_428940_local *a1);
-void cursor_group_orders(_428940_local *a1); // cursor handler for unit group
-void _42AFD0_vehicle_repair_station_handler(_428940_local *a1, Entity *a2); // idb
-void cursor_unit_move_confirmation(_428940_local *a1);
-void cursor_sidebar_handler(_428940_local *a1);
-void cursor_process_user_actions(_428940_local *a1, int a2);
+void sub_4297D0(CursorHandler *a1, int a2);
+void cursor_load_mobd(CursorHandler *a1, int offset); // idb
+bool cursor_check_click(CursorHandler *a1);
+void cursor_group_orders(CursorHandler *a1); // cursor handler for unit group
+void _42AFD0_vehicle_repair_station_handler(CursorHandler *a1, Entity *a2); // idb
+void cursor_unit_move_confirmation(CursorHandler *a1);
+void cursor_sidebar_handler(CursorHandler *a1);
+void cursor_process_user_actions(CursorHandler *a1, int a2);
 
 
 extern task_428940_attach__cursors *task_428940_attach__cursors_list;

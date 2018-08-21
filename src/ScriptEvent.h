@@ -1,24 +1,24 @@
 #pragma once
 
-struct Script;
+#include "src/Script.h"
 
 
 /* 365 */
 enum SCRIPT_EVENT : __int32
 {
-    EVT_MSG_1497 = 1497,
+    MSG_ATTACKED = 1497,
     EVT_MSG_MISSION_FAILED = 1498,
     EVT_MSG_1499 = 1499,
     EVT_MSG_1500 = 1500,
-    EVT_MSG_DAMAGE = 1503,
-    EVT_MSG_1505 = 1505,
+    CMD_APPLY_DAMAGE = 1503,
+    MSG_RECEIVE_EXPERIENCE = 1505,
     EVT_MSG_SABOTAGE = 1506,
     EVT_MSG_1507_stru11 = 1507,
     EVT_MSG_1508 = 1508,
     EVT_MSG_1509_stru11 = 1509,
     EVT_MSG_1510 = 1510,
-    EVT_MSG_1511_sidebar_click_category = 1511,
-    EVT_SHOW_UI_CONTROL = 1512,
+    EVT_MSG_SELECTED = 1511,
+    EVT_MSG_DESELECTED = 1512,
     EVT_MSG_1513 = 1513,
     EVT_MSG_1514 = 1514,
     EVT_MSG_SHOW_UNIT_HINT = 1515,
@@ -29,13 +29,13 @@ enum SCRIPT_EVENT : __int32
     EVT_MSG_1520 = 1520,
     EVT_MSG_1521_entity_created = 1521,
     EVT_MSG_1522_plan_building_construction = 1522,
-    EVT_ENTITY_ATTACK = 1523,
-    EVT_ENTITY_MOVE = 1524,
+    EVT_CMD_ENTITY_ATTACK = 1523,
+    EVT_CMD_ENTITY_MOVE = 1524,
     EVT_MSG_1525 = 1525,
     EVT_MSG_1526_infiltrate = 1526,
     EVT_MSG_1527 = 1527,
     EVT_MSG_1528 = 1528,
-    EVT_MSG_1529_ai = 1529,
+    EVT_MSG_NEXT_CONSTRUCTION_STATE = 1529,
     EVT_MSG_1530_OPEN_GAME_MENU = 1530,
     EVT_MSG_1531 = 1531,
     EVT_MSG_1532 = 1532,
@@ -72,8 +72,8 @@ struct ScriptEvent
 
 
 bool script_event_list_alloc();
-bool script_trigger_event(Script *sender, enum SCRIPT_EVENT event, void *param, Script *receiver);
-bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *param, enum SCRIPT_TYPE receiver_type);
+bool script_trigger_event(Script *sender, SCRIPT_EVENT event, void *param, Script *receiver);
+bool script_trigger_event_group(Script *sender, SCRIPT_EVENT event, void *param, SCRIPT_TYPE receiver_type);
 ScriptEvent *script_get_next_event(Script *a1);
 void script_discard_event(ScriptEvent *a1);
 void script_discard_all_events(Script *a1);

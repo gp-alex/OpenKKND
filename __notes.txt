@@ -3,7 +3,7 @@ UNIT ORDER (move)
 new mode = entity_mode_move_attack OR entity_mode_move_tanker
 	entity_move
 		EventHandler_Infantry			// infantry event handler
-			script_trigger_event(EVT_ENTITY_MOVE, dst_x, dst_y)
+			script_trigger_event(EVT_CMD_ENTITY_MOVE, dst_x, dst_y)
 				case stru209_TYPE_MOVE
 				script_evt39030_handler	// process user unit orders
 
@@ -27,3 +27,9 @@ mobile derrick:
 	4. mode_turn_return - MOVING TO DESTINATION		entity_mode_move_to_target_416790
 	5. mode_arrive - DESTINATION REACED				entity_mode_406DC0_mobilederrick
 	6. mode - IDLE									entity_mode_default_idle
+
+
+
+
+NICE TEXT BOX (3 sec):
+	GAME_OnSaveFailed + script_421D60_on_savegame_failed

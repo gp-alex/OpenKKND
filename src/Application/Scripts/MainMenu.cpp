@@ -2,8 +2,8 @@
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
 #include "src/stru29.h"
+#include "src/Render.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 
@@ -50,7 +50,7 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
     v8 = LVL_FindMapd();
-    _40E400_set_palette(&v8[2].items->palette);
+    _40E400_set_palette(v8[2].items->GetPalette());
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)2, 0, -10);
     cplc_select(2);
     cplc_406320();
@@ -138,7 +138,7 @@ void script_mobd79_evt1__main_menu_play_mission(Script *a1)
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
     v8 = LVL_FindMapd();
-    _40E400_set_palette(&v8[11].items->palette);
+    _40E400_set_palette(v8[11].items->GetPalette());
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)11, 0, -10);
     cplc_select(11);
     cplc_406320();
@@ -186,7 +186,7 @@ void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
     v8 = LVL_FindMapd();
-    _40E400_set_palette(&v8[1].items->palette);
+    _40E400_set_palette(v8[1].items->GetPalette());
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
     cplc_select(1);
     cplc_406320();
@@ -234,7 +234,7 @@ void script_mobd79_evt1__main_menu_new_missions(Script *a1)
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
     v8 = LVL_FindMapd();
-    _40E400_set_palette(&v8[14].items->palette);
+    _40E400_set_palette(v8[14].items->GetPalette());
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)14, 0, -10);
     cplc_select(14);
     cplc_406320();
@@ -282,7 +282,7 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
     bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
     v8 = LVL_FindMapd();
-    _40E400_set_palette(&v8[15].items->palette);
+    _40E400_set_palette(v8[15].items->GetPalette());
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)15, 0, -10);
     cplc_select(15);
     cplc_406320();
@@ -368,7 +368,7 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
         bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(v1, 3);
         v5 = LVL_FindMapd();
-        _40E400_set_palette(&v5[12].items->palette);
+        _40E400_set_palette(v5[12].items->GetPalette());
         _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)12, 0, -10);
         cplc_select(12);
         cplc_406320();
@@ -391,7 +391,7 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
             bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
             script_sleep(v1, 3);
             v6 = LVL_FindMapd();
-            _40E400_set_palette(&v6[12].items->palette);
+            _40E400_set_palette(v6[12].items->GetPalette());
             _47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)12, 0, -10);
             cplc_select(12);
             cplc_406320();
@@ -437,8 +437,8 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
                     v10 = stru29_list_first();
                     if (v9 & INPUT_KEYBOARD_RETURN_MASK && v10 != stru29_list_end())
                     {
-                        script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47C6D4_stru29->sprite->script);
-                        script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47C6D4_stru29->sprite->script);
+                        script_trigger_event(0, EVT_MSG_SELECTED, 0, _47C6D4_stru29->sprite->script);
+                        script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47C6D4_stru29->sprite->script);
                         v10 = stru29_list_first();
                     }
                     if (v9 & (INPUT_KEYBOARD_TAB_MASK | INPUT_KEYBOARD_ARROW_KEYS_MASK))
@@ -453,10 +453,10 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
             {
                 if (i->event == EVT_MOUSE_HOVER)
                 {
-                    if (v16.just_pressed_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
-                        script_trigger_event(v1, EVT_MSG_1511_sidebar_click_category, 0, (Script *)i->param);
-                    if (v16.just_released_buttons_mask & INPUT_MOUSE_LBUTTON_MASK && i->param && !dword_4778A0)
-                        script_trigger_event(v1, EVT_SHOW_UI_CONTROL, 0, (Script *)i->param);
+                    if (mouse_lbutton_just_pressed() && i->param && !dword_4778A0)
+                        script_trigger_event(v1, EVT_MSG_SELECTED, 0, (Script *)i->param);
+                    if (mouse_lbutton_just_released() && i->param && !dword_4778A0)
+                        script_trigger_event(v1, EVT_MSG_DESELECTED, 0, (Script *)i->param);
                 }
                 script_discard_event(i);
             }

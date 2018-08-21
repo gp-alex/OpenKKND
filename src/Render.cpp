@@ -1,12 +1,15 @@
-#include "src/kknd.h"
+#include "src/Render.h"
 
+#include "src/kknd.h"
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
-#include "src/Render.h"
+#include "src/Video.h"
+#include "src/Pathfind.h"
+#include "src/Map.h"
 
 #include "src/Engine/Entity.h"
 
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
 
 const bool debug_outline_tiles = true;
@@ -14,430 +17,87 @@ extern bool is_mission_running;
 extern Entity *debug_pathing_entity;
 
 
-IDirectDrawSurface *pdds_primary;
-IDirectDrawSurface *pdds_backbuffer;
+Palette *render_current_palette = nullptr;
+Palette palette_477490;
+Palette *palette_4778A4;
+int j_render_nullsub_2; // weak
+int j_render_434B70; // weak
+Palette *ppalette_4785C0;
+int j_render_434A90; // weak
+int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
+void(*j_render_4349D0_draw_tile_32x32)(void *pixels, int x, int y); // idb
+int(*j_render_4351A0_draw)(void *pixels, int x, int y, int w, int h); // idb
+Palette palette_4785F0; // weak
+void(*p_render_set_clip)(int, int, int, int);
+void(*j_render_434C60)(unsigned __int8 *pixels, unsigned __int8 *palette, int x, int y, int w, int h); // idb
+int(*j_render_435320)(void *pixels, int x, int y, int w, int h);
+void(*j_render_draw_tile)(void *data, int image_off_x, int image_off_y, int image_x_size, int image_y_size);
+void(*j_render_draw_cursor_434A00)(void *pixels, int x, int y, int w, int h); // idb
+int render_478A0C; // weak
+int(*j_render_4349A0_draw_tile_32x32)(void *pixels, int x, int y); // idb
+int _478A14_prev_stru1_palette_entries; // weak
+//COLORREF sys_colors[25];
+void(*j_render_434BD0)(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
+void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
+int render_478A94; // weak
+int j_render_nullsub_1; // weak
+Palette _47B408_palette_entries;
+Palette RenderDD_primary_palette_values;
+Palette palette_47BC10;
+int render_clip_w; // weak
+int render_clip_z; // weak
+int render_clip_x; // weak
+int render_clip_y; // weak
+int render_width = 0;
+int render_height = 0;
+int render_bpp;
+bool render_fullscreen;
+
+void _40E430_update_palette(unsigned int a1);
+
+bool stru1_list_init(int window_width, int window_height, const int num_stru1s = 7);
 
 
-PALETTEENTRY *render_current_palette = nullptr;
 
-//----- (00411760) --------------------------------------------------------
-bool render_create_window(int width, int height, int bpp, int run, bool fullscreen)
-{
-    int he1ght; // ebx@1
-    int w1dth; // ebp@1
-    BOOL result; // eax@2
-    BOOL v10; // eax@6
-    DWORD v11; // eax@11
-    LONG v12; // eax@13
-    int v13; // ST18_4@13
-    HWND v14; // eax@13
-    stru1_draw_params *v15; // eax@19
-    int v16; // ecx@21
-    WNDCLASSEXA v17; // [sp+10h] [bp-30h]@8
+Palette *_4785DC_syscolors_palette_entries;
 
-    he1ght = height;
-    w1dth = width;
-    if (is_render_window_initialized)
-        return false;
-
-    if (bpp == 15)
-    {
-        bpp = 16;
-    }
-    else if (bpp != 8 && bpp != 16 && bpp != 24 && bpp != 32)
-    {
-        return false;
-    }
-    global_wnd_bpp = bpp;
-    global_wnd_width = width;
-    global_wnd_height = height;
-    global_time_flows = run;
-    global_fullscreen = fullscreen;
-
-    HWND v9 = FindWindowA("OpenKKNDWindowClass", "OpenKKND");
-    if (v9)
-    {
-        SetForegroundWindow(v9);
-        v10 = 0;
-    }
-    else
-    {
-        ShowCursor(0);
-        if (!global_hwnd)
-        {
-            v17.style = 8;
-            v17.hInstance = global_hinstance;
-            v17.lpszClassName = "KKNDXtremeMainWindowClass";
-            v17.lpfnWndProc = (WNDPROC)WndProc;
-            v17.cbSize = 48;
-            v17.hIcon = LoadIconA(global_hinstance, (LPCSTR)0x65);
-            v17.cbClsExtra = 0;
-            v17.cbWndExtra = 0;
-            v17.hIconSm = LoadIconA(global_hinstance, (LPCSTR)0x65);
-            v17.hCursor = 0;
-            v17.lpszMenuName = 0;
-            v17.hbrBackground = (HBRUSH)GetStockObject(5);
-            if (!RegisterClassExA(&v17))
-            {
-                v10 = 0;
-                goto LABEL_17;
-            }
-            if (global_fullscreen == 1)
-            {
-                v11 = 0x90080000;
-                global_wnd_style_ex = 0x40008;
-                global_wnd_style = 0x90080000;
-            }
-            else
-            {
-                v11 = 0x90CA0000;
-                global_wnd_style_ex = 0x40000;
-                global_wnd_style = 0x90CA0000;
-            }
-            global_wnd_rect.left = 0;
-            global_wnd_rect.right = global_wnd_width;
-            global_wnd_rect.top = 0;
-            global_wnd_rect.bottom = global_wnd_height;
-            AdjustWindowRect(&global_wnd_rect, v11, 0);
-            global_wnd_rect.bottom -= global_wnd_rect.top;
-            global_wnd_rect.right -= global_wnd_rect.left;
-            global_wnd_rect.top = 0;
-            global_wnd_rect.left = 0;
-            v12 = GetSystemMetrics(0) - global_wnd_rect.right;
-            global_wnd_rect.right += v12;
-            v13 = global_wnd_rect.right - (v12 + global_wnd_rect.left);
-            global_wnd_rect.left += v12;
-            v14 = CreateWindowExA(
-                global_wnd_style_ex,
-                "KKNDXtremeMainWindowClass",
-                "KKND Xtreme",
-                global_wnd_style,
-                global_wnd_rect.left,
-                global_wnd_rect.top,
-                v13,
-                global_wnd_rect.bottom - global_wnd_rect.top,
-                0,
-                0,
-                global_hinstance,
-                0);
-            global_hwnd = v14;
-            if (!v14)
-            {
-                v10 = 0;
-                goto LABEL_17;
-            }
-            UpdateWindow(v14);
-        }
-        render_sw_initialize();
-        v10 = render_init_dd();
-    }
-
-LABEL_17:
-    if (v10)
-    {
-        v15 = (stru1_draw_params *)malloc(0xFCu);
-        stru1_list = v15;
-        if (v15)
-        {
-            v16 = 0;
-            do
-            {
-                v15[v16].next = &v15[v16 + 1];          // chain
-                                                        // [0] -> [1] -> [2] -> [3] -> [4] -> [5] -> [6]
-                v15 = stru1_list;
-                ++v16;
-            } while (v16 < 6);
-            stru1_list[6].next = 0;
-            stru1_list_free_pool = stru1_list;
-            default_stru1.prev = &default_stru1;
-            default_stru1.next = &default_stru1;
-            default_stru1.field_8 = 0;
-            default_stru1.anim_pos = 0x80000000;
-            default_stru1.clip_y = 0;
-            default_stru1.clip_x = 0;
-            default_stru1.clip_z = w1dth;
-            default_stru1.clip_w = he1ght;
-            default_stru1.field_20 = 0;
-            is_render_window_initialized = 1;
-
-            return true;
-        }
-    }
-
-    return false;
+//----- (0040E550) --------------------------------------------------------
+Palette *GetSysPalette() {
+    return _4785DC_syscolors_palette_entries;
 }
 
-//----- (00411A50) --------------------------------------------------------
-bool render_init_dd()
-{
-    int v0; // eax@11
-    int v1; // eax@15
-    int v2; // eax@19
-    int v3; // eax@23
-    int v4; // eax@31
-    int v5; // eax@35
-    int v6; // eax@45
-    HWND v8; // eax@46
-    IDirectDrawSurface *v9; // [sp+68h] [bp-280h]@10
-    IDirectDraw *lpDD; // [sp+6Ch] [bp-27Ch]@3
-    DDCAPS v11; // [sp+70h] [bp-278h]@5
-    DDCAPS v12; // [sp+1ACh] [bp-13Ch]@5
-
-    if (!RenderDD_initialized && !pdd)
-    {
-        RenderDD_initialized = 1;
-        lpDD = 0;
-        if (!DirectDrawCreate(0, &lpDD, 0))
-        {
-            pdd = lpDD;
-            if (lpDD)
-            {
-                v11.dwSize = 316;
-                memset(&v11.dwCaps, 0, 0x138u);
-                v12.dwSize = 316;
-                memset(&v12.dwCaps, 0, 0x138u);
-                lpDD->GetCaps(&v11, &v12);
-                if (v11.dwCaps & DDCAPS_CANBLTSYSMEM || v12.dwCaps & DDCAPS_CANBLTSYSMEM)
-                {
-                    if (global_fullscreen == 1)
-                    {
-                        global_wnd_style = 0x90080000;
-                        global_wnd_style_ex = 0x40008;
-                        SetWindowLongA(global_hwnd, GWL_STYLE, 0x90080000);
-                        SetWindowLongA(global_hwnd, GWL_EXSTYLE, global_wnd_style_ex);
-                        SetWindowPos(global_hwnd, (HWND)(void *)((int)HWND_MESSAGE | 0x2), 0, 0, global_wnd_width, global_wnd_height, 0x60u);
-                        InvalidateRect(global_hwnd, 0, 1);
-                        UpdateWindow(global_hwnd);
-                        if (!pdd->SetCooperativeLevel(
-                            global_hwnd,
-                            DDSCL_EXCLUSIVE | DDSCL_NOWINDOWCHANGES | DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN)
-                            && !pdd->SetDisplayMode(global_wnd_width, global_wnd_height, global_wnd_bpp))
-                        {
-                            pdds_backbuffer = 0;
-                            ddsd_primary.dwSize = 108;
-                            ddsd_primary.dwFlags = 33;
-                            ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLTSTRETCH | DDCAPS_ALIGNSIZESRC | DDCAPS_ALIGNBOUNDARYSRC;
-                            ddsd_primary.dwBackBufferCount = 2;
-                            fullscreen_flip_or_blt = 1;
-                            if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
-                            {
-                                v0 = 0;
-                            }
-                            else
-                            {
-                                pdds_primary = v9;
-                                v0 = v9 != 0;
-                            }
-                            if (v0
-                                || ((ddsd_primary.ddsCaps.dwCaps = DDCAPS_BLTSTRETCH | DDCAPS_ALIGNSIZESRC | DDCAPS_ALIGNBOUNDARYSRC,
-                                    ddsd_primary.dwBackBufferCount = 1,
-                                    !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v1 = v9 != 0) : (v1 = 0),
-                                    v1
-                                    || ((fullscreen_flip_or_blt = 0,
-                                        ddsd_primary.dwFlags = 1,
-                                        ddsd_primary.ddsCaps.dwCaps = 512,
-                                        !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_primary = v9, v2 = v9 != 0) : (v2 = 0),
-                                        v2
-                                        && ((ddsd_primary.dwHeight = global_wnd_height,
-                                            ddsd_primary.dwWidth = global_wnd_width,
-                                            ddsd_primary.dwFlags = 7,
-                                            ddsd_primary.ddsCaps.dwCaps = 2112,
-                                            !pdd->CreateSurface(&ddsd_primary, &v9, 0)) ? (pdds_backbuffer = v9, v3 = v9 != 0) : (v3 = 0),
-                                            v3))))
-                            {
-                                if (pdds_backbuffer
-                                    || (v9 = (IDirectDrawSurface *)4,
-                                        !pdds_primary->GetAttachedSurface((LPDDSCAPS)&v9, &pdds_backbuffer)))
-                                {
-                                LABEL_38:
-                                    if ((global_fullscreen != 1
-                                        || !pdd->CreatePalette(68, RenderDD_primary_palette_values, &pddpal_primary, 0)
-                                        && !pdds_primary->SetPalette(pddpal_primary))
-                                        && !pdd->CreateClipper(0, &pddclipper, 0)
-                                        && !pddclipper->SetHWnd(0, global_hwnd)
-                                        && !pdds_primary->SetClipper(pddclipper)
-                                        && !pdds_primary->GetSurfaceDesc(&ddsd_primary))
-                                    {
-                                        memcpy(&pixelformat_primary, &ddsd_primary.ddpfPixelFormat, sizeof(pixelformat_primary));
-                                        v6 = ShowWindow(global_hwnd, global_win32_nCmdShow);
-                                        RenderDD_initialized = 0;
-                                        REND_DirectDrawClearScreen(1);
-                                        return 1;
-                                    }
-                                    goto LABEL_46;
-                                }
-                            }
-                        }
-                    }
-                    else                                  // windowed
-                    {
-                        global_wnd_style = 0x90CA0000;
-                        global_wnd_style_ex = 0x40000;
-                        SetWindowLongA(global_hwnd, GWL_STYLE, 0x90CA0000);
-                        SetWindowLongA(global_hwnd, GWL_EXSTYLE, global_wnd_style_ex);
-                        SetWindowPos(
-                            global_hwnd,
-                            (HWND)0xFFFFFFFE,
-                            global_wnd_rect.left,
-                            global_wnd_rect.top,
-                            global_wnd_rect.right - global_wnd_rect.left,
-                            global_wnd_rect.bottom - global_wnd_rect.top,
-                            0x60u);
-                        InvalidateRect(global_hwnd, 0, 1);
-                        UpdateWindow(global_hwnd);
-                        if (!pdd->SetCooperativeLevel(global_hwnd, DDSCL_NORMAL))
-                        {
-                            memset(&ddsd_primary, 0, sizeof(ddsd_primary));
-                            ddsd_primary.dwSize = 108;
-                            ddsd_primary.dwFlags = 1;
-                            ddsd_primary.ddsCaps.dwCaps = 512;
-                            if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
-                            {
-                                v4 = 0;
-                            }
-                            else
-                            {
-                                pdds_primary = v9;
-                                v4 = v9 != 0;
-                            }
-                            if (v4)
-                            {
-                                ddsd_primary.dwHeight = global_wnd_height;
-                                ddsd_primary.dwWidth = global_wnd_width;
-                                ddsd_primary.dwFlags = 7;
-                                ddsd_primary.ddsCaps.dwCaps = DDCAPS_OVERLAYSTRETCH | DDCAPS_BLT;
-                                if (pdd->CreateSurface(&ddsd_primary, &v9, 0))
-                                {
-                                    v5 = 0;
-                                }
-                                else
-                                {
-                                    pdds_backbuffer = v9;
-                                    v5 = v9 != 0;
-                                }
-                                if (v5)
-                                    goto LABEL_38;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    LABEL_46:
-        RenderDD_initialized = 0;
-        render_cleanup_dd();
-        v8 = GetActiveWindow();
-        MessageBoxA(v8, (LPCSTR)aFailedToSetupDirectdraw, (LPCSTR)Caption, 0);
-        return 0;
-    }
-    return 1;
+void SetSysPalette(Palette *pal) {
+    _4785DC_syscolors_palette_entries = pal;
 }
 
-//----- (00411FE0) --------------------------------------------------------
-void render_cleanup_dd()
-{
-    IDirectDrawSurface *v0; // esi@3
-    int v1; // eax@15
-    IDirectDrawSurface *v2; // esi@23
-    int v3; // eax@24
-    IDirectDrawPalette *v4; // [sp+14h] [bp-4h]@9
 
-    if (!RenderDD_initialized && pdd)
-    {
-        v0 = pdds_primary;
-        if (pdds_primary)
-        {
-            pdds_primary->SetClipper(0);
-            v0 = pdds_primary;
-        }
-        if (pddclipper)
-        {
-            pddclipper->Release();
-            v0 = pdds_primary;
-            pddclipper = 0;
-        }
-        if (global_fullscreen == 1)
-        {
-            if (v0)
-            {
-                v4 = 0;
-                v0->GetPalette(&v4);
-                if (v4)
-                    pdds_primary->SetPalette(0);
-                v0 = pdds_primary;
-            }
-            if (pddpal_primary)
-            {
-                pddpal_primary->Release();
-                v0 = pdds_primary;
-                pddpal_primary = 0;
-            }
-        }
-        if (v0)
-        {
-            while (1)
-            {
-                v1 = v0->GetBltStatus(2);
-                if (v1 != 0x887601AE && v1 != 0x8876021C)
-                    break;
-                Sleep(0xAu);
-            }
-            if (fullscreen_flip_or_blt && v0->GetFlipStatus(2) == 0x887601AE)
-            {
-                do
-                    Sleep(0xAu);
-                while (v0->GetFlipStatus(2) == 0x887601AE);
-            }
-            v0->Release();
-        }
-        pdds_primary = 0;
-        if (!fullscreen_flip_or_blt)
-        {
-            v2 = pdds_backbuffer;
-            if (pdds_backbuffer)
-            {
-                while (1)
-                {
-                    v3 = v2->GetBltStatus(2);
-                    if (v3 != 0x887601AE && v3 != 0x8876021C)
-                        break;
-                    Sleep(0xAu);
-                }
-                if (fullscreen_flip_or_blt && v2->GetFlipStatus(2) == -2005532242)
-                {
-                    do
-                        Sleep(0xAu);
-                    while (v2->GetFlipStatus(2) == -2005532242);
-                }
-                v2->Release();
-            }
-        }
-        pdds_backbuffer = 0;
-        if (global_fullscreen != 1 && !GetWindowRect(global_hwnd, &global_wnd_rect))
-        {
-            global_wnd_rect.top = 0;
-            global_wnd_rect.left = 0;
-        }
-        if (pdd)
-        {
-            pdd->Release();
-            pdd = 0;
-        }
+bool render_init(int width, int height, int bpp, bool fullscreen) {
+    render_width = width;
+    render_height = height;
+    render_bpp = bpp;
+    render_fullscreen = fullscreen;
+
+    game_window_created = false;
+    if (stru1_list_init(width, height)) {
+        game_window_created = true;
     }
+
+    return game_window_created;
 }
+
 
 //----- (00412190) --------------------------------------------------------
 bool render_should_render()
 {
-    BOOL result; // eax@3
+    bool result; // eax@3
     bool v1; // sf@4
     unsigned __int8 v2; // of@4
 
-    if (global_time_flows)
+    //if (render_is_target_available)
     {
-        if (timer_time < timeGetTime())
+        if (timer_time < OsGetPrecisionTime())
         {
-            if (timer_time < timeGetTime())
+            if (timer_time < OsGetPrecisionTime())
             {
                 if (++timer_render_skips < 4)
                 {
@@ -445,7 +105,7 @@ bool render_should_render()
                 }
                 else
                 {
-                    timer_time = timeGetTime();
+                    timer_time = OsGetPrecisionTime();
                     timer_render_skips = 0;
                     return 1;
                 }
@@ -457,7 +117,7 @@ bool render_should_render()
             result = 1;
         }
     }
-    else
+    //else
     {
         result = 1;
     }
@@ -469,10 +129,10 @@ stru1_draw_params *render_create_stru1(int a1, int clip_x, int clip_y, int clip_
 {
     stru1_draw_params *result; // eax@5
 
-    if (clip_x < global_wnd_width
-        && clip_y < global_wnd_height
-        && clip_z + clip_x <= global_wnd_width
-        && clip_w + clip_y <= global_wnd_height
+    if (clip_x < render_width
+        && clip_y < render_height
+        && clip_z + clip_x <= render_width
+        && clip_w + clip_y <= render_height
         && (result = stru1_list_free_pool) != 0)
     {
         stru1_list_free_pool = stru1_list_free_pool->next;
@@ -511,160 +171,77 @@ void render_remove_stru1(stru1_draw_params *a1)
 //----- (004122B0) --------------------------------------------------------
 bool render_dd_is_primary_surface_lost()
 {
-    BOOL result; // eax@2
+    return false;
+    /*BOOL result; // eax@2
 
     if (!pdds_primary || (result = pdds_primary->IsLost()) != 0)
         result = 1;
-    return result;
+    return result;*/
+}
+
+void render_execute_draw_list(DrawJobList *list) {
+    render_first_drawing_item = 1;
+
+    for (auto i = list->next; i != (DrawJob *)list; i = i->next)
+    {
+        auto img = (MapdScrlImage *)i->job_details.image;
+        if (img && img->on_draw_handler)
+        {
+            img->on_draw_handler(&i->job_details, 0);
+        }
+    }
 }
 
 //----- (004122D0) --------------------------------------------------------
 void render_draw_list(DrawJobList *list)
 {
-    int restore_palettes; // ebx@4
-    IDirectDrawSurface *v3; // esi@7
-    int v4; // eax@8
-    HRESULT v5; // eax@9
-    IDirectDrawSurface *v6; // esi@14
-    int v7; // eax@15
-    HRESULT v8; // eax@16
-    DrawJob *i; // esi@25
-    MapdScrlImage *v10; // eax@26
-    int(*v11)(DrawJobDetails *, int); // eax@27
-    RECT v12; // [sp+44h] [bp-94h]@34
-    POINT Point; // [sp+54h] [bp-84h]@35
-    POINT v14; // [sp+5Ch] [bp-7Ch]@35
-    RECT v15; // [sp+64h] [bp-74h]@35
-    DDBLTFX v16; // [sp+74h] [bp-64h]@34
+    if (list && render_default_stru1) {
 
-    if (list && render_default_stru1 && pdds_primary)
-    {
-        restore_palettes = 0;
-        if (pdds_primary->IsLost() == 0x887601C2 && global_fullscreen == 1)
-            restore_palettes = 1;
-        v3 = pdds_primary;
-        if (pdds_primary)
+        render_locked_surface_width_px = render_width;
+
+        // 8/16 bpp are hardcoded, introduce a walkaround for ordinary bpp
+        //static auto pixels_8bpp = new unsigned char[ddsd_primary.dwWidth * ddsd_primary.dwHeight];
+        auto pixels_8bpp = new unsigned char[render_width * render_height];
+        auto pixels_32bpp = new unsigned int[render_width * render_height];
+
+        //render_locked_surface_ptr = ddsd_primary.lpSurface;
+        render_locked_surface_ptr = pixels_8bpp;
+
+        render_execute_draw_list(list);
+
+
+        for (int y = 0; y < render_height; ++y)
         {
-            v5 = pdds_primary->IsLost();
-            if (v5 == 0x887601C2)
-                v4 = v3->Restore() == 0;
-            else
-                v4 = v5 == 0;
-        }
-        else
-        {
-            v4 = 0;
-        }
-        if (v4)
-        {
-            if (global_fullscreen == 1
-                || ((v6 = pdds_backbuffer) != 0 ? ((v8 = pdds_backbuffer->IsLost(), v8 != 0x887601C2) ? (v7 = v8 == 0) : (v7 = v6->Restore() == 0)) : (v7 = 0),
-                    v7))
+            for (int x = render_width - 1; x >= 0; --x)
             {
-                if (restore_palettes)
+                auto c = pixels_8bpp[render_locked_surface_width_px * y + x];
+
+                //auto p = (unsigned char *)ddsd_primary.lpSurface;
+                //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (c << 16) | (c << 8) | c;
+
+                int r, g, b;
+                r = c;
+                g = c;
+                b = c;
+                if (render_current_palette)
                 {
-                    pdds_primary->SetPalette(pddpal_primary);
-                    pddpal_primary->SetEntries(0, 0, 256, RenderDD_primary_palette_values);
+                    r = render_current_palette->entires[c].peRed;
+                    g = render_current_palette->entires[c].peGreen;
+                    b = render_current_palette->entires[c].peBlue;
                 }
-                _40E430_update_palette(render_default_stru1->anim_pos);
-                if (!pdds_backbuffer->Lock(&stru_465810, &ddsd_primary, 1, 0))
-                {
-                    render_locked_surface_width_px = ddsd_primary.dwWidth;
 
-                    // 8/16 bpp are hardcoded, introduce a walkaround for ordinary bpp
-                    auto *pixels_8bpp = new unsigned char[ddsd_primary.dwWidth * ddsd_primary.dwHeight];
+                pixels_32bpp[y * render_width + x] = 0xFF000000 | b | (g << 8) | (r << 16);
 
-                    //render_locked_surface_ptr = ddsd_primary.lpSurface;
-                    render_locked_surface_ptr = pixels_8bpp;
-
-                    render_first_drawing_item = 1;
-                    for (i = list->next; i != (DrawJob *)list; i = i->next)
-                    {
-                        v10 = (MapdScrlImage *)i->job_details.image;
-                        if (v10)
-                        {
-                            v11 = v10->on_draw_handler;
-                            if (v11)
-                                v11(&i->job_details, 0);
-                        }
-                    }
-
-                    // convert 8bpp to target bpp (32 here)
-                    for (int y = 0; y < ddsd_primary.dwHeight; ++y)
-                    {
-                        for (int x = render_locked_surface_width_px - 1; x >= 0; --x)
-                        {
-                            auto c = pixels_8bpp[render_locked_surface_width_px * y + x];
-
-                            auto p = (unsigned char *)ddsd_primary.lpSurface;
-                            //*(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (c << 16) | (c << 8) | c;
-
-                            int r, g, b;
-                            r = c;
-                            g = c;
-                            b = c;
-                            if (render_current_palette)
-                            {
-                                r = render_current_palette[c].peRed;
-                                g = render_current_palette[c].peGreen;
-                                b = render_current_palette[c].peBlue;
-                            }
-
-                            *(unsigned int *)(p + ddsd_primary.lPitch * y + x * 4) = (r << 16) | (g << 8) | b;
-                        }
-                    }
-
-                    delete[] pixels_8bpp;
-
-
-                    if (!pdds_backbuffer->Unlock(ddsd_primary.lpSurface))
-                    {
-                        if (global_fullscreen == 1)
-                        {
-                            if (fullscreen_flip_or_blt)
-                            {
-                                pdds_primary->Flip(0, 0);
-                            }
-                            else
-                            {
-                                v12.bottom = global_wnd_height;
-                                v12.top = 0;
-                                v12.left = 0;
-                                v12.right = global_wnd_width;
-                                memset(&v16, 0, sizeof(v16));
-                                v16.dwSize = 100;
-                                v16.dwDDFX = 8;
-                                pdds_primary->Blt(
-                                    &v12,
-                                    pdds_backbuffer,
-                                    &v12,
-                                    DDBLT_WAIT | DDBLT_DDFX | DDBLT_ASYNC,
-                                    &v16);
-                            }
-                        }
-                        else
-                        {
-                            v14.x = global_wnd_width;
-                            v14.y = global_wnd_height;
-                            Point.x = 0;
-                            Point.y = 0;
-                            ClientToScreen(global_hwnd, &Point);
-                            ClientToScreen(global_hwnd, &v14);
-                            v12.top = 0;
-                            v12.left = 0;
-                            *(struct tagPOINT *)&v15.left = Point;
-                            v12.right = global_wnd_width;
-                            *(struct tagPOINT *)&v15.right = v14;
-                            v12.bottom = global_wnd_height;
-                            memset(&v16, 0, sizeof(v16));
-                            v16.dwSize = 100;
-                            v16.dwDDFX = 8;
-                            pdds_primary->Blt(&v15, pdds_backbuffer, &v12, DDBLT_WAIT | DDBLT_DDFX | DDBLT_ASYNC, &v16);
-                        }
-                    }
-                }
             }
         }
+
+        gRenderer->ClearTarget(64, 64, 64);
+        gRenderer->DrawImageCentered(render_width, render_height, pixels_32bpp);
+        gRenderer->Present();
+
+
+        delete[] pixels_8bpp;
+        delete[] pixels_32bpp;
     }
 }
 
@@ -699,16 +276,11 @@ int render_call_draw_handler_mode2(DrawJobDetails *a1)
 //----- (00412610) --------------------------------------------------------
 void render_cleanup()
 {
-    if (is_render_window_initialized == 1)
+    //if (is_render_window_initialized == 1)
     {
-        render_cleanup_dd();
-        render_sw_free_palette();
-        ShowWindow(global_hwnd, 0);
-        UpdateWindow(global_hwnd);
         free(stru1_list);
     }
 }
-// 4798CC: using guessed type int is_render_window_initialized;
 
 //----- (00412650) --------------------------------------------------------
 int render_sprt_draw_handler_setup_palettes()
@@ -832,7 +404,7 @@ void debug_mission_pathing_outline(int map_x, int map_y, int draw_x, int draw_y)
     if (!debug_pathing_entity) {
         return;
     }
-    if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
+    if (map_x < 0 || map_x >= map_get_width() || map_y < 0 || map_y >= map_get_height())
         return;
 
     bool should_outline = false;
@@ -870,8 +442,9 @@ void debug_mission_pathing_outline(int map_x, int map_y, int draw_x, int draw_y)
         }
     }
 }
+
 void debug_mission_tile_outline(int map_x, int map_y, int draw_x, int draw_y) {
-    if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
+    if (map_x < 0 || map_x >= map_get_width() || map_y < 0 || map_y >= map_get_height())
         return;
 
     int black = 0;
@@ -880,7 +453,7 @@ void debug_mission_tile_outline(int map_x, int map_y, int draw_x, int draw_y) {
     int teal = 13;
     int orange = 14;
 
-    auto tile = Map_get_tile(map_x, map_y);
+    auto tile = boxd_get_tile(map_x, map_y);
     if (tile->IsVehicleOrBuilding()) {
         int w = 32;
         int h = 4;
@@ -1154,14 +727,13 @@ int render_video_draw_handler(DrawJobDetails *a1, int mode)
 //----- (00434790) --------------------------------------------------------
 void REND_DirectDrawClearScreen(int a2)
 {
-    int v2; // esi@1
+    /*int v2; // esi@1
     int v3; // eax@3
     int v8; // [sp+0h] [bp-6Ch]@3
-    DDBLTFX v9; // [sp+8h] [bp-64h]@7
 
     v2 = a2;
 
-    if (global_fullscreen == 1)
+    if (render_fullscreen == 1)
     {
         pdds_primary->EnumAttachedSurfaces(0, EnumAttachedSurfacesCallback);
     }
@@ -1178,7 +750,7 @@ void REND_DirectDrawClearScreen(int a2)
         v9.dwFillColor = 0;
         v9.dwSize = 100;
         pdds_primary->Blt(&_46BB50_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v9);
-    }
+    }*/
 }
 
 //----- (0040E2A0) --------------------------------------------------------
@@ -1216,7 +788,7 @@ void REND_SetClip(int a1, int a2, int a3, int a4)
     render_clip_z = a3;
     render_clip_w = a4;
 }
-
+/*
 //----- (00434740) --------------------------------------------------------
 HRESULT __stdcall EnumAttachedSurfacesCallback(IDirectDrawSurface *lpDDSurface, DDSURFACEDESC *lpDDSurfaceDesc, void *lpContext)
 {
@@ -1231,7 +803,7 @@ HRESULT __stdcall EnumAttachedSurfacesCallback(IDirectDrawSurface *lpDDSurface, 
     }
     return 1;
 }
-
+*/
 //----- (004348B0) --------------------------------------------------------
 int render_clip(_DWORD *clipped_x, _DWORD *clipped_y, _DWORD *width, _DWORD *height, _DWORD *x, _DWORD *y)
 {
@@ -3804,7 +3376,7 @@ bool draw_list_update_and_draw()
     DrawJob *v0; // eax@2
     DrawJob *v1; // ecx@2
     DrawJob *v2; // edx@5
-    BOOL result; // eax@10
+    bool result; // eax@10
 
     if (render_should_render())
     {
@@ -4008,13 +3580,620 @@ void draw_list_free()
 }
 
 
-void render_on_wm_paint(struct tagRECT *a1)
+void render_on_wm_paint(long left, long top, long right, long bottom)
 {
+    /*RECT rc = { left, top, right, bottom };
     if (pdds_primary)
     {
         if (pdds_backbuffer)
         {
-            pdds_primary->Blt(a1, pdds_backbuffer, a1, 0, 0);
+            pdds_primary->Blt(a1, pdds_backbuffer, &rc, 0, 0);
+        }
+    }*/
+}
+
+
+//----- (00431980) --------------------------------------------------------
+void _431980_update_primary_palette(Palette *pal)
+{
+    PaletteEntry *v1; // edx@1
+    int v2; // eax@4
+    char *v3; // ecx@9
+    BYTE *v4; // eax@9
+    int v5; // eax@11
+    _BYTE *v6; // ecx@14
+    int v7; // eax@14
+    //HPALETTE v8; // esi@16
+    int v9; // [sp-Ch] [bp-410h]@4
+    _BYTE v10[1024]; // [sp+0h] [bp-404h]@14
+    int v11; // [sp+400h] [bp-4h]@14
+
+    /*v1 = pal->entires;
+    if (render_bpp == 8)
+    {
+        dword_47C018 = 0;
+        dword_468FD4 = 1;
+        dword_468FD8 = 2;
+        dword_468FDC = 4;
+        if (pal)
+            render_copy_palette(&_47B408_palette_entries, pal);
+        else
+            v1 = _47B408_palette_entries.entires;
+        if (render_fullscreen == 1)
+        {
+            v3 = (char *)&RenderDD_primary_palette_values[0].peGreen;
+            v4 = &v1->peBlue;
+            do
+            {
+                v4[&RenderDD_primary_palette_values[0].peGreen - (BYTE *)v1] = 0;
+                *(v3 - 1) = *(v4 - 2);
+                *v3 = *(v4 - 1);
+                v4[(char *)RenderDD_primary_palette_values - (char *)v1] = *v4;
+                v3 += 4;
+                v4 += 4;
+            } while ((int)v3 < (int)&render_sw_hdc + 1);
+            //v5 = render_dd_is_primary_surface_lost();
+            //if (!v5)
+            //{
+            //    v5 = (int)pddpal_primary;
+            //    if (pddpal_primary)
+            //        v5 = pddpal_primary->SetEntries(0, 0, 256, RenderDD_primary_palette_values);
+            //}
+        }
+        else
+        {
+            v6 = v10;
+            v7 = (int)&v1->peGreen;
+            v11 = 256;
+            do
+            {
+                *(_BYTE *)(&v10[2] - (_BYTE *)v1 + v7) = 0;
+                *v6 = *(_BYTE *)(v7 + 1);
+                *(_BYTE *)(v10 - (_BYTE *)v1 + v7) = *(_BYTE *)v7;
+                *(_BYTE *)(&v10[1] - (_BYTE *)v1 + v7) = *(_BYTE *)(v7 - 1);
+                v6 += 4;
+                v7 += 4;
+                --v11;
+            } while (v11);
+            v8 = render_sw_palette;
+            if (render_sw_palette)
+            {
+                render_sw_palette = _431B60_create_palette((Palette *)v10, 256);
+                SelectPalette(render_sw_hdc, render_sw_palette, 0);
+                DeleteObject(v8);
+            }
+            else
+            {
+                render_sw_palette = _431B60_create_palette((Palette *)v10, 256);
+                render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
+            }
+            v5 = RealizePalette(render_sw_hdc);
+        }
+    }*/
+}
+
+//----- (00431B60) --------------------------------------------------------
+/*HPALETTE _431B60_create_palette(Palette *pal, int num_entries)
+{
+    PaletteEntry *v2; // ebx@1
+    int v3; // ecx@1
+    char *v4; // esi@1
+    char *v5; // edi@1
+    int v6; // eax@1
+    char *v7; // ebp@1
+    int v8; // edx@1
+    int v9; // eax@4
+    int v10; // edx@4
+    int v11; // eax@6
+    int v12; // edx@6
+    int v14; // [sp+14h] [bp-408h]@1
+    struct
+    {
+        LOGPALETTE plpal; // [sp+18h] [bp-404h]@1
+        char pixels[0x400];
+    } v15;
+
+    v2 = pal->entires;
+    v15.plpal.palVersion = 768;
+    v15.plpal.palNumEntries = 256;
+    memset(v15.plpal.palPalEntry, 0, 0x400u);
+    v14 = num_entries - 10;
+    v3 = &v15.plpal.palPalEntry[0].peBlue - (BYTE *)v2;
+    v4 = (char *)((char *)&v15.plpal.palNumEntries + 1 - (char *)v2);
+    v5 = (char *)((char *)v15.plpal.palPalEntry - (char *)v2);
+    v6 = (int)&v2->peGreen;
+    v7 = (char *)(&v15.plpal.palPalEntry[0].peGreen - (BYTE *)v2);
+    v8 = 10;
+    do
+    {
+        *(_BYTE *)(v3 + v6) = 0;
+        *(_BYTE *)(v6 + 1) = v4[v6];
+        *(_BYTE *)v6 = v5[v6];
+        *(_BYTE *)(v6 - 1) = v7[v6];
+        v6 += 4;
+        --v8;
+    } while (v8);
+    if (v14 > 10)
+    {
+        v9 = (int)&v2[10].peGreen;
+        v10 = v14 - 10;
+        do
+        {
+            v4[v9] = *(_BYTE *)(v9 + 1);
+            v5[v9] = *(_BYTE *)v9;
+            v7[v9] = *(_BYTE *)(v9 - 1);
+            *(_BYTE *)(v9 + v3) = 5;
+            v9 += 4;
+            --v10;
+        } while (v10);
+    }
+    v11 = (int)&v2[246].peGreen;
+    v12 = 10;
+    do
+    {
+        *(_BYTE *)(v11 + v3) = 0;
+        *(_BYTE *)(v11 + 1) = v4[v11];
+        *(_BYTE *)v11 = v5[v11];
+        *(_BYTE *)(v11 - 1) = v7[v11];
+        v11 += 4;
+        --v12;
+    } while (v12);
+    return CreatePalette(&v15.plpal);
+}*/
+
+//----- (00431C40) --------------------------------------------------------
+void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
+{
+    int v1; // edx@2
+    int i; // ecx@2
+    int v3; // eax@9
+    PaletteEntry *v4; // edx@10
+    char *v5; // ecx@14
+    BYTE *v6; // eax@14
+    PaletteEntry *v8; // ecx@19
+    int v9; // eax@19
+    //HPALETTE v10; // esi@21
+    int v11; // [sp-Ch] [bp-410h]@9
+    Palette v12_; // [sp+0h] [bp-404h]@19
+    PaletteEntry *v12 = v12_.entires; // [sp+0h] [bp-404h]@19
+    int v13; // [sp+400h] [bp-4h]@19
+
+    /*if (render_bpp == 8)
+    {
+        v1 = dword_468FDC << 8;
+        for (i = 0; i < v1; ++i)
+        {
+            if (((*(&_47B408_palette_entries.entires[0].peRed + i) << 8) & 0xFFFFFF00) >= 0xFF00)
+                result = (void *)255;
+            else
+                result = (void *)*(&_47B408_palette_entries.entires[0].peRed + i);
+            *(&palette_47BC10.entires[0].peRed + i) = (unsigned __int8)result;
+        }
+
+        v4 = palette_47BC10.entires;
+        dword_47C018 = 0;
+        dword_468FD4 = 1;
+        dword_468FD8 = 2;
+        dword_468FDC = 4;
+        if (&palette_47BC10)
+            render_copy_palette(&_47B408_palette_entries, &palette_47BC10);
+        else
+            v4 = _47B408_palette_entries.entires;
+        if (render_fullscreen == 1)
+        {
+            v5 = (char *)&RenderDD_primary_palette_values[0].peGreen;
+            v6 = &v4->peBlue;
+            do
+            {
+                v6[&RenderDD_primary_palette_values[0].peGreen - (BYTE *)v4] = 0;
+                *(v5 - 1) = *(v6 - 2);
+                *v5 = *(v6 - 1);
+                v6[(char *)RenderDD_primary_palette_values - (char *)v4] = *v6;
+                v5 += 4;
+                v6 += 4;
+            } while ((int)v5 < (int)&render_sw_hdc + 1);
+            //v7 = (IDirectDrawPalette *)render_dd_is_primary_surface_lost();
+            //if (!v7)
+            //{
+            //    v7 = pddpal_primary;
+            //    if (pddpal_primary)
+            //        v7 = (IDirectDrawPalette *)pddpal_primary->SetEntries(
+            //            0,
+            //            0,
+            //            256,
+            //            RenderDD_primary_palette_values);
+            //}
+        }
+        else
+        {
+            v8 = v12;
+            v9 = (int)&v4->peGreen;
+            v13 = 256;
+            do
+            {
+                *(_BYTE *)(&v12[0].peBlue - (BYTE *)v4 + v9) = 0;
+                v8->peRed = *(_BYTE *)(v9 + 1);
+                *(_BYTE *)((char *)v12 - (char *)v4 + v9) = *(_BYTE *)v9;
+                *(_BYTE *)(&v12[0].peGreen - (BYTE *)v4 + v9) = *(_BYTE *)(v9 - 1);
+                ++v8;
+                v9 += 4;
+                --v13;
+            } while (v13);
+            v10 = render_sw_palette;
+            if (render_sw_palette)
+            {
+                render_sw_palette = _431B60_create_palette(&v12_, 256);
+                SelectPalette(render_sw_hdc, render_sw_palette, 0);
+                DeleteObject(v10);
+            }
+            else
+            {
+                render_sw_palette = _431B60_create_palette(&v12_, 256);
+                render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
+            }
+            RealizePalette(render_sw_hdc);
+        }
+    }*/
+}
+
+
+//----- (0040E400) --------------------------------------------------------
+void _40E400_set_palette(Palette *palette)
+{
+    render_current_palette = palette;
+
+    ppalette_4785C0 = palette;
+    SetSysPalette(palette);
+    _478A14_prev_stru1_palette_entries = -1;
+    _40E430_update_palette(render_default_stru1->anim_pos);
+}
+
+
+//----- (0040E430) --------------------------------------------------------
+void _40E430_update_palette(unsigned int a1)
+{
+    unsigned int v1; // esi@1
+    PaletteEntry *v2; // edx@7
+    PaletteEntry *v3; // eax@7
+    int v4; // edi@7
+    unsigned char *v5; // edx@8
+    unsigned char *v6; // eax@8
+    __int16 v7; // cx@8
+    unsigned int v8; // ecx@10
+    unsigned char *v9; // edx@13
+    unsigned char *v10; // eax@13
+    unsigned int v11; // ecx@13
+    unsigned char *v12; // edx@16
+    unsigned char *v13; // eax@16
+    unsigned int v14; // ecx@16
+
+    v1 = a1 >> 23;
+    if (a1 >> 23)
+    {
+        auto sys = GetSysPalette();
+        if (sys && v1 != _478A14_prev_stru1_palette_entries)
+        {
+            _478A14_prev_stru1_palette_entries = a1 >> 23;
+            if (v1 == 256)
+            {
+                ppalette_4785C0 = sys;
+                _431980_update_primary_palette(sys);
+            }
+            else
+            {
+                v2 = sys->entires;
+                v3 = palette_4785F0.entires;
+                v4 = 256;
+                if (a1 > 0x100)
+                {
+                    do
+                    {
+                        v8 = v1 * v2->peRed >> 8;
+                        if ((unsigned __int8)v8 > 0xFFu)
+                            v3->peRed = -1;
+                        else
+                            v3->peRed = v8;
+                        v9 = &v2->peGreen;
+                        v10 = &v3->peGreen;
+                        v11 = v1 * *v9 >> 8;
+                        if ((unsigned __int8)v11 > 0xFFu)
+                            *v10 = -1;
+                        else
+                            *v10 = v11;
+                        v12 = v9 + 1;
+                        v13 = v10 + 1;
+                        v14 = v1 * *v12 >> 8;
+                        if ((unsigned __int8)v14 > 0xFFu)
+                            *v13 = -1;
+                        else
+                            *v13 = v14;
+                        v2 = (PaletteEntry *)(v12 + 2);
+                        v3 = (PaletteEntry *)(v13 + 2);
+                        --v4;
+                    } while (v4);
+                }
+                else
+                {
+                    do
+                    {
+                        v3->peRed = (unsigned __int16)(v1 * v2->peRed) >> 8;
+                        v5 = &v2->peGreen;
+                        v6 = &v3->peGreen;
+                        *v6++ = (unsigned __int16)(v1 * *v5++) >> 8;
+                        v7 = *v5;
+                        v2 = (PaletteEntry *)(v5 + 2);
+                        *v6 = (unsigned __int16)(v1 * v7) >> 8;
+                        v3 = (PaletteEntry *)(v6 + 2);
+                        --v4;
+                    } while (v4);
+                }
+                ppalette_4785C0 = &palette_4785F0;
+                _431980_update_primary_palette(&palette_4785F0);
+            }
         }
     }
+    else
+    {
+        REND_DirectDrawClearScreen(0);
+    }
+}
+
+//----- (0040E530) --------------------------------------------------------
+void RENDER_SetViewportAndClear()
+{
+    p_render_set_clip(0, 0, render_width, render_height);
+    REND_DirectDrawClearScreen(0);
+}
+
+//----- (0040E560) --------------------------------------------------------
+/*void _40E560_flip_gdi_update_syscolors()
+{
+    unsigned int v0; // esi@3
+    unsigned int v1; // eax@6
+    int v2; // ebp@7
+    COLORREF v3; // edi@7
+    char *v4; // esi@7
+    int v5; // eax@8
+    int v6; // ecx@9
+    unsigned __int16 v7; // dx@13
+    int v8; // [sp+4h] [bp-78h]@7
+    int v9; // [sp+8h] [bp-74h]@7
+    int v10; // [sp+Ch] [bp-70h]@7
+    unsigned int v11; // [sp+10h] [bp-6Ch]@6
+    int v12; // [sp+14h] [bp-68h]@7
+    COLORREF aRgbValues[25]; // [sp+18h] [bp-64h]@13
+
+    if (render_fullscreen == 1)
+    {
+        if (_465680_get_sys_colors)
+        {
+            v0 = 0;
+            do
+            {
+                sys_colors[v0] = GetSysColor(*(int *)((char *)&sys_colors_elements + v0 * 4));
+                ++v0;
+            } while (v0 < 25);
+            _465680_get_sys_colors = 0;
+        }
+        v1 = 0;
+        v11 = 0;
+        do
+        {
+            v2 = *((_BYTE *)&sys_colors[0] + v1 + 1);
+            v10 = 0;
+            v9 = 195075;
+            v8 = 0;
+            v12 = *((_BYTE *)sys_colors + v1);
+            v3 = (*(COLORREF *)((char *)sys_colors + v1) >> 16) & 0xFF;
+
+            int i = 0;
+            v4 = (char *)&RenderDD_primary_palette_values.entires[0].peGreen;
+            do
+            {
+                v5 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
+                    + (v2 - (unsigned __int8)*v4) * (v2 - (unsigned __int8)*v4)
+                    + (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
+                if (v5 >= v9)
+                {
+                    v6 = v10;
+                }
+                else
+                {
+                    v6 = v8;
+                    v10 = v8;
+                    if (!v5)
+                        break;
+                    v9 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
+                        + (v2 - (unsigned __int8)*v4) * (v2 - (unsigned __int8)*v4)
+                        + (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
+                }
+                v4 += 4;
+                i++;
+                ++v8;
+            } while (i < 256);//((int)v4 < (int)&render_sw_hdc + 1);
+            LOBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values.entires[v6].peGreen;
+            HIBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values.entires[v6].peBlue;
+            *(COLORREF *)((char *)aRgbValues + v11) = RenderDD_primary_palette_values.entires[v6].peRed | (v7 << 8);
+            v1 = v11 + 4;
+            v11 = v1;
+        } while (v1 < 0x64);
+        SetSysColors(25, &sys_colors_elements, aRgbValues);
+    }
+}*/
+
+//----- (0040E6B0) --------------------------------------------------------
+void _40E6B0_set_sys_colors()
+{
+    if (render_fullscreen == 1)
+    {
+        //SetSysColors(25, &sys_colors_elements, sys_colors);
+        _431980_update_primary_palette(GetSysPalette());
+    }
+}
+
+
+void render_copy_palette(Palette *dst, Palette *src) {
+    for (int i = 0; i < 256; ++i) {
+        dst->entires[i] = src->entires[i];
+    }
+}
+
+
+//----- (00408410) --------------------------------------------------------
+void _408410_dim_palette()
+{
+    int v1; // ecx@1
+    int v2; // ecx@3
+    BYTE v3; // dl@4
+
+    for (int i = 0; i < 240; ++i) {
+        palette_477490.entires[i].peRed = palette_4778A4->entires[i].peRed >> 1;
+        palette_477490.entires[i].peGreen = palette_4778A4->entires[i].peGreen >> 1;
+        palette_477490.entires[i].peBlue = palette_4778A4->entires[i].peBlue >> 1;
+        palette_477490.entires[i].peFlags = palette_4778A4->entires[i].peFlags >> 1;
+    }
+
+    for (int i = 240; i < 256; ++i) {
+        palette_477490.entires[i].peRed = palette_4778A4->entires[i].peRed;
+        palette_477490.entires[i].peGreen = palette_4778A4->entires[i].peGreen;
+        palette_477490.entires[i].peBlue = palette_4778A4->entires[i].peBlue;
+        palette_477490.entires[i].peFlags = palette_4778A4->entires[i].peFlags;
+    }
+
+    _40E400_set_palette(&palette_477490);
+}
+
+
+
+//----- (00408460) --------------------------------------------------------
+void sub_408460()
+{
+    _40E400_set_palette(palette_4778A4);
+    dword_4778A8 = 0;
+}
+// 4778A8: using guessed type int dword_4778A8;
+
+//----- (00408550) --------------------------------------------------------
+void _408550_multi_pal()
+{
+    FILE *v0; // edi@2
+    int v1; // esi@3
+    BYTE v2; // al@4
+    BYTE v3; // cl@4
+    char v4; // bl@6
+    int v5; // ebp@6
+    int v6; // eax@6
+    FILE *v7; // edi@10
+    int v8; // esi@11
+    BYTE v9; // dl@12
+    BYTE v10; // al@12
+    int v11; // ebp@14
+    PaletteEntry *v12; // ebx@14
+    char *v13; // edx@14
+    int v15; // ecx@16
+    BYTE v16; // [sp+10h] [bp-45Ch]@4
+    BYTE v17; // [sp+14h] [bp-458h]@4
+    BYTE v18; // [sp+18h] [bp-454h]@4
+    char v19[80]; // [sp+1Ch] [bp-450h]@2
+    Palette v20_; // [sp+6Ch] [bp-400h]@4
+    PaletteEntry *v20 = v20_.entires;
+
+    palette_4778A4 = GetSysPalette();
+    if (_47C6D8_use__466098_cost_multipliers)
+    {
+        sprintf(v19, aSLevelsMulti_p, game_data_installation_dir);
+        v0 = fopen(v19, aR);
+        if (v0)
+        {
+            v1 = 0;
+            do
+            {
+                fscanf(v0, aDDD, &v17, &v18, &v16);
+                v2 = v18;
+                v3 = v16;
+                v20[v1].peRed = v17;
+                v20[v1].peGreen = v2;
+                v20[v1].peBlue = v3;
+                v20[v1].peFlags = 0;
+                ++v1;
+            } while (v1 < 256);
+            fclose(v0);
+        }
+        v4 = byte_47C654;
+        render_copy_palette(&palette_477490, palette_4778A4);
+        v5 = player_sprite_color_by_player_side[player_side];
+        v6 = byte_47C654 << 6;
+        memcpy(&palette_477490.entires[16 * player_sprite_color_by_player_side[player_side]], (char *)v20 + v6, 0x40u);
+        if (v4 < 7 && v4 != v5)
+            memcpy((char *)palette_477490.entires + v6, &v20[112], 0x40u);
+    }
+    else
+    {
+        if (single_player_game)
+            return;
+        sprintf(v19, aSLevelsMulti_p, game_data_installation_dir);
+        v7 = fopen(v19, aR);
+        if (v7)
+        {
+            v8 = 0;
+            do
+            {
+                fscanf(v7, aDDD, &v16, &v18, &v17);
+                v9 = v18;
+                v10 = v17;
+                v20[v8].peRed = v16;
+                v20[v8].peGreen = v9;
+                v20[v8].peBlue = v10;
+                v20[v8].peFlags = 0;
+                ++v8;
+            } while (v8 < 256);
+            fclose(v7);
+        }
+        v11 = 0;
+        render_copy_palette(&palette_477490, palette_4778A4);
+        v12 = palette_477490.entires;
+        v13 = &netz_47A740[2].field_9;
+        //v14 = &player_sprite_color_by_player_side[1];
+        for (int v14 = 1; v14 < 7; ++v14)
+        {
+            if (*(v13 - 1))
+            {
+                v15 = *v13 << 6;
+                player_sprite_color_by_player_side[v14] = v11;
+                memcpy(v12, (char *)v20 + v15, 0x40u);
+            }
+            ++v11;
+            v13 += 28;
+            v12 += 16;
+        }
+    }
+    render_copy_palette(palette_4778A4, &palette_477490);
+    _40E400_set_palette(&palette_477490);
+}
+
+
+
+bool stru1_list_init(int window_width, int window_height, const int num_stru1s) {
+    stru1_list = new stru1_draw_params[num_stru1s];
+    if (stru1_list)
+    {
+        for (int i = 0; i < num_stru1s; ++i) {
+            stru1_list[i].next = &stru1_list[i + 1];
+        }
+
+        stru1_list[6].next = nullptr;
+        stru1_list_free_pool = stru1_list;
+        default_stru1.prev = &default_stru1;
+        default_stru1.next = &default_stru1;
+        default_stru1.field_8 = 0;
+        default_stru1.anim_pos = 0x80000000;
+        default_stru1.clip_y = 0;
+        default_stru1.clip_x = 0;
+        default_stru1.clip_z = window_width;
+        default_stru1.clip_w = window_height;
+        default_stru1.field_20 = 0;
+
+        return true;
+    }
+    return false;
 }

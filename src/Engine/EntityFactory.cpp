@@ -1,11 +1,13 @@
-#include "Engine/EntityFactory.h"
+#include "src/Engine/EntityFactory.h"
 
-#include "_unsorted_data.h"
-#include "kknd.h"
-#include "ScriptEvent.h"
-#include "stru31.h"
+#include "src/_unsorted_data.h"
+#include "src/kknd.h"
+#include "src/ScriptEvent.h"
+#include "src/stru31.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 
-#include "Engine/Infrastructure/EntityRepository.h"
+#include "src/Engine/Infrastructure/EntityRepository.h"
 
 using Engine::EntityFactory;
 using Engine::Infrastructure::EntityRepository;
@@ -65,9 +67,9 @@ Entity *EntityFactory::Create(Script *a1)
     }
     v1->field_110 = 0;
     v1->stru11_list_108 = (stru11unit *)&v1->stru11_list_104;
-    v1->field_94 = 0;
+    v1->experience = 0;
     v1->stru11_list_104 = (stru11unit *)&v1->stru11_list_104;
-    v1->_98_465610_accuracy_dmg_bonus_idx = 0;
+    v1->veterancy_level = 0;
     v1->entity_id = ++_47DCC4_entity_id_counter;
     v1->SetMode(nullptr);
     v1->mode_idle = 0;
@@ -80,7 +82,7 @@ Entity *EntityFactory::Create(Script *a1)
     a1->event_handler = MessageHandler_EntityScript;
     v2->param = v1;
     v1->stats = &unit_stats[v1->unit_id];
-    v1->current_mobd_lookup_idx = 128;
+    v1->SetCurrentAnimFrame(128);
     v1->hitpoints = v1->stats->hitpoints;
     v1->field_78 = 0;
 
@@ -102,7 +104,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
 {
     EntitySerialized *v2; // ebp@1
     unsigned int v5; // eax@6
-    BOOL result; // eax@8
+    int result; // eax@8
     unsigned int v7; // ecx@12
     int v8; // ecx@14
     int v9; // eax@19
@@ -147,7 +149,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
     Script *v71; // eax@168
     unsigned int v72; // ecx@169
     void(*v73)(Script *, Script *, enum SCRIPT_EVENT, void *); // ecx@171
-    BOOL v74; // esi@177
+    int v74; // esi@177
     unsigned int v75; // eax@178
     int v76; // eax@180
     DataMobdItem_stru1 *v79; // ecx@189
@@ -167,7 +169,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
     auto _handler = get_handler(v5);
     if (_handler)
     {
-        result = (BOOL)script_create_function(save_data->entity_task_event, (void(*)(Script *))_handler);
+        result = (int)script_create_function(save_data->entity_task_event, (void(*)(Script *))_handler);
         if (result)
         {
             v7 = v2->entity_task_message_handler_idx - 1;
@@ -183,7 +185,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
     v3->script = (Script *)result;
     if (result)
     {
-        result = (BOOL)GAME_Load_UnpackSprite(&v2->entity_sprite);
+        result = (int)GAME_Load_UnpackSprite(&v2->entity_sprite);
         v3->sprite = (Sprite *)result;
         if (result)
         {
@@ -199,7 +201,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             v3->stats = &unit_stats[v3->unit_id];
             if (v2->turret_sprite_task_handler_idx)
             {
-                result = (BOOL)script_create_local_object(v3->script, 56);
+                result = (int)script_create_local_object(v3->script, 56);
                 v10 = (EntityTurret *)result;
                 if (!result)
                     return delete v3, nullptr;
@@ -210,7 +212,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 auto _handler = get_handler(v11);
                 if (_handler)
                 {
-                    result = (BOOL)script_create_function(v2->turret_sprite_task_event, (void(*)(Script *))_handler);
+                    result = (int)script_create_function(v2->turret_sprite_task_event, (void(*)(Script *))_handler);
                     if (result)
                     {
                         v12 = v2->turret_sprite_task_message_handler_idx - 1;
@@ -226,7 +228,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 v10->sprite_task = (Script *)result;
                 if (!result)
                     return delete v3, nullptr;
-                result = (BOOL)GAME_Load_UnpackSprite(&v2->turret_sprite);
+                result = (int)GAME_Load_UnpackSprite(&v2->turret_sprite);
                 v10->turret_sprite = (Sprite *)result;
                 if (!result)
                     return delete v3, nullptr;
@@ -286,14 +288,14 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             memset(&v3->_24_ai_node_per_player_side, 0, sizeof(v3->_24_ai_node_per_player_side));
             memset32(&v3->stru60, (int)&entity_default_stru60_ptr, 6u);
             v3->field_78 = v2->entity_field_78;
-            v3->current_mobd_lookup_idx = v2->entity_mobd_idx;
+            v3->SetCurrentAnimFrame(v2->entity_mobd_idx);
             v3->field_80 = v2->entity_field_80;
             v3->field_84 = v2->entity_field_84;
             v3->_88_dst_orientation = v2->entity_field_88;
             v3->destroyed = 0;
             v3->hitpoints = v2->entity_hitpoints;
-            v3->field_94 = v2->entity_field_94;
-            v3->_98_465610_accuracy_dmg_bonus_idx = v2->entity_98__465610_damage_multipliers_idx;
+            v3->experience = v2->entity_field_94;
+            v3->veterancy_level = v2->entity_98_veterancy_damage_bonus_idx;
             v3->_9C_hp_regen_condition = v2->entity_9C_hp_regen_condition;
             v3->_A0_hp_regen_condition = v2->entity_A0_hp_regen_condition;
             v3->_A4_idx_in_tile = v2->field_A4;
@@ -312,10 +314,10 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             v3->field_D8 = v2->field_D8;
             v3->_DC_order = (ENTITY_ORDER)v2->field_DC;
 
-            v3->_E0_current_attack_target = entityRepo->FindById(v2->entity_EC_outpost_clanhall_entity_id);
+            v3->retaliation_target = entityRepo->FindById(v2->entity_EC_outpost_clanhall_entity_id);
             v3->_E4_prev_attack_target = entityRepo->FindById(v2->entity_E4_entity_id);
             v3->_E8_entity = 0;
-            v3->_E0_current_attack_target_entity_id = v2->_E0_current_attack_target_entity_id;
+            v3->retaliation_target_id = v2->retaliation_target_id;
             v3->_E4_prev_attack_target_entity_id = v2->_E4_prev_attack_target_entity_id;
             v3->entity_118_entity_id = v2->entity_F4_entity_118_entity_id;
             v3->_E8_entity_id = 0;
@@ -378,7 +380,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                     map_place_entity(v3, v55->x, v86, 0);
                     goto LABEL_208;
                 }
-                result = (BOOL)script_create_local_object(v3->script, 116);
+                result = (int)script_create_local_object(v3->script, 116);
                 if (result)
                 {
                     v3->state = (void *)result;
@@ -406,7 +408,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 }
                 return delete v3, nullptr;
             case 0x19u:
-                result = (BOOL)script_create_local_object(v3->script, 12);
+                result = (int)script_create_local_object(v3->script, 12);
                 if (!result)
                     return delete v3, nullptr;
                 v3->state = (void *)result;
@@ -553,7 +555,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             if (!v70)
                 return delete v3, nullptr;
             *(_DWORD *)v56 = (int)v70;
-            result = (BOOL)script_create_local_object(v70, 32);
+            result = (int)script_create_local_object(v70, 32);
             v74 = result;
             if (result)
             {
@@ -564,7 +566,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 *(_DWORD *)(v74 + 8) = v2[1].entity_task_field_2C;
                 *(_DWORD *)(v74 + 12) = v2[1].unit_stats_idx;
                 *(Entity **)(v74 + 16) = entityRepo->FindById(v2[1].player_side);
-                result = (BOOL)GAME_Load_UnpackSprite((SpriteSerialized *)&v2[1].turret_sprite_task_event);
+                result = (int)GAME_Load_UnpackSprite((SpriteSerialized *)&v2[1].turret_sprite_task_event);
                 *(_DWORD *)(v74 + 24) = result;
                 if (result)
                 {

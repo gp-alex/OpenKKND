@@ -1,11 +1,10 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include "Application/Game.h"
+#include "src/Application/Game.h"
 
-#include "src/kknd.h"
+using Application::Game;
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
+#include "src/kknd.h"
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/stru29.h"
@@ -13,18 +12,66 @@
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
+#include "src/Sound.h"
+#include "src/Video.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 
-#include "Engine/Entity.h"
+#include "src/Application/GameWindowObserver.h"
 
-#include "Infrastructure/File.h"
-#include "Infrastructure/Input.h"
+using Application::GameWindowObserver;
 
-using Application::Game;
+#include "src/Engine/Entity.h"
+
+#include "src/Infrastructure/File.h"
+#include "src/Infrastructure/Input.h"
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
+
+#include "src/Infrastructure/Renderer/RendererConfigFactory.h"
+#include "src/Infrastructure/Renderer/RendererFactory.h"
+
+using Infrastructure::RendererConfigFactory;
+using Infrastructure::RendererFactory;
+using Infrastructure::Renderer;
+
+#include "src/Infrastructure/Window/WindowConfigFactory.h"
+#include "src/Infrastructure/Window/WindowFactory.h"
+
+using Infrastructure::WindowConfigFactory;
+using Infrastructure::WindowFactory;
+using Infrastructure::Window;
+
+std::shared_ptr<Renderer> gRenderer = nullptr;
+std::shared_ptr<Window> gWindow = nullptr;
+
 
 bool is_mission_running = false;
+
+
 //----- (00423460) --------------------------------------------------------
 void Game::Run() {
     Bitmap **v3; // esi@27
+
+    int window_width = 640;
+    int window_height = 480;
+    bool fullscreen = false;
+
+    OsShowCursor(false);
+
+    auto windowObserver = std::make_shared<GameWindowObserver>(shared_from_this());
+    auto windowConfig = WindowConfigFactory().Create(
+        "Open Krush Kill `n' Destroy", window_width, window_height
+    );
+    window = WindowFactory().CreateSdlWindow(windowConfig, windowObserver);
+    ::gWindow = window;
+
+    auto rendererConfig = RendererConfigFactory().Create("SDL2", window, window_width, window_height, fullscreen);
+    renderer = RendererFactory().CreateSdl2(rendererConfig);
+    ::gRenderer = renderer;
+
+    renderer->ClearTarget(0, 0, 0);
+    renderer->Present();
+    window->PeekMessageAll();
 
     WaitScreen();
 
@@ -93,7 +140,7 @@ void Game::Run() {
                     if (_47DCF4_wm_quit_received)
                         break;
                 }
-                current_level_idx = LEVEL_SURV_02_BUILD_AN_OUTPOST;
+                //%current_level_idx = LEVEL_SURV_02_BUILD_AN_OUTPOST;
                 GAME_PrepareLevel();
                 is_mission_running = true;
                 //create_script(196);
@@ -101,14 +148,14 @@ void Game::Run() {
                 do
                 {
                     if (!single_player_game)
-                        is_coroutine_list_initialization_failed = dword_47A738 != 0;
+                        is_async_execution_supported = dword_47A738 != 0;
                     sprite_list_init_mobd_items();
                     sprite_list_update_positions();
                     input_update_keyboard();
                     input_update_mouse();
                     _43A370_process_sound();
                     stru1_animate();
-                    boxd_40EA20();
+                    boxd_40EA20_gameloop_update();
                     _44C4B0_mess_with_turrets();
                     script_list_update();
                     _4393F0_call_mapd();
@@ -137,7 +184,6 @@ void Game::Run() {
         free(wait_lvl);
         sound_free_sounds();
         GAME_Deinit();
-        timeEndPeriod(1u);
     }
     else
     {
@@ -207,10 +253,9 @@ void Game::MainMenu() {
 //----- (00422610) --------------------------------------------------------
 void Game::WaitScreen() {
     int v0; // eax@12
-    DataMapd *v4; // eax@24
     int v5; // esi@24
 
-    GAME_ReadRegistry();
+    GAME_ReadAppConfiguration();
     _4240E0_kknd_sve_read(pKknd_sve);
     GAME_ParseCommandLine();
     if (!LVL_SysInit())
@@ -221,8 +266,8 @@ void Game::WaitScreen() {
 
     REND_SetRoutines();
 
-    if (nocd)
-        strcpy(app_root_dir, a_);
+    if (true)//if (nocd)
+        strcpy(app_root_dir, ".");
     else
         sprintf(app_root_dir, aC, game_installation_drive_letter);
 
@@ -242,14 +287,15 @@ void Game::WaitScreen() {
     _47A010_mapd_item_being_drawn[0] = 0;
     _47A010_mapd_item_being_drawn[1] = 0;
     _47A010_mapd_item_being_drawn[2] = 0;
-    message_pump();
+    gWindow->PeekMessageAll();
+
     if (!LVL_RunLevel(wait_lvl))
     {
         log("Wait LVL_RunLevel() failed\n");
         Terminate();
     }
-    v4 = LVL_FindMapd();
-    _40E400_set_palette(&v4->items->palette);
+    auto mapd = LVL_FindMapd();
+    _40E400_set_palette(mapd->items[0].GetPalette());
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
     _47C380_mapd.mapd_cplc_render_y = 0x1EA00;     // 490
     v5 = 1;
@@ -267,4 +313,9 @@ void Game::Terminate() {
     netz_deinit();
     GAME_Deinit();
     exit(-1);
+}
+
+
+void Game::Exit() {
+    Terminate();
 }

@@ -301,3 +301,10 @@ template<class T, class U> int8 __CFADD__(T x, U y)
                         // for example a char:
 
 #define _UNKNOWN char
+
+
+#ifndef CONTAINING_RECORD
+#define CONTAINING_RECORD(address, type, field) ((type *)( \
+                                                  (char *)(address) - \
+                                                  (unsigned long)(&((type *)0)->field)))
+#endif

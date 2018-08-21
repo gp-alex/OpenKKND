@@ -1,10 +1,26 @@
 #pragma once
 
+#include <memory>
 #include <list>
 
 #include "src/kknd.h"
 #include "src/_unsorted_functions.h"
+#include "src/Render.h"
 
+
+extern int dword_478AB0; // weak
+extern int _478BE8_map_info__see40E6E0[8];
+extern char byte_478C08; // weak
+extern int dword_478FF4; // weak
+extern int dword_47952C; // weak
+extern int dword_47953C; // weak
+extern int _479DF0_mapd_initialized; // weak
+extern int currently_running_lvl_mapd_num_items; // weak
+extern Mapd_stru0 _47C380_mapd;
+extern int currently_running_lvl_mapd_valid; // weak
+extern int _47C390_mapd; // weak
+extern DataMapd *currently_running_lvl_mapd;
+extern Bitmap *_47A010_mapd_item_being_drawn[3];
 extern _UNKNOWN loc_45D19B; // weak
 extern _UNKNOWN loc_45D1A4; // weak
 extern _UNKNOWN loc_45D267; // weak
@@ -12,7 +28,6 @@ extern int sys_colors_elements;
 extern int kknd_sve_array_463070[15];
 extern int kknd_sve_array_4630AC[15];
 extern int dword_4630E8; // weak
-extern GUID netz_463DE0;
 extern char asc_464068[4];
 extern BasicProductionOption mute_default_buildings[6];
 extern BasicProductionOption mute_default_infantry[3];
@@ -47,8 +62,10 @@ extern char aWarningOutOfTa[]; // idb
 extern char aWarningOutOfBu[]; // idb
 extern char aWarningOutOfEnemyNodes[]; // idb
 extern char aEnemyaiCreatur[]; // idb
-extern int _465610_damage_multipliers[12];
-extern int _465640_accuracy_bonus[4];
+extern int veterancy_damage_bonus[3];
+extern int veterancy_reload_bonus[3];
+extern int veterancy_regeneration_rate[3];
+extern int veterancy_accuracy_bonus[3];
 extern stru201_displaymode _465650_display_modes[3];
 extern int _465680_get_sys_colors; // weak
 extern int dword_465688[32];
@@ -63,14 +80,10 @@ extern unsigned __int8 _465804_stru26_stru27_initializer[4];
 extern stru1_draw_params default_stru1;
 extern stru1_draw_params *render_default_stru1;
 extern int render_first_drawing_item; // weak
-extern RECT stru_465810;
-extern char *aFailedToSetupDirectdraw;
 extern char *Caption;
 extern unsigned __int8 palette_465848_sprt[256];
 extern int _465948_per_mobd_lookup_idx[16];
-extern enum SOUND_ID _465988_sounds[5];
 extern int input_465A80_wndprockey_map[256];
-extern int input_465FE8[16];
 extern stru7 array_466028[7];
 extern int _466098_cost_multiplier[4];
 extern const char *slvs[2];
@@ -95,17 +108,8 @@ extern char aSS_0[]; // idb
 extern int prev_level_idx; // weak
 extern const char *pKknd_sve;
 extern char aC[3]; // idb
-extern char *reg_MinimumInstall;
-extern char *reg_DriveLetter;
-extern char *reg_GamePath;
-extern char a_[2]; // weak
-extern char *aS;
-extern char *aLvl_runlevelFa;
-extern char *aLvl_substhunkF;
 extern char *MOBD;
-extern char *aLvl_loadlevelS;
 extern char *aSLevelsSS;
-extern char *aSuperSpriteLoa;
 extern char *aSLevelsSSupspr;
 extern char intro_vbc[10]; // weak
 extern char *aSFmvMh_fmv_vbc;
@@ -115,35 +119,10 @@ extern char *aEvolvout_vbc;
 extern char *aSurvout_vbc;
 extern char *aLoadgamestateF;
 extern char *aUnit_initFaile;
-extern char *aSLevelsS;
 extern char *aSpriteLoadFail;
 extern CustomMission custom_missions[20];
-extern UnitNameId unit_name_id_lut[66];
-extern char *console_switch_nocd;
-extern char *console_switch_noblack;
-extern char *errmsg_no_stats_file_specified;
-extern char *console_switch_stats;
-extern char *aSS;
 extern char *aW;
-extern char *errmsg_could_not_open_file;
-extern char *errmsg_unrecognized_name;
-extern char aDamageToBuildi[20]; // weak
-extern char aDamageToVehicl[19]; // weak
-extern char aDamageToInfant[19]; // weak
-extern char aAccuracy[9]; // weak
-extern char aFiringVisualRa[20]; // weak
-extern char aTurningSpeed[14]; // weak
-extern char aVolleySize[12]; // weak
-extern char aReload2Time[13]; // weak
-extern char aReloadTime[12]; // weak
-extern char aSpeed[6]; // weak
-extern char aWarningUnitSIs[]; // idb
-extern char aHitpoints[10]; // weak
-extern char aProductionTime[16]; // weak
-extern char errmsg_unit_out_of_range[]; // idb
-extern char cost[5]; // weak
-extern char _4681EC_whitespace[]; // idb
-extern char asc_space[]; // idb
+
 
 extern stru52 stru_4681F8;
 extern stru52 stru_468210;
@@ -174,21 +153,8 @@ extern stru50 _4687D0_stru50_array[20];
 extern DataCplcItem_ptr1_stru20 _4688E0_DataCplcItem_ptr1_stru20_clanhall; // weak
 extern DataCplcItem_ptr1_stru20 _468910_DataCplcItem_ptr1_stru20_outpost; // weak
 
-extern int dword_468940[]; // weak
 extern int dword_468980; // weak
 extern int dword_468984; // weak
-extern enum SOUND_ID _468988_sound_ids[4];
-extern enum SOUND_ID _468998_sound_ids[4];
-extern enum SOUND_ID _4689A8_sound_ids[2];
-extern enum SOUND_ID _4689B0_sound_ids[4];
-extern enum SOUND_ID _4689C0_sound_ids[22];
-extern enum SOUND_ID _468A18_sound_ids[2];
-extern enum SOUND_ID _468A20_sound_ids[2];
-extern enum SOUND_ID _468A28_sound_ids[4];
-extern enum SOUND_ID _468A38_sound_ids[4];
-extern enum SOUND_ID _468A48_sound_ids[2];
-extern enum SOUND_ID _468A50_sound_ids[2];
-extern enum SOUND_ID _468A58_sound_id;
 extern char aSD[]; // idb
 extern char aSS_1[]; // idb
 extern unsigned __int8 _468A6C_mobd_lookups[68];
@@ -254,11 +220,7 @@ extern char asc_46BB14[18];
 extern char aD_1[]; // idb
 extern char aD_0[5]; // weak
 extern char aD[6]; // weak
-extern RECT _46BB40_enum_attached_surfaces_blt_rect;
-extern RECT _46BB50_blt_rect;
 extern int _46BB60_dmg_handler_mobd_offsets[3];
-extern enum SOUND_ID _46BB70_dmg_handler_sounds[3];
-extern enum SOUND_ID _46BB80_dmg_handler_sounds[2];
 extern char aSGameD_sav[]; // idb
 extern char aSlotDSD[]; // idb
 extern char aActiveslotD[]; // idb
@@ -269,12 +231,6 @@ extern int dword_46BC40[8];
 extern int dword_46BC60[9];
 extern int dword_46BC84[5];
 extern int dword_46BC98[8];
-extern char aSoun[]; // idb
-extern char shared_slv_filename[]; // idb
-extern char aData[5]; // weak
-extern char fmt[5]; // weak
-extern char WAVE[5]; // weak
-extern char RIFF[5]; // weak
 extern int render_43B4A6_46BD04; // weak
 extern __int16 word_46BD08; // weak
 extern int dword_46BD0A; // weak
@@ -337,15 +293,6 @@ extern int dword_470510[8]; // weak
 extern char aCouldnTCreat_0[]; // idb
 extern char aWaitingForServ[]; // idb
 extern char aWaitingForPlay[]; // idb
-
-extern int dword_470588[];
-extern int dword_470598; // weak
-extern int dword_47059C; // weak
-extern int *_4705A8_minimap_smthn; // weak
-
-extern MobdSprtImage _47CBA0_MobdSprtImage_fog_of_war;
-extern DataMobdItem_stru0 _4705B0_minimap; // weak
-
 
 extern UnitDamageSource dmg_rifle;
 extern UnitDamageSource dmg_shell_anaconda;
@@ -430,17 +377,6 @@ extern int max_beastenclosure_level; // weak
 extern int dword_477358; // weak
 extern stru15unit _477378_clanhall;
 extern int max_clanhall_level; // weak
-extern int _4773A0_boxd_item0_num_things; // weak
-extern DataBoxd *currently_running_lvl_boxd;
-extern Boxd_stru0 *_4773A8_boxd_parray;
-extern int _4773AC_boxd_item0_map_x_scale; // weak
-extern Boxd_stru0 **_4773B0_boxd_item0_things;
-extern int _4773B4_boxd_item0_map_num_y_tiles; // weak
-extern int _4773B8_boxd_item0_map_y_scale; // weak
-extern int currently_running_lvl_boxd_valid; // weak
-extern Boxd_stru0 *_4773C0_boxd_array;
-extern BoxdTile **_4773C4_boxd_item0_map_tiles;
-extern int _4773C8_boxd_item0_map_num_x_tiles; // weak
 extern char byte_4773D0[68]; // idb
 extern int dword_477410; // weak
 extern DataCplcItem_ptr1 *_477414_cplc_next2;
@@ -470,13 +406,11 @@ extern OilDeposit *oilspot_list_head;
 extern OilDeposit *oildeposit_list_end;
 extern OilDeposit *oilspot_list;
 extern OilDeposit *oilspot_list_free_pool;
-extern PALETTEENTRY palette_477490[256];
 extern int dword_477890;
 extern int dword_477894;
 extern int dword_477898; // weak
 extern int dword_47789C; // weak
 extern int dword_4778A0; // weak
-extern PALETTEENTRY *palette_4778A4;
 extern int dword_4778A8; // weak
 extern int dword_4778AC; // weak
 extern int __4778C0_stru1_anim_length; // weak
@@ -489,74 +423,10 @@ extern int _4778C8_singleplayer_available_units_denom; // weak
 extern Script *task_ai_players[7];
 extern _UNKNOWN unk_4778EC; // weak
 extern stru24 *cpu_player_scripts_attached_stru24s[7];
-extern int dword_477940; // weak
-extern int dword_477944; // weak
-extern DetailedDrawHandler_VideoPlayer _477948_video_draw_details;
-extern int _477970_video_header_field_6; // weak
-extern int _477974_video_header_field_8; // weak
-extern DrawJob *video_477978_draw_job;
-extern _UNKNOWN video_477DE4_dsb_waveformatex; // weak
-extern _UNKNOWN unk_477982; // weak
-extern __int64 qword_477984; // weak
-extern _UNKNOWN unk_47798C; // weak
-extern _UNKNOWN unk_47798E; // weak
-extern PALETTEENTRY stru_477990; // idb
-extern DetailedDrawHandler_VideoPlayer stru_477D90; // weak
-extern int dword_477DB8; // weak
-extern int dword_477DBC; // weak
-extern DrawJob *video_477DC0;
-extern int video_477DC4_current_sound_position; // weak
-extern int dword_477DC8; // weak
-extern DSBUFFERDESC video_477DE4_dsb_desc; // weak
-extern IDirectSoundBuffer *video_477DE4_dsb;
-extern VideoFile *video;
-extern int video_477DEC_is_sound_playing; // weak
-extern int video_477DF0; // weak
-extern int dword_477DF4; // weak
-extern char video_477DF8_subtitles[756];
-extern int video_4780EC; // weak
-extern int video_4780F0; // weak
-extern int video_4780F4; // weak
-extern RenderString *video_4780F8_subtitles;
 extern int timer_delta_updated; // weak
 extern int timer_delta_ms; // weak
 extern int timer_time; // weak
 extern Entity *dword_478108[300];
-extern int j_render_nullsub_2; // weak
-extern int j_render_434B70; // weak
-extern PALETTEENTRY *ppalette_4785C0;
-extern int j_render_434A90; // weak
-extern int(*j_render_434EA0)(void *pixels, int x, int y, int w, int h); // idb
-extern PALETTEENTRY *_4785DC_syscolors_palette_entries;
-extern void (*j_render_4349D0_draw_tile_32x32)(void *pixels, int x, int y); // idb
-extern int(*j_render_4351A0_draw)(void *pixels, int x, int y, int w, int h); // idb
-extern PALETTEENTRY palette_4785F0[256]; // weak
-extern void(*p_render_set_clip)(int, int, int, int);
-extern void (*j_render_434C60)(unsigned __int8 *pixels, unsigned __int8 *palette, int x, int y, int w, int h); // idb
-extern int(*j_render_435320)(void *pixels, int x, int y, int w, int h);
-extern void(*j_render_draw_tile)(void *data, int image_off_x, int image_off_y, int image_x_size, int image_y_size);
-extern void(*j_render_draw_cursor_434A00)(void *pixels, int x, int y, int w, int h); // idb
-extern int render_478A0C; // weak
-extern int(*j_render_4349A0_draw_tile_32x32)(void *pixels, int x, int y); // idb
-extern int _478A14_prev_stru1_palette_entries; // weak
-extern COLORREF sys_colors[25];
-extern void(*j_render_434BD0)(unsigned __int8 *sprite_data, unsigned __int8 *palette, int x, int y, int width, int height); // idb
-extern int render_height; // idb
-extern int render_width; // idb
-extern void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
-extern int render_478A94; // weak
-extern int j_render_nullsub_1; // weak
-extern DataBoxd_stru0_per_map_unit *_478AA8_boxd_stru0_array;
-extern int _478AAC_map_height; // weak
-extern int dword_478AB0; // weak
-extern int _478AB4_map_width_shl_13; // weak
-extern int _478BE8_map_info__see40E6E0[8];
-extern char byte_478C08; // weak
-extern int _478FF0_map_height_shl_13; // weak
-extern int dword_478FF4; // weak
-extern int _4793F8_map_width; // weak
-extern int dword_47952C; // weak
-extern int dword_47953C; // weak
 extern Sidebar *stru22_list_479548;
 extern Sidebar *stru22_list_47954C;
 extern Sidebar *sidebar_list;
@@ -573,27 +443,10 @@ extern stru2 *stru2_list_free_pool;
 extern stru2 *stru2_list;
 extern stru26 _4795F0_stru26_array[3];
 extern stru27 _479740_stru27_array[3];
-extern tagRECT global_wnd_rect; // idb
 extern void *render_locked_surface_ptr;
-extern DDPIXELFORMAT pixelformat_primary;
-extern DWORD global_wnd_style; // idb
-extern int global_wnd_bpp; // weak
 extern unsigned int render_locked_surface_width_px; // idb
-extern DDSURFACEDESC ddsd_primary;
-extern int global_fullscreen; // weak
-extern int global_time_flows; // weak
 extern stru1_draw_params *stru1_list_free_pool;
-extern int global_wnd_height; // idb
-extern DWORD global_wnd_style_ex; // idb
 extern stru1_draw_params *stru1_list;
-extern int fullscreen_flip_or_blt; // weak
-extern int global_wnd_width; // idb
-extern bool is_render_window_initialized; // 411760
-extern IDirectDraw *pdd;
-extern IDirectDrawPalette *pddpal_primary;
-extern IDirectDrawClipper *pddclipper;
-extern HWND global_hwnd; // idb
-extern int RenderDD_initialized; // weak
 extern int timer_render_skips; // weak
 extern char palette_4798F8_sprt_aligned[512];
 extern stru1_draw_params *current_drawing_params;
@@ -620,8 +473,6 @@ extern int stru1_global_obj_anim_initialized; // weak
 extern int game_window_created; // weak
 extern int _479DE8_boxd_initialized; // weak
 extern int stru2_list_elements_initialized; // weak
-extern int _479DF0_mapd_initialized; // weak
-extern __int16 stru2_list_initialized; // weak
 extern char current_savegame_filename[256];
 extern char byte_479EF8[192]; // idb
 extern char str[128];
@@ -634,12 +485,11 @@ extern int max_machineshop_level; // weak
 extern char app_root_dir[20]; // idb
 extern DataHunk *current_level_lvl; // idb
 extern char game_installation_drive_letter; // weak
-extern Bitmap *_47A010_mapd_item_being_drawn[3];
 extern int _47A01C_sound_id; // weak
 extern char game_data_root_dir[80]; // idb
 extern char game_data_installation_dir[256];
 extern DataHunk *wait_lvl;
-extern int is_minimal_install;
+extern bool is_minimal_install;
 extern DataHunk *sprites_lvl; // idb
 extern int dword_47A180; // weak
 extern int dword_47A184; // weak
@@ -651,17 +501,12 @@ extern int _47A1A4_custom_mission_briefing_line; // weak
 extern int _47A1A8_custom_mission_idx; // weak
 extern int _47A1AC_is_custom_surv_mission; // weak
 extern int _47A1B0_custom_mission_briefing_ui; // weak
-extern char global_console_argv[260];
-extern int dword_47A2BC; // weak
-extern char *global_cmd_line;
 extern int netz_47A2C8; // weak
 extern enum LEVEL_ID current_level_idx;
 extern __int16 current_mute_level; // weak
 extern __int16 current_surv_level; // weak
 extern int _47A2E4_mess_with_game_dir; // weak
-extern int nocd; // weak
-extern int _47A2EC_noblack; // weak
-extern int units_stats_parsed_from_argv; // weak
+extern int debug_unit_stats_supplied; // weak
 extern int _4269B0_task_attachment__num_units_created_manually; // weak
 extern int _47A300_stru51_array__field_4__minus1_index[]; // weak
 extern stru51_tech_bunkers _47A300_stru51_tech_bunkers[14];
@@ -691,10 +536,9 @@ extern stru37 *stru37_list_47A500;
 extern stru37 *stru37_list_47A504;
 extern stru37 *stru37_list;
 extern stru37 *stru37_list_free_pool;
-extern int input_mouse_window_losing_focus_reset_to_defaults; // weak
 extern int dword_47A5A0; // weak
 extern char byte_47A5A8[56];
-extern Script *task_mobd17_cursor; // idb
+extern Script *game_cursor_script; // idb
 extern stru13_stru0 _47A608_stru13_associated_array; // weak
 extern stru13construct *stru13construct_list_47A638;
 extern stru13construct *stru13construct_list_47A63C;
@@ -739,21 +583,11 @@ extern int _47B3E0_unit_int_outpost_clanhall; // weak
 extern int __47B3E0_outpost_levels_negindex[]; // weak
 extern stru15unit _47B3E0_outpost_levels;
 extern int max_outpost_level; // weak
-extern PALETTEENTRY _47B408_palette_entries[256];
-extern PALETTEENTRY RenderDD_primary_palette_values[256];
-extern HDC render_sw_hdc; // idb
-extern PALETTEENTRY palette_47BC10[256];
-extern HPALETTE render_sw_palette;
-extern HPALETTE render_sw_default_palette; // idb
 extern int dword_47C018; // weak
 extern Script *receiver; // idb
 extern Script *task_47C028; // idb
 extern int dword_47C030; // weak
-extern int render_clip_w; // weak
-extern int render_clip_z; // weak
-extern int render_clip_x; // weak
-extern int render_clip_y; // weak
-extern int _47C048_unit_bomberdmg; // weak
+extern int _47C048_num_attack_projectile_sprites; // weak
 extern int _47C04C_num_explosions_max20; // weak
 extern stru175 _47C050_array[20];
 extern char byte_47C230[256]; // idb
@@ -770,28 +604,6 @@ extern Bitmap *bitmap_list_47C364;
 extern void(*mapd_j_4391D0_handler)(Mapd_stru0 *, void *);
 extern Bitmap *bitmap_list_free_pool;
 extern void(*j_drawjob_update_handler_mapd_menu)(Bitmap *param, DrawJob *job);
-extern int currently_running_lvl_mapd_num_items; // weak
-extern Mapd_stru0 _47C380_mapd;
-extern int currently_running_lvl_mapd_valid; // weak
-extern int _47C390_mapd; // weak
-extern DataMapd *currently_running_lvl_mapd;
-extern int sound_list_end; // weak
-extern Sound *sound_list_free_pool;
-extern Sound *sound_list_47C3D4;
-extern sound_stru_2 **_47C4E0_sounds;
-extern LPDIRECTSOUND pds; // idb
-extern int _47C4E8_num_sounds; // weak
-extern int sound_volumes[16];
-extern Sound *sound_list_head;
-extern int sound_pans[16];
-extern int Sound_47C578[16];
-extern Sound *sound_list;
-extern int _47C5C0_can_sound; // weak
-extern int sound_list_last_id; // weak
-extern void *faction_slv; // idb
-extern BOOL sound_initialized;
-extern int dword_47C5D0; // weak
-extern int _47C5D4_sound_threaded_snd_id; // idb
 extern DrawJobList draw_list_47C5D8; // idb
 extern DrawJob *draw_list_free_pool;
 extern DrawJobList draw_list_47C5E8; // idb
@@ -833,7 +645,7 @@ extern Script *script_execute_list;
 extern Script *script_list_47C714;
 extern size_t coroutine_default_stack_size; // idb
 extern Script *task_creation_handler_arg;
-extern __int16 is_coroutine_list_initialization_failed; // weak
+extern __int16 is_async_execution_supported; // weak
 extern Script *script_list;
 extern int stru8_list_size; // weak
 extern int stru8_list_allocated; // weak
@@ -877,41 +689,6 @@ extern _DWORD dword_47CB14; // idb
 extern int dword_47CB18; // weak
 extern int dword_47CB1C; // weak
 extern int dword_47CB20; // weak
-extern MapdScrlImageTile *fog_of_war_tile_15;
-extern int __478AAC_map_height_plus4; // weak
-extern MapdScrlImage *fog_of_war_scrl_source;
-extern int __478AAC_map_height_x2; // weak
-extern MapdScrlImageTile *fog_of_war_tile_1;
-extern MapdScrlImageTile *fog_of_war_tile_10;
-extern MapdScrlImageTile *fog_of_war_tile_14;
-extern MapdScrlImageTile *fog_of_war_tile_4;
-extern MapdScrlImage *map_fog_of_war_scrl;
-extern int dword_47CB4C; // weak
-extern char byte_47CB50[8];
-extern Sprite *_47CB58_minimap_sprite;
-extern MapdScrlImageTile *fog_of_war_tile_11;
-extern MapdScrlImageTile *fog_of_war_tile_7;
-extern MapdScrlImageTile *fog_of_war_tile_3;
-extern int dword_47CB68; // weak
-extern int dword_47CB6C; // weak
-extern MapdScrlImageTile *fog_of_war_tile_13;
-extern void *_47CB74_fow_map_x2; // idb
-extern MapdScrlImageTile *fog_of_war_tile_6;
-extern int __4793F8_map_width_x2; // weak
-extern int __4793F8_map_width_plus4; // weak
-extern MapdScrlImageTile *fog_of_war_tile_8;
-extern void *_47CB88_fow_map_x2; // idb
-extern DrawHandlerData_Units *_47CB8C_fow;
-extern MapdScrlImageTile *fog_of_war_tile_5;
-extern MapdScrlImageTile *fog_of_war_tile_12;
-extern void *_47CB98_fow_map_x2;
-extern int dword_47CBAC; // weak
-extern Bitmap *fog_of_war_bitmap;
-extern MapdScrlImageTile **map_fog_of_war_scrl_tiles;
-extern MapdScrlImageTile *fog_of_war_tile_9;
-extern MapdScrlImageTile *fog_of_war_tile_2;
-extern int _47CBC0_fow[256];
-extern int dword_47CFC0; // weak
 extern int __47CFC4_mobd_lookup_speeds[256];
 extern int _47D3C4_entity_mobd_lookup_ids[257];
 extern unsigned __int8 player_sprite_palette_tmp[256];
@@ -936,7 +713,4 @@ extern int UNIT_num_nonplayer_units; // weak
 extern int num_players_towers; // weak
 extern void *entity_default_stru60_ptr;
 extern int dword_47DCE8; // weak
-extern HINSTANCE global_hinstance; // idb
-extern int global_win32_nCmdShow; // idb
 extern bool _47DCF4_wm_quit_received; // weak
-extern VideoFileFrame *video_47F434_frame;

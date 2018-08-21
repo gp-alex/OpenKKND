@@ -1,16 +1,22 @@
-#include "src/kknd.h"
+#include <time.h>
 
+#include "src/Infrastructure/Netz.h"
+
+#include "src/kknd.h"
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
-#include "Infrastructure/Netz.h"
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
+#include "src/Video.h"
+
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
 
 
+
+//GUID IID_IDirectPlay2A = { 2638611840u, 43042u, 4559u,{ 150u, 12u, 0u, 128u, 199u, 83u, 78u, 130u } };
 
 netz_stru6_per_player netz_47A740[8];
 int(*netz_pfn_47A838)(netz_stru_3 *);
@@ -311,7 +317,7 @@ void *netz_42E450(void *a1, char a2, char a3)
     v29 = a2;
     LOBYTE_HEXRAYS(a2a) = a3;
 
-    v27 = (char *)timeGetTime();
+    v27 = (char *)OsGetPrecisionTime();
     memset(&a3a, 0, 0x64u);
     v28 = (char *)10000;
     if (netz_47A834)
@@ -364,7 +370,7 @@ void *netz_42E450(void *a1, char a2, char a3)
             v4 = netz_468B50_available_units_denom - 1;
             for (dword_47CB10 = netz_468B50_available_units_denom - 1; dword_47CB10 > 0; v4 = dword_47CB10)
             {
-                v4 = timeGetTime() - (_DWORD)v27;
+                v4 = OsGetPrecisionTime() - (_DWORD)v27;
                 if (v4 >= 0x2710)
                     break;
                 netz_42F9C0(0, 0);
@@ -475,10 +481,9 @@ void *netz_42E690(void *a1, char a2)
 //----- (0042E7B0) --------------------------------------------------------
 bool netz_42E7B0()
 {
-    BOOL result; // eax@1
     char *v1; // ecx@4
 
-    result = 1;
+    bool result = true;
     if (netz_47A834 && !single_player_game)
     {
         if (netz_468B50_available_units_denom != 1)
@@ -491,7 +496,7 @@ bool netz_42E7B0()
                     return result;
             }
         }
-        result = 0;
+        result = false;
     }
     return result;
 }
@@ -1002,7 +1007,7 @@ int netz_42E820(netz_stru_3 *a1)
             dword_47A738 = 0;
             dword_47CB18 = 1;
             *(_DWORD *)&netz_47A740[2].str_0[0] = 1;
-            is_coroutine_list_initialization_failed = 0;
+            is_async_execution_supported = 0;
             dword_47CB1C = 0;
             dword_47A180 = 2;
             game_state = GAME_STATE::GAME_3;
@@ -1011,7 +1016,7 @@ int netz_42E820(netz_stru_3 *a1)
         case 62:
             if (netz_468B50_available_units_denom <= 2)
             {
-                is_coroutine_list_initialization_failed = 0;
+                is_async_execution_supported = 0;
                 *(_DWORD *)&netz_47A740[2].str_0[0] = 1;
                 dword_47CB18 = 1;
                 dword_47A738 = 0;
@@ -1571,7 +1576,7 @@ int netz_42FAC0(const char *provider)
 bool netz_42FB60_init_provider(int provider_id)
 {
     int v1; // ecx@2
-    BOOL result; // eax@4
+    int result; // eax@4
     int v3; // eax@5
     int v4; // edx@5
     int v5; // [sp+Ch] [bp-10h]@5
@@ -2256,36 +2261,39 @@ int netz_430690()
 }
 
 //----- (004306C0) --------------------------------------------------------
-BOOL __stdcall DirectPlayEnumerateACallback(LPGUID lpguidSP, LPSTR lpSPName, DWORD dwMajorVersion, DWORD dwMinorVersion, LPVOID lpContext)
-{
-    HLOCAL v5; // eax@1
-    int v6; // ebx@1
-    char *v7; // edx@2
-    int v8; // ecx@2
-    int i; // eax@4
-
-    v5 = LocalAlloc(0, 0x1Cu);
-    v6 = (int)v5;
-    if (v5)
-    {
-        *(GUID *)((char *)v5 + 4) = *lpguidSP;
-        v7 = (char *)LocalAlloc(0, strlen(lpSPName) + 1);
-        *(_DWORD *)(v6 + 20) = (int)v7;
-        strcpy(v7, lpSPName);
-        v8 = netz_47A8DC;
-        if (!netz_47A8DC)
-        {
-            netz_47A8DC = v6;
-            *(_DWORD *)(v6 + 24) = 0;
-            return 1;
-        }
-        for (i = *(_DWORD *)(netz_47A8DC + 24); i; i = *(_DWORD *)(i + 24))
-            v8 = i;
-        *(_DWORD *)(v8 + 24) = v6;
-        *(_DWORD *)(v6 + 24) = 0;
-    }
-    return 1;
+bool __stdcall DirectPlayEnumerateACallback(void *lpguidSP, char *lpSPName, __int32 dwMajorVersion, __int32 dwMinorVersion, void *lpContext) {
+    return false;
 }
+//BOOL __stdcall DirectPlayEnumerateACallback(LPGUID lpguidSP, LPSTR lpSPName, DWORD dwMajorVersion, DWORD dwMinorVersion, LPVOID lpContext)
+//{
+//    HLOCAL v5; // eax@1
+//    int v6; // ebx@1
+//    char *v7; // edx@2
+//    int v8; // ecx@2
+//    int i; // eax@4
+//
+//    v5 = LocalAlloc(0, 0x1Cu);
+//    v6 = (int)v5;
+//    if (v5)
+//    {
+//        *(GUID *)((char *)v5 + 4) = *lpguidSP;
+//        v7 = (char *)LocalAlloc(0, strlen(lpSPName) + 1);
+//        *(_DWORD *)(v6 + 20) = (int)v7;
+//        strcpy(v7, lpSPName);
+//        v8 = netz_47A8DC;
+//        if (!netz_47A8DC)
+//        {
+//            netz_47A8DC = v6;
+//            *(_DWORD *)(v6 + 24) = 0;
+//            return 1;
+//        }
+//        for (i = *(_DWORD *)(netz_47A8DC + 24); i; i = *(_DWORD *)(i + 24))
+//            v8 = i;
+//        *(_DWORD *)(v8 + 24) = v6;
+//        *(_DWORD *)(v6 + 24) = 0;
+//    }
+//    return 1;
+//}
 
 //----- (00430780) --------------------------------------------------------
 int netz_create_direct_play(int a1)
@@ -2414,7 +2422,7 @@ bool netz_430910_dplay()
     v1 = v0 + 4;
     if (!DirectPlayCreate((LPGUID)(v0 + 4), &lpDP, 0))
     {
-    (*(void(__stdcall **)(_DWORD, _DWORD, _DWORD))lpDP->lpVtbl)(lpDP, &netz_463DE0, &netz_47A898_object);
+    (*(void(__stdcall **)(_DWORD, _DWORD, _DWORD))lpDP->lpVtbl)(lpDP, &IID_IDirectPlay2A, &netz_47A898_object);
     (*((void(__stdcall **)(_DWORD))lpDP->lpVtbl + 2))(lpDP);
     netz_47A89C = *(_DWORD *)v1;
     netz_47A8A0 = *(_DWORD *)(v1 + 4);
@@ -2512,14 +2520,15 @@ int netz_430B10(int a1, int a2)
     int v9; // [sp+14h] [bp-1Ch]@10
     char *v10; // [sp+18h] [bp-18h]@10
     char *v11; // [sp+1Ch] [bp-14h]@10
-    char username[16]; // [sp+20h] [bp-10h]@3
+    char username[256]; // [sp+20h] [bp-10h]@3
 
     v2 = a2;
     if (netz_47A898_object)
     {
-        pcbBuffer = 15;
-        if (!GetUserNameA(username, &pcbBuffer))
-            strcpy(username, aUnknown);
+        strcpy(username, OsGetUserName().c_str());
+        //pcbBuffer = 15;
+        //if (!GetUserNameA(username, &pcbBuffer))
+        //    strcpy(username, aUnknown);
         memset(&netz_47A8E4, 0, sizeof(netz_47A8E4));
         netz_47A8E4.field_18 = 0x87824EC0;
         netz_47A8E4.field_0 = 80;
@@ -2856,15 +2865,15 @@ void script_449820_netz(Script *a1)
             ++v3;
         } while ((int)v3 < (int)&dword_47A83C);
         netz_42E690(v3, 50);
-        v4 = timeGetTime();
-        v5 = timeGetTime();
+        v4 = OsGetPrecisionTime();
+        v5 = OsGetPrecisionTime();
         v6 = (void *)dword_47CB10;
         if (dword_47CB10)
         {
             while (1)
             {
                 netz_42F9C0(0, 1);
-                if (timeGetTime() - v5 > 0x7530)
+                if (OsGetPrecisionTime() - v5 > 0x7530)
                 {
                     v8 = &netz_47A740[3];
                     dword_47CB10 = netz_468B50_available_units_denom - 1;
@@ -2874,9 +2883,9 @@ void script_449820_netz(Script *a1)
                         ++v8;
                     } while ((int)v8 < (int)&dword_47A83C);
                     netz_42E690(v8, 50);
-                    v5 = timeGetTime();
+                    v5 = OsGetPrecisionTime();
                 }
-                if (timeGetTime() - v4 > 0x1D4C0)
+                if (OsGetPrecisionTime() - v4 > 0x1D4C0)
                     break;
                 v6 = (void *)dword_47CB10;
                 if (!dword_47CB10)
@@ -2970,7 +2979,7 @@ void script_449820_netz(Script *a1)
                 if (netz_449E00(&dword_47CB14, 0x9C40u, aWaitingForPlay))
                 {
                     dword_47A738 = 0;
-                    is_coroutine_list_initialization_failed = 0;
+                    is_async_execution_supported = 0;
                     netz_42F620();
                     dword_47CB14 = -1;
                     dword_47CB18 = 1;
@@ -3019,7 +3028,7 @@ void script_449820_netz(Script *a1)
                 if (netz_449E00(&dword_47CB14, 0x9C40u, aWaitingForServ))
                 {
                     dword_47A738 = 0;
-                    is_coroutine_list_initialization_failed = 0;
+                    is_async_execution_supported = 0;
                     netz_42F620();
                     dword_47CB14 = -1;
                     dword_47CB18 = 1;
@@ -3093,26 +3102,26 @@ bool netz_449E00(_DWORD *a1, unsigned int a2, const char *a3)
     char *v7; // esi@12
     int v8; // eax@18
     int v9; // eax@25
-    BOOL result; // eax@32
+    int result; // eax@32
     int v11; // [sp+0h] [bp-14h]@5
     unsigned int v12; // [sp+Ch] [bp-8h]@1
     DWORD v13; // [sp+10h] [bp-4h]@1
 
     v12 = a2;
     v3 = a1;
-    v4 = timeGetTime();
-    v13 = timeGetTime();
+    v4 = OsGetPrecisionTime();
+    v13 = OsGetPrecisionTime();
     if (!*v3)
         goto LABEL_36;
     do
     {
-        v5 = (void *)(timeGetTime() - v13);
+        v5 = (void *)(OsGetPrecisionTime() - v13);
         if ((unsigned int)v5 >= v12)
             break;
         netz_42F9C0(0, 1);
         if (*v3 == -1 || dword_47CB1C != 1)
             break;
-        if (timeGetTime() - v4 > 0x1F4)
+        if (OsGetPrecisionTime() - v4 > 0x1F4)
         {
             if (netz_47A834)
             {
@@ -3130,7 +3139,7 @@ bool netz_449E00(_DWORD *a1, unsigned int a2, const char *a3)
             {
                 j_netz_42FFB0(netz_47A740[dword_468B54 + 2].field_18, 0);
             }
-            v4 = timeGetTime();
+            v4 = OsGetPrecisionTime();
         }
     } while (*v3);
     if (*v3 && *v3 != -1)
@@ -3235,7 +3244,7 @@ void *netz_44A220(char a1, char *a2, int a3)
 //----- (0044A2A0) --------------------------------------------------------
 void netz_44A2A0(char a1, int a2, int a3)
 {
-    DWORD(__stdcall *v3)(); // esi@1
+    unsigned long(*v3)(); // esi@1
     DWORD v4; // ebx@1
     int *v5; // eax@1
     void *v6; // eax@3
@@ -3256,11 +3265,11 @@ void netz_44A2A0(char a1, int a2, int a3)
     void *v21; // [sp+10h] [bp-8h]@1
     char v22; // [sp+17h] [bp-1h]@1
 
-    v3 = timeGetTime;
+    v3 = OsGetPrecisionTime;
     v21 = (void *)a2;
     v22 = a1;
-    v4 = timeGetTime();
-    v20 = timeGetTime();
+    v4 = OsGetPrecisionTime();
+    v20 = OsGetPrecisionTime();
     dword_47CB20 = 1;
     dword_47CB10 = netz_468B50_available_units_denom - 1;
     v5 = (int *)&netz_47A740[3];
@@ -3286,7 +3295,7 @@ void netz_44A2A0(char a1, int a2, int a3)
             v8 += 7;
             v7 = (char *)v7 + 1;
         } while ((int)v8 < (int)&netz_pfn_47A838);
-        v3 = timeGetTime;
+        v3 = OsGetPrecisionTime;
     }
     while (dword_47CB10 > 0)
     {
@@ -3320,7 +3329,7 @@ void netz_44A2A0(char a1, int a2, int a3)
                     v16 += 7;
                     v15 = (char *)v15 + 1;
                 } while ((int)v16 < (int)&netz_pfn_47A838);
-                v3 = timeGetTime;
+                v3 = OsGetPrecisionTime;
             }
             v4 = v3();
         }

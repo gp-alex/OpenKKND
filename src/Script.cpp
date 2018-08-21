@@ -1,12 +1,14 @@
-#include "src/kknd.h"
+#include "src/Script.h"
 
+#include "src/hexrays-defs.h"
+#include "src/kknd.h"
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
-#include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
+#include "src/Pathfind.h"
+#include "src/Map.h"
 
 #include "src/Engine/Entity.h"
 
@@ -647,7 +649,7 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(entity_mode_4035C0_building),
     MAKE_HANDLER_PTR(entity_mode_403650_building),
     MAKE_HANDLER_PTR(entity_mode_403720_on_prison_death__or__prolly_any_generic_building),
-    MAKE_HANDLER_PTR(entity_mode_building_default_on_death),
+    MAKE_HANDLER_PTR(entity_mode_building_on_death_default),
     MAKE_HANDLER_PTR(entity_4038B0),
     MAKE_HANDLER_PTR(entity_clanhall_on_upgrade_complete),
     MAKE_HANDLER_PTR(EventHandler_Clanhall),
@@ -745,11 +747,11 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(script_418A10),
     MAKE_HANDLER_PTR(entity_mode_418B30),
     MAKE_HANDLER_PTR(entity_mode_418D20),
-    MAKE_HANDLER_PTR(entity_mode_418E90),
+    MAKE_HANDLER_PTR(entity_mode_418E90_leaving_repair_bay),
     MAKE_HANDLER_PTR(entity_mode_418F60),
-    MAKE_HANDLER_PTR(entity_mode_418FE0),
-    MAKE_HANDLER_PTR(entity_mode_419180),
-    MAKE_HANDLER_PTR(entity_mode_419230),
+    MAKE_HANDLER_PTR(entity_mode_418FE0_repairing_in_bay),
+    MAKE_HANDLER_PTR(entity_mode_419180_in_repairbay),
+    MAKE_HANDLER_PTR(entity_mode_419230_arrive_at_repairbay),
     MAKE_HANDLER_PTR(entity_4192F0),
     MAKE_HANDLER_PTR(entity_mode_419390_oiltanker),
     MAKE_HANDLER_PTR(entity_mode_move_tanker),
@@ -760,8 +762,8 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(EventHandler_Infantry),
     MAKE_HANDLER_PTR(EventHandler_419CA0),
     MAKE_HANDLER_PTR(EventHandler_General_Scout),
-    MAKE_HANDLER_PTR(EventHandler_419DF0),
-    MAKE_HANDLER_PTR(EventHandler_419E80),
+    MAKE_HANDLER_PTR(EventHandler_419DF0_unit_repairing_in_bay),
+    MAKE_HANDLER_PTR(EventHandler_419E80_unit_in_repairbay),
     MAKE_HANDLER_PTR(entity_machineshop_on_upgrade_complete),
     MAKE_HANDLER_PTR(EventHandler_MachineShop),
     MAKE_HANDLER_PTR(entity_4220B0_machineshop),
@@ -798,7 +800,7 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(UNIT_Handler_MobileOutpost),
     MAKE_HANDLER_PTR(entity_mode_4278C0_mobile_outpost),
     MAKE_HANDLER_PTR(MessageHandler_MobileOutpost),
-    MAKE_HANDLER_PTR(nullsub_2),
+    MAKE_HANDLER_PTR(MessageHandler_MobileOutpostEmpty),
     MAKE_HANDLER_PTR(entity_427BB0_mobile_outpost_clanhall_planting),
     MAKE_HANDLER_PTR(entity_mode_427BF0_mobile_outpost_clanhall_planting),
     MAKE_HANDLER_PTR(entity_427C30_after_mobile_outpost_clanhall_wagon_plant),
@@ -979,6 +981,23 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_433810_ingame_menu),
     MAKE_HANDLER_PTR(script_4339F0_ingame_menu),
     MAKE_HANDLER_PTR(script_4338F0_ingame_menu),
+
+    MAKE_HANDLER_PTR(script_440810_mobd45),
+    MAKE_HANDLER_PTR(script_441780_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_441470_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_440CA0_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_441050_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_441680_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_441260_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_440ED0_mobd45_evt8),
+
+    // ingame menu - save game
+    MAKE_HANDLER_PTR(script_432F30_ingame_menu_read_keyboard_input),
+    MAKE_HANDLER_PTR(script_433E60_ingame_menu),
+    MAKE_HANDLER_PTR(script_433FB0_ingame_menu),
+    MAKE_HANDLER_PTR(script_433ED0_ingame_menu),
+    MAKE_HANDLER_PTR(script_433F40_ingame_menu),
+    MAKE_HANDLER_PTR(script_421D60_on_savegame_failed),
 };
 
 
@@ -999,6 +1018,7 @@ const char *get_handler_name(void *function) {
         }
     }
 
+    // please add the script to   other_unsorted_handlers
     __debugbreak();
     return nullptr;
 }
@@ -1024,7 +1044,7 @@ bool script_list_alloc(int coroutine_stack_size)
 
             coroutine_default_stack_size = coroutine_stack_size;
             coroutine_current = coroutine_list_head;
-            is_coroutine_list_initialization_failed = 0;
+            is_async_execution_supported = 0;
 
             return true;
         }
@@ -1033,7 +1053,7 @@ bool script_list_alloc(int coroutine_stack_size)
 }
 
 //----- (00445210) --------------------------------------------------------
-Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size)
+Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*task_main)(Script *), int stack_size)
 {
     Script *v3; // esi@1
 
@@ -1042,17 +1062,17 @@ Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *),
     {
         script_list_free_pool = script_list_free_pool->next;
 
-        memset(v3, SCRIPT_COROUTINE, sizeof(Script));
+        memset(v3, 0, sizeof(Script));
         v3->script_type = type;
         v3->routine_type = SCRIPT_COROUTINE;
 
-        auto coroutine = couroutine_create(coroutine_main, get_handler_name(handler));
+        auto coroutine = couroutine_create(coroutine_main, get_handler_name(task_main));
         v3->handler = (void(*)(Script *))coroutine;
-        v3->debug_handler_name = get_handler_name(handler);
+        v3->debug_handler_name = get_handler_name(task_main);
 
         if (coroutine)
         {
-            task_creation_handler = handler;
+            task_creation_handler = task_main;
             task_creation_handler_arg = v3;
 
             script_execute_list_prepend(v3);
@@ -1142,9 +1162,6 @@ int script_yield_any_trigger(Script *a1, int num_turns) {
 //----- (00445370) --------------------------------------------------------
 int script_yield(Script *a1, int yield_flags, int param)
 {
-    int v5; // eax@8
-    unsigned int v6; // eax@8
-
     if (yield_flags & SCRIPT_FLAGS_20_EVENT_TRIGGER && a1->event_list)
     {
         a1->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;

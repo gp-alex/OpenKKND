@@ -1,18 +1,20 @@
 #include "src/kknd.h"
-
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Sound.h"
+#include "src/Pathfind.h"
+#include "src/Map.h"
 
-#include "Engine/Entity.h"
-#include "Engine/EntityFactory.h"
+
+#include "src/Engine/Entity.h"
+#include "src/Engine/EntityFactory.h"
 
 using Engine::EntityFactory;
 
-#include "Engine/Infrastructure/EntityRepository.h"
+#include "src/Engine/Infrastructure/EntityRepository.h"
 
 using Engine::Infrastructure::EntityRepository;
 
@@ -24,7 +26,7 @@ void EventHandler_Prison(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
     v4 = (Entity *)receiver->param;
     if (!v4->destroyed)
     {
-        if (event == EVT_MSG_DAMAGE)
+        if (event == CMD_APPLY_DAMAGE)
         {
             if (current_level_idx == LEVEL_SURV_09_RESCUE_THE_COMMANDER)
                 entity_402E90_on_damage(v4, param, entity_mode_prison_on_death_surv09);
@@ -48,9 +50,9 @@ void entity_mode_407300_prison(Entity *a1)
     v1 = a1;
     a1->sprite->field_88_unused = 1;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
+    a1->sprite->x = map_point_to_tile_global(a1->stru60.ptr_C->x_offset + a1->sprite->x) - a1->stru60.ptr_C->x_offset + 4096;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
+    a1->sprite->y = map_point_to_tile_global(a1->stru60.ptr_C->y_offset + a1->sprite->y) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     v2 = v1->script;
     v1->SetMode((EntityMode)nullsub_1);
@@ -121,7 +123,7 @@ void entity_mode_prison_on_death(Entity *a1)
     Script *v2; // eax@1
 
     v1 = a1;
-    entity_mode_building_default_on_death(a1);
+    entity_mode_building_on_death_default(a1);
     v2 = v1->script;
     v1->_12C_prison_bunker_spawn_type = 10;
     v1->SetMode(entity_mode_prison_spawn_unit);
@@ -149,7 +151,7 @@ void entity_mode_prison_on_death_surv09(Entity *a1)
     Script *v2; // eax@1
 
     v1 = a1;
-    entity_mode_building_default_on_death(a1);
+    entity_mode_building_on_death_default(a1);
     v2 = v1->script;
     v1->SetMode(entity_mode_prison_spawn_unit_surv09);
     script_sleep(v2, 80);
@@ -165,15 +167,15 @@ void EventHandler_TechBunker(Script *receiver, Script *sender, enum SCRIPT_EVENT
     {
         switch (event)
         {
-        case EVT_MSG_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_402E90_on_damage(v4, param, entity_mode_407C60_on_death_tech_bunker);
             entity_410710_status_bar(v4);
             break;
-        case EVT_MSG_1511_sidebar_click_category:
-            entity_410CB0_event1511(v4);
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
             break;
-        case EVT_SHOW_UI_CONTROL:
-            entity_410CD0_eventTextString(v4);
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
@@ -394,9 +396,9 @@ void entity_mode_407A90_techbunker(Entity *a1)
     v1 = a1;
     a1->sprite->field_88_unused = 1;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
+    a1->sprite->x = map_point_to_tile_global(a1->stru60.ptr_C->x_offset + a1->sprite->x) - a1->stru60.ptr_C->x_offset + 4096;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
+    a1->sprite->y = map_point_to_tile_global(a1->stru60.ptr_C->y_offset + a1->sprite->y) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
     if (current_level_idx == LEVEL_SURV_18)
         v1->SetMode(entity_mode_4079F0_techbunker_spawn10_surv18_lvl);
@@ -476,8 +478,8 @@ void entity_mode_407C60_on_death_tech_bunker(Entity *a1)
     v3 = &v1->turret->sprite_task;
     if (v3)
         script_trigger_event(0, EVT_MSG_1500, 0, *v3);
-    script_trigger_event(v1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-    script_trigger_event_group(v1->script, EVT_SHOW_UI_CONTROL, v1, SCRIPT_TYPE_39030);
+    script_trigger_event(v1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
+    script_trigger_event_group(v1->script, EVT_MSG_DESELECTED, v1, SCRIPT_TYPE_39030);
     v1->script->script_type = SCRIPT_TYPE_INVALID;
     v4 = v1->sprite;
     v1->entity_id = 0;
@@ -505,7 +507,7 @@ void entity_mode_hut_on_death(Entity *a1)
 {
     entity_load_mobd_4(a1);
     a1->SetMode(entity_mode_407D10);
-    script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
+    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
 
     a1->destroyed = 1;
     entity_439120_add_explosion(a1);
@@ -530,15 +532,15 @@ void EventHandler_Hut(Script *receiver, Script *sender, enum SCRIPT_EVENT event,
     {
         switch (event)
         {
-        case EVT_MSG_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_402E90_on_damage(v4, param, entity_mode_hut_on_death);
             entity_410710_status_bar(v4);
             break;
-        case EVT_MSG_1511_sidebar_click_category:
-            entity_410CB0_event1511(v4);
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
             break;
-        case EVT_SHOW_UI_CONTROL:
-            entity_410CD0_eventTextString(v4);
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
@@ -553,18 +555,17 @@ void EventHandler_Hut(Script *receiver, Script *sender, enum SCRIPT_EVENT event,
 void entity_mode_407E70_hut(Entity *a1)
 {
     Entity *v1; // esi@1
-    Script *v2; // eax@1
 
     v1 = a1;
     a1->sprite->field_88_unused = 1;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->x = ((a1->stru60.ptr_C->x_offset + a1->sprite->x) & 0xFFFFE000) - a1->stru60.ptr_C->x_offset + 4096;
+    a1->sprite->x = map_point_to_tile_global(a1->stru60.ptr_C->x_offset + a1->sprite->x) - a1->stru60.ptr_C->x_offset + 4096;
     a1->sprite->field_88_unused = 1;
-    a1->sprite->y = ((a1->stru60.ptr_C->y_offset + a1->sprite->y) & 0xFFFFE000) - a1->stru60.ptr_C->y_offset + 4096;
+    a1->sprite->y = map_point_to_tile_global(a1->stru60.ptr_C->y_offset + a1->sprite->y) - a1->stru60.ptr_C->y_offset + 4096;
     entity_40DD00_boxd(a1);
-    v2 = v1->script;
+
     v1->SetMode(entity_mode_407DA0);
-    script_sleep(v2, 1);
+    script_sleep(v1->script, 1);
 }
 
 //----- (00407F00) --------------------------------------------------------
@@ -591,19 +592,19 @@ void UNIT_Handler_Hut(Script *a1)
         switch (v2)
         {
         case 1:
-            v1->current_mobd_lookup_idx = 16;
+            v1->SetCurrentAnimFrame(16);
             break;
         case 2:
-            v1->current_mobd_lookup_idx = 32;
+            v1->SetCurrentAnimFrame(32);
             break;
         case 3:
-            v1->current_mobd_lookup_idx = 48;
+            v1->SetCurrentAnimFrame(48);
             break;
         case 4:
-            v1->current_mobd_lookup_idx = 64;
+            v1->SetCurrentAnimFrame(64);
             break;
         default:
-            v1->current_mobd_lookup_idx = 0;
+            v1->SetCurrentAnimFrame(0);
             break;
         }
         v1->script->event_handler = EventHandler_Hut;

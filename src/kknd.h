@@ -1,22 +1,13 @@
 #pragma once
 
-#define _CRT_SECURE_NO_WARNINGS
-
-#include <windows.h>
-#include <process.h>    // _beginthread, _endthread
-#include <stdio.h>
-#include <time.h>
-#include <math.h>
-
-#include "lib/src/legacy_dx/ddraw.h"
-#include "lib/src/legacy_dx/dsound.h"
-
 #include "src/hexrays-defs.h"
-
-#include "Infrastructure/File.h"
-#include "Infrastructure/Netz.h"
+#include "src/Render.h"
 #include "src/Script.h"
-#include "Infrastructure/Input.h"
+#include "src/Sound.h"
+
+#include "src/Infrastructure/File.h"
+#include "src/Infrastructure/Netz.h"
+#include "src/Infrastructure/Input.h"
 
 struct UnitAttachmentPoint;
 struct UnitDamageSource;
@@ -67,13 +58,6 @@ struct _47CAF0_task_attachment1_attack_task;
 struct task_428940_attach__cursors;
 struct task_428940_attach__cursors_2;
 struct Entity;
-
-/* 63 */
-struct UnitNameId
-{
-	const char *unit_name;
-	int id;
-};
 
 enum class GAME_STATE : int {
     MainMenu = 0,
@@ -275,10 +259,10 @@ struct UnitStat
 	int speed;
 	int reload_time;
 	int turning_speed;
-	int field_20;
+    int view_range;//field_20;
 	int firing_range;
 	int accuracy;
-	int field_2C;
+	int can_squash_infantry;
 	int is_infantry;
 	int mobd_lookup_offset_attack; // -1 for turreted units
 	int mobd_lookup_offset_move;
@@ -286,15 +270,17 @@ struct UnitStat
 	int mobd_lookup_offset_4; // damaged_buildings?
 	UnitAttachmentPoint *attach;
 	UnitDamageSource *dmg_source;
-	int field_4C;   // 4096
+	int field_4C;   // map tile occupation type/flag
+                    //
+                    // 4096: 2x2 tiles
                     // xl vehicles : autocannon, missile crab, mobile outposts
                     // gort
                     // plasma tank
                     //
-                    // 512
+                    // 512: 1/5th of a tile
                     // infantry
                     //
-                    // 128
+                    // 128: exactly 1 tile
                     // vehicles
                     // buildings
                     // tech bunker
@@ -303,9 +289,9 @@ struct UnitStat
                     // tree
                     // hut
 	enum PLAYER_SIDE player_side;
-	int field_54;
-	int field_58;
-	enum UNIT_ID _5C_unit_id;
+	int _54_ai_importance;
+	int _58_ai_importance;
+	enum UNIT_ID factory;
 	int production_time;
 };
 
@@ -315,11 +301,11 @@ struct UnitAttachmentPoint
 	enum MOBD_ID mobd_id;
 	void (*mode_attach)(Script *);
 	int mobd_frame_step;
-	int reload_time;
-	int reload2_time;
+	int reload_time;  // fire delay
+	int reload2_time; // reload time
 	int volley_size;
-	int mobd_lookup_table_offset;
-	int _1C_mobd_lookup_table_offset_for_rotary_cannon;
+    int mobd_lookup_offset_idle;//mobd_lookup_table_offset; 
+    int mobd_lookup_offset_attack;
 	UnitDamageSource *dmg_source;
 	int field_24;
 };
@@ -329,13 +315,13 @@ struct UnitDamageSource
 {
 	enum MOBD_ID mobd_id;
 	void(*dmg_handler)(Script *);
-	int mobd_offset;
-	int field_C;
-	int field_10;
+    int mobd_lookup_offset_flying;//mobd_offset;
+    int mobd_lookup_offset_hit;// field_C;
+    int speed;//field_10;
 	int damage_infantry;
 	int damage_vehicle;
 	int damage_building;
-	int field_20;
+	int _20_projectile_size; // 128 for bomber, 32 for otehrs
 	int field_24;
 };
 
@@ -360,11 +346,11 @@ struct __declspec(align(4)) LevelDesc
 	const char *lvl_filename;
 	const char *wav_filename;
 	const char *vbc_filename;
-	__int16 starting_cash;
-	__int16 field_E;
-	__int16 field_10;
+    __int16 survivor_starting_cash;//starting_cash;
+	__int16 evolved_starting_cash;//field_E;
+	__int16 field_10; // int 
 	__int16 _12_cost_multiplier_idx;
-	__int16 field_14;
+	__int16 field_14; // int tech level?
 	__int16 field_16;
 	unsigned int disabled_units_mask;
 	int field_1C;
@@ -377,37 +363,6 @@ struct __declspec(align(4)) LevelDesc
 };
 
 
-/* 262 */
-struct Sound
-{
-	int id;
-	IDirectSoundBuffer *pdsb;
-	Script *task;
-	File *file;
-	int hthread;
-	int field_14;
-	int field_18;
-	int sound_volume_offset;
-	int field_20;
-	int field_24;
-	int sound_pan_offset;
-	int field_2C;
-	int field_30;
-	int flags;
-	Sound *next;
-	Sound *prev;
-	int field_40;
-	char filename[32];
-	_BYTE gap64[42];
-	char field_8E[100];
-	char field_F2[80];
-	char field_142;
-	char field_143;
-	char field_144;
-	char field_145;
-	char field_146;
-	char field_147;
-};
 
 /* 270 */
 struct CustomMission
@@ -702,7 +657,11 @@ struct DataMapdItem
 	int num_images;
 	MapdScrlImage *images[1];
 	int num_palette_entries;
-	PALETTEENTRY palette;
+	__int32 _palette_start;
+
+    Palette *GetPalette() {
+        return (Palette *)&_palette_start;
+    }
 };
 
 /* 306 */
@@ -1110,7 +1069,7 @@ struct stru24
 	int list_58_and_70_size;
 	int field_2B4;
 	int field_2B8;
-	int field_2BC;
+	int _2BC_ai_importance;
 	int field_2C0;
 	int array_2C8_idx;
 	int array_2C8[4];
@@ -1170,7 +1129,7 @@ struct stru24_stru160
 	int field_20;
 	stru24_EnemyNode *field_24;
 	int field_28;
-	int field_2C;
+	int _2C_ai_importance;
 	int field_30;
 	int x_offset;
 	int y_offset;
@@ -1272,7 +1231,7 @@ struct stru24_stru310
 	int y;
 	int x_offset;
 	int y_offset;
-	int field_20;
+	int _20_ai_importance;
 };
 
 /* 350 */
@@ -1332,125 +1291,6 @@ struct stru31
 	int field_18;
 };
 
-/* 363 */
-enum SOUND_ID : __int32
-{
-	SOUND_0 = 0,
-	SOUND_3 = 3,
-	SOUND_RIFLE_FIRE = 4,
-	SOUND_LOW_CALIBER_MACHINEGUN_FIRE = 5,
-	SOUND_CANNON_FIRE = 6,
-	SOUND_BIKE_AND_SIDECAR_FIRE = 7,
-	SOUND_MACHINEGUN_FIRE = 8,
-	SOUND_GENERIC_PROJECTILE_DMG = 9,
-	SOUND_GENERIC_PROJECTILE_DMG_2 = 10,
-	SOUND_RIFLE_FIRE_2 = 11,
-	SOUND_RIFLE_FIRE_3 = 12,
-	SOUND_RIFLE_FIRE_4 = 13,
-	SOUND_14_dmg = 14,
-	SOUND_SHOTGUN_FIRE = 17,
-	SOUND_20 = 20,
-	SOUND_23 = 23,
-	SOUND_26_sabotage = 26,
-	SOUND_28_technician = 28,
-	SOUND_SURV_BUILDING_COMPLETED = 32,
-	SOUND_SURV_UNIT_READY = 33,
-	SOUND_40_sabotage = 40,
-	SOUND_43 = 43,
-	SOUND_45_surv_saboteur = 45,
-	SOUND_SURV_LOW_OIL_WARNING = 47,
-	SOUND_48 = 48,
-	SOUND_49 = 49,
-	SOUND_50 = 50,
-	SOUND_51 = 51,
-	SOUND_52 = 52,
-	SOUND_53 = 53,
-	SOUND_SURV_COMMENCING_UPGRADE = 54,
-	SOUND_SURV_UPGRADE_COMPLETE_1 = 55,
-	SOUND_SURV_UNIT_DRILL_RIG = 56,
-	SOUND_59 = 59,
-	SOUND_60 = 60,
-	SOUND_SURV_UPGRADE_COMPLETE_2 = 62,
-	SOUND_SURV_AIRSTRIKE_READY = 66,
-	SOUND_68 = 68,
-	SOUND_69 = 69,
-	SOUND_70 = 70,
-	SOUND_71 = 71,
-	SOUND_72 = 72,
-	SOUND_73 = 73,
-	SOUND_76 = 76,
-	SOUND_78 = 78,
-	SOUND_85 = 85,
-	SOUND_LASER_DMG = 87,
-	SOUND_88 = 88,
-	SOUND_89_dmg_handler = 89,
-	SOUND_90_dmg_handler = 90,
-	SOUND_91 = 91,
-	SOUND_92 = 92,
-	SOUND_93_sabotage = 93,
-	SOUND_MUTE_BUILDING_COMPLETED = 96,
-	SOUND_101 = 101,
-	SOUND_MUTE_UPGRADE_COMPLETE_1 = 102,
-	SOUND_MUTE_UPGRADE_COMPLETE_2 = 104,
-	SOUND_105_sabotage = 105,
-	SOUND_108_mekanik = 108,
-	SOUND_116 = 116,
-	SOUND_119 = 119,
-	SOUND_MUTE_LOW_OIL_WARNING = 122,
-	SOUND_124_mute_saboteur = 124,
-	SOUND_MUTE_UNIT_READY = 125,
-	SOUND_MUTE_COMMENCING_UPGRADE = 126,
-	SOUND_MUTE_UNIT_DRILL_RIG = 128,
-	SOUND_129 = 129,
-	SOUND_131 = 131,
-	SOUND_132 = 132,
-	SOUND_133 = 133,
-	SOUND_MUTE_AIRSTRIKE_READY = 136,
-	SOUND_139 = 139,
-	SOUND_140 = 140,
-	SOUND_141 = 141,
-	SOUND_142 = 142,
-	SOUND_148 = 148,
-	SOUND_153 = 153,
-	SOUND_154 = 154,
-	SOUND_155 = 155,
-	SOUND_156 = 156,
-	SOUND_157 = 157,
-	SOUND_158 = 158,
-	SOUND_MUTE_UNIT_WAR_MASTADONT_2 = 159,
-	SOUND_MUTE_UNIT_WAR_MASTADONT_READY = 160,
-	SOUND_ACID_SPIT_DMG = 161,
-	SOUND_163 = 163,
-	SOUND_MUTE_UNIT_DIRE_WOLF_2 = 164,
-	SOUND_MUTE_UNIT_DIRE_WOLF_READY = 165,
-	SOUND_MISSION_OUTCOME_LETTER_APPEARING = 166,
-	SOUND_MUTE_UNIT_GIANT_BEETLE_READY = 168,
-	SOUND_MUTE_UNIT_GIANT_BEETLE_2 = 169,
-	SOUND_MUTE_UNIT_MISSILE_CRAB_READY = 170,
-	SOUND_MUTE_UNIT_MISSILE_CRAB_2 = 171,
-	SOUND_MUTE_UNIT_GIANT_SCORPION_READY = 172,
-	SOUND_MUTE_UNIT_GIANT_SCORPION_2 = 173,
-	SOUND_174 = 174,
-	SOUND_175 = 175,
-	SOUND_176 = 176,
-	SOUND_177 = 177,
-	SOUND_178 = 178,
-	SOUND_179 = 179,
-	SOUND_180 = 180,
-	SOUND_181 = 181,
-	SOUND_182 = 182,
-	SOUND_183 = 183,
-	SOUND_184 = 184,
-	SOUND_185 = 185,
-	SOUND_186 = 186,
-	SOUND_187 = 187,
-	SOUND_188 = 188,
-	SOUND_MobileOutpost_ClanhallWagon_Planted = 189,
-	SOUND_SHOTGUN_FIRE_2 = 190,
-	SOUND_TANKER_OIL_UNLOADING = 191,
-	SOUND_SURV_UNIT_SCOUT_192 = 192,
-	SOUND_193 = 193,
-};
 
 
 struct _47CAF0_task_attachment1_attack_task
@@ -1544,14 +1384,20 @@ enum LEVEL_ID : __int32
     LEVEL_INVALID = -1
 };
 
+typedef void(*TurretHandler)(struct EntityTurret *);
+
 /* 372 */
 struct EntityTurret
 {
+    inline void SetHandler(TurretHandler handler) {
+        this->handler = handler;
+    }
+
 	Script *sprite_task;
 	Sprite *turret_sprite;
 	Entity *entity;
 	Entity *_C_entity;
-	void(*handler)(EntityTurret *);
+    TurretHandler handler;
 	int mobd_lookup_id;
 	int field_18;
 	int field_1C;
@@ -1569,89 +1415,6 @@ struct EntityTankerConvoyAttachment
 	int x;
 	int y;
 	int checkpoint;
-};
-
-/* 374 */
-struct VideoFileHeader
-{
-	__int16 _0__first_4_bits_eq_bpp;
-	__int16 width;
-	__int16 height;
-	__int16 field_6;
-	__int16 field_8;
-	__int16 num_frames;
-	__int16 current_frame;
-	__int16 field_E;
-	int field_10;
-	int _14_looks_like_fps;
-	int field_18;
-	int num_sound_bytes;
-	__int16 *ptr_20;
-	int field_24;
-	int field_28;
-};
-
-/* 376 */
-struct VideoFileFrame
-{
-	int frame_size;
-	__int16 field_4;
-	__int16 field_6;
-	__int16 field_8;
-	__int16 field_A;
-	char gap_C[8];
-	__int16 _14__first_4_bits_eq_bpp;
-	__int16 width;
-	__int16 height;
-	__int16 field_1A;
-	__int16 field_1C;
-	__int16 num_frames;
-	__int16 field_20;
-	__declspec(align(1)) int _22_looks_like_fps;
-	__int16 field_26;
-	__int16 field_28;
-	__int16 field_2A;
-	__int16 field_2C;
-	__int16 field_2E;
-	__int16 field_30;
-	__int16 field_32;
-	__int16 field_34;
-	__int16 field_36;
-	__int16 field_38;
-	__int16 field_3A;
-};
-
-/* 375 */
-struct VideoFile
-{
-	VideoFileHeader header;
-	_BYTE gap2C[372];
-	int field_1A0[80];
-	_BYTE gap2E0[36];
-	int field_304[9];
-	_BYTE gap328[8];
-	__int16 field_330;
-	__int16 field_332;
-	FILE *file;
-	int data_offset;
-	void *frame_front_buffer;
-	void *frame_back_buffer;
-	int _344_prolly_palette[256];
-	VideoFileFrame _744_frame;
-	char field_780[131015];
-	char field_20747;
-};
-
-/* 377 */
-struct DetailedDrawHandler_VideoPlayer
-{
-	int(*handler)(DrawJobDetails *data, int mode);
-	int width;
-	int height;
-	int field_C;
-	int field_10;
-	int field_14;
-	void *_18_img_data;
 };
 
 /* 383 */
@@ -1717,56 +1480,6 @@ struct DataMobdItem_stru0
     Sprite_stru58 *ptr_10;
 	SOUND_ID _14_sound_id;
 	DataMobdItem_stru1 *field_18;
-};
-
-#define BOXD_STRU0_TILE_SLOT(n)         (1 << (n))
-#define BOXD_STRU0_TILE_SLOT0           BOXD_STRU0_TILE_SLOT(0)
-#define BOXD_STRU0_TILE_SLOT1           BOXD_STRU0_TILE_SLOT(1)
-#define BOXD_STRU0_TILE_SLOT2           BOXD_STRU0_TILE_SLOT(2)
-#define BOXD_STRU0_TILE_SLOT3           BOXD_STRU0_TILE_SLOT(3)
-#define BOXD_STRU0_TILE_SLOT4           BOXD_STRU0_TILE_SLOT(4)
-#define BOXD_STRU0_ALL_SLOTS            (BOXD_STRU0_TILE_SLOT0 | BOXD_STRU0_TILE_SLOT1 | BOXD_STRU0_TILE_SLOT2 | BOXD_STRU0_TILE_SLOT3 | BOXD_STRU0_TILE_SLOT4)
-#define BOXD_STRU0_OBSTRUCTED           0x20    // edges of some landscapes
-#define BOXD_STRU0_BLOCKED              0x40    // completely blocked terrrain
-#define BOXD_STRU0_IMPASSIBLE           (BOXD_STRU0_BLOCKED | BOXD_STRU0_OBSTRUCTED)
-#define BOXD_STRU0_VEHICLE_BUILDING     0x80    // tile is occupied by a vehicle or a building
-/* 389 */
-struct DataBoxd_stru0_per_map_unit
-{
-    bool IsImpassibleTerrain() const {
-        return flags & BOXD_STRU0_IMPASSIBLE;
-    }
-    bool IsAnySlotOccupied() const {
-        return flags & BOXD_STRU0_ALL_SLOTS;
-    }
-    bool IsVehicleOrBuilding() const {
-        return flags & BOXD_STRU0_VEHICLE_BUILDING;
-    }
-
-	char flags;
-	char flags2;
-	char field_2;
-	char field_3;
-	Entity *_4_entities[5];
-};
-
-/* 390 */
-struct BoxdTile
-{
-	BoxdTile_stru0 *pstru0;
-	void *ptr_4;
-	int field_8;
-};
-
-/* 391 */
-struct BoxdTile_stru0
-{
-	int type;
-	int _4_x;
-	int _8_y;
-	int field_C;
-	int _10_z;
-	int _14_w;
 };
 
 /* 393 */
@@ -1989,7 +1702,7 @@ struct EntitySerialized
 	int entity_field_88;
 	int entity_hitpoints;
 	int entity_field_94;
-	int entity_98__465610_damage_multipliers_idx;
+	int entity_98_veterancy_damage_bonus_idx;
 	int entity_9C_hp_regen_condition;
 	int entity_A0_hp_regen_condition;
 	int field_A4;
@@ -2009,7 +1722,7 @@ struct EntitySerialized
 	int field_DC;
 	int entity_EC_outpost_clanhall_entity_id;
 	int entity_E4_entity_id;
-	int _E0_current_attack_target_entity_id;
+	int retaliation_target_id;
 	int _E4_prev_attack_target_entity_id;
 	int entity_F4_entity_118_entity_id;
 	int entity_sprite_width_2;
@@ -2151,6 +1864,18 @@ struct EntityOilTankerAttachment_stru70
 /* 426 */
 struct EntityOilTankerState
 {
+    inline EntityOilTankerState *constructor() {
+        this->_0_oil_loaded = 0;
+        this->_4_entity = 0;
+        this->drillrig = 0;
+        this->powerstation = 0;
+        this->drillrig_entity_id = 0;
+        this->powerstation_entity_id = 0;
+        this->_18_entity_id = 0;
+        memset(this->array_20, 0, sizeof(this->array_20));
+
+        return this;
+    }
 	int _0_oil_loaded;
 	Entity *_4_entity;
 	Entity *powerstation;
@@ -2161,15 +1886,6 @@ struct EntityOilTankerState
 	int array_20_size;
 	Entity *array_20[20];
 	EntityOilTankerAttachment_stru70 *pstru70;
-};
-
-/* 428 */
-struct sound_stru_2
-{
-	int riff_fourcc;
-	int riff_chunk_size;
-	int data_fourcc;
-	int data;
 };
 
 /* 429 */

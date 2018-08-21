@@ -1,16 +1,6 @@
 #pragma once
 #include "src/kknd.h"
 
-void log_init();
-void log(const char *, ...);
-
-int map_place_entity(Entity *a1, int x, int y, int a3); // idb
-int Map_40EEB0_place_entity(Entity *a1, int map_x, int map_y, int a4);
-int Map_40E1B0_place_xl_entity(Entity *a1, int x, int y, int a4); // idb
-int map_40DA90_move_entity(Entity *a1);
-int Map_40EA50_classify_tile_objects(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a4);
-DataBoxd_stru0_per_map_unit *Map_get_tile(int map_x, int map_y);
-
 void stru28_list_free();
 void UNIT_AttachHandler_DockPoint(Script *self);
 void EntityTowerAttachment_handler_4010C0(EntityTurret *a1);
@@ -71,7 +61,7 @@ void entity_mode_403540(Entity *a1);
 void entity_mode_4035C0_building(Entity *a1);
 void entity_mode_403650_building(Entity *a1);
 void entity_mode_403720_on_prison_death__or__prolly_any_generic_building(Entity *a1);
-void entity_mode_building_default_on_death(Entity *a1);
+void entity_mode_building_on_death_default(Entity *a1);
 void entity_4038B0(Entity *a1, enum PLAYER_SIDE side);
 int building_limits_list_alloc();
 int building_limits_count(enum UNIT_ID unit_stats_idx);
@@ -79,7 +69,6 @@ bool building_limits_can_build(enum UNIT_ID unit_id);
 int building_limits_on_new_building(enum UNIT_ID stats_idx);
 void building_limits_on_building_destroyed(Entity *a1);
 void building_limits_list_free();
-int sub_403B70(CHAR a1);
 int get_max_clanhall_level();
 bool is_clanhall_maxed();
 void entity_clanhall_on_upgrade_complete(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
@@ -102,10 +91,6 @@ bool sub_4049D0(Sprite *a1, Sprite *a2, int a3, void *a4, void *);
 bool sub_404AA0(Sprite *a1, Sprite *a2, int a3, void *a4, void *);
 bool sub_404B80(Sprite *a1, Sprite *a2, int a3, void *a4, void *);
 bool sub_404C60(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5);
-bool boxd_init();
-void bodx_404D50_sprite_list(Sprite *list);
-void boxd_404F40_sprite(Sprite *a1, int a2, int a3);
-void boxd_free();
 void entity_show_hint(Entity *a1);
 void entity_4054D0_tanker_convoy(Entity *a1);
 void EventHandler_TankerConvoy(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
@@ -177,12 +162,9 @@ void entity_mode_drillrig_on_death(Entity *a1);
 void script_408370(Script *a1);
 void sub_4083D0();
 int sub_408400();
-void _408410_palettes();
-void sub_408460();
 void stru1_408480_reset_animation();
 void script_4084A0_animation(Script *a1);
 void script_408500_anim(Script *a1);
-void _408550_multi_pal();
 bool stru1_init_anim();
 void stru1_set_animation(stru1_draw_params *a1, int start, int end, int length);
 void sprite_408800_play_sound(Sprite *a1, enum SOUND_ID sound, int volume, Script *script);
@@ -202,46 +184,14 @@ bool stru24_40B490(stru24 *a1, UNIT_ID a2, int *out_x, int *out_y);
 void script_40B700_ai(Script *a1);
 int UNIT_InitAiPlayers();
 void UNIT_FreeAiPlayers();
-int VIDEO_IsAllocated();
-int VIDEO_ReadAndAllocDrawJob(const char *a1, int x, int y, int z_index);
-int VIDEO_DoFrame();
-void VIDEO_40D090(VideoFile *a1);
-void VIDEO_free();
-bool VIDEO_IsVideoInvalid();
-bool VIDEO_ReadAndAllocDrawJob_2(const char *a1, stru1_draw_params *a2, stru1_draw_params *a3, RenderString *a4, int width, int height, int z_index);
-void VIDEO_40D430(RenderString *a1);
-void VIDEO_40D450(char *a1, int a2);
 int timer_init(unsigned int fps);
 void TimedMessagePump();
 int entity_40D600_infantry_get_new_movement_orientation(Entity *a1, int sprite_width, int sprite_height, int a4);
 int entity_40D6F0_vehicle_get_new_movement_orientation(Entity *a1, int sprite_width, int sprite_height, int a4);
 bool _40D860_prolly_sprite_distance(Sprite *a1, Sprite *a2, int a3); // idb
 int sprite_40D8B0_dmg(Sprite *a1, int a2); // idb
-bool entity_40DBF0_boxd_does_unit_fit(Entity *a1);
-bool entity_40DD00_boxd(Entity *a1);
-int entity_40DDD0_boxd(Entity *a1);
-char *entity_40DEC0_boxd(Entity *a1, int a2, int a3, int a4);
-void Map_40DF50_update_tile(Entity *a1, int a2);
 int entity_40E000_boxd(Entity *a1, int a2, int a3);
-int REND_SetRoutines();
 char *get_resource_res_subfolder();
-void _40E400_set_palette(PALETTEENTRY *palette);
-void _40E430_update_palette(unsigned int a1);
-void RENDER_SetViewportAndClear();
-PALETTEENTRY *sub_40E550();
-void _40E560_flip_gdi_update_syscolors();
-void _40E6B0_set_sys_colors();
-bool boxd_40E6E0();
-void boxd_40EA20();
-void boxd_40EA30_cleanup();
-int boxd_40ED00(Entity *a1, DataBoxd_stru0_per_map_unit *a2);
-bool boxd_40EDF0(DataBoxd_stru0_per_map_unit *a1, Entity *a2, Entity *a3);
-Entity *boxd_40EE10_prolly_get_building(int map_x, int map_y); // idb
-int boxd_40EE70(int map_x, int map_y); // idb
-int entity_40F0A0_get_dx(Entity *a1, int a2); // idb
-int entity_40F100_get_dy(Entity *a1, int a2); // idb
-int boxd_40F160(Entity *a1, int map_x, int map_y, int a4);
-void Map_40F230_update_tile(Entity *a1, int map_x, int map_y, int slot, int a5);
 bool sidebar_button_list_alloc();
 void script_sidebar(Script *a1); // idb
 Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int height, int sidebar_horizontal); // idb
@@ -256,7 +206,7 @@ SidebarButton *sidebar_add_buttton_internal(Sidebar *a1, int mobd_lookup_table_o
 void sidebar_remove_button(Sidebar *a1, SidebarButton *a2); // idb
 void sidebar_list_remove(Sidebar *a1);
 void sidebar_list_free();
-bool stru2_list_alloc();
+bool stru2_list_alloc(const int num_stru2s = 16);
 stru2 *stru2_list_create(int hunk);
 int stru2_list_init_elements();
 void stru2_list_remove_elements();
@@ -270,8 +220,8 @@ void entity_410950(Entity *a1, int a2);
 void entity_4109A0_status_bar(Entity *a1);
 void entity_410B00_building_status_bar(Entity *a1);
 void entity_410BE0_status_bar(Entity *a1);
-void entity_410CB0_event1511(Entity *a1);
-void entity_410CD0_eventTextString(Entity *a1);
+void entity_selected_default(Entity *a1);
+void entity_deselected_default(Entity *a1);
 void entity_410CF0_aircraft(Entity *a1);
 void entity_set_draw_handlers(Entity *a1);
 void entity_410DC0_building(Entity *a1);
@@ -279,28 +229,20 @@ void entity_oil_tanker_initialize_state(Entity *a1);
 bool stru27_array_initialize();
 bool stru26_array_initialize();
 void stru26_stru27_free();
-int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam); // idb
 void UNIT_Handler_Vehicle(Script *a1); // idb
 void UNIT_Handler_Infantry(Script *a1);
 void entity_init_infantry(Entity *a1);
 void entity_attach_turret(Entity *a1);
-bool entity_413120(Entity *a1, Entity *a2, int entity_id);
+bool entity_413120_can_fire_on_entity(Entity *a1, Entity *a2, int entity_id);
 void entity_4133D0(Entity *a1);
 bool entity_4135E0(Entity *a1);
-bool entity_413860_boxd(Entity *a1);
-bool entity_413A90_boxd(Entity *a1);
 int entity_413C10(Entity *a1);
 bool entity_initialize_order(Entity *a1);
-void entity_414440_boxd(Entity *a1, int *a2, int *a3);
-bool entity_414520_boxd(Entity *a1);
 void entity_414670(Entity *a1);
-bool entity_414870_boxd(Entity *a1);
 void entity_4149A0(Entity *a1);
-bool entity_414AD0_vehicle_collide_vehicle(Entity *a1);
 void entity_414C30_boxd(Entity *a1);
 void entity_414E80(Entity *a1);
 bool entity_415400_tanker_order7(Entity *a1);
-void entity_mode_adjust_unit_placement_inside_tile(Entity *a1);
 void entity_mode_default_idle(Entity *a1);
 void entity_mode_4157F0_infantry_idle_fidgeting(Entity *a1);
 void entity_4158B0(Entity *a1);
@@ -339,12 +281,12 @@ void script_4188F0(Script *); // idb
 void script_418A10(Script *); // idb
 void entity_mode_418B30(Entity *a1);
 void entity_mode_418D20(Entity *a1);
-void entity_mode_418E90(Entity *a1);
+void entity_mode_418E90_leaving_repair_bay(Entity *a1);
 void entity_mode_418F60(Entity *a1);
-void entity_mode_418FE0(Entity *a1);
-void entity_mode_419180(Entity *a1);
-void entity_mode_419230(Entity *a1);
-char *entity_4192F0(Entity *a1);
+void entity_mode_418FE0_repairing_in_bay(Entity *a1);
+void entity_mode_419180_in_repairbay(Entity *a1);
+void entity_mode_419230_arrive_at_repairbay(Entity *a1);
+void entity_4192F0(Entity *a1);
 void entity_mode_419390_oiltanker(Entity *a1);
 void entity_mode_move_tanker(Entity *a1);
 void entity_419560_on_death(Entity *a1);
@@ -354,19 +296,19 @@ void entity_mode_4197E0_infantry(Entity *a1);
 void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void EventHandler_419CA0(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void EventHandler_General_Scout(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void EventHandler_419DF0(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void EventHandler_419E80(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void entity_41A060_evt1525(Entity *a1, void *a2); // idb
-void entity_41A170_evt1524(Entity *a1, int a2);
+void EventHandler_419DF0_unit_repairing_in_bay(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
+void EventHandler_419E80_unit_in_repairbay(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
+void entity_41A060_evt1525(Entity *a1, void *param); // idb
+void entity_41A170_evt1524(Entity *a1, void *param);
 void entity_41A400_evt1547(Entity *a1, Entity *a2);
-void entity_41A470(Entity *a1, Entity *a2);
+void entity_41A470_vehicle_repair_at_station(Entity *a1, Entity *a2);
 void entity_41A510_evt1503(Entity *a1, int a2);
-void entity_41A610_evt1503(Entity *a1, void *a2); // idb
-void entity_41A6D0_evt1497(Entity *a1, Entity *a2);
+void entity_do_damage(Entity *a1, Sprite *a2); // idb
+void entity_on_attacked_default(Entity *a1, Entity *a2);
 void entity_41A850_evt1507_mess_with_stru11(Entity *a1, void *param);
 void entity_41A890_evt1528(Entity *a1);
 void entity_41A980_evt1509_unset_stru11(Entity *a1, void *param);
-void entity_41A9B0_unit(Entity *a1, int a2);
+void entity_41A9B0_unit(Entity *a1, void *param);
 bool array_479B98_array_479C60_init();
 __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(const char *, int), int a4, Script *a5);
 bool _41B000_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5);
@@ -381,16 +323,6 @@ void *LVL_FindSection(const char *name);
 DataMapd *LVL_FindMapd();
 bool LVL_SubstHunk(DataHunk *dst, DataHunk *src, const char *hunk);
 bool entity_41B510(Entity *a1, Entity *a2);
-int Map_41B970_straight_line_pathing(Entity *a1, int a2, int a3); // idb
-int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1);
-int boxd_41BC60(int x, int y, int a3, int a4, int a5, int a6, Entity *a7);
-int Map_41BE90_add_waypoint(_DWORD *a1, int a2, _DWORD *a3, _DWORD *a4, Entity *a5, int *a6, int *a7, int *a8, int map_x, int map_y, _DWORD *a11, _DWORD *a12);
-int boxd_41C060(int a1, Entity *a2, int a3, int a4, int *a5, int *a6, int *a7, int a8);
-bool boxd_41C130(int x, int y, int z, int w, Entity *entity);
-bool boxd_41C190(int x, int y, int z, int w, Entity *a5);
-bool boxd_41C250(int x, int y, int z, int w, Entity *a5);
-bool boxd_41C660(int x, int y, int width, int height, int a5, int a6, Entity *a7);
-bool boxd_41C890(int x, int y, int width, int height, int a5, int a6, Entity *a7);
 bool is_game_loading();
 bool is_game_saving();
 bool _41CAE0_prepare_to_load_level(const char *a1, enum LEVEL_ID level);
@@ -424,10 +356,9 @@ void entity_mode_machineshop_on_death_no_default(Entity *); // idb
 void entity_mode_4223A0_machineshop(Entity *a1);
 void entity_mode_machineshop_on_death(Entity *); // idb
 void _4224B0_update_last_level();
-void GAME_ReadRegistry();
+void GAME_ReadAppConfiguration();
 bool GAME_ShowWait();
 void GAME_PrepareSuperLvl(int mapd_idx);
-int VIDEO_Play(int id);
 void GAME_PrepareLevel();
 bool on_level_finished();
 int GAME_Main();
@@ -440,7 +371,6 @@ char GAME_ParseCommandLine();
 void _4240E0_kknd_sve_read(const char *filename);
 void _424270_kknd_sve_read(const char *a1, _WORD *a2, _WORD *a3);
 void _4243C0_kknd_sve_update_last_level(const char *a1);
-bool _424560_parse_unit_stats_table(const char *filename);
 void UNIT_Handler_TechBunker_2(Script *a1);
 void script_424BF0_mobd_20_handler(Script *a1);
 void _424CA0_script_47A3CC_evttrigger();
@@ -470,7 +400,7 @@ void _426860_4269B0_task_attachment_handler(_4269B0_task_attachment *a1);
 void _4268B0_4269B0_task_attachment_handler(_4269B0_task_attachment *a1);
 void task_4269B0_mobd_20_handler(Script *a1);
 void drawjob_update_handler_426C40_mobd(Sprite *a1, DrawJob *a2);
-bool sprite_list_alloc();
+bool sprite_list_alloc(const int pool_size = 2000);
 void sprite_init_47A400();
 Sprite *sprite_create(enum MOBD_ID mobd_item_idx, Script *script, Sprite *parent);
 Sprite *sprite_create_scripted(enum MOBD_ID mobd_item_idx, Sprite *parent, void(*script)(Script *), enum SCRIPT_ROUTINE_TYPE task_type, Entity_stru_dmg_related *a5);
@@ -490,12 +420,12 @@ void UNIT_Handler_MobileOutpost(Script *a1);
 void entity_mobile_outpost_init(Entity *a1);
 void entity_mode_4278C0_mobile_outpost(Entity *a1);
 void MessageHandler_MobileOutpost(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void __stdcall nullsub_2(int a1, int a2);
+void MessageHandler_MobileOutpostEmpty(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1);
 void entity_427BB0_mobile_outpost_clanhall_planting(Entity *a1);
 void entity_mode_427BF0_mobile_outpost_clanhall_planting(Entity *a1);
 void entity_427C30_after_mobile_outpost_clanhall_wagon_plant(Entity *a1);
-bool stru37_stru38_list_alloc();
+bool stru37_stru38_list_alloc(const int num_stru37s = 100, const int num_stru38s = 100);
 void stru37_list_427D60_enqueue_item(int *pcash, int *pcost, int cost_per_time_step, Script *production_task, void *production_task_param, int a6); // idb
 void stru37_list_427D80_enqueue_item(int *pcash, int *pcost, int cost, int cost_per_time_step, Script *production_task, void *production_task_param, int a7); // idb
 void stru37_list_427E90_enqueue_infantry(int *pcash, int *pcost, int cost_per_time_step, Script *production_task, void *production_task_param, int a6); // idb
@@ -520,8 +450,8 @@ int _47A660_list_reset();
 int _42D560_get_mobd_lookup_id_rotation(int x, int y); // idb
 __int16 _42D639_mobd_lookup(int x, int y); // idb
 __int16 _42D63B_mobd_do_lookup(int x, int y); // idb
-unsigned int math_42D64D_prolly_vec_length(int a1, int a2);
-unsigned int math_42D669_prolly_vec_length(unsigned int a1);
+int math_42D64D_vec_length_2d(int a1, int a2);
+unsigned int math_42D669_sqrt(unsigned int a1);
 void EventHandler_42D6B0_evolved_mission8_ai(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void script_42DA90_ai(Script *a2);
 void script_42DC70_ai(Script *a1);
@@ -545,10 +475,6 @@ void entity_mode_431680_outpost_arrive(Entity *a1);
 void entity_mode_outpost_on_death_update_production(Entity *a1);
 void _4318E0_free_building_production();
 void entity_mode_outpost_on_death(Entity *a1);
-void render_sw_initialize();
-void render_sw_free_palette();
-void _431980_update_primary_palette(PALETTEENTRY *palette_entries);
-HPALETTE _431B60_create_palette(PALETTEENTRY *a1, int num_entries); // idb
 void script_431E60_mobd_20_input(Script *a1);
 void script_431F10_ingame_menu(Script *a1); // idb
 void script_4321A0_ingame_menu(Script *a1);
@@ -636,7 +562,7 @@ int _438630_read_save_lst();
 bool _438740_save_lst();
 bool _438840_save_lst();
 int stru28_list_alloc();
-void _4389A0_prolly_create_map_damage_decal(int map_x, int map_y); // idb
+void _4389A0_prolly_create_map_damage_decal(int x, int y); // idb
 void _438B40_reset_explosions();
 int _438B50_can_create_more_explosions();
 void decrease_num_explosions();
@@ -656,19 +582,6 @@ Bitmap *MAPD_Draw(enum MAPD_ID mapd_idx, unsigned int image_id, int z_index);
 void bitmap_list_remove(Bitmap *a1);
 void _4393F0_call_mapd();
 void bitmap_list_free();
-bool sound_initialize();
-bool LVL_LoadSlv(const char *slv_filename);
-int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset, Script *script);
-int sound_play_threaded(const char *name, int a2, int sound_volume_offset, int sound_pan_offset, Script *task); // idb
-void _439C10_sound_thread(Sound *a1); // idb
-void sound_stop(int sound_id);
-void sound_free_sounds();
-void _43A370_process_sound();
-void sound_deinit();
-bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3);
-bool sound_stru_2_43A710(sound_stru_2 *a1, WAVEFORMATEX **a2, int *a3, unsigned int *out_buffer_size);
-void sound_list_43A800(int a1);
-void sound_list_remove(Sound *a1);
 void script_43BA40(Script *a1, int a2, int(*a3)(void), int a4);
 void script_netz_43BA70(Script *a1);
 int nullsub_3(void);
@@ -769,9 +682,9 @@ Entity *entity_444BE0_oiltanker_get_state_entity(Entity *a1);
 void entity_mode_444CC0_oiltanker(Entity *a1);
 void entity_mode_444D10_oiltanker(Entity *a1);
 void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result);
+void _431C40_on_WM_ACTIVATEAPP_software_render(void *result);
 void coroutine_main();
-bool render_string_list_alloc();
+bool render_string_list_alloc(const int num_stru8s = 768, const int num_render_strings = 16);
 void render_string_445770(RenderString *a1, const char *text, DataMobdItem *custom_font); // idb
 RenderString *render_string_create(stru1_draw_params *a1, DataMobdItem *custom_font, int a3, int a4, int a5, int a6, int z_index, int a8, int a9); // idb
 void render_string_list_remove(RenderString *a1);
@@ -810,14 +723,12 @@ void sidebar_button_handler_minimap_close(SidebarButton *a1);
 void sidebar_deinit();
 void script_446ED0_sidebar_buttons(Script *a1);
 bool is_player_faction_evolved();
-void sub_447000();
-void disable_minimap();
 void attempt_unlock_aircraft();
 void on_airstrike_ready();
 void _4471E0_send_sidebar_buttons_message();
 void _447250_toggle_aircraft();
 Sprite *_447310_minimap();
-void _447340_send_sidebar_buttons_message(int exception_id);
+void _447340_send_sidebar_buttons_message(int excluding_button_id);
 void UNIT_Handler_GuardTower(Script *a1);
 void UNIT_Handler_Towers(Script *a1);
 void entity_mode_4474D0_towers(Entity *);
@@ -825,7 +736,7 @@ void entity_mode_4474E0_towers(Entity *);
 void entity_mode_tower_on_death(Entity *); // idb
 void entity_mode_tower_dead(Entity *a1);
 void EventHandler_Towers(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void entity_4477B0_towers(Entity *a1, int a2);
+void tower_attack(Entity *a1, int a2);
 void entity_mode_4478E0_towers(Entity *a1);
 void UNIT_AttachHandler_Turret(Script *a1);
 int EntityTowerAttachment_4479F0(EntityTurret *a1);
@@ -842,8 +753,6 @@ void EntityTowerAttachment_handler_448290(EntityTurret *a1);
 void EntityTowerAttachment_handler_4482D0_missile_battery(EntityTurret *a1);
 void nullsub_1();
 void MessageHandler_TowersAttachment(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void drawjob_update_handler_level_background(void *a1, DrawJob *a2);
-void drawjob_update_handler_448390_fog_of_war(void *unused, DrawJob *a2);
 void drawjob_update_handler_4483E0_sidebar(Sprite *a1, DrawJob *a2);
 void drawjob_update_handler_cursors(Sprite *a1, DrawJob *a2);
 void drawjob_update_handler_4484A0_explosions(Sprite *a1, DrawJob *a2);
@@ -868,19 +777,6 @@ void MessageHandler_task4_evt39030(Script *receiver, Script *sender, enum SCRIPT
 void script_evt39030_handler(Script *a1);
 bool UNIT_InitTasks();
 void __47CAF0_tasks_evt39030_array_free();
-void script_44A500_fog_of_war(Script *a1); // idb
-void show_minimap_sprite();
-void hide_minimap_sprite();
-void _44A6B0_minimap(int x, int y);
-void script_44A700_minimap(Script *a1);
-_BYTE *_44A780_gof_of_war();
-bool mapd_init_fog_of_war();
-void mapd_44AE30_fog_of_war();
-bool is_map_revealed_at(int x, int y); // idb
-void map_reveal_fog_around_entity(Entity *a1);
-void minimap_free();
-int sub_44BC80(int a1, int a2, int a3, int a4);
-int MAPD_44BD50_alter_tile_flags();
 void drawjob_update_handler_44BDC0_entity_turret(Sprite *a1, DrawJob *a2);
 void script_44BE60_explosions(Script *a1); // idb
 void EntityTurret_44BF00_handler(EntityTurret *);
@@ -898,7 +794,7 @@ bool sub_44CA50(enum UNIT_ID id); // idb
 Entity *entity_44CA70_find(Entity *a1, enum UNIT_ID a2, int player_side); // idb
 bool show_message_ex(Entity *a1, const char *text);
 bool show_message(const char *text);
-int entity_advance_mobd_rotation(int *src_lookup_id, int dst, int step); // idb
+int mobd_advance_anim(int *src_lookup_id, int dst, int step); // idb
 void script_show_message_ex(Script *a1); // idb
 bool _44CDC0_sidebar_is_units_limit();
 bool is_enemy(enum PLAYER_SIDE player_side, Entity *a2);
@@ -907,12 +803,7 @@ void script_show_message(Script *a1);
 int entity_44D000_boxd(Entity *a1);
 _DWORD *boxd_44D250(_DWORD *a1, _DWORD *a2, int a3, Entity *a4, int *a5);
 bool boxd_44D340(int *out_x, int *out_y, int a3, Entity *a1, int *out_idx);
-void message_pump();
 int nullsub_4();
-VideoFile *VIDEO_ReadFile(const char *video_name);
-void VIDEO_Clean(VideoFile *video); // idb
-int VIDEO_ReadNextFrame(VideoFile *a1);
-__int16 video_45A110(VideoFile *a1, VideoFileFrame *frame); // idb
 FILE *j_fopen_weirdmode_3(const char *a1);
 _BYTE *sub_45A48E(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8);
 _BYTE *sub_45D3B8(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8, int a9);
@@ -926,13 +817,4 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1); // idb
 void script_mobd79_evt1__main_menu_multiplayer(Script *a1); // idb
 void script_mobd79_evt1__main_menu_quit(Script *a1); // idb
 
-SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id);
-SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced);
-SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced);
-SOUND_ID get_unit_ready_sound(UNIT_ID unit_id);
 bool mobile_base_can_deploy(Entity *entity);
-
-int global2map(int coordinate);
-int map2global(int coordinate);
-bool map_is_same_tile(int coord1, int coord2);
-bool map_is_different_tile(int coord1, int coord2);

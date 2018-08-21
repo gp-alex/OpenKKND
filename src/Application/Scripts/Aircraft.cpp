@@ -48,7 +48,7 @@ void entity_401110_aircraft(Entity *a1)
             v2->turret_sprite->param = v2;
             v2->turret_sprite->z_index = 0;
             v2->entity = v1;
-            v2->mobd_lookup_id = v1->current_mobd_lookup_idx;
+            v2->mobd_lookup_id = v1->GetCurrentAnimFrame();
             v5 = v1->stats->attach;
             v2->handler = EntityTowerAttachment_handler_4010E0;
             v2->stats_attachment_point = v5;
@@ -71,16 +71,16 @@ void EventHandler_Aircraft(Script *receiver, Script *sender, enum SCRIPT_EVENT e
     {
         switch (event)
         {
-        case EVT_MSG_1511_sidebar_click_category:
-            entity_410CB0_event1511(v4);
+        case EVT_MSG_SELECTED:
+            entity_selected_default(v4);
             break;
-        case EVT_SHOW_UI_CONTROL:
-            entity_410CD0_eventTextString(v4);
+        case EVT_MSG_DESELECTED:
+            entity_deselected_default(v4);
             break;
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v4);
             break;
-        case EVT_MSG_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             if (param)
             {
                 v5 = v4->hitpoints;
@@ -215,7 +215,7 @@ void entity_401530_aircraft(Entity *a1, int a2)
     v4 = a1->script;
     a1->destroyed = 1;
     v4->flags_24 &= ~SCRIPT_FLAGS_20_10000000;
-    script_trigger_event(a1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
+    script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
     v5 = v2->turret;
     if (v5)
     {
@@ -223,7 +223,7 @@ void entity_401530_aircraft(Entity *a1, int a2)
         script_deinit(v2->turret->sprite_task);
         script_free_local_object(v2->script, v2->turret);
     }
-    script_trigger_event_group(v2->script, EVT_SHOW_UI_CONTROL, v2, SCRIPT_TYPE_39030);
+    script_trigger_event_group(v2->script, EVT_MSG_DESELECTED, v2, SCRIPT_TYPE_39030);
     v2->script->script_type = SCRIPT_TYPE_INVALID;
     v2->sprite->z_speed = 0;
     v2->sprite->z_speed_limit = 512;
@@ -309,11 +309,11 @@ void entity_mode_4016B0_aircraft(Entity *a1)
     else if (a1->_134_param__unitstats_after_mobile_outpost_plant)
     {
         v3 = a1->stats->dmg_source;
-        if (v3 && _47C048_unit_bomberdmg < 200)
+        if (v3 && _47C048_num_attack_projectile_sprites < 200)
         {
-            ++_47C048_unit_bomberdmg;
+            ++_47C048_num_attack_projectile_sprites;
             v4 = sprite_create_scripted(v3->mobd_id, a1->sprite, v3->dmg_handler, SCRIPT_FUNCTION, a1->stru60.ptr_0);
-            v5 = v3->mobd_offset;
+            v5 = v3->mobd_lookup_offset_flying;
             v6 = v4;
             if (v5 != -1)
                 sprite_load_mobd(v4, v5);
@@ -327,13 +327,13 @@ void entity_mode_4016B0_aircraft(Entity *a1)
             v6->field_84 = v1->entity_id;
             v6->field_8C_infantry_damage = LOWORD_HEXRAYS(v3->damage_infantry)
                 + (v3->damage_infantry
-                    * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+                    * veterancy_damage_bonus[v1->veterancy_level] >> 8);
             v6->field_8E_vehicle_damage = LOWORD_HEXRAYS(v3->damage_vehicle)
                 + (v3->damage_vehicle
-                    * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+                    * veterancy_damage_bonus[v1->veterancy_level] >> 8);
             v6->field_90_building_damage = LOWORD_HEXRAYS(v3->damage_building)
                 + (v3->damage_building
-                    * _465610_damage_multipliers[v1->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+                    * veterancy_damage_bonus[v1->veterancy_level] >> 8);
         }
         v9 = v1->_134_param__unitstats_after_mobile_outpost_plant;
         v1->_12C_prison_bunker_spawn_type = 15;
@@ -344,7 +344,7 @@ void entity_mode_4016B0_aircraft(Entity *a1)
         a1->SetMode(entity_mode_401800_aircraft);
     }
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (004017E0) --------------------------------------------------------
 void entity_yield_40_repeats(Entity *a1)
@@ -368,13 +368,13 @@ void entity_mode_401800_aircraft(Entity *a1)
 
     v1 = a1;
     v2 = _42D560_get_mobd_lookup_id_rotation(a1->sprite_x - a1->sprite->x, a1->sprite_y - a1->sprite->y);
-    entity_advance_mobd_rotation(&v1->current_mobd_lookup_idx, v2 & 0xF0, 5);
+    entity_advance_rotation(v1, v2 & 0xF0, 5);
     sprite_4273B0_load_mobd_item_sound(
         v1->sprite,
         v1->stats->mobd_lookup_offset_move,
-        _47D3C4_entity_mobd_lookup_ids[v1->current_mobd_lookup_idx + 1]);
-    v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->current_mobd_lookup_idx + 1]] >> 6;
-    v1->sprite->y_speed = -(v1->stats->speed * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v1->current_mobd_lookup_idx + 1]]) >> 6;
+        _47D3C4_entity_mobd_lookup_ids[v1->GetCurrentAnimFrame() + 1]);
+    v1->sprite->x_speed = v1->stats->speed * _4731A8_speeds[__47CFC4_mobd_lookup_speeds[v1->GetCurrentAnimFrame() + 1]] >> 6;
+    v1->sprite->y_speed = -(v1->stats->speed * _4731A8_speeds[8 + __47CFC4_mobd_lookup_speeds[v1->GetCurrentAnimFrame() + 1]]) >> 6;
     v3 = v1->sprite_x;
     v4 = v1->sprite;
     v5 = v1->sprite_y;
@@ -418,11 +418,11 @@ void Task_context_1_BomberDmgHandler_401D10(Task_context_1_BomberDmgHandler *a1)
     Task_context_1_BomberDmgHandler *v1; // esi@1
 
     v1 = a1;
-    --_47C048_unit_bomberdmg;
+    --_47C048_num_attack_projectile_sprites;
     sprite_list_remove(a1->sprite);
     script_terminate(v1->task);
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00401D30) --------------------------------------------------------
 void Task_context_1_BomberDmgHandler_401D30(Task_context_1_BomberDmgHandler *a1)

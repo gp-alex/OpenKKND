@@ -1,12 +1,10 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <assert.h>
-#include <direct.h>
+#include <time.h>
 
 #include "src/kknd.h"
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/stru29.h"
@@ -15,257 +13,40 @@
 #include "src/ScriptEvent.h"
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
+#include "src/Sound.h"
+#include "src/Video.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 
-#include "Application/Game.h"
-#include "Application/GameFactory.h"
-
-#include "Engine/BuildingLimits.h"
-#include "Engine/Entity.h"
-#include "Engine/EntityFactory.h"
-
-#include "Engine/Infrastructure/EntityRepository.h"
-
-using Engine::Infrastructure::EntityRepository;
-
-#include "Infrastructure/File.h"
-#include "Infrastructure/Input.h"
+#include "src/Application/Game.h"
+#include "src/Application/GameFactory.h"
 
 using Application::Game;
 using Application::GameFactory;
 
+#include "src/Engine/BuildingLimits.h"
+#include "src/Engine/Entity.h"
+#include "src/Engine/EntityFactory.h"
+
 using Engine::EntityFactory;
 
+#include "src/Engine/Infrastructure/EntityRepository.h"
 
-#pragma comment(lib, "Winmm.lib") // timeGetTime
-#pragma comment(lib, "ddraw.lib") // DirectDrawCreate
-#pragma comment(lib, "Dsound.lib") // DirectSoundCreate
+using Engine::Infrastructure::EntityRepository;
+
+#include "src/Infrastructure/File.h"
+#include "src/Infrastructure/Input.h"
+
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
 
-void __stdcall nullsub_2(int, int) {}
+void MessageHandler_MobileOutpostEmpty(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param) {
+}
 void nullsub_1(void) {}
 
 
-bool map_is_same_tile(int coord1, int coord2)
-{
-    return !map_is_different_tile(coord1, coord2);
-}
-
-bool map_is_different_tile(int coord1, int coord2)
-{
-    // original code, equivalent to global2map(coord1) != global2map(coord2)
-    return (coord1 ^ coord2) & 0xFFFFE000;
-}
-
-int global2map(int coordinate)
-{
-    return coordinate >> 13;
-}
-
-int map2global(int coordinate)
-{
-    return coordinate << 13;
-}
 
 
-SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id)
-{
-    switch (unit_id)
-    {
-        case UNIT_STATS_GORT:
-        case UNIT_STATS_PLASMA_TANK:
-        case UNIT_STATS_SENTINEL_DROID:
-            return _4689A8_sound_ids[kknd_rand() % -2];
-        break;
-        case UNIT_STATS_MUTE_DIRE_WOLF:
-            return (SOUND_ID)165;
-            break;
-        case UNIT_STATS_MUTE_GIANT_BEETLE:
-            return (SOUND_ID)168;
-            break;
-        case UNIT_STATS_MUTE_GIANT_SCORPION:
-            return (SOUND_ID)172;
-            break;
-        case UNIT_STATS_MUTE_MISSILE_CRAB:
-            return (SOUND_ID)170;
-            break;
-        case UNIT_STATS_MUTE_WAR_MASTADONT:
-            return (SOUND_ID)160;
-            break;
-        default:
-            if (is_player_faction_evolved())
-            {
-                return _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
-            }
-            else
-            {
-                return _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
-            }
-            break;
-    }
-}
-
-
-SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced)
-{
-    if (is_21st_century(unit_id))
-    {
-        return _4689C0_sound_ids[kknd_rand() % 22];
-    }
-    else if (unit_id == UNIT_STATS_SURV_SCOUT)
-    {
-        return SOUND_SURV_UNIT_SCOUT_192;
-    }
-    else if (unit_id == UNIT_STATS_MUTE_MISSILE_CRAB)
-    {
-        return SOUND_MUTE_UNIT_MISSILE_CRAB_2;
-    }
-    else if (unit_id == UNIT_STATS_MUTE_GIANT_BEETLE)
-    {
-        return SOUND_MUTE_UNIT_GIANT_BEETLE_2;
-    }
-    else if (unit_id == UNIT_STATS_MUTE_WAR_MASTADONT)
-    {
-        return SOUND_MUTE_UNIT_WAR_MASTADONT_2;
-    }
-    else if (unit_id == UNIT_STATS_MUTE_GIANT_SCORPION)
-    {
-        return SOUND_MUTE_UNIT_GIANT_SCORPION_2;
-    }
-    else if (unit_id == UNIT_STATS_MUTE_DIRE_WOLF)
-    {
-        return SOUND_MUTE_UNIT_DIRE_WOLF_2;
-    }
-    else
-    {
-        if (!is_player_faction_evolved())
-        {
-            if (experienced)
-            {
-                int v13 = kknd_rand();
-                return _468A48_sound_ids[(((unsigned __int64)v13 >> 32) ^ abs(v13) & 1) - ((unsigned __int64)v13 >> 32)];
-            }
-            else
-            {
-                return _468A28_sound_ids[kknd_rand() % 3];
-            }
-        }
-        else
-        {
-            if (experienced)
-            {
-                int v14 = kknd_rand();
-                return _468A50_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 1) - ((unsigned __int64)v14 >> 32)];
-            }
-            else
-            {
-                return _468A38_sound_ids[kknd_rand() % 3];
-            }
-        }
-    }
-}
-
-
-SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced)
-{
-    if (is_21st_century(unit_id))
-    {
-        return _4689B0_sound_ids[kknd_rand() % 3];
-    }
-    else if (unit_id == UNIT_STATS_MUTE_MISSILE_CRAB)
-    {
-        return SOUND_MUTE_UNIT_MISSILE_CRAB_2;
-    }
-    else if (unit_id == UNIT_STATS_MUTE_GIANT_BEETLE)
-    {
-        return SOUND_MUTE_UNIT_GIANT_BEETLE_2;
-    }
-    else if (unit_id == UNIT_STATS_MUTE_WAR_MASTADONT)
-    {
-        return SOUND_MUTE_UNIT_WAR_MASTADONT_2;
-    }
-    else if (unit_id == UNIT_STATS_MUTE_GIANT_SCORPION)
-    {
-        return SOUND_MUTE_UNIT_GIANT_SCORPION_2;
-    }
-    else if (unit_id == UNIT_STATS_MUTE_DIRE_WOLF)
-    {
-        return SOUND_MUTE_UNIT_DIRE_WOLF_2;
-    }
-    else if (unit_id == UNIT_STATS_SURV_SCOUT)
-    {
-        return SOUND_SURV_UNIT_SCOUT_192;
-    }
-    else
-    {
-        if (experienced)
-        {
-            if (is_player_faction_evolved())
-                return SOUND_153;
-            else
-                return SOUND_73;
-        }
-        else
-        {
-            if (!is_player_faction_evolved())
-            {
-                if ((char)kknd_rand() % -2)
-                {
-                    return SOUND_59;
-                }
-                else
-                {
-                    return SOUND_48;
-                }
-            }
-            else
-            {
-                if ((char)kknd_rand() % -2)
-                {
-                    return SOUND_92;
-                }
-                else
-                {
-                    return SOUND_119;
-                }
-            }
-        }
-    }
-}
-
-
-SOUND_ID get_unit_ready_sound(UNIT_ID unit_id)
-{
-    switch (unit_id)
-    {
-        case UNIT_STATS_MUTE_DIRE_WOLF:
-            return SOUND_MUTE_UNIT_DIRE_WOLF_READY;
-
-        case UNIT_STATS_MUTE_GIANT_BEETLE:
-            return SOUND_MUTE_UNIT_GIANT_BEETLE_READY;
-
-        case UNIT_STATS_MUTE_GIANT_SCORPION:
-            return SOUND_MUTE_UNIT_GIANT_SCORPION_READY;
-
-        case UNIT_STATS_MUTE_MISSILE_CRAB:
-            return SOUND_MUTE_UNIT_MISSILE_CRAB_READY;
-
-        case UNIT_STATS_MUTE_WAR_MASTADONT:
-            return SOUND_MUTE_UNIT_WAR_MASTADONT_READY;
-
-        default:
-        {
-            int v14 = kknd_rand();
-            if (is_player_faction_evolved())
-            {
-                return _468998_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 3) - ((unsigned __int64)v14 >> 32)];
-            }
-            else
-            {
-                return _468988_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 3) - ((unsigned __int64)v14 >> 32)];
-            }
-        }
-    }
-}
 
 
 
@@ -416,10 +197,10 @@ void EventHandler_401B80(Script *receiver, Script *sender, enum SCRIPT_EVENT eve
 		v4->field_4 = 0;
 		v4->handler = Task_context_0_401A40;
 		break;
-	case EVT_MSG_1511_sidebar_click_category:
+	case EVT_MSG_SELECTED:
 		++v4->field_4;
 		break;
-	case EVT_SHOW_UI_CONTROL:
+	case EVT_MSG_DESELECTED:
 		v6 = v4->field_4;
 		if (v6 > 0)
 			v4->field_4 = v6 - 1;
@@ -514,12 +295,12 @@ void entity_attach_docking_point(Entity *a1)
 		v2->sprite_task = v4;
 		v4->param = v2;
 		v2->turret_sprite->param = v2;
-		v2->sprite_task->event_handler = MessageHandler_EntityScript;
+		v2->sprite_task->SetEventHandler(MessageHandler_EntityScript);
 		v2->entity = v1;
 		v2->_C_entity = 0;
-		v2->handler = EntityTurret_44BF00_handler;
+		v2->SetHandler(EntityTurret_44BF00_handler);
 		v2->field_18 = 0;
-		v2->mobd_lookup_id = v1->current_mobd_lookup_idx;
+		v2->mobd_lookup_id = v1->GetCurrentAnimFrame();
 		v2->stats_attachment_point = v1->stats->attach;
 	}
 	v1->turret = v2;
@@ -539,9 +320,9 @@ DrawJob *entity_402BB0_set_arrive_handler(Entity *a1, void(*mode_arrive)(Entity 
 	mOde_arrive = mode_arrive;
 	sprite_4272E0_load_mobd_item(a1->sprite, a1->stats->mobd_lookup_offset_attack, 0);
 	if (v2->player_side == player_side)
-		script_trigger_event(v2->script, EVT_MSG_1529_ai, v2, task_mobd17_cursor);
+		script_trigger_event(v2->script, EVT_MSG_NEXT_CONSTRUCTION_STATE, v2, game_cursor_script);
 	v4 = v2->sprite;
-	v2->mode_arrive = mOde_arrive;
+	v2->mode_arrive = mode_arrive;
 	v5 = v4->_54_inside_mobd_ptr4->field_18;
 	if (v5)
 	{
@@ -716,7 +497,7 @@ void entity_402E90_on_damage(Entity *a1, void *param, void(*on_death_mode)(Entit
 		damage_amount = (void *)*((_WORD *)param + 72);
 		if (a1->hitpoints > 0)
 		{
-			if (a1->stats->field_54)
+			if (a1->stats->_54_ai_importance)
 			{
 				v5 = *((_DWORD *)param + 32);
 				if (v5)
@@ -725,7 +506,7 @@ void entity_402E90_on_damage(Entity *a1, void *param, void(*on_death_mode)(Entit
 					{
 						v6 = *(Script **)(v5 + 12);
 						if (v6)
-							script_trigger_event(a1->script, EVT_MSG_1505, damage_amount, v6);
+							script_trigger_event(a1->script, MSG_RECEIVE_EXPERIENCE, damage_amount, v6);
 					}
 				}
 			}
@@ -743,33 +524,33 @@ void entity_402E90_on_damage(Entity *a1, void *param, void(*on_death_mode)(Entit
 }
 
 //----- (00403B70) --------------------------------------------------------
-int sub_403B70(CHAR a1)
-{
-	int v1; // eax@3
-	int v2; // ecx@4
-	int result; // eax@7
-	CHAR RootPathName[4]; // [sp+0h] [bp-4h]@1
-
-	strcpy(RootPathName, "#:\\");
-	RootPathName[0] = a1;
-
-	v2 = GetDriveTypeA(RootPathName);
-
-	switch (v2)
-	{
-	case 5:
-		result = 1;
-		break;
-	case 0:
-	case 1:
-		result = -1;
-		break;
-	default:
-		result = 0;
-		break;
-	}
-	return result;
-}
+//int sub_403B70_get_drive_type(char drive_letter)
+//{
+//	int v1; // eax@3
+//	int v2; // ecx@4
+//	int result; // eax@7
+//	char RootPathName[4]; // [sp+0h] [bp-4h]@1
+//
+//	strcpy(RootPathName, "#:\\");
+//	RootPathName[0] = drive_letter;
+//
+//	v2 = GetDriveTypeA(RootPathName);
+//
+//	switch (v2)
+//	{
+//	case DRIVE_CDROM:
+//		result = 1;
+//		break;
+//	case DRIVE_UNKNOWN:
+//	case DRIVE_NO_ROOT_DIR:
+//		result = -1;
+//		break;
+//	default:
+//		result = 0;
+//		break;
+//	}
+//	return result;
+//}
 
 //----- (00403C20) --------------------------------------------------------
 int get_max_clanhall_level()
@@ -920,7 +701,7 @@ void EventHandler_Clanhall(Script *receiver, Script *sender, enum SCRIPT_EVENT e
 			}
 		}
 		break;
-	case EVT_MSG_DAMAGE:
+	case CMD_APPLY_DAMAGE:
 		entity_402E90_on_damage(v4, param, entity_mode_clanhall_on_death);
 		entity_410520_update_healthbar_color(v4);
 		break;
@@ -1174,7 +955,6 @@ LABEL_22:
 bool is_tower_available(enum UNIT_ID unit_id)
 {
 	ProductionOption *v1; // eax@2
-	BOOL result; // eax@5
 
 	if (_47B3B8_tower_production_group
 		&& (v1 = _47B3B8_tower_production_group->next_option,
@@ -1184,22 +964,17 @@ bool is_tower_available(enum UNIT_ID unit_id)
 		{
 			v1 = v1->next;
 			if ((ProductionOption **)v1 == &_47B3B8_tower_production_group->next_option)
-				return 0;
+				return false;
 		}
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+    return false;
 }
 
 //----- (004044C0) --------------------------------------------------------
 bool is_building_available(enum UNIT_ID a1)
 {
 	ProductionGroup *v1; // eax@2
-	BOOL result; // eax@5
 
 	if (_47B3D0_building_production_group
 		&& (v1 = (ProductionGroup *)_47B3D0_building_production_group->next_option,
@@ -1209,15 +984,11 @@ bool is_building_available(enum UNIT_ID a1)
 		{
 			v1 = v1->next;
 			if ((ProductionOption **)v1 == &_47B3D0_building_production_group->next_option)
-				return 0;
+				return false;
 		}
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+    return false;
 }
 
 //----- (004044F0) --------------------------------------------------------
@@ -1227,7 +998,7 @@ void entity_mode_clanhall_on_death(Entity *a1)
 
 	v1 = a1;
 	entity_mode_clanhall_on_death_reset_production_options(a1);
-	entity_mode_building_default_on_death(v1);
+	entity_mode_building_on_death_default(v1);
 }
 
 //----- (00404510) --------------------------------------------------------
@@ -1253,7 +1024,7 @@ void copy_player_sprite_palette_aligned(unsigned __int8 *palette, unsigned __int
 bool sub_404530(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 {
 	int v5; // eax@2
-	BOOL result; // eax@3
+	bool result; // eax@3
 	int v7; // edx@4
 	int v8; // esi@6
 	Script *v9; // eax@6
@@ -1437,7 +1208,6 @@ bool sub_404760(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	int v6; // edx@4
 	int v7; // esi@5
 	Script *v8; // eax@7
-	BOOL result; // eax@9
 
 	if (a3 != 2
 		|| (v5 = a1->x, v5 > *((_DWORD *)a5 + 4))
@@ -1446,7 +1216,7 @@ bool sub_404760(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 		|| (v7 = *((_DWORD *)a4 + 5), v7 >= *((_DWORD *)a5 + 5))
 		|| v7 >= v6 + 2048)
 	{
-		result = 0;
+        return false;
 	}
 	else
 	{
@@ -1458,9 +1228,8 @@ bool sub_404760(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 			v8->flags_20 |= SCRIPT_FLAGS_20_400000;
 			a1->script->flags_24 |= a1->script->flags_20;
 		}
-		result = 1;
+        return true;
 	}
-	return result;
 }
 
 //----- (004047E0) --------------------------------------------------------
@@ -1472,7 +1241,6 @@ bool sub_4047E0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	int v8; // ebx@4
 	int v9; // eax@5
 	Script *v10; // eax@6
-	BOOL result; // eax@8
 
 	if (a3 == 1
 		|| (v5 = a1->x, v6 = *((_DWORD *)a5 + 4), v5 > v6)
@@ -1480,7 +1248,7 @@ bool sub_4047E0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 		|| (v8 = *((_DWORD *)a5 + 5), *((_DWORD *)a4 + 5) > v8 + 2048)
 		|| (v9 = v8 + (v5 - v7) * (*((_DWORD *)a5 + 2) - v8) / (v6 - v7), v9 >= a1->y))
 	{
-		result = 0;
+        return false;
 	}
 	else
 	{
@@ -1492,9 +1260,8 @@ bool sub_4047E0(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 			v10->flags_20 |= SCRIPT_FLAGS_20_400000;
 			a1->script->flags_24 |= a1->script->flags_20;
 		}
-		result = 1;
+        return true;
 	}
-	return result;
 }
 
 //----- (00404870) --------------------------------------------------------
@@ -1506,7 +1273,6 @@ bool sub_404870(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	int v8; // ebx@4
 	int v9; // eax@5
 	Script *v10; // eax@6
-	BOOL result; // eax@8
 
 	if (a3
 		&& (v5 = a1->x, v6 = *((_DWORD *)a5 + 4), v5 <= v6)
@@ -1522,13 +1288,10 @@ bool sub_404870(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 			v10->flags_20 |= SCRIPT_FLAGS_20_400000;
 			a1->script->flags_24 |= a1->script->flags_20;
 		}
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+
+    return false;
 }
 
 //----- (00404900) --------------------------------------------------------
@@ -1736,442 +1499,6 @@ bool sub_404C60(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	return 0;
 }
 
-//----- (00404C90) --------------------------------------------------------
-bool boxd_init()
-{
-	BOOL result; // eax@2
-
-	currently_running_lvl_boxd_valid = 0;
-	currently_running_lvl_boxd = (DataBoxd *)LVL_FindSection(BOXD);
-	if (currently_running_lvl_boxd)
-	{
-		result = (BOOL)malloc(0x17700u);            // 8000 items
-		_4773C0_boxd_array = (Boxd_stru0 *)result;
-		if (result)
-		{
-			_4773B0_boxd_item0_things = 0;
-			_4773A0_boxd_item0_num_things = currently_running_lvl_boxd->items->field_0_num_things;
-			_4773AC_boxd_item0_map_x_scale = currently_running_lvl_boxd->items->some_map_width_scale;
-			_4773B8_boxd_item0_map_y_scale = currently_running_lvl_boxd->items->some_map_height_scale;
-			_4773C8_boxd_item0_map_num_x_tiles = currently_running_lvl_boxd->items->map_num_x_tiles;
-			_4773B4_boxd_item0_map_num_y_tiles = currently_running_lvl_boxd->items->map_num_y_tiles;
-			_4773C4_boxd_item0_map_tiles = currently_running_lvl_boxd->items->map_tiles;
-			_4773B0_boxd_item0_things = (Boxd_stru0 **)malloc(4 * _4773A0_boxd_item0_num_things);
-			if (_4773B0_boxd_item0_things)
-			{
-				result = 1;
-				currently_running_lvl_boxd_valid = 1;
-			}
-			else
-			{
-				free(_4773C0_boxd_array);
-				result = 0;
-			}
-		}
-	}
-	else
-	{
-		result = 1;
-	}
-	return result;
-}
-
-//----- (00404D50) --------------------------------------------------------
-void bodx_404D50_sprite_list(Sprite *list)
-{
-	Sprite *v1; // edx@1
-	Sprite *v2; // edi@5
-	Script *v3; // eax@7
-	signed __int16 v4; // cx@8
-	Sprite_stru58 *v5; // eax@10
-	Sprite_stru58_stru0 *v6; // esi@12
-	int v7; // eax@12
-	int v8; // ebx@16
-	int v9; // eax@16
-	int v10; // edx@16
-	char v11; // cl@17
-	int v12; // edx@17
-	int v13; // ebx@19
-	int v14; // ebx@23
-	int v15; // eax@25
-	int v16; // ebp@25
-	bool v17; // sf@25
-	int v18; // eax@25
-	int v19; // eax@26
-	int v20; // esi@28
-	int v21; // esi@32
-	Boxd_stru0 **v22; // edx@34
-	Boxd_stru0 **v23; // eax@36
-	int v24; // ecx@37
-	int v25; // [sp+10h] [bp-Ch]@25
-	int v26; // [sp+10h] [bp-Ch]@35
-	Sprite_stru58 *v27; // [sp+14h] [bp-8h]@10
-	Sprite *v28; // [sp+18h] [bp-4h]@1
-
-	v1 = list;
-	v28 = list;
-	if (currently_running_lvl_boxd_valid)
-	{
-		if (_4773B0_boxd_item0_things && _4773A0_boxd_item0_num_things)
-			memset(_4773B0_boxd_item0_things, 0, 4 * _4773A0_boxd_item0_num_things);
-		_4773A8_boxd_parray = _4773C0_boxd_array;
-		v2 = list->next;
-		if (list->next != list)
-		{
-			do
-			{
-				if (is_coroutine_list_initialization_failed && (v3 = v2->script) != 0)
-					v4 = v3->field_1C & 1;
-				else
-					v4 = 1;
-				v5 = v2->pstru58;
-				v27 = v2->pstru58;
-				if (v5 && v4)
-				{
-					v6 = v5->pstru0;
-					v7 = v5->pstru0->psrite_pstru7_idx;
-					if (v7 >= 0)
-					{
-						if (v2->pstru7[v7]._4_psprite_pstru7_idx)
-						{
-						LABEL_16:
-							v8 = v2->x_speed;
-							v9 = v2->x;
-							v10 = v6->x;
-							if (v8 < 0)
-							{
-								v11 = _4773AC_boxd_item0_map_x_scale;
-								v12 = (v8 + v9 + v10) >> _4773AC_boxd_item0_map_x_scale;
-								if (v12 < 0)
-									v12 = 0;
-								v13 = v6->z + v9 - 1;
-							}
-							else
-							{
-								v11 = _4773AC_boxd_item0_map_x_scale;
-								v12 = (v9 + v10) >> _4773AC_boxd_item0_map_x_scale;
-								if (v12 < 0)
-									v12 = 0;
-								v13 = v9 + v6->z + v8 - 1;
-							}
-							v14 = (v13 >> v11) - v12;
-							if (v12 + v14 >= _4773C8_boxd_item0_map_num_x_tiles)
-								v14 = _4773C8_boxd_item0_map_num_x_tiles - v12 - 1;
-							v15 = v2->y_speed;
-							v16 = v2->y;
-							v25 = v15;
-							v17 = v15 < 0;
-							v18 = v6->y;
-							if (v17)
-							{
-								v19 = (v2->y_speed + v16 + v18) >> _4773B8_boxd_item0_map_y_scale;
-								if (v19 < 0)
-									v19 = 0;
-								v20 = v6->w + v16 - 1;
-							}
-							else
-							{
-								v19 = (v16 + v18) >> _4773B8_boxd_item0_map_y_scale;
-								if (v19 < 0)
-									v19 = 0;
-								v20 = v16 + v6->w + v25 - 1;
-							}
-							v21 = (v20 >> _4773B8_boxd_item0_map_y_scale) - v19;
-							if (v19 + v21 >= _4773B4_boxd_item0_map_num_y_tiles)
-								v21 = _4773B4_boxd_item0_map_num_y_tiles - v19 - 1;
-							v22 = &_4773B0_boxd_item0_things[v12 + _4773C8_boxd_item0_map_num_x_tiles * v19];
-							if (v21 >= 0)
-							{
-								v26 = v21 + 1;
-								do
-								{
-									v23 = v22;
-									if (v14 >= 0)
-									{
-										v24 = v14 + 1;
-										do
-										{
-											++v23;
-											_4773A8_boxd_parray->sprite_pstru58 = v27;
-											_4773A8_boxd_parray->sprite = v2;
-											_4773A8_boxd_parray->ptr_8 = *(v23 - 1);
-											*(v23 - 1) = _4773A8_boxd_parray;
-											--v24;
-											++_4773A8_boxd_parray;
-										} while (v24);
-									}
-									v22 += _4773C8_boxd_item0_map_num_x_tiles;
-									--v26;
-								} while (v26);
-							}
-							v1 = v28;
-							goto LABEL_41;
-						}
-					}
-					else if (v7 != -2)
-					{
-						goto LABEL_16;
-					}
-				}
-			LABEL_41:
-				v2 = v2->next;
-			} while (v2 != v1);
-		}
-	}
-}
-
-//----- (00404F40) --------------------------------------------------------
-void boxd_404F40_sprite(Sprite *a1, int a2, int a3)
-{
-	Sprite *v3; // esi@1
-	Script *v4; // eax@3
-	signed __int16 v5; // ax@4
-	Sprite_stru58 *v6; // ecx@6
-	Sprite_stru58_stru0 *v7; // edi@8
-	int v8; // eax@8
-	Sprite_stru58 *v16; // ecx@28
-	int v17; // eax@30
-	int v18; // ebp@38
-	stru7 *v19; // ecx@41
-	bool (*v20)(Sprite *, Sprite *, int, void *, void *); // eax@41
-	Sprite_stru58 *v24; // eax@45
-	Sprite_stru58_stru0 *v25; // eax@45
-	stru7 *v26; // ebp@46
-	int v27; // ecx@47
-	int v28; // ecx@49
-	int(*v29)(Sprite *, void *, int, int *, int *); // eax@51
-	Sprite_stru58 *v33; // eax@56
-	Sprite_stru58 *v36; // [sp+10h] [bp-8Ch]@28
-	Sprite_stru58 *v37; // [sp+14h] [bp-88h]@8
-	Sprite_stru58 *v38; // [sp+14h] [bp-88h]@45
-	int v45; // [sp+24h] [bp-78h]@31
-	int v46; // [sp+28h] [bp-74h]@28
-	int v48; // [sp+30h] [bp-6Ch]@9
-	int v51; // [sp+3Ch] [bp-60h]@1
-	int v58; // [sp+60h] [bp-3Ch]@46
-	int v59; // [sp+64h] [bp-38h]@34
-	int v60; // [sp+68h] [bp-34h]@34
-	int v61; // [sp+6Ch] [bp-30h]@36
-	int v62; // [sp+74h] [bp-28h]@35
-	int v63; // [sp+78h] [bp-24h]@37
-	int v64; // [sp+80h] [bp-1Ch]@47
-	int v65; // [sp+84h] [bp-18h]@47
-	int v66; // [sp+88h] [bp-14h]@49
-	int v67; // [sp+90h] [bp-Ch]@48
-	int v68; // [sp+94h] [bp-8h]@50
-
-	v51 = a2;
-	v3 = a1;
-	if (currently_running_lvl_boxd_valid)
-	{
-		if (is_coroutine_list_initialization_failed && (v4 = a1->script) != 0)
-			v5 = v4->field_1C & 1;
-		else
-			v5 = 1;
-		v6 = a1->pstru58;
-		if (v6)
-		{
-			if (v5)
-			{
-				v7 = v6->pstru0;
-				v37 = v3->pstru58;
-				v8 = v6->pstru0->psrite_pstru7_idx;
-				if (v8 < 0)
-				{
-					if (v8 == -3)
-						return;
-					v48 = -1;
-				}
-				else
-				{
-					v48 = v3->pstru7[v8].field_0;
-					if (!v48)
-						return;
-				}
-
-                int z = v3->x + v7->z;
-                int y_y = v3->y + v7->w;
-
-                int x = v3->x + v7->x;
-                int y = v3->y + v7->y;
-
-				int v53 = v6->pstru0->psrite_pstru7_idx;
-
-				int x_scaled = x >> _4773AC_boxd_item0_map_x_scale;
-				if (x_scaled < 0)
-                    x_scaled = 0;
-
-                int z_scaled = (z - 1) >> _4773AC_boxd_item0_map_x_scale;
-                if (z_scaled >= _4773C8_boxd_item0_map_num_x_tiles)
-                    z_scaled = _4773C8_boxd_item0_map_num_x_tiles - 1;
-
-				int width_scaled = z_scaled - x_scaled;
-
-				int y_scaled = y >> _4773B8_boxd_item0_map_y_scale;
-				if (y_scaled < 0)
-                    y_scaled = 0;
-
-                int w_scaled = (y_y - 1) >> _4773B8_boxd_item0_map_y_scale;
-				if (w_scaled >= _4773B4_boxd_item0_map_num_y_tiles)
-                    w_scaled = _4773B4_boxd_item0_map_num_y_tiles - 1;
-
-                int height_scaled = w_scaled - y_scaled;
-
-
-                for (int k = 0; k <= height_scaled; ++k)
-                {
-                    for (int j = 0; j <= width_scaled; ++j)
-                    {
-                        int tile_idx = (x_scaled + j) + (y_scaled + k) * _4773C8_boxd_item0_map_num_x_tiles;
-                        BoxdTile **tile = &_4773C4_boxd_item0_map_tiles[tile_idx];
-                        Boxd_stru0 **tile_extra = &_4773B0_boxd_item0_things[tile_idx];
-
-                        for (Boxd_stru0 *i = *tile_extra; i; i = i->ptr_8)
-                        {
-                            if (i->sprite != v3)
-                            {
-                                v16 = i->sprite_pstru58;
-                                v46 = 1;
-                                v36 = i->sprite_pstru58;
-                                do
-                                {
-                                    if (!v16->pstru0)
-                                        break;
-                                    v17 = v16->pstru0->psrite_pstru7_idx;
-                                    if (v17 >= 0)
-                                    {
-                                        v45 = v3->pstru7[v17]._4_psprite_pstru7_idx;
-                                        v16 = v36;
-                                    }
-                                    else
-                                    {
-                                        v46 = 0;
-                                        v45 = -1;
-                                    }
-                                    if (v48 & v45)
-                                    {
-                                        v59 = v17;
-                                        v60 = i->sprite->x + v16->pstru0->x;
-                                        if (v60 < z)
-                                        {
-                                            v62 = i->sprite->x + v16->pstru0->z;
-                                            if (v62 > x)
-                                            {
-                                                v61 = i->sprite->y + v16->pstru0->y;
-                                                if (v61 < y_y)
-                                                {
-                                                    v63 = i->sprite->y + v16->pstru0->w;
-                                                    if (v63 > y)
-                                                    {
-                                                        v18 = v16->pstru0->psrite_pstru7_idx;
-                                                        if (v18 >= 0)
-                                                        {
-                                                            if (v7->psrite_pstru7_idx < 0)
-                                                            {
-                                                                v24 = v37 + 1;
-                                                                v38 = v24;
-                                                                v25 = v24->pstru0;
-                                                                if (v25)
-                                                                {
-                                                                    do
-                                                                    {
-                                                                        v26 = v3->pstru7;
-                                                                        v58 = v25->psrite_pstru7_idx;
-                                                                        if (v45 & v26[v58].field_0)
-                                                                        {
-                                                                            v27 = v3->x;
-                                                                            v64 = v58;
-                                                                            v65 = v27 + v38->pstru0->x;
-                                                                            if (v65 < v62)
-                                                                            {
-                                                                                v67 = v27 + v38->pstru0->z;
-                                                                                if (v67 > v60)
-                                                                                {
-                                                                                    v28 = v3->y;
-                                                                                    v66 = v28 + v38->pstru0->y;
-                                                                                    if (v66 < v63)
-                                                                                    {
-                                                                                        v68 = v28 + v38->pstru0->w;
-                                                                                        if (v68 > v61)
-                                                                                        {
-                                                                                            v29 = (int(*)(Sprite *, void *, int, int *, int *))v26[v38->pstru0->psrite_pstru7_idx].pfn_8_ui_hint_box;
-                                                                                            if (v29
-                                                                                                || (v29 = (int(*)(Sprite *, void *, int, int *, int *))v26[v36->pstru0->psrite_pstru7_idx].pfn_C) != 0)
-                                                                                            {
-                                                                                                if (v29(v3, i->sprite, v51, &v64, &v59))
-                                                                                                {
-                                                                                                    x = v3->x + v7->x;
-                                                                                                    y = v3->y + v7->y;
-
-                                                                                                    z = v3->x + v7->z;
-                                                                                                    y_y = v3->y + v7->w;
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                        v33 = v38 + 1;
-                                                                        v38 = v33;
-                                                                        v25 = v33->pstru0;
-                                                                    } while (v25);
-                                                                    v16 = v36;
-                                                                }
-                                                                v37 = v3->pstru58;
-                                                            }
-                                                            else
-                                                            {
-                                                                v19 = v3->pstru7;
-                                                                v20 = v19[v7->psrite_pstru7_idx].pfn_8_ui_hint_box;
-                                                                if (v20 || (v20 = v19[v18].pfn_C) != 0)
-                                                                {
-                                                                    if (v20(v3, i->sprite, v51, &v53, &v59))
-                                                                    {
-                                                                        x = v3->x + v7->x;
-                                                                        y = v3->y + v7->y;
-
-                                                                        z = v3->x + v7->z;
-                                                                        y_y = v3->y + v7->w;
-                                                                    }
-                                                                }
-                                                                v16 = v36;
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            v46 = 1;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    ++v16;
-                                    v36 = v16;
-                                } while (v46);
-                            }
-                        }
-                        ++_4773A8_boxd_parray;
-                    }
-                }
-			}
-		}
-	}
-}
-
-//----- (00405430) --------------------------------------------------------
-void boxd_free()
-{
-	if (currently_running_lvl_boxd_valid)
-	{
-		if (_4773B0_boxd_item0_things)
-			free(_4773B0_boxd_item0_things);
-		if (_4773C0_boxd_array)
-			free(_4773C0_boxd_array);
-	}
-}
-// 4773BC: using guessed type int currently_running_lvl_boxd_valid;
 
 //----- (00405460) --------------------------------------------------------
 void entity_show_hint(Entity *a1)
@@ -2212,23 +1539,23 @@ void entity_4054D0_tanker_convoy(Entity *a1)
 	if (entity_405750_tanker_convoy(a1))
 	{
 		v2 = v1->stats;
-		v1->_DC_order = ENTITY_ORDER_6_tanker;
-		v1->_E0_current_attack_target = 0;
+		v1->SetOrder(ENTITY_ORDER_6_tanker);
+		v1->retaliation_target = 0;
 		v1->_E4_prev_attack_target = 0;
 		v1->_134_param__unitstats_after_mobile_outpost_plant = 5;
 		v3 = (int)v1->state;
 		if (v2->is_infantry)
-			v4 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
+			v4 = map_get_entity_placement_inside_tile_x(v1, v1->_A4_idx_in_tile);
 		else
 			v4 = v2->field_4C != 128 ? 7424 : 4096;
-		v5 = v4 + (*(_DWORD *)v3 & 0xFFFFE000);
+		v5 = v4 + map_point_to_tile_global(*(_DWORD *)v3);
 		v6 = v1->stats;
 		v1->sprite_x_2 = v5;
 		if (v6->is_infantry)
-			v7 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
+			v7 = map_get_entity_placement_inside_tile_y(v1, v1->_A4_idx_in_tile);
 		else
 			v7 = v6->field_4C != 128 ? 7424 : 4096;
-		v8 = *(_DWORD *)(v3 + 4) & 0xFFFFE000;
+		v8 = map_point_to_tile_global(*(_DWORD *)(v3 + 4));
 		v1->entity_8 = 0;
 		v1->mode_return = entity_mode_move_attack;
 		v1->sprite_y_2 = v7 + v8;
@@ -2250,15 +1577,15 @@ void EventHandler_TankerConvoy(Script *receiver, Script *sender, enum SCRIPT_EVE
 	{
 		switch (event)
 		{
-		case EVT_MSG_DAMAGE:
-			entity_41A610_evt1503(v4, param);
+		case CMD_APPLY_DAMAGE:
+			entity_do_damage(v4, (Sprite *)param);
 			entity_410710_status_bar(v4);
 			break;
-		case EVT_MSG_1511_sidebar_click_category:
-			entity_410CB0_event1511(v4);
+		case EVT_MSG_SELECTED:
+			entity_selected_default(v4);
 			break;
-		case EVT_SHOW_UI_CONTROL:
-			entity_410CD0_eventTextString(v4);
+		case EVT_MSG_DESELECTED:
+			entity_deselected_default(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
 			entity_show_hint(v4);
@@ -2269,8 +1596,8 @@ void EventHandler_TankerConvoy(Script *receiver, Script *sender, enum SCRIPT_EVE
 		case EVT_MSG_1509_stru11:
 			entity_41A980_evt1509_unset_stru11(v4, param);
 			break;
-		case EVT_MSG_1497:
-			entity_41A6D0_evt1497(v4, (Entity *)param);
+		case MSG_ATTACKED:
+			entity_on_attacked_default(v4, (Entity *)param);
 			break;
 		default:
 			return;
@@ -2413,12 +1740,12 @@ void UNIT_Handler_OilTankerConvoy(Script *a1)
 				v4->checkpoint = LOWORD_HEXRAYS(v2->param_1C);
 			entity_4056E0_tanker_convoy_update_checkpoint(v1->sprite->x, v4);
 
-			v1->_DC_order = ENTITY_ORDER_6_tanker;
-			v1->_E0_current_attack_target = 0;
+			v1->SetOrder(ENTITY_ORDER_6_tanker);
+			v1->retaliation_target = 0;
 			v1->_E4_prev_attack_target = 0;
 			v1->_134_param__unitstats_after_mobile_outpost_plant = 600;
-			v1->sprite_x_2 = entity_transform_x(v1, v4->x);
-            v1->sprite_y_2 = entity_transform_y(v1, v4->y);
+			v1->sprite_x_2 = map_adjust_entity_in_tile_x(v1, v4->x);
+            v1->sprite_y_2 = map_adjust_entity_in_tile_y(v1, v4->y);
 			v1->entity_8 = 0;
 			v1->mode_arrive = 0;
             entity_load_idle_mobd(v1, 192);
@@ -2435,7 +1762,6 @@ void UNIT_Handler_OilTankerConvoy(Script *a1)
 bool render_string_4059C0(RenderString *a1, int a2, int a3)
 {
 	int v3; // edi@1
-	BOOL result; // eax@1
 	stru8 *v5; // esi@1
 	int i; // edx@1
 	int v7; // ebx@5
@@ -2444,12 +1770,14 @@ bool render_string_4059C0(RenderString *a1, int a2, int a3)
 	int v10; // ebp@8
 
 	v3 = a1->field_C;
-	result = 0;
 	v5 = a1->pstru8;
 	for (i = v3 * (a2 + 1) + 1; i; --i)
 		v5 = v5->next;
+
+    bool result = false;
 	if (v5->drawjob->job_details.y < -10)
-		result = 1;
+		result = true;
+
 	v7 = 0;
 	if (v3 > 0)
 	{
@@ -2748,7 +2076,6 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
 //----- (00405E60) --------------------------------------------------------
 bool cplc_init()
 {
-	BOOL result; // eax@2
 	DataCplcItem *v1; // eax@3
 	void *v2; // eax@3
 	DataCplcItem *v3; // esi@4
@@ -2785,10 +2112,9 @@ bool cplc_init()
 	currently_running_lvl_cplc = (DataCplc *)LVL_FindSection(CPLC);
 	if (currently_running_lvl_cplc)
 	{
-		result = (BOOL)malloc(0x5DC0u);
-		cplc_stru0_list = (DataCplc_stru0 *)result;
-		if (!result)
-			return result;
+		cplc_stru0_list = (DataCplc_stru0 *)malloc(0x5DC0u);
+		if (!cplc_stru0_list)
+			return false;
 		currently_running_lvl_cplc_data = 0;
 		v1 = currently_running_lvl_cplc->items;
 		currently_running_lvl_cplc_item = v1;
@@ -3477,16 +2803,12 @@ void cplc_init_script_do_reinit(int a1)
 //----- (004068C0) --------------------------------------------------------
 void cplc_init_script(int handler_id, bool reinit_ptrs)
 {
-	BOOL v2; // ebp@1
 	DataCplcItem_ptr1 *v3; // esi@2
 	DataCplcItem_ptr1 *v4; // edx@3
 	DataCplcItem_ptr1 *v5; // ecx@3
 	DataCplcItem_ptr1 *v6; // edi@3
 	DataCplcItem_ptr1 *v7; // ebx@3
-	int handler_1d; // [sp+0h] [bp-4h]@1
 
-	v2 = reinit_ptrs;
-	handler_1d = handler_id;
 	if (currently_running_lvl_cplc_valid)
 	{
 		v3 = _477430_cplc_item0_ptr1;
@@ -3498,9 +2820,9 @@ void cplc_init_script(int handler_id, bool reinit_ptrs)
 			v7 = _47746C_cplc_prev1;
 			do
 			{
-				if (v3->script_handler_id == handler_1d)
+				if (v3->script_handler_id == handler_id)
 				{
-					if (v2)
+					if (reinit_ptrs)
 					{
 						cplc_create_sprite_script(v3);
 						v7 = _47746C_cplc_prev1;
@@ -3572,32 +2894,24 @@ void cplc_free()
 //----- (00406FD0) --------------------------------------------------------
 bool oilspot_list_alloc()
 {
-	OilDeposit *v0; // eax@1
 	int v1; // ecx@2
-	BOOL result; // eax@4
 
-	v0 = (OilDeposit *)malloc(0x1800u);
-	oilspot_list = v0;
-	if (v0)
+	oilspot_list = (OilDeposit *)malloc(0x1800u);
+	if (oilspot_list)
 	{
-		oilspot_list_free_pool = v0;
+		oilspot_list_free_pool = oilspot_list;
 		v1 = 0;
 		do
 		{
-			v0[v1].next = &v0[v1 + 1];
-			v0 = oilspot_list;
+            oilspot_list[v1].next = &oilspot_list[v1 + 1];
 			++v1;
 		} while (v1 < 255);
 		oilspot_list[255].next = 0;
 		oilspot_list_head = (OilDeposit *)&oilspot_list_head;
 		oildeposit_list_end = (OilDeposit *)&oilspot_list_head;
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+    return false;
 }
 
 //----- (00407030) --------------------------------------------------------
@@ -3623,7 +2937,7 @@ OilDeposit *oilspot_list_407040_find_by_coordinates(int x, int y)
 		while (1)
 		{
 			v3 = result->sprite;
-			if (!((x ^ v3->x) & 0xFFFFE000) && !((y ^ v3->y) & 0xFFFFE000) && !(v3->drawjob->flags & 0x40000000))
+			if (map_is_same_tile(x, v3->x) && map_is_same_tile(y, v3->y) && !(v3->drawjob->flags & 0x40000000))
 				break;
 			result = result->next;
 			if ((OilDeposit **)result == &oilspot_list_head)
@@ -3715,19 +3029,17 @@ void UNIT_Handler_OilPatch(Script *a1)
 {
 	Sprite *v1; // esi@1
 	DataCplcItem_ptr1 *v2; // eax@1
-	unsigned int v3; // edx@1
 	OilDeposit *v4; // edi@2
 	int v6; // eax@7
 	char *v7; // eax@7
 
 	v1 = a1->sprite;
-	v1->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448600_oilspot;
+	v1->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_448600_oilspot;
 	sprite_load_mobd(v1, 0);
 	v2 = v1->cplc_ptr1;
-	v3 = v1->y & 0xFFFFE000;
-	v1->x = (v1->x & 0xFFFFE000) + 4096;
+	v1->x = map_point_to_tile_global(v1->x) + 4096;
 	v1->field_88_unused = 1;
-	v1->y = v3 + 4096;
+	v1->y = map_point_to_tile_global(v1->y) + 4096;
 	if (v2)
 	{
 		v4 = oilspot_list_free_pool;
@@ -3750,7 +3062,7 @@ void UNIT_Handler_OilPatch(Script *a1)
 	}
 	v6 = v1->y;
 	v1->field_88_unused = 1;
-	v7 = &Map_get_tile(v1->x >> 13, v6 >> 13)->flags2;
+	v7 = &boxd_get_tile(v1->x >> 13, v6 >> 13)->flags2;
 	*v7 |= 0x80u;
 	script_yield(a1, 1, 0);
 	v1->drawjob->flags |= 0x40000000u;
@@ -3766,6 +3078,17 @@ void UNIT_Handler_OilPatch(Script *a1)
 	sprite_list_remove(v1);
 }
 
+void entity_on_attacked_drillrig(Entity *e) {
+    if (player_side == e->player_side && e->_12C_prison_bunker_spawn_type == 0)
+    {
+        e->_12C_prison_bunker_spawn_type = 1500;
+        if (is_player_faction_evolved())
+            sound_play(SOUND_MUTE_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
+        else
+            sound_play(SOUND_SURV_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
+    }
+}
+
 //----- (00407FD0) --------------------------------------------------------
 void EventHandler_DrillRig(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
 {
@@ -3776,17 +3099,10 @@ void EventHandler_DrillRig(Script *receiver, Script *sender, enum SCRIPT_EVENT e
 	{
 		switch (event)
 		{
-		case EVT_MSG_1497:
-			if (player_side == v4->player_side && !v4->_12C_prison_bunker_spawn_type)
-			{
-				v4->_12C_prison_bunker_spawn_type = 1500;
-				if (is_player_faction_evolved())
-					sound_play(SOUND_MUTE_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
-				else
-					sound_play(SOUND_SURV_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
-			}
+		case MSG_ATTACKED:
+            entity_on_attacked_drillrig(v4);
 			break;
-		case EVT_MSG_DAMAGE:
+		case CMD_APPLY_DAMAGE:
 			entity_402E90_on_damage(v4, param, entity_mode_drillrig_on_death);
 			entity_410520_update_healthbar_color(v4);
 			break;
@@ -3825,8 +3141,8 @@ void UNIT_Handler_DrillRig(Script *a1)
 			v3 = oilspot_list_407090_find_by_sprite_coordinates(v1->sprite->x, v1->sprite->y);
 			if (v3)
 			{
-				v1->sprite->x = (v3->sprite->x & 0xFFFFE000) + 4096;
-				v1->sprite->y = (v3->sprite->y & 0xFFFFE000) + 4096;
+				v1->sprite->x = map_point_to_tile_global(v3->sprite->x) + 4096;
+				v1->sprite->y = map_point_to_tile_global(v3->sprite->y) + 4096;
 			}
 			v1->_11C__infantry_sprite_y___drillrig_oil_spot = (int)v3;
 			v1->sprite->field_88_unused = 1;
@@ -3897,8 +3213,8 @@ void entity_mode_408260_drillrig(Entity *a1)
 		v2 = oilspot_list_407090_find_by_sprite_coordinates(a1->sprite->x, a1->sprite->y);
 		if (v2)
 		{
-			v1->sprite->x = (v2->sprite->x & 0xFFFFE000) + 4096;
-			v1->sprite->y = (v2->sprite->y & 0xFFFFE000) + 4096;
+			v1->sprite->x = map_point_to_tile_global(v2->sprite->x) + 4096;
+			v1->sprite->y = map_point_to_tile_global(v2->sprite->y) + 4096;
 		}
 	}
 	v3 = v1->turret;
@@ -3926,7 +3242,7 @@ void entity_mode_drillrig_on_death(Entity *a1)
 	script_trigger_event_group(a1->script, EVT_MSG_1540, 0, SCRIPT_TANKER_CONVOY_HANDLER);
 
     a1->destroyed = 1;
-    a1->SetMode(entity_mode_building_default_on_death);
+    a1->SetMode(entity_mode_building_on_death_default);
     script_sleep(a1->script, 1);
 }
 
@@ -3968,42 +3284,6 @@ int sub_408400()
 	return dword_4778AC;
 }
 
-//----- (00408410) --------------------------------------------------------
-void _408410_palettes()
-{
-	PALETTEENTRY *v0; // eax@1
-	int v1; // ecx@1
-	int v2; // ecx@3
-	BYTE v3; // dl@4
-
-	v0 = palette_4778A4;
-	dword_4778A8 = 1;
-	v1 = 0;
-	do
-	{
-		*(&palette_477490[0].peRed + v1) = v0->peRed >> 1;
-		v0 = (PALETTEENTRY *)((char *)v0 + 1);
-		++v1;
-	} while (v1 < 960);
-	v2 = 960;
-	do
-	{
-		v3 = v0->peRed;
-		v0 = (PALETTEENTRY *)((char *)v0 + 1);
-		*(&palette_477490[0].peRed + v2++) = v3;
-	} while (v2 < 1024);
-	_40E400_set_palette(palette_477490);
-}
-// 4778A8: using guessed type int dword_4778A8;
-
-//----- (00408460) --------------------------------------------------------
-void sub_408460()
-{
-	_40E400_set_palette(palette_4778A4);
-	dword_4778A8 = 0;
-}
-// 4778A8: using guessed type int dword_4778A8;
-
 //----- (00408480) --------------------------------------------------------
 void stru1_408480_reset_animation()
 {
@@ -4044,105 +3324,6 @@ void script_408500_anim(Script *a1)
 	dword_4778A0 = 0;
 }
 // 4778A0: using guessed type int dword_4778A0;
-
-//----- (00408550) --------------------------------------------------------
-void _408550_multi_pal()
-{
-	FILE *v0; // edi@2
-	int v1; // esi@3
-	BYTE v2; // al@4
-	BYTE v3; // cl@4
-	char v4; // bl@6
-	int v5; // ebp@6
-	int v6; // eax@6
-	FILE *v7; // edi@10
-	int v8; // esi@11
-	BYTE v9; // dl@12
-	BYTE v10; // al@12
-	int v11; // ebp@14
-	PALETTEENTRY *v12; // ebx@14
-	char *v13; // edx@14
-	int *v14; // eax@14
-	int v15; // ecx@16
-	BYTE v16; // [sp+10h] [bp-45Ch]@4
-	BYTE v17; // [sp+14h] [bp-458h]@4
-	BYTE v18; // [sp+18h] [bp-454h]@4
-	char v19[80]; // [sp+1Ch] [bp-450h]@2
-	PALETTEENTRY v20[256]; // [sp+6Ch] [bp-400h]@4
-
-	palette_4778A4 = sub_40E550();
-	if (_47C6D8_use__466098_cost_multipliers)
-	{
-		sprintf(v19, aSLevelsMulti_p, game_data_installation_dir);
-		v0 = fopen(v19, aR);
-		if (v0)
-		{
-			v1 = 0;
-			do
-			{
-				fscanf(v0, aDDD, &v17, &v18, &v16);
-				v2 = v18;
-				v3 = v16;
-				v20[v1].peRed = v17;
-				v20[v1].peGreen = v2;
-				v20[v1].peBlue = v3;
-				v20[v1].peFlags = 0;
-				++v1;
-			} while (v1 < 256);
-			fclose(v0);
-		}
-		v4 = byte_47C654;
-		memcpy(palette_477490, palette_4778A4, sizeof(palette_477490));
-		v5 = player_sprite_color_by_player_side[player_side];
-		v6 = byte_47C654 << 6;
-        memcpy(&palette_477490[16 * player_sprite_color_by_player_side[player_side]], (char *)v20 + v6, 0x40u);
-		if (v4 < 7 && v4 != v5)
-            memcpy((char *)palette_477490 + v6, &v20[112], 0x40u);
-	}
-	else
-	{
-		if (single_player_game)
-			return;
-		sprintf(v19, aSLevelsMulti_p, game_data_installation_dir);
-		v7 = fopen(v19, aR);
-		if (v7)
-		{
-			v8 = 0;
-			do
-			{
-				fscanf(v7, aDDD, &v16, &v18, &v17);
-				v9 = v18;
-				v10 = v17;
-				v20[v8].peRed = v16;
-				v20[v8].peGreen = v9;
-				v20[v8].peBlue = v10;
-				v20[v8].peFlags = 0;
-				++v8;
-			} while (v8 < 256);
-			fclose(v7);
-		}
-		v11 = 0;
-        memcpy(palette_477490, palette_4778A4, sizeof(palette_477490));
-		v12 = palette_477490;
-		v13 = &netz_47A740[2].field_9;
-		v14 = &player_sprite_color_by_player_side[1];
-		do
-		{
-			if (*(v13 - 1))
-			{
-				v15 = *v13 << 6;
-				*v14 = v11;
-				memcpy(v12, (char *)v20 + v15, 0x40u);
-			}
-			++v14;
-			++v11;
-			v13 += 28;
-			v12 += 16;
-		} while ((int)v14 < (int) & _47DCC4_entity_id_counter);
-	}
-    memcpy(palette_4778A4, palette_477490, 0x400u);
-	_40E400_set_palette(palette_477490);
-}
 
 //----- (00408780) --------------------------------------------------------
 bool stru1_init_anim()
@@ -4287,511 +3468,6 @@ void stru1_animate()
 	}
 }
 
-//----- (0040CAE0) --------------------------------------------------------
-int VIDEO_IsAllocated()
-{
-	int result; // eax@2
-
-	if (video)
-	{
-		result = 0;
-	}
-	else
-	{
-		video_477DF0 = 0;
-		result = 1;
-	}
-	return result;
-}
-
-//----- (0040CB00) --------------------------------------------------------
-int VIDEO_ReadAndAllocDrawJob(const char *a1, int x, int y, int z_index)
-{
-	int v4; // esi@1
-	int result; // eax@1
-	DrawJob *v6; // eax@2
-
-	v4 = x;
-	result = (int)VIDEO_ReadFile(a1);
-	video = (VideoFile *)result;
-	if (result)
-	{
-		v6 = draw_list_add(0, 0);
-		video_477978_draw_job = v6;
-		if (v6)
-		{
-			v6->job_details.x = v4;
-			video_477978_draw_job->job_details.y = y;
-			video_477978_draw_job->job_details.z_index = z_index;
-			video_477978_draw_job->job_details.image = &_477948_video_draw_details;
-			_477970_video_header_field_6 = video->header.field_6;
-			_477974_video_header_field_8 = video->header.field_8;
-			_477948_video_draw_details.width = video->header.width;
-			result = 1;
-			_477948_video_draw_details.height = video->header.height;
-			_477948_video_draw_details.handler = render_video_draw_handler;
-			_477948_video_draw_details.field_14 = 1;
-			video_477DC0 = 0;
-			video_477DF0 = 0;
-		}
-		else
-		{
-			VIDEO_Clean(video);
-			video = 0;
-			result = 0;
-		}
-	}
-	return result;
-}
-
-//----- (0040CBD0) --------------------------------------------------------
-int VIDEO_DoFrame()
-{
-	VideoFile *v0; // ecx@1
-	VideoFile *v1; // edi@4
-	signed __int64 v2; // rax@5
-	int v3; // ecx@6
-	int v4; // esi@6
-	int v5; // eax@9
-	int result; // eax@19
-	int v7; // eax@20
-	VideoFile *v8; // ebx@21
-	DWORD v9; // eax@24
-	DWORD v10; // ecx@26
-	DWORD v11; // ecx@33
-	char *v12; // eax@35
-	DWORD v13; // eax@41
-	VideoFile *v14; // edi@45
-	signed __int64 v15; // rax@46
-	int v16; // ecx@47
-	int v17; // esi@47
-	int v18; // eax@50
-	VideoFile *v19; // eax@57
-	int v20; // edx@60
-	int v21; // ecx@60
-	int v22; // esi@60
-	char v23; // dl@61
-	int v24; // ecx@64
-	unsigned int v25; // [sp+68h] [bp-10h]@23
-	void *v26; // [sp+6Ch] [bp-Ch]@23
-	char *v27; // [sp+70h] [bp-8h]@8
-	__int16 *current_play_position; // [sp+74h] [bp-4h]@8
-
-	v0 = video;
-	if (!video)
-		return 0;
-	if (!dword_477DF4)
-	{
-		if (video->header.current_frame >= video->header.num_frames - 1)
-		{
-			v1 = video;
-			if (video_477DEC_is_sound_playing)
-			{
-				v3 = video->header.field_18;
-				v4 = ((_BYTE)v3 != 8) + 1;
-				if (BYTE1(v3) & 1)
-					v4 *= 2;
-				if (video_477DE4_dsb->GetCurrentPosition(
-					(LPDWORD)&current_play_position,
-					(LPDWORD)&v27))
-				{
-					v5 = 0;
-					goto LABEL_14;
-				}
-				if ((int)current_play_position < video_477DC4_current_sound_position)
-					dword_477DC8 += 0x10000;
-				video_477DC4_current_sound_position = (int)current_play_position;
-				current_play_position = (__int16 *)(((int)current_play_position + dword_477DC8) / v4);
-				v2 = (signed __int64)((double)(int)current_play_position * 1000.0 / (double)v1->header._14_looks_like_fps);
-			}
-			else
-			{
-				LODWORD(v2) = timeGetTime();
-			}
-			v5 = (unsigned int)v2 < dword_477940;
-		LABEL_14:
-			if (!v5 && video)
-			{
-				if (video_477DEC_is_sound_playing)
-				{
-					video_477DE4_dsb->Stop();
-					video_477DE4_dsb->Release();
-					video_477DEC_is_sound_playing = 0;
-				}
-				VIDEO_Clean(video);
-				video = 0;
-				video_477978_draw_job->job_details.image = 0;
-				video_477978_draw_job->flags |= 0x80000000;
-				video_477978_draw_job = 0;
-				if (video_477DC0)
-				{
-					video_477DC0->job_details.image = 0;
-					video_477DC0->flags |= 0x80000000;
-					video_477DC0 = 0;
-					return 0;
-				}
-			}
-			return 0;
-		}
-		VIDEO_ReadNextFrame(video);
-		v0 = video;
-		v7 = video->header.num_sound_bytes;
-		if (v7)
-		{
-			v8 = video;
-			if (video_477DEC_is_sound_playing)
-			{
-				if (!video_477DE4_dsb->Lock(
-					(((unsigned __int64)dword_477944 >> 32) ^ abs(dword_477944)) - ((unsigned __int64)dword_477944 >> 32),
-					v7,
-					(LPVOID *)&current_play_position,
-					(LPDWORD)&v25,
-					(LPVOID *)&v27,
-					(LPDWORD)&v26,
-					0))
-				{
-					v9 = v25;
-					if (v25)
-					{
-						memcpy(current_play_position, v8->header.ptr_20, v25);
-						v9 = v25;
-					}
-					v10 = (DWORD)v26;
-					if (v26)
-					{
-						memcpy(v27, (char *)v8->header.ptr_20 + v9, (unsigned int)v26);
-						v10 = (DWORD)v26;
-						v9 = v25;
-					}
-					dword_477944 += v8->header.num_sound_bytes;
-					video_477DE4_dsb->Unlock(current_play_position, v9, v27, v10);
-				}
-			}
-			else
-			{
-				VIDEO_40D090(video);
-			}
-			v0 = video;
-		}
-		if (v0->header.current_frame >= v0->header.num_frames - 1 && video_477DEC_is_sound_playing)
-		{
-			if (!video_477DE4_dsb->Lock(
-				(((unsigned __int64)dword_477944 >> 32) ^ abs(dword_477944)) - ((unsigned __int64)dword_477944 >> 32),
-				0x10000,
-				&v26,
-				(LPDWORD)&v25,
-				(LPVOID *)&v27,
-				(LPDWORD)&current_play_position,
-				0))
-			{
-				v11 = v25;
-				if (v25)
-				{
-					memset(v26, 0x80u, v25);
-					v11 = v25;
-				}
-				v12 = (char *)current_play_position;
-				if (current_play_position)
-				{
-					memset(v27, 0x80u, (unsigned int)current_play_position);
-					v12 = (char *)current_play_position;
-					v11 = v25;
-				}
-				dword_477944 += (int)&v12[v11];
-				video_477DE4_dsb->Unlock(v26, v11, v27, (DWORD)v12);
-			}
-			v0 = video;
-		}
-		if (v0->header.current_frame)
-		{
-			video_477DF0 = 1;
-		}
-		else if (video_477DEC_is_sound_playing)
-		{
-			dword_477940 = 0;
-		}
-		else
-		{
-			v13 = timeGetTime();
-			v0 = video;
-			dword_477940 = v13;
-		}
-		dword_477DF4 = 1;
-	}
-	v14 = v0;
-	if (video_477DEC_is_sound_playing)
-	{
-		v16 = v0->header.field_18;
-		v17 = ((_BYTE)v16 != 8) + 1;
-		if (BYTE1(v16) & 1)
-			v17 *= 2;
-		if (video_477DE4_dsb->GetCurrentPosition((LPDWORD)&current_play_position, (LPDWORD)&v27))
-		{
-			v18 = 0;
-			goto LABEL_55;
-		}
-		if ((int)current_play_position < video_477DC4_current_sound_position)
-			dword_477DC8 += 0x10000;
-		video_477DC4_current_sound_position = (int)current_play_position;
-		current_play_position = (__int16 *)(((int)current_play_position + dword_477DC8) / v17);
-		v15 = (signed __int64)((double)(int)current_play_position * 1000.0 / (double)v14->header._14_looks_like_fps);
-	}
-	else
-	{
-		LODWORD(v15) = timeGetTime();
-	}
-	v18 = (unsigned int)v15 < dword_477940;
-LABEL_55:
-	if (v18)
-	{
-		video_477DF0 = 0;
-		return 0;
-	}
-	v19 = video;
-	dword_477DF4 = 0;
-	dword_477940 += video->header.field_E;
-	if (video->field_330 & 0x40)
-	{
-		VIDEO_40D450((char *)video->header.field_28, video->header.field_24);
-		v19 = video;
-	}
-	if (*(_WORD *)&v19->gap2C[0])
-	{
-		v20 = *(_WORD *)&v19->gap2C[2];
-		v21 = 3 * v20;
-		v22 = 4 * v20 + 4684177;
-		do
-		{
-			v23 = v19->gap2C[v21 + 4];
-			v21 += 3;
-			*(_BYTE *)(v22 - 1) = v23;
-			*(_BYTE *)v22 = v19->gap2C[v21 + 2];
-			*(_BYTE *)(v22 + 1) = v19->gap2C[v21 + 3];
-			--*(_WORD *)&v19->gap2C[0];
-			v19 = video;
-			v22 += 4;
-		} while (*(_WORD *)&video->gap2C[0]);
-		_40E400_set_palette(&stru_477990);
-		v19 = video;
-	}
-	if (!video_477DF0)
-	{
-		_477948_video_draw_details._18_img_data = (void *)v19->header.field_10;
-		v24 = v19->header.field_10;
-		result = 1;
-		stru_477D90._18_img_data = (void *)(v24 + _477948_video_draw_details.height * _477948_video_draw_details.width);
-		return result;
-	}
-	return 0;
-}
-// 477940: using guessed type int dword_477940;
-// 477944: using guessed type int dword_477944;
-// 477D90: using guessed type DetailedDrawHandler_VideoPlayer stru_477D90;
-// 477DC4: using guessed type int video_477DC4_current_sound_position;
-// 477DC8: using guessed type int dword_477DC8;
-// 477DEC: using guessed type int video_477DEC_is_sound_playing;
-// 477DF0: using guessed type int video_477DF0;
-// 477DF4: using guessed type int dword_477DF4;
-
-//----- (0040D090) --------------------------------------------------------
-void VIDEO_40D090(VideoFile *a1)
-{
-	VideoFile *v1; // ebx@1
-	int v2; // ecx@1
-	__int16 v3; // ax@1
-	__int16 *v4; // [sp+30h] [bp-10h]@5
-	DWORD v5; // [sp+34h] [bp-Ch]@5
-	void *v6; // [sp+38h] [bp-8h]@5
-	DWORD v7; // [sp+3Ch] [bp-4h]@5
-
-	v1 = a1;
-	v2 = a1->header.field_18;
-	v3 = ((_BYTE)v2 != 8) + 1;
-	if (BYTE1(v2) & 1)
-		v3 *= 2;
-	video_477DE4_dsb_waveformatex = 0;
-	video_477DE4_dsb_waveformatex = 1;
-	qword_477984 = 0i64;
-	unk_47798C = 0;
-	unk_477982 = (unsigned __int16)(((v1->header.field_18 & 0x100) != 0) + 1);
-	LODWORD(qword_477984) = v1->header._14_looks_like_fps;
-	unk_47798C = v3;
-	HIDWORD(qword_477984) = v1->header._14_looks_like_fps * v3;
-	unk_47798E = (unsigned __int8)v1->header.field_18 != 8 ? 16 : 8;
-	video_477DE4_dsb_desc.dwReserved = 0;
-	video_477DE4_dsb_desc.dwSize = 20;
-	video_477DE4_dsb_desc.dwFlags = 0;
-	video_477DE4_dsb_desc.dwBufferBytes = 0x10000;
-	video_477DE4_dsb_desc.lpwfxFormat = (LPWAVEFORMATEX)&video_477DE4_dsb_waveformatex;
-	if (pds
-		&& !pds->CreateSoundBuffer(&video_477DE4_dsb_desc, &video_477DE4_dsb, 0)
-		&& !video_477DE4_dsb->Lock(0, 0x10000, (LPVOID *)&v4, &v7, &v6, &v5, 0))
-	{
-		memcpy(v4, v1->header.ptr_20, v1->header.num_sound_bytes);
-		dword_477944 = v1->header.num_sound_bytes;
-		dword_477DC8 = 0;
-		video_477DC4_current_sound_position = 0;
-		video_477DE4_dsb->Unlock(v4, v7, v6, v5);
-		video_477DE4_dsb->Play(0, 0, 1);
-		video_477DEC_is_sound_playing = 1;
-	}
-}
-
-//----- (0040D230) --------------------------------------------------------
-void VIDEO_free()
-{
-	if (video)
-	{
-		if (video_477DEC_is_sound_playing)
-		{
-			video_477DE4_dsb->Stop();
-			video_477DE4_dsb->Release();
-			video_477DEC_is_sound_playing = 0;
-		}
-		VIDEO_Clean(video);
-		video = 0;
-		video_477978_draw_job->job_details.image = 0;
-		video_477978_draw_job->flags |= 0x80000000;
-		video_477978_draw_job = 0;
-		if (video_477DC0)
-		{
-			video_477DC0->job_details.image = 0;
-			video_477DC0->flags |= 0x80000000;
-			video_477DC0 = 0;
-		}
-	}
-}
-
-//----- (0040D2C0) --------------------------------------------------------
-bool VIDEO_IsVideoInvalid()
-{
-	return video == 0;
-}
-
-//----- (0040D2D0) --------------------------------------------------------
-bool VIDEO_ReadAndAllocDrawJob_2(const char *a1, stru1_draw_params *a2, stru1_draw_params *a3, RenderString *a4, int width, int height, int z_index)
-{
-	stru1_draw_params *v7; // ebx@1
-	BOOL result; // eax@2
-	DrawJob *v9; // eax@5
-	int v10; // ecx@8
-
-	v7 = a2;
-	video = VIDEO_ReadFile(a1);
-	if (video)
-	{
-		if (a3)
-			video_477DC0 = draw_list_add(0, 0);
-		v9 = draw_list_add(0, 0);
-		video_477978_draw_job = v9;
-		if (v9)
-		{
-			v9->job_details.params = v7;
-			video_477978_draw_job->job_details.x = 0;
-			video_477978_draw_job->job_details.y = 0;
-			video_477978_draw_job->job_details.z_index = z_index;
-			video_477978_draw_job->job_details.image = &_477948_video_draw_details;
-			_477970_video_header_field_6 = video->header.field_6;
-			_477974_video_header_field_8 = video->header.field_8;
-			_477948_video_draw_details.width = width;
-			_477948_video_draw_details.height = height;
-			_477948_video_draw_details.handler = render_video_draw_handler;
-			_477948_video_draw_details.field_14 = 0;
-			if (a3)
-			{
-				video_477DC0->job_details.params = a3;
-				video_477DC0->job_details.x = 0;
-				video_477DC0->job_details.y = 0;
-				video_477DC0->job_details.z_index = z_index;
-				video_477DC0->job_details.image = &stru_477D90;
-				dword_477DB8 = 0;
-				dword_477DBC = 0;
-				stru_477D90.width = video->header.width;
-				v10 = video->header.height - height;
-				stru_477D90.handler = render_video_draw_handler;
-				stru_477D90.height = v10;
-				stru_477D90.field_14 = 0;
-			}
-			else
-			{
-				video_477DC0 = 0;
-			}
-			if (a4)
-				VIDEO_40D430(a4);
-			video_477DF0 = 0;
-			result = 1;
-		}
-		else
-		{
-			VIDEO_Clean(video);
-			video = 0;
-			result = 0;
-		}
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
-//----- (0040D430) --------------------------------------------------------
-void VIDEO_40D430(RenderString *a1)
-{
-	video_4780F8_subtitles = a1;
-	video_4780F0 = 0;
-	video_4780F4 = 0;
-	video_4780EC = 0;
-}
-
-//----- (0040D450) --------------------------------------------------------
-void VIDEO_40D450(char *a1, int a2)
-{
-	char *v2; // esi@1
-	int v3; // edi@3
-	char v4; // al@4
-	bool v5; // sf@6
-	unsigned __int8 v6; // of@6
-	char *v7; // eax@10
-
-	v2 = a1;
-	if (video_4780F8_subtitles && a2 > 0)
-	{
-		v3 = a2;
-		do
-		{
-			v4 = *v2++;
-			if (v4 >= 32 && v4 < 127)
-			{
-				video_477DF8_subtitles[video_4780F0++] = v4;
-				v6 = __OFSUB__(video_4780F4 + 1, 23);
-				v5 = video_4780F4++ - 22 < 0;
-				if (!(v5 ^ v6))
-					v4 = '\n';
-			}
-			if (v4 == '\n')
-			{
-				++video_4780EC;
-				video_477DF8_subtitles[video_4780F0++] = '\n';
-				video_4780F4 = 0;
-				if (video_4780EC >= 26)
-				{
-					v7 = strchr(video_477DF8_subtitles, '\n') + 1;
-					video_4780F0 -= v7 - video_477DF8_subtitles;
-					--video_4780EC;
-					memcpy(video_477DF8_subtitles, v7, 675 - (v7 - video_477DF8_subtitles));
-					render_string_445AE0(video_4780F8_subtitles);
-				}
-			}
-			video_477DF8_subtitles[video_4780F0] = 0;
-			video_4780F8_subtitles->field_18 = 0;
-			video_4780F8_subtitles->num_lines = 0;
-			render_string_445770(video_4780F8_subtitles, video_477DF8_subtitles, 0);
-			--v3;
-		} while (v3);
-	}
-}
-
 //----- (0040D580) --------------------------------------------------------
 int timer_init(unsigned int fps)
 {
@@ -4811,15 +3487,15 @@ void TimedMessagePump()
 	if (timer_delta_updated)
 	{
 		timer_delta_updated = 0;
-		timer_time = timer_delta_ms + timeGetTime();
+		timer_time = timer_delta_ms + OsGetPrecisionTime();
 	}
 	else
 	{
-		v0 = timeGetTime();
+		v0 = OsGetPrecisionTime();
 		if ((int)(timer_time - v0) > 0)
-			Sleep(timer_time - v0);
+			OsThreadSleep(timer_time - v0);
 		timer_time += timer_delta_ms;
-		message_pump();
+        gWindow->PeekMessageAll();
 	}
 }
 
@@ -5017,11 +3693,11 @@ int sprite_40D8B0_dmg(Sprite *a1, int a2)
 	v32 = result + v8;
 	if (result < result + v8)
 	{
-		while (v9 < _478AAC_map_height)
+		while (v9 < map_get_height())
 		{
 			v10 = v6;
 			v29 = v6;
-			v11 = Map_get_tile(v6, v9);
+			v11 = boxd_get_tile(v6, v9);
 			v31 = v4 + v6;
 			if (v6 < v4 + v6)
 			{
@@ -5029,7 +3705,7 @@ int sprite_40D8B0_dmg(Sprite *a1, int a2)
 				v30 = v11->_4_entities;
 				do
 				{
-					if (v10 >= _4793F8_map_width)
+					if (v10 >= map_get_width())
 						break;
 					v28 = 0;
 					v13 = &dword_478108[v23];
@@ -5064,7 +3740,7 @@ int sprite_40D8B0_dmg(Sprite *a1, int a2)
 										}
 										if (v19 >= v23)
 										{
-											result = script_trigger_event(v3->script, EVT_MSG_DAMAGE, v3, v18->script);
+											result = script_trigger_event(v3->script, CMD_APPLY_DAMAGE, v3, v18->script);
 											*v13 = *v12;
 											++v13;
 											++v23;
@@ -5158,7 +3834,7 @@ int map_40DA90_move_entity(Entity *a1)
 		{
 			v15 = Map_40EEB0_place_entity(a1, new_map_x, new_map_y, 1);
 			if (v15 == 5)
-				return Map_40EA50_classify_tile_objects(v1, new_map_x, new_map_y, Map_get_tile(new_map_x, new_map_y));
+				return boxd_40EA50_classify_tile_objects(v1, new_map_x, new_map_y, boxd_get_tile(new_map_x, new_map_y));
 			boxd_40F160(v1, v1->sprite_map_x, v1->sprite_map_y, v1->_A4_idx_in_tile);
 			v1->_A4_idx_in_tile = v15;
 			v1->sprite_map_x = new_map_x;
@@ -5166,513 +3842,6 @@ int map_40DA90_move_entity(Entity *a1)
 		}
 		return 4;
 	}
-}
-// 4793F8: using guessed type int _4793F8_map_width;
-
-//----- (0040DBF0) --------------------------------------------------------
-bool entity_40DBF0_boxd_does_unit_fit(Entity *a1)
-{
-	enum UNIT_ID v1; // eax@1
-	stru196 *v2; // edx@1
-	enum UNIT_ID v3; // esi@1
-	Sprite *v4; // eax@4
-	int v5; // esi@4
-	int v6; // edi@4
-	int v7; // eax@4
-	int v8; // ebx@6
-	int v9; // edx@7
-	int v10; // edx@9
-	DataBoxd_stru0_per_map_unit *v11; // ebp@9
-	DataBoxd_stru0_per_map_unit *v12; // eax@10
-	int v13; // esi@10
-	Entity *v14; // edx@12
-	int v16; // [sp+10h] [bp-Ch]@8
-	int v17; // [sp+18h] [bp-4h]@7
-
-	v1 = array_4701D8[0].unit_id;
-	v2 = array_4701D8;
-	v3 = a1->unit_id;
-	if (array_4701D8[0].unit_id == v3)
-	{
-	LABEL_4:
-		v4 = a1->sprite;
-		v5 = (int)&a1->stru60.ptr_C->field_0;
-		v6 = (*(_DWORD *)(v5 + 4) + v4->x) >> 13;
-		v7 = (*(_DWORD *)(v5 + 8) + v4->y) >> 13;
-		if (v6 >= 0 && v7 >= 0)
-		{
-			v8 = v2->_4_x + v6;
-			if (v8 - 1 < _4793F8_map_width)
-			{
-				v9 = v7 + v2->_8_y;
-				v17 = v9;
-				if (v9 - 1 < _478AAC_map_height)
-				{
-					v16 = v7;
-					if (v7 >= v9)
-						return 1;
-					v10 = 24 * _4793F8_map_width;
-					v11 = Map_get_tile(v6, v7);
-					while (1)
-					{
-						v12 = v11;
-						v13 = v6;
-						if (v6 < v8)
-							break;
-					LABEL_17:
-						v11 = (DataBoxd_stru0_per_map_unit *)((char *)v11 + v10);
-						if (++v16 >= v17)
-							return 1;
-					}
-					while (1)
-					{
-						if (v12->flags & 0x1F)
-						{
-							v14 = v12->_4_entities[0];
-							if (!v14 || v14->entity_id != a1->entity_id)
-								break;
-						}
-						if (v12->flags2 & 0x40)
-							break;
-						++v12;
-						if (++v13 >= v8)
-						{
-							v10 = 24 * _4793F8_map_width;
-							goto LABEL_17;
-						}
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		while (v1 != -1)
-		{
-			v1 = v2[1].unit_id;
-			++v2;
-			if (v1 == v3)
-				goto LABEL_4;
-		}
-	}
-	return 0;
-}
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
-
-//----- (0040DD00) --------------------------------------------------------
-bool entity_40DD00_boxd(Entity *a1)
-{
-	enum UNIT_ID v1; // edx@1
-	enum UNIT_ID v2; // eax@1
-	stru196 *v3; // ebx@1
-	DataMobdItem_stru1 *v4; // eax@4
-	Sprite *v5; // ecx@4
-	int v6; // edx@4
-	int v7; // ebp@4
-	int v8; // eax@4
-	int v9; // edx@4
-	int v10; // edi@4
-	int i; // ebp@4
-	int v12; // esi@5
-	BOOL result; // eax@13
-	unsigned int v14; // [sp+10h] [bp-Ch]@1
-	Entity *a1a; // [sp+14h] [bp-8h]@1
-	int v16; // [sp+18h] [bp-4h]@4
-
-	v1 = a1->unit_id;
-	v2 = array_4701D8[0].unit_id;
-	a1a = a1;
-	v14 = 0x80000000;
-	v3 = array_4701D8;
-	if (array_4701D8[0].unit_id == v1)
-	{
-	LABEL_4:
-		v4 = a1->stru60.ptr_C;
-		v5 = a1->sprite;
-		v6 = v4->y_offset + v5->y;
-		v7 = v4->x_offset + v5->x;
-		v8 = 0;
-		v9 = v6 >> 13;
-		v16 = v9;
-		v10 = v9;
-		for (i = v7 >> 13; v10 < v3->_8_y + v9; ++v10)
-		{
-			v12 = i;
-			if (i < v3->_4_x + i)
-			{
-				do
-				{
-					if (v14 & v3->field_14)
-						v8 = Map_40EEB0_place_entity(a1a, v12, v10, 0);
-					else
-						v8 = Map_40EEB0_place_entity(a1a, v12, v10, 64);
-					v14 >>= 1;
-					++v12;
-				} while (v12 < v3->_4_x + i);
-				v9 = v16;
-			}
-			if (v8 == 5)
-				break;
-		}
-		result = 1;
-	}
-	else
-	{
-		while (v2 != -1)
-		{
-			v2 = v3[1].unit_id;
-			++v3;
-			if (v2 == v1)
-				goto LABEL_4;
-		}
-		result = 0;
-	}
-	return result;
-}
-
-//----- (0040DDD0) --------------------------------------------------------
-int entity_40DDD0_boxd(Entity *a1)
-{
-	enum UNIT_ID v1; // edx@1
-	int result; // eax@1
-	stru196 *v3; // ebx@1
-	Sprite *v4; // eax@4
-	DataMobdItem_stru1 *v5; // ecx@4
-	int v6; // edi@4
-	int v7; // ebp@4
-	int i; // edi@4
-	int v9; // esi@5
-	int v10; // [sp+10h] [bp-Ch]@1
-	Entity *v11; // [sp+14h] [bp-8h]@1
-	int v12; // [sp+18h] [bp-4h]@4
-
-	v1 = a1->unit_id;
-	result = array_4701D8[0].unit_id;
-	v11 = a1;
-	v10 = 0x80000000;
-	v3 = array_4701D8;
-	if (array_4701D8[0].unit_id == v1)
-	{
-	LABEL_4:
-		v4 = a1->sprite;
-		v5 = a1->stru60.ptr_C;
-		v6 = v5->x_offset + v4->x;
-		result = (v5->y_offset + v4->y) >> 13;
-		v12 = result;
-		v7 = result;
-		for (i = v6 >> 13; v7 < v3->_8_y + result; ++v7)
-		{
-			v9 = i;
-			if (i < v3->_4_x + i)
-			{
-				do
-				{
-					boxd_40F160(v11, v9++, v7, 0);
-					v10 >>= 1;
-				} while (v9 < v3->_4_x + i);
-				result = v12;
-			}
-		}
-	}
-	else
-	{
-		while (result != -1)
-		{
-			result = v3[1].unit_id;
-			++v3;
-			if (result == v1)
-				goto LABEL_4;
-		}
-	}
-	return result;
-}
-
-//----- (0040DE80) --------------------------------------------------------
-int map_place_entity(Entity *a1, int x, int y, int a3)
-{
-	if (entity_is_xl_vehicle(a1))
-		return Map_40E1B0_place_xl_entity(a1, x, y, a3) != 4 ? 5 : 0;
-	else
-		return Map_40EEB0_place_entity(a1, global2map(x), global2map(y), a3);
-}
-
-//----- (0040DEC0) --------------------------------------------------------
-char *entity_40DEC0_boxd(Entity *a1, int a2, int a3, int a4)
-{
-	Entity *v4; // ebp@1
-	char *result; // eax@2
-	Sprite *v6; // eax@3
-	int v7; // ecx@3
-	int v8; // eax@3
-	int v9; // esi@3
-	int v10; // edi@3
-	int v11; // ebx@3
-	int v12; // esi@3
-	int v13; // edi@3
-	char *i; // [sp+14h] [bp+4h]@3
-	int v15; // [sp+18h] [bp+8h]@3
-
-	v4 = a1;
-	if (entity_is_xl_vehicle(a1))
-	{
-		v6 = a1->sprite;
-		v7 = v6->y;
-		v8 = v6->x;
-		v9 = v8 - 4096;
-		v10 = v8 + 4096;
-		v11 = (v7 - 4096) >> 13;
-		result = (char *)((v7 + 4096) >> 13);
-		v12 = v9 >> 13;
-		v13 = v10 >> 13;
-		v15 = v12;
-		for (i = (char *)((v7 + 4096) >> 13); v11 <= (int)result; ++v11)
-		{
-			if (v12 <= v13)
-			{
-				do
-					boxd_40F160(v4, v12++, v11, 0);
-				while (v12 <= v13);
-				v12 = v15;
-				result = i;
-			}
-		}
-	}
-	else
-	{
-		result = (char *)boxd_40F160(a1, a2, a3, a4);
-	}
-	return result;
-}
-
-//----- (0040DF50) --------------------------------------------------------
-void Map_40DF50_update_tile(Entity *a1, int a2)
-{
-	Entity *v2; // ebp@1
-    int v3;
-	int v7; // ebx@3
-	int v8; // esi@3
-	int v9; // edi@3
-	int v11; // [sp+14h] [bp-8h]@3
-
-	v2 = a1;
-	if (entity_is_xl_vehicle(a1))
-	{
-		v7 = global2map(a1->sprite->y - 1 * 4096);
-		v3 = global2map(a1->sprite->y + 1 * 4096);
-		v8 = global2map(a1->sprite->x - 1 * 4096);
-		v9 = global2map(a1->sprite->x + 1 * 4096);
-		for (v7; v7 <= v3; ++v7)
-		{
-            for (v11 = v8; v11 <= v9; ++v11)
-			{
-                Map_40F230_update_tile(v2, v11++, v7, 0, a2);
-			}
-		}
-	}
-	else
-	{
-		Map_40F230_update_tile(a1, a1->sprite_map_x, a1->sprite_map_y, a1->_A4_idx_in_tile, a2);
-	}
-}
-
-//----- (0040E000) --------------------------------------------------------
-int entity_40E000_boxd(Entity *a1, int a2, int a3)
-{
-	Entity *v3; // edi@1
-	DataBoxd_stru0_per_map_unit *v4; // ebx@1
-	DataBoxd_stru0_per_map_unit *v5; // esi@2
-	int result; // eax@2
-	int v7; // ecx@4
-	Entity **v8; // edx@4
-	int v9; // edi@9
-	int v10; // ebp@9
-	int v11; // esi@9
-	int v12; // edx@9
-	int v13; // edi@9
-	int v14; // ebp@9
-	int v15; // ecx@9
-	int v16; // ebx@10
-	DataBoxd_stru0_per_map_unit *v17; // esi@10
-	int v18; // eax@11
-	int v19; // eax@12
-	int v20; // eax@24
-	Entity **v21; // ecx@24
-	int v22; // eax@29
-	DataBoxd_stru0_per_map_unit *v23; // [sp+10h] [bp-14h]@1
-	int v24; // [sp+14h] [bp-10h]@9
-	int v25; // [sp+18h] [bp-Ch]@9
-	Entity *a1a; // [sp+1Ch] [bp-8h]@1
-	int v27; // [sp+20h] [bp-4h]@9
-	int v28; // [sp+28h] [bp+4h]@9
-
-	v3 = a1;
-	v4 = 0;
-	a1a = a1;
-	v23 = 0;
-	if (a1->stats->field_4C != 4096)
-	{
-		v5 = Map_get_tile(a2 >> 13, a3 >> 13);
-		result = boxd_40ED00(a1, v5);
-		if (result == 1 || result == 3)
-		{
-			v7 = 0;
-			v8 = v5->_4_entities;
-			while (!*v8)
-			{
-				++v7;
-				++v8;
-				if (v7 >= 5)
-					return result;
-			}
-			v3->entity_27C = v5->_4_entities[v7];
-			v3->entity_27C_entity_id = v5->_4_entities[v7]->entity_id;
-		}
-		return result;
-	}
-	v9 = a2 - 4096;
-	v10 = a2 + 4096;
-	v11 = 0;
-	v12 = (a3 + 4096) >> 13;
-	v13 = v9 >> 13;
-	v14 = v10 >> 13;
-	v27 = (a3 + 4096) >> 13;
-	v25 = 0;
-	v24 = 0;
-	v28 = (a3 - 4096) >> 13;
-	v15 = v28;
-	if (v28 <= v12)
-	{
-		do
-		{
-			v16 = v13;
-			v17 = Map_get_tile(v13, v15);
-			if (v13 <= v14)
-			{
-				while (1)
-				{
-					v18 = boxd_40ED00(a1a, v17);
-					if (!v18)
-						return 0;
-					v19 = v18 - 1;
-					if (!v19)
-						break;
-					if (v19 == 2)
-					{
-						++v25;
-					LABEL_16:
-						v23 = v17;
-					}
-					++v16;
-					++v17;
-					if (v16 > v14)
-					{
-						v15 = v28;
-						v12 = v27;
-						goto LABEL_19;
-					}
-				}
-				++v24;
-				goto LABEL_16;
-			}
-		LABEL_19:
-			v28 = ++v15;
-		} while (v15 <= v12);
-		v4 = v23;
-		v11 = v24;
-	}
-	if (v11 || v25)
-	{
-		v20 = 0;
-		v21 = v4->_4_entities;
-		while (!*v21)
-		{
-			++v20;
-			++v21;
-			if (v20 >= 5)
-				goto LABEL_29;
-		}
-		a1a->entity_27C = v4->_4_entities[v20];
-		a1a->entity_27C_entity_id = v4->_4_entities[v20]->entity_id;
-	LABEL_29:
-		v22 = -(v11 != 0);
-		LOBYTE_HEXRAYS(v22) = v22 & 0xFE;
-		result = v22 + 3;
-	}
-	else
-	{
-		result = 2;
-	}
-	return result;
-}
-// 4793F8: using guessed type int _4793F8_map_width;
-
-//----- (0040E1B0) --------------------------------------------------------
-int Map_40E1B0_place_xl_entity(Entity *a1, int x, int y, int a4)
-{
-	Entity *v4; // edi@1
-	int v5; // esi@1
-	int v6; // eax@1
-	int v7; // ecx@1
-	int v8; // ebp@1
-	int v9; // ebx@1
-	int v11; // eax@9
-	int v12; // ebp@9
-	int i; // esi@10
-	int a2a; // [sp+10h] [bp-8h]@1
-	int v15; // [sp+14h] [bp-4h]@1
-	int ya; // [sp+1Ch] [bp+4h]@1
-	int a4a; // [sp+20h] [bp+8h]@9
-
-	v4 = a1;
-	v5 = -1;
-	v6 = -1;
-	v7 = a1->stats->field_4C;
-	a2a = (x - v7) >> 13;
-	v8 = (y - v7) >> 13;
-	v9 = (v7 + x) >> 13;
-	v15 = v8;
-	ya = (y + v7) >> 13;
-	if (v8 > ya)
-	{
-	LABEL_7:
-		if (v6 != 5)
-		{
-			v4->_A4_idx_in_tile = 0;
-			return 4;
-		}
-	}
-	else
-	{
-		while (1)
-		{
-			v5 = a2a;
-			if (a2a <= v9)
-				break;
-		LABEL_5:
-			if (v6 == 5)
-				goto LABEL_9;
-			if (++v8 > ya)
-				goto LABEL_7;
-		}
-		while (1)
-		{
-			v6 = Map_40EEB0_place_entity(v4, v5, v8, a4);
-			if (v6 == 5)
-				break;
-			if (++v5 > v9)
-				goto LABEL_5;
-		}
-	}
-LABEL_9:
-	v11 = Map_40EA50_classify_tile_objects(v4, v5, v8, Map_get_tile(v5, v8));
-	v12 = v15;
-	for (a4a = v11; v12 <= ya; ++v12)
-	{
-		for (i = a2a; i <= v9; ++i)
-			boxd_40F160(v4, i, v12, 0);
-	}
-	return a4a;
 }
 
 //----- (0040E3E0) --------------------------------------------------------
@@ -5686,1078 +3855,6 @@ char *get_resource_res_subfolder()
 	return result;
 }
 
-//----- (0040E400) --------------------------------------------------------
-void _40E400_set_palette(PALETTEENTRY *palette)
-{
-    render_current_palette = palette;
-
-	ppalette_4785C0 = palette;
-	_4785DC_syscolors_palette_entries = palette;
-	_478A14_prev_stru1_palette_entries = -1;
-	_40E430_update_palette(render_default_stru1->anim_pos);
-}
-// 478A14: using guessed type int _478A14_prev_stru1_palette_entries;
-
-//----- (0040E430) --------------------------------------------------------
-void _40E430_update_palette(unsigned int a1)
-{
-	unsigned int v1; // esi@1
-	PALETTEENTRY *v2; // edx@7
-	PALETTEENTRY *v3; // eax@7
-	int v4; // edi@7
-	BYTE *v5; // edx@8
-	BYTE *v6; // eax@8
-	__int16 v7; // cx@8
-	unsigned int v8; // ecx@10
-	BYTE *v9; // edx@13
-	BYTE *v10; // eax@13
-	unsigned int v11; // ecx@13
-	BYTE *v12; // edx@16
-	BYTE *v13; // eax@16
-	unsigned int v14; // ecx@16
-
-	v1 = a1 >> 23;
-	if (a1 >> 23)
-	{
-		if (_4785DC_syscolors_palette_entries && v1 != _478A14_prev_stru1_palette_entries)
-		{
-			_478A14_prev_stru1_palette_entries = a1 >> 23;
-			if (v1 == 256)
-			{
-				ppalette_4785C0 = _4785DC_syscolors_palette_entries;
-				_431980_update_primary_palette(_4785DC_syscolors_palette_entries);
-			}
-			else
-			{
-				v2 = _4785DC_syscolors_palette_entries;
-				v3 = palette_4785F0;
-				v4 = 256;
-				if (a1 > 0x100)
-				{
-					do
-					{
-						v8 = v1 * v2->peRed >> 8;
-						if ((unsigned __int8)v8 > 0xFFu)
-							v3->peRed = -1;
-						else
-							v3->peRed = v8;
-						v9 = &v2->peGreen;
-						v10 = &v3->peGreen;
-						v11 = v1 * *v9 >> 8;
-						if ((unsigned __int8)v11 > 0xFFu)
-							*v10 = -1;
-						else
-							*v10 = v11;
-						v12 = v9 + 1;
-						v13 = v10 + 1;
-						v14 = v1 * *v12 >> 8;
-						if ((unsigned __int8)v14 > 0xFFu)
-							*v13 = -1;
-						else
-							*v13 = v14;
-						v2 = (PALETTEENTRY *)(v12 + 2);
-						v3 = (PALETTEENTRY *)(v13 + 2);
-						--v4;
-					} while (v4);
-				}
-				else
-				{
-					do
-					{
-						v3->peRed = (unsigned __int16)(v1 * v2->peRed) >> 8;
-						v5 = &v2->peGreen;
-						v6 = &v3->peGreen;
-						*v6++ = (unsigned __int16)(v1 * *v5++) >> 8;
-						v7 = *v5;
-						v2 = (PALETTEENTRY *)(v5 + 2);
-						*v6 = (unsigned __int16)(v1 * v7) >> 8;
-						v3 = (PALETTEENTRY *)(v6 + 2);
-						--v4;
-					} while (v4);
-				}
-				ppalette_4785C0 = palette_4785F0;
-				_431980_update_primary_palette(palette_4785F0);
-			}
-		}
-	}
-	else
-	{
-        REND_DirectDrawClearScreen(0);
-	}
-}
-
-//----- (0040E530) --------------------------------------------------------
-void RENDER_SetViewportAndClear()
-{
-	p_render_set_clip(0, 0, render_width, render_height);
-    REND_DirectDrawClearScreen(0);
-}
-
-//----- (0040E550) --------------------------------------------------------
-PALETTEENTRY *sub_40E550()
-{
-	return _4785DC_syscolors_palette_entries;
-}
-
-//----- (0040E560) --------------------------------------------------------
-void _40E560_flip_gdi_update_syscolors()
-{
-	unsigned int v0; // esi@3
-	unsigned int v1; // eax@6
-	int v2; // ebp@7
-	COLORREF v3; // edi@7
-	char *v4; // esi@7
-	int v5; // eax@8
-	int v6; // ecx@9
-	unsigned __int16 v7; // dx@13
-	int v8; // [sp+4h] [bp-78h]@7
-	int v9; // [sp+8h] [bp-74h]@7
-	int v10; // [sp+Ch] [bp-70h]@7
-	unsigned int v11; // [sp+10h] [bp-6Ch]@6
-	int v12; // [sp+14h] [bp-68h]@7
-	COLORREF aRgbValues[25]; // [sp+18h] [bp-64h]@13
-
-	if (global_fullscreen == 1)
-	{
-		pdd->FlipToGDISurface();
-		if (_465680_get_sys_colors)
-		{
-			v0 = 0;
-			do
-			{
-				sys_colors[v0] = GetSysColor(*(int *)((char *)&sys_colors_elements + v0 * 4));
-				++v0;
-			} while (v0 < 25);
-			_465680_get_sys_colors = 0;
-		}
-		v1 = 0;
-		v11 = 0;
-		do
-		{
-			v2 = *((_BYTE *)&sys_colors[0] + v1 + 1);
-			v10 = 0;
-			v9 = 195075;
-			v8 = 0;
-			v12 = *((_BYTE *)sys_colors + v1);
-			v3 = (*(COLORREF *)((char *)sys_colors + v1) >> 16) & 0xFF;
-			v4 = (char *)&RenderDD_primary_palette_values[0].peGreen;
-			do
-			{
-				v5 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
-					+ (v2 - (unsigned __int8)*v4) * (v2 - (unsigned __int8)*v4)
-					+ (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
-				if (v5 >= v9)
-				{
-					v6 = v10;
-				}
-				else
-				{
-					v6 = v8;
-					v10 = v8;
-					if (!v5)
-						break;
-					v9 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
-						+ (v2 - (unsigned __int8)*v4) * (v2 - (unsigned __int8)*v4)
-						+ (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
-				}
-				v4 += 4;
-				++v8;
-			} while ((int)v4 < (int)&render_sw_hdc + 1);
-			LOBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values[v6].peGreen;
-			HIBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values[v6].peBlue;
-			*(COLORREF *)((char *)aRgbValues + v11) = RenderDD_primary_palette_values[v6].peRed | (v7 << 8);
-			v1 = v11 + 4;
-			v11 = v1;
-		} while (v1 < 0x64);
-		SetSysColors(25, &sys_colors_elements, aRgbValues);
-	}
-}
-// 465680: using guessed type int _465680_get_sys_colors;
-// 4798AC: using guessed type int global_fullscreen;
-
-//----- (0040E6B0) --------------------------------------------------------
-void _40E6B0_set_sys_colors()
-{
-	if (global_fullscreen == 1)
-	{
-		SetSysColors(25, &sys_colors_elements, sys_colors);
-		_431980_update_primary_palette(_4785DC_syscolors_palette_entries);
-	}
-}
-// 4798AC: using guessed type int global_fullscreen;
-
-//----- (0040E6E0) --------------------------------------------------------
-bool boxd_40E6E0()
-{
-	DataBoxd *v0; // eax@1
-	DataBoxdItem *v1; // ebx@2
-	int v2; // edi@2
-	int v3; // eax@2
-	DataBoxd_stru0_per_map_unit *v4; // eax@2
-	BOOL result; // eax@3
-	int v6; // esi@4
-	int v7; // ecx@5
-	int v8; // eax@6
-	int v9; // edx@6
-	BoxdTile *ptile; // edx@12
-	BoxdTile_stru0 *ptilE; // eax@12
-	int v12; // eax@13
-	DataBoxd_stru0_per_map_unit *v13; // esi@16
-	int v14; // edi@16
-	int v15; // ebp@16
-	int v16; // edx@17
-	int v17; // edi@19
-	int v18; // ebp@19
-	int v19; // eax@21
-	BoxdTile_stru0 *v20; // ecx@21
-	int v21; // edx@21
-	int v22; // ecx@25
-	int v23; // ecx@26
-	DataBoxd_stru0_per_map_unit *v24; // [sp+10h] [bp-34h]@9
-	BoxdTile *pt1le; // [sp+14h] [bp-30h]@12
-	int j; // [sp+18h] [bp-2Ch]@10
-	BoxdTile **tiles; // [sp+1Ch] [bp-28h]@4
-	int i; // [sp+20h] [bp-24h]@9
-	int v29; // [sp+24h] [bp-20h]@19
-	DataBoxdItem *v30; // [sp+28h] [bp-1Ch]@2
-	int v31; // [sp+2Ch] [bp-18h]@16
-	int v32; // [sp+30h] [bp-14h]@2
-	int v33; // [sp+34h] [bp-10h]@2
-	int v34; // [sp+38h] [bp-Ch]@19
-
-	byte_478C08 = 0;
-	kknd_srand_3(0);
-	dword_478FF4 = 0;
-	dword_47953C = 0;
-	dword_47952C = 0;
-	dword_478AB0 = 0;
-	v0 = (DataBoxd *)LVL_FindSection(BOXD);
-	if (v0)
-	{
-		v1 = v0->items;
-		v30 = v1;
-		v2 = v0->items->some_map_width_scale - 13;
-		v32 = v0->items->some_map_width_scale - 13;
-		_4793F8_map_width = v0->items->map_num_x_tiles << v32;
-		v33 = v1->some_map_height_scale - 13;
-		v3 = v1->map_num_y_tiles << v33;
-		_478AB4_map_width_shl_13 = _4793F8_map_width << 13;
-		_478AAC_map_height = v3;
-		_478FF0_map_height_shl_13 = v3 << 13;
-		v4 = (DataBoxd_stru0_per_map_unit *)malloc(24 * _4793F8_map_width * v3);
-		_478AA8_boxd_stru0_array = v4;
-		if (!v4)
-			return 0;
-		tiles = v1->map_tiles;
-		v6 = 0;
-		if (_4793F8_map_width * _478AAC_map_height > 0)
-		{
-			v7 = 0;
-			do
-			{
-				v4[v7].flags = 0;
-				v8 = v7 * 24 + 4;
-				_478AA8_boxd_stru0_array[v7].flags2 = 0;
-				v9 = 5;
-				do
-				{
-					v8 += 4;
-					--v9;
-					*(_DWORD *)((char *)_478AA8_boxd_stru0_array + v8 - 4) = 0;// array_4 (5 bytes)
-				} while (v9);
-				++v6;
-				++v7;
-				v4 = _478AA8_boxd_stru0_array;
-			} while (v6 < _4793F8_map_width * _478AAC_map_height);
-		}
-		v24 = v4;
-		for (i = 0; i < v1->map_num_y_tiles; ++i)
-		{
-			for (j = 0; j < v1->map_num_x_tiles; ++j)
-			{
-				if (*tiles)
-				{
-					ptile = *tiles;
-					pt1le = *tiles;
-					ptilE = (*tiles)->pstru0;
-					if (ptilE)
-					{
-						do
-						{
-							v12 = ptilE->type;
-							if (v12 == 6 || v12 == 7 || v12 == 8)
-							{
-								v13 = v24;
-								v14 = 0;
-								v15 = 1 << v33;
-								v31 = 0;
-								if (1 << v33 > 0)
-								{
-									v16 = 1 << v32;
-									do
-									{
-										if (v16 > 0)
-										{
-											v17 = v14 << 13;
-											v34 = v17;
-											v18 = 0;
-											v29 = v16;
-											while (1)
-											{
-												v19 = v18 + (j << v1->some_map_width_scale);
-												v20 = pt1le->pstru0;
-												v21 = v17 + (i << v1->some_map_height_scale);
-												if (pt1le->pstru0->_4_x < v19 + 0x2000
-													&& v20->_10_z > v19
-													&& v20->_8_y < v21 + 0x2000
-													&& v20->_14_w > v21)
-												{
-													v22 = v20->type - 6;
-													if (v22)
-													{
-														v23 = v22 - 1;
-														if (v23)
-														{
-															if (v23 == 1)
-															{
-																v13->flags = 0;
-																v13->flags2 = 64;
-															}
-														}
-														else
-														{
-															v13->flags = 63;
-														}
-													}
-													else
-													{
-														v13->flags = 95;
-													}
-												}
-												v1 = v30;
-												v18 += 0x2000;
-												++v13;
-												if (!--v29)
-													break;
-												v17 = v34;
-											}
-											v14 = v31;
-											v15 = 1 << v33;
-											v16 = 1 << v32;
-										}
-										v31 = ++v14;
-										v13 += _4793F8_map_width - v16;
-									} while (v14 < v15);
-									ptile = pt1le;
-								}
-							}
-							ptilE = (BoxdTile_stru0 *)ptile->ptr_4;
-							ptile = (BoxdTile *)((char *)ptile + 4);
-							pt1le = ptile;
-						} while (ptilE);
-						LOBYTE_HEXRAYS(v2) = v32;
-					}
-				}
-				v24 += 1 << v2;
-				++tiles;
-			}
-			v24 += _4793F8_map_width * ((1 << v33) - 1);
-		}
-	}
-	else
-	{
-		_478AAC_map_height = 0;
-		_4793F8_map_width = 0;
-		_478AA8_boxd_stru0_array = 0;
-	}
-	result = 1;
-	_478BE8_map_info__see40E6E0[0] = -_4793F8_map_width;
-	_478BE8_map_info__see40E6E0[1] = 1 - _4793F8_map_width;
-	_478BE8_map_info__see40E6E0[3] = _4793F8_map_width + 1;
-	_478BE8_map_info__see40E6E0[5] = _4793F8_map_width - 1;
-	_478BE8_map_info__see40E6E0[2] = 1;
-	_478BE8_map_info__see40E6E0[4] = _4793F8_map_width;
-	_478BE8_map_info__see40E6E0[6] = -1;
-	_478BE8_map_info__see40E6E0[7] = -1 - _4793F8_map_width;
-	return result;
-}
-
-//----- (0040EA20) --------------------------------------------------------
-void boxd_40EA20()
-{
-	++dword_47953C;
-}
-// 47953C: using guessed type int dword_47953C;
-
-//----- (0040EA30) --------------------------------------------------------
-void boxd_40EA30_cleanup()
-{
-	free(_478AA8_boxd_stru0_array);
-	_478AA8_boxd_stru0_array = 0;
-}
-
-//----- (0040EA50) --------------------------------------------------------
-int boxd_40EA50_original(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a4)
-{
-	int v4; // eax@1
-	int v5; // edx@2
-	int v6; // eax@5
-	int v7; // eax@8
-	int v8; // edi@8
-	DataBoxd_stru0_per_map_unit *v9; // ebx@13
-	char v10; // al@13
-	enum PLAYER_SIDE v11; // ebp@24
-	int v12; // edi@24
-	Entity **v13; // esi@24
-	int result; // eax@37
-	char v15; // al@39
-	char v16; // al@44
-	Entity **v17; // esi@46
-	enum PLAYER_SIDE v18; // ebx@51
-	int v19; // edi@51
-	int v20; // eax@57
-	int v21; // [sp+10h] [bp-1Ch]@8
-	int v22; // [sp+14h] [bp-18h]@8
-	int v23; // [sp+18h] [bp-14h]@8
-	int v24; // [sp+1Ch] [bp-10h]@8
-	Entity *v25; // [sp+20h] [bp-Ch]@1
-	int v26; // [sp+24h] [bp-8h]@8
-	int v27; // [sp+28h] [bp-4h]@1
-
-	v4 = map_x;
-	v27 = map_x;
-	v25 = a1;
-	if (map_x < 0)
-		return 0;
-	v5 = _4793F8_map_width;
-	if (v4 >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
-		return 0;
-	v6 = a1->stats->field_4C;
-    if (v6 == 128)
-    {
-        v16 = a4->flags;
-        if (a4->flags & 0x60 && !(v16 & 0x80))
-            return 0;
-        v17 = a4->_4_entities;
-        if (a4->_4_entities[0] == a1)
-        {
-            result = 2;
-        }
-        else if (v16 & 0x1F)
-        {
-            if (!(v16 & 0x80))
-            {
-                v18 = a1->player_side;
-                v19 = 0;
-                while (!*v17 || is_enemy(v18, *v17))
-                {
-                    ++v19;
-                    ++v17;
-                    if (v19 >= 5)
-                    {
-                        if (!v25->stats->field_2C)
-                            break;
-                        return 2;
-                    }
-                }
-            }
-            v20 = -(((a4->flags ^ a4->flags2) & 0x1F) != 0);
-            LOBYTE_HEXRAYS(v20) = v20 & 0xFE;
-            result = v20 + 3;
-        }
-        else
-        {
-            result = 2;
-        }
-        return result;
-    }
-    else if (v6 == 512)
-    {
-        v15 = a4->flags;
-        if (!(a4->flags & 0x60) || v15 & 0x80)
-        {
-            if ((v15 & 0x1F) == 31)
-                result = (a4->flags2 & 0x1F) != 0 ? 3 : 1;
-            else
-                result = 2;
-            return result;
-        }
-    }
-    else if (entity_is_xl_vehicle(a1))
-    {
-        v7 = 0;
-        v8 = 0;
-        v23 = 0;
-        v24 = 0;
-        v26 = 0;
-        v22 = 0;
-        v21 = 0;
-        while (v8 + v27 < v5 && v7 + map_y < _478AAC_map_height)
-        {
-            v9 = &a4[v8 + (v7 != 0 ? v5 : 0)];
-            v10 = v9->flags;
-            if (v9->flags & 0x60 && !(v10 & 0x80))
-                v26 = 1;
-            if (v10 & 0x80 && v9->_4_entities[0] != v25)
-            {
-                if ((v9->flags2 & 0x1F) == 31)
-                    v24 = 1;
-                else
-                    v23 = 1;
-            }
-            if (!(v10 & 0x80) && v10 & 0x1F)
-            {
-                if (v25->stats->field_2C)
-                {
-                    v11 = v25->player_side;
-                    v12 = 0;
-                    v13 = v9->_4_entities;
-                    while (!*v13 || is_enemy(v11, *v13))
-                    {
-                        ++v12;
-                        ++v13;
-                        if (v12 >= 5)
-                        {
-                            v8 = v21;
-                            goto LABEL_33;
-                        }
-                    }
-                    v8 = v21;
-                }
-                if ((v9->flags ^ v9->flags2) & 0x1F)
-                    v23 = 1;
-                else
-                    v24 = 1;
-            }
-        LABEL_33:
-            v7 = v22;
-            v21 = ++v8;
-            if (v8 < 2)
-            {
-                v5 = _4793F8_map_width;
-            }
-            else
-            {
-                v7 = v22 + 1;
-                v22 = v7;
-                if (v7 >= 2)
-                {
-                    if (v26)
-                        return 0;
-                    if (v23)
-                        result = 1;
-                    else
-                        result = (v24 != 0) + 2;
-                    return result;
-                }
-                v5 = _4793F8_map_width;
-                v8 = 0;
-                v21 = 0;
-            }
-        }
-    }
-	return 0;
-}
-
-//----- (0040EA50) --------------------------------------------------------
-int boxd_40EA50_refactored(Entity *entity, int map_x, int map_y, DataBoxd_stru0_per_map_unit *tile)
-{
-    int v6; // eax@5
-    int v7; // eax@8
-    int v8; // edi@8
-    DataBoxd_stru0_per_map_unit *v9; // ebx@13
-    enum PLAYER_SIDE v11; // ebp@24
-    int v12; // edi@24
-    Entity **v13; // esi@24
-    int result; // eax@37
-    Entity **v17; // esi@46
-    enum PLAYER_SIDE v18; // ebx@51
-    int v19; // edi@51
-    int v20; // eax@57
-    int v21; // [sp+10h] [bp-1Ch]@8
-    int v22; // [sp+14h] [bp-18h]@8
-    int v23; // [sp+18h] [bp-14h]@8
-    int v24; // [sp+1Ch] [bp-10h]@8
-    int v26; // [sp+24h] [bp-8h]@8
-
-    if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
-        return 0;
-    v6 = entity->stats->field_4C;
-    if (v6 == 128)
-    {
-        if (tile->IsImpassibleTerrain() && !tile->IsVehicleOrBuilding())
-            return 0;
-        v17 = tile->_4_entities;
-        if (tile->_4_entities[0] == entity)
-        {
-            return 2;
-        }
-        else if (tile->flags & BOXD_STRU0_ALL_SLOTS)
-        {
-            if (!tile->IsVehicleOrBuilding())
-            {
-                v18 = entity->player_side;
-                v19 = 0;
-                while (!*v17 || is_enemy(v18, *v17))
-                {
-                    ++v19;
-                    ++v17;
-                    if (v19 >= 5)
-                    {
-                        if (!entity->stats->field_2C)
-                            break;
-                        return 2;
-                    }
-                }
-            }
-            v20 = -(((tile->flags ^ tile->flags2) & BOXD_STRU0_ALL_SLOTS) != 0);
-            LOBYTE_HEXRAYS(v20) = v20 & 0xFE;
-            return v20 + 3;
-        }
-        else
-        {
-            return 2;
-        }
-    }
-    else if (v6 == 512)
-    {
-        if (!tile->IsImpassibleTerrain() || tile->IsVehicleOrBuilding())
-        {
-            if ((tile->flags & BOXD_STRU0_ALL_SLOTS) == BOXD_STRU0_ALL_SLOTS)
-                return (tile->flags2 & BOXD_STRU0_ALL_SLOTS) != 0 ? 3 : 1;
-            else
-                return 2;
-        }
-    }
-    else if (entity_is_xl_vehicle(entity))
-    {
-        v7 = 0;
-        v8 = 0;
-        v23 = 0;
-        v24 = 0;
-        v26 = 0;
-        v22 = 0;
-        v21 = 0;
-        while (v8 + map_x < _4793F8_map_width && v7 + map_y < _478AAC_map_height)
-        {
-            v9 = &tile[v8 + (v7 != 0 ? _4793F8_map_width : 0)];
-            if (v9->IsImpassibleTerrain() && !v9->IsVehicleOrBuilding())
-                v26 = 1;
-            if (v9->IsVehicleOrBuilding() && v9->_4_entities[0] != entity)
-            {
-                if ((v9->flags2 & BOXD_STRU0_ALL_SLOTS) == BOXD_STRU0_ALL_SLOTS)
-                    v24 = 1;
-                else
-                    v23 = 1;
-            }
-            if (!v9->IsVehicleOrBuilding() && v9->flags & BOXD_STRU0_ALL_SLOTS)
-            {
-                if (entity->stats->field_2C)
-                {
-                    v11 = entity->player_side;
-                    v12 = 0;
-                    v13 = v9->_4_entities;
-                    while (!*v13 || is_enemy(v11, *v13))
-                    {
-                        ++v12;
-                        ++v13;
-                        if (v12 >= 5)
-                        {
-                            v8 = v21;
-                            goto LABEL_33;
-                        }
-                    }
-                    v8 = v21;
-                }
-                if ((v9->flags ^ v9->flags2) & BOXD_STRU0_ALL_SLOTS)
-                    v23 = 1;
-                else
-                    v24 = 1;
-            }
-        LABEL_33:
-            v7 = v22;
-            v21 = ++v8;
-            if (v8 < 2)
-            {
-                ;
-            }
-            else
-            {
-                v7 = v22 + 1;
-                v22 = v7;
-                if (v7 >= 2)
-                {
-                    if (v26)
-                        return 0;
-                    if (v23)
-                        result = 1;
-                    else
-                        result = (v24 != 0) + 2;
-                    return result;
-                }
-                v8 = 0;
-                v21 = 0;
-            }
-        }
-    }
-    return 0;
-}
-
-int Map_40EA50_classify_tile_objects(Entity *a1, int map_x, int map_y, DataBoxd_stru0_per_map_unit *a4) {
-    int one = boxd_40EA50_original(a1, map_x, map_y, a4);
-    int two = boxd_40EA50_refactored(a1, map_x, map_y, a4);
-    assert(one == two);
-    return two;
-}
-
-//----- (0040ED00) --------------------------------------------------------
-int boxd_40ED00(Entity *a1, DataBoxd_stru0_per_map_unit *a2)
-{
-	Entity *v2; // ebp@1
-	int v3; // eax@1
-	int result; // eax@4
-	char v5; // al@5
-	char v6; // al@11
-	Entity **v7; // esi@14
-	enum PLAYER_SIDE v8; // ebx@19
-	int v9; // edi@19
-	int v10; // eax@26
-	DataBoxd_stru0_per_map_unit *v11; // [sp+10h] [bp-4h]@1
-
-	v2 = a1;
-	v11 = a2;
-	v3 = a1->stats->field_4C;
-	if (v3 != 128)
-	{
-		if (v3 == 512)
-		{
-			v5 = a2->flags;
-			if (!(a2->flags & 0x60) || v5 & 0x80)
-			{
-				if ((v5 & 0x1F) == 31)
-					result = (a2->flags2 & 0x1F) != 0 ? 3 : 1;
-				else
-					result = 2;
-			}
-			else
-			{
-				result = 0;
-			}
-			return result;
-		}
-		if (v3 != 4096)
-			return 0;
-	}
-	v6 = a2->flags;
-	if (!(a2->flags & 0x60) || v6 & 0x80)
-	{
-		v7 = a2->_4_entities;
-		if (a2->_4_entities[0] == a1)
-		{
-			result = 2;
-		}
-		else if (v6 & 0x1F)
-		{
-			if (!(v6 & 0x80))
-			{
-				v8 = a1->player_side;
-				v9 = 0;
-				while (!*v7 || is_enemy(v8, *v7))
-				{
-					++v9;
-					++v7;
-					if (v9 >= 5)
-					{
-						if (v2->stats->field_2C)
-							return 2;
-						break;
-					}
-				}
-				a2 = v11;
-			}
-			v10 = -(((a2->flags ^ a2->flags2) & 0x1F) != 0);
-			LOBYTE_HEXRAYS(v10) = v10 & 0xFE;
-			result = v10 + 3;
-		}
-		else
-		{
-			result = 2;
-		}
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
-//----- (0040EDF0) --------------------------------------------------------
-bool boxd_40EDF0(DataBoxd_stru0_per_map_unit *a1, Entity *a2, Entity *a3)
-{
-	Entity *v3; // eax@2
-	BOOL result; // eax@4
-
-	result = 1;
-	if (a1->flags & 0x40)
-	{
-		v3 = a1->_4_entities[0];
-		if (v3 != a2 && v3 != a3)
-			result = 0;
-	}
-	return result;
-}
-
-//----- (0040EE10) --------------------------------------------------------
-Entity *boxd_40EE10_prolly_get_building(int map_x, int map_y)
-{
-	DataBoxd_stru0_per_map_unit *v2; // eax@5
-	Entity *v3; // ecx@6
-	int v4; // ecx@7
-	Entity *result; // eax@9
-	enum UNIT_ID v6; // ecx@11
-
-	if (map_x < 0 || map_y < 1 || map_x >= _4793F8_map_width || map_y >= _478AAC_map_height)
-		goto LABEL_16;
-	v2 = Map_get_tile(map_x, map_y);
-	if (v2->flags2 & 0x40)
-	{
-		v3 = v2[-1]._4_entities[0];
-		if (v3)
-		{
-			v4 = v3->unit_id;
-			if (v4 >= (int)UNIT_STATS_SURV_DRILL_RIG && v4 <= (int)UNIT_STATS_MUTE_ALCHEMY_HALL)
-				return v2[-1]._4_entities[0];
-		}
-	}
-	result = v2->_4_entities[0];
-	if (!result
-		|| (v6 = result->unit_id, (int)v6 < (int)UNIT_STATS_SURV_DRILL_RIG)
-		|| (int)v6 >(int)UNIT_STATS_MUTE_ALCHEMY_HALL)
-	{
-	LABEL_16:
-		result = 0;
-	}
-	return result;
-}
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
-
-//----- (0040EE70) --------------------------------------------------------
-int boxd_40EE70(int map_x, int map_y)
-{
-	DataBoxd_stru0_per_map_unit *v2; // eax@5
-	int result; // eax@7
-
-	result = 0;
-	if (map_x >= 0 && map_y >= 1 && map_x < _4793F8_map_width && map_y < _478AAC_map_height)
-	{
-		v2 = Map_get_tile(map_x, map_y);
-		if (!(v2->flags & 0x1F) && !(v2->flags2 & 0x40))
-			result = 1;
-	}
-	return result;
-}
-
-int Map_40EEB0_place_entity_infantry(Entity *a1, DataBoxd_stru0_per_map_unit *v5, int a4) {
-    int v8 = v5->flags & 0x1F;
-    if (v8 < 31)
-    {
-        int v9 = a1->_A4_idx_in_tile;
-        if ((1 << a1->_A4_idx_in_tile) & v8)
-            v9 = dword_465688[v8];
-        if (v9 != 5)
-        {
-            int v10 = v5->flags2;
-            v5->flags |= (1 << v9);
-            v5->flags2 = ((_BYTE)a4 << v9) | v10;
-            v5->_4_entities[v9] = a1;
-            map_reveal_fog_around_entity(a1);
-            return v9;
-        }
-    }
-    return 5;
-}
-
-//----- (0040EEB0) --------------------------------------------------------
-int Map_40EEB0_place_entity(Entity *a1, int map_x, int map_y, int a4)
-{
-	Entity *v4; // ebx@1
-	DataBoxd_stru0_per_map_unit *v5; // ebp@5
-	char v7; // al@5
-	int result; // eax@10
-	char v12; // cl@19
-	char v13; // cl@20
-	Entity **v14; // esi@25
-	int v15; // edi@30
-	Entity *v16; // esi@34
-	int v17; // edi@34
-	char v18; // al@39
-	char v19; // al@40
-	enum PLAYER_SIDE player_side; // [sp+10h] [bp-4h]@30
-
-	v4 = a1;
-	if (map_x < 0 || map_x >= _4793F8_map_width || map_y < 0 || map_y >= _478AAC_map_height)
-		return 5;
-	v5 = Map_get_tile(map_x, map_y);
-	v7 = v5->flags;
-	if (a1->IsInfantry())
-	{
-        return Map_40EEB0_place_entity_infantry(a1, v5, a4);
-	}
-	if (v5->IsAnySlotOccupied())
-	{
-		v14 = v5->_4_entities;
-		if (v5->_4_entities[0] == v4)
-			return 0;
-		if (!v5->IsImpassibleTerrain() && !(v7 & 0x80) && a1->stats->field_2C)
-		{
-			v15 = 0;
-			player_side = v4->player_side;
-			while (!*v14 || is_enemy(player_side, *v14))
-			{
-				++v15;
-				++v14;
-				if (v15 >= 5)
-				{
-					v16 = (Entity *)v5->_4_entities;
-					v17 = 5;
-					do
-					{
-						if (v16->next && v16->next->script)
-						{
-							script_trigger_event(v4->script, EVT_MSG_1499, 0, v16->next->script);
-							v16->next = 0;
-						}
-						v16 = (Entity *)((char *)v16 + 4);
-						--v17;
-					} while (v17);
-					v18 = v5->flags2;
-					v5->flags |= 0x9Fu;
-					if (a4)
-						v19 = v18 | 0x1F;
-					else
-						v19 = v18 & 0xE0;
-					v5->flags2 = v19;
-					v5->_4_entities[0] = v4;
-					goto LABEL_43;
-				}
-			}
-		}
-		return 5;
-	}
-	if (!a1->stats->speed)
-	{
-		if (!(v5->flags2 & 0x40))
-		{
-			v5->flags = v7 | 0x40;
-			goto LABEL_15;
-		}
-		return 5;
-	}
-LABEL_15:
-	if (a4 == 64)
-		v5->flags = 0;
-    else {
-        v5->flags |= BOXD_STRU0_ALL_SLOTS | BOXD_STRU0_VEHICLE_BUILDING;
-    }
-	if (a4)
-	{
-		v12 = v5->flags2;
-		if (a4 == 64)
-			v13 = v12 | 0x40;
-		else
-			v13 = v12 | 0x1F;
-	}
-	else
-	{
-		v13 = v5->flags2 & 0xE0;
-	}
-	v5->flags2 = v13;
-	if (a4 == 64)
-	{
-	LABEL_43:
-		map_reveal_fog_around_entity(v4);
-		result = 0;
-	}
-	else
-	{
-		v5->_4_entities[0] = v4;
-		map_reveal_fog_around_entity(v4);
-		result = 0;
-	}
-	return result;
-}
-
-//----- (0040F0A0) --------------------------------------------------------
-int entity_40F0A0_get_dx(Entity *a1, int a2)
-{
-	int v2; // eax@1
-	int result; // eax@3
-
-	v2 = a1->stats->field_4C;
-	if (v2 == 128)
-	{
-	LABEL_7:
-		result = 4096;
-	}
-	else if (v2 == 512)
-	{
-		switch (a2)
-		{
-		case 1:
-		case 3:
-			result = 2048;
-			break;
-		case 2:
-		case 4:
-			result = 6144;
-			break;
-		default:
-			goto LABEL_7;
-		}
-	}
-	else
-	{
-		result = v2 != 4096 ? 0 : 7424;
-	}
-	return result;
-}
-
-//----- (0040F100) --------------------------------------------------------
-int entity_40F100_get_dy(Entity *a1, int a2)
-{
-	int v2; // eax@1
-	int result; // eax@3
-
-	v2 = a1->stats->field_4C;
-	if (v2 == 128)
-	{
-	LABEL_7:
-		result = 4096;
-	}
-	else if (v2 == 512)
-	{
-		switch (a2)
-		{
-		case 2:
-		case 3:
-			result = 6144;
-			break;
-		case 1:
-		case 4:
-			result = 2048;
-			break;
-		default:
-			goto LABEL_7;
-		}
-	}
-	else
-	{
-		result = v2 != 4096 ? 0 : 7424;
-	}
-	return result;
-}
-
 //----- (0040F160) --------------------------------------------------------
 int boxd_40F160(Entity *a1, int map_x, int map_y, int a4)
 {
@@ -6766,8 +3863,8 @@ int boxd_40F160(Entity *a1, int map_x, int map_y, int a4)
 	char v6; // bl@9
 	char v7; // cl@12
 
-	result = (int) & _478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y].flags;
-	if (map_x >= 0 && map_x < _4793F8_map_width && map_y >= 0 && map_y < _478AAC_map_height)
+	result = (int) & _478AA8_boxd_stru0_array[map_x + map_get_width() * map_y].flags;
+	if (map_x >= 0 && map_x < map_get_width() && map_y >= 0 && map_y < map_get_height())
 	{
 		if (!a1->stats->speed || (v5 = a1->unit_id, v5 == UNIT_STATS_SURV_OUTPOST) || v5 == UNIT_STATS_MUTE_CLANHALL)// 58 -> Outpost, 59 -> Clanhall
 			*(_BYTE *)(result + 1) &= 0xBFu;
@@ -6795,9 +3892,9 @@ int boxd_40F160(Entity *a1, int map_x, int map_y, int a4)
 //----- (0040F230) --------------------------------------------------------
 void Map_40F230_update_tile(Entity *a1, int map_x, int map_y, int slot, int a5)
 {
-    DataBoxd_stru0_per_map_unit *tile = Map_get_tile(map_x, map_y);
+    DataBoxd_stru0_per_map_unit *tile = boxd_get_tile(map_x, map_y);
 
-	if (map_x >= 0 && map_x < _4793F8_map_width && map_y >= 0 && map_y < _478AAC_map_height)
+	if (map_x >= 0 && map_x < map_get_width() && map_y >= 0 && map_y < map_get_height())
 	{
 		if (tile->IsVehicleOrBuilding())
 		{
@@ -6826,7 +3923,6 @@ bool sidebar_button_list_alloc()
 	int v1; // ecx@2
 	SidebarButton *v2; // eax@4
 	int v3; // ecx@5
-	BOOL result; // eax@7
 
 	v0 = (Sidebar *)malloc(0x4C0u);
 	sidebar_list = v0;
@@ -6860,14 +3956,13 @@ bool sidebar_button_list_alloc()
 		sidebar_button_list_4795A4 = (SidebarButton *)&sidebar_button_list_4795A0;
 		sidebar_button_list_item_width = 0x2000;
 		sidebar_button_list_sidebar_height = 0x2000;
-		result = 1;
+        return true;
 	}
 	else
 	{
-	LABEL_11:
-		result = 0;
+    LABEL_11:
+        return false;
 	}
-	return result;
 }
 
 //----- (0040F460) --------------------------------------------------------
@@ -6986,7 +4081,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 					v6 = 1;
 				if (v8 == EVT_MSG_1514)
 					v4 = 1;
-				if (v8 == EVT_MSG_1511_sidebar_click_category)
+				if (v8 == EVT_MSG_SELECTED)
 					v5 = 1;
 				script_discard_event(i);
 			}
@@ -7013,7 +4108,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 						{
 							v9 = 1;
 						}
-						else if (v11 == EVT_SHOW_UI_CONTROL)
+						else if (v11 == EVT_MSG_DESELECTED)
 						{
 							v25 = 1;
 						}
@@ -7049,11 +4144,11 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 				v16 = k->event;
 				if (v16 == EVT_MSG_1548_sidebar)
 					v6 = 1;
-				if (v16 == EVT_MSG_1511_sidebar_click_category)
+				if (v16 == EVT_MSG_SELECTED)
 				{
 					v14 = 1;
 				}
-				else if (v16 == EVT_SHOW_UI_CONTROL)
+				else if (v16 == EVT_MSG_DESELECTED)
 				{
 					v26 = 1;
 				}
@@ -7101,7 +4196,7 @@ void script_40F5D0_sidebar_button_1_2(Script *a1)
 						{
 							v19 = 1;
 						}
-						else if (v21 == EVT_SHOW_UI_CONTROL)
+						else if (v21 == EVT_MSG_DESELECTED)
 						{
 							v26 = 1;
 						}
@@ -7187,7 +4282,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 					v6 = 1;
 				if (v8 == EVT_MSG_1514)
 					v4 = 1;
-				if (v8 == EVT_MSG_1511_sidebar_click_category)
+				if (v8 == EVT_MSG_SELECTED)
 					v5 = 1;
 				script_discard_event(i);
 			}
@@ -7214,7 +4309,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 						{
 							v11 = 1;
 						}
-						else if (v13 == EVT_SHOW_UI_CONTROL || v13 == EVT_MSG_1513)
+						else if (v13 == EVT_MSG_DESELECTED || v13 == EVT_MSG_1513)
 						{
 							v9 = 1;
 						}
@@ -7252,11 +4347,11 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 					v18 = k->event;
 					if (v18 == EVT_MSG_1548_sidebar)
 						v6 = 1;
-					if (v18 == EVT_MSG_1511_sidebar_click_category)
+					if (v18 == EVT_MSG_SELECTED)
 					{
 						v16 = 1;
 					}
-					else if (v18 == EVT_SHOW_UI_CONTROL || v18 == EVT_MSG_1513)
+					else if (v18 == EVT_MSG_DESELECTED || v18 == EVT_MSG_1513)
 					{
 						v26 = 1;
 					}
@@ -7282,7 +4377,7 @@ void script_40F8F0_sidebar_button_3(Script *a1)
 							{
 								v20 = 1;
 							}
-							else if (v22 == EVT_SHOW_UI_CONTROL || v22 == EVT_MSG_1513)
+							else if (v22 == EVT_MSG_DESELECTED || v22 == EVT_MSG_1513)
 							{
 								v26 = 1;
 							}
@@ -7810,30 +4905,23 @@ void sidebar_list_free()
 }
 
 //----- (004103C0) --------------------------------------------------------
-bool stru2_list_alloc()
+bool stru2_list_alloc(const int num_stru2s)
 {
-	stru2 *result; // eax@1
-	int v1; // edx@2
-
-	result = (stru2 *)malloc(0x180u);
-	stru2_list = result;
-	if (result)
+	if (stru2_list = new stru2[num_stru2s])
 	{
-		stru2_list_free_pool = result;
-		result->prev = (stru2 *)&stru2_list_free_pool;
-		v1 = 15;
-		do
-		{
-			--v1;
-			result->next = result + 1;
-			++result;
-		} while (v1);
-		result->next = (stru2 *)&stru2_list_free_pool;
+		for (int i = 0; i < num_stru2s - 1; ++i) {
+            stru2_list[i].next = stru2_list + i + 1;
+		}
+
+        stru2_list_free_pool = stru2_list;
+        stru2_list[0].prev = (stru2 *)&stru2_list_free_pool;
+        stru2_list[num_stru2s - 1].next = (stru2 *)&stru2_list_free_pool;
+
 		stru2_list_4795DC = (stru2 *)&stru2_list_4795D8;
 		stru2_list_4795D8 = (stru2 *)&stru2_list_4795D8;
-		result = (stru2 *)1;
+        return true;
 	}
-	return (BOOL)result;
+    return false;
 }
 
 //----- (00410410) --------------------------------------------------------
@@ -8052,8 +5140,8 @@ int entity_410710_status_bar(Entity *a1)
 	int v5; // eax@10
 
 	v1 = 2;
-	if (a1->_98_465610_accuracy_dmg_bonus_idx <= 2)
-		v1 = a1->_98_465610_accuracy_dmg_bonus_idx;
+	if (a1->veterancy_level <= 2)
+		v1 = a1->veterancy_level;
 	v2 = a1->unit_id;
 	if ((int)v2 > (int)UNIT_STATS_SURV_SCOUT || (v2 & 0x80000000) != 0)
 	{
@@ -8511,7 +5599,7 @@ void entity_410BE0_status_bar(Entity *a1)
 }
 
 //----- (00410CB0) --------------------------------------------------------
-void entity_410CB0_event1511(Entity *a1)
+void entity_selected_default(Entity *a1)
 {
 	DrawJob *v1; // eax@1
 
@@ -8521,7 +5609,7 @@ void entity_410CB0_event1511(Entity *a1)
 }
 
 //----- (00410CD0) --------------------------------------------------------
-void entity_410CD0_eventTextString(Entity *a1)
+void entity_deselected_default(Entity *a1)
 {
 	DrawJob *v1; // eax@1
 
@@ -8831,9 +5919,9 @@ bool stru27_array_initialize()
 		v1 = v31[1].data;
 		++v28;
 		++v31;
-		if ((tagRECT *)v31 != &global_wnd_rect)
-			continue;
-		break;
+        if (v28 >= 3) {
+            break;
+        }
 	}
 	return 1;
 }
@@ -8968,6 +6056,7 @@ void stru26_stru27_free()
 	stru26 *v2; // esi@5
 	int v3; // edi@6
 
+    int i = 0;
 	v0 = _479740_stru27_array;
 	do
 	{
@@ -8978,7 +6067,9 @@ void stru26_stru27_free()
 			v0 = (stru27 *)((char *)v0 + 4);
 			--v1;
 		} while (v1);
-	} while ((tagRECT *)v0 != &global_wnd_rect);
+	} while (++i < 3);
+
+    i = 0;
 	v2 = _4795F0_stru26_array;
 	do
 	{
@@ -8989,232 +6080,60 @@ void stru26_stru27_free()
 			v2 = (stru26 *)((char *)v2 + 4);
 			--v3;
 		} while (v3);
-	} while ((stru27 *)v2 != _479740_stru27_array);
+	} while (++i < 3);
 }
 
-//----- (00411420) --------------------------------------------------------
-int __stdcall WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
-{
-	int result; // eax@4
-	HWND v5; // eax@17
-	struct tagPOINT Point; // [sp+Ch] [bp-60h]@7
-	struct tagPOINT v7; // [sp+14h] [bp-58h]@7
-	RECT v8; // [sp+1Ch] [bp-50h]@7
-	struct tagPAINTSTRUCT Paint; // [sp+2Ch] [bp-40h]@5
-
-		switch (Msg)
-		{
-		case WM_ERASEBKGND:
-			return 1;
-		case WM_ACTIVATEAPP:
-			if (!is_render_window_initialized || global_fullscreen != 1)
-				goto LABEL_18;
-			if (wParam)
-			{
-				ShowWindow(hWnd, 3);
-				if (!RenderDD_initialized)
-				{
-					_431C40_on_WM_ACTIVATEAPP_software_render((void *)RenderDD_initialized);
-					return DefWindowProcA(hWnd, Msg, wParam, lParam);
-				}
-			}
-			else if (GetForegroundWindow() != hWnd)
-			{
-				ShowWindow(hWnd, 6);
-				v5 = GetDesktopWindow();
-				SetForegroundWindow(v5);
-			}
-		LABEL_18:
-			result = DefWindowProcA(hWnd, Msg, wParam, lParam);
-			break;
-		case WM_KEYUP:
-		case WM_SYSKEYUP:
-			wnd_proc_pressed_key_id = -1;
-			return 0;
-		case WM_SYSCOMMAND:
-			if (wParam == 61760)
-				result = 0;
-			else
-				result = DefWindowProcA(hWnd, Msg, wParam, lParam);
-			return result;
-		case WM_KEYFIRST:
-		case WM_SYSKEYDOWN:
-			wnd_proc_pressed_key_id = wParam;
-			return 0;
-		case WM_CHAR:
-		case WM_DEADCHAR:
-		case WM_SYSCHAR:
-		case WM_SYSDEADCHAR:
-			return 0;
-
-        case WM_PAINT:
-            BeginPaint(hWnd, &Paint);
-            {
-                Point = *(struct tagPOINT *)&Paint.rcPaint.left;
-                v7 = *(struct tagPOINT *)&Paint.rcPaint.right;
-                ClientToScreen(hWnd, &Point);
-                ClientToScreen(hWnd, &v7);
-                *(struct tagPOINT *)&v8.left = Point;
-                *(struct tagPOINT *)&v8.right = v7;
-
-                render_on_wm_paint(&v8);
-            }
-            EndPaint(hWnd, &Paint);
-            result = 1;
-            break;
-
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            result = 0;
-            break;
-
-		default:
-            result = DefWindowProcA(hWnd, Msg, wParam, lParam);
-            break;
-		}
-
-    return result;
-}
-
-//----- (00419DF0) --------------------------------------------------------
-void EventHandler_419DF0(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
-{
-	Entity *v4; // ecx@1
-
-	v4 = (Entity *)receiver->param;
-	if (!v4->destroyed)
-	{
-		switch (event)
-		{
-		case EVT_MSG_1511_sidebar_click_category:
-			entity_410CB0_event1511(v4);
-			break;
-		case EVT_SHOW_UI_CONTROL:
-			entity_410CD0_eventTextString(v4);
-			break;
-		case EVT_MSG_SHOW_UNIT_HINT:
-			entity_show_hint(v4);
-			break;
-		case EVT_MSG_DAMAGE:
-			entity_41A510_evt1503(v4, (int)param);
-			break;
-		case EVT_ENTITY_MOVE:
-			entity_41A170_evt1524(v4, (int)param);
-			break;
-		default:
-			return;
-		}
-	}
-}
-
-//----- (00419E80) --------------------------------------------------------
-void EventHandler_419E80(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
-{
-	Entity *v4; // ecx@1
-
-	v4 = (Entity *)receiver->param;
-	if (!v4->destroyed)
-	{
-		switch (event)
-		{
-		case EVT_MSG_1511_sidebar_click_category:
-			entity_410CB0_event1511(v4);
-			break;
-		case EVT_SHOW_UI_CONTROL:
-			entity_410CD0_eventTextString(v4);
-			break;
-		case EVT_MSG_SHOW_UNIT_HINT:
-			entity_show_hint(v4);
-			break;
-		case EVT_MSG_DAMAGE:
-			entity_41A510_evt1503(v4, (int)param);
-			break;
-		default:
-			return;
-		}
-	}
-}
 
 //----- (0041A060) --------------------------------------------------------
-void entity_41A060_evt1525(Entity *a1, void *a2)
+void entity_41A060_evt1525(Entity *a1, void *param)
 {
-	_DWORD *v2; // edi@1
-	Entity *v3; // esi@1
-	UnitStat *v4; // eax@5
-	int v5; // eax@6
-	unsigned int v6; // ecx@8
-	UnitStat *v7; // eax@8
-	int v8; // eax@9
-	unsigned int v9; // edx@11
+	auto v2 = (int *)param;
 
-	v2 = (int *)a2;
-	v3 = a1;
-	if (a1->player_side == *(_DWORD *)a2
-		&& (a1->_DC_order != 9
-			|| (*((_DWORD *)a2 + 1) ^ a1->sprite_x_2) & 0xFFFFE000
-			|| (*((_DWORD *)a2 + 2) ^ a1->sprite_y_2) & 0xFFFFE000))
+    int param_player_side = v2[0];
+    int param_x = v2[1];
+    int param_y = v2[2];
+
+	if (a1->player_side == param_player_side
+		&& (a1->GetOrder() != ENTITY_ORDER_9
+			|| !map_is_same_tile(param_x, a1->sprite_x_2)
+			|| !map_is_same_tile(param_y, a1->sprite_y_2)))
 	{
         script_sleep(a1->script, 1);
-		v4 = v3->stats;
-		v3->_DC_order = ENTITY_ORDER_9;
-		v3->_134_param__unitstats_after_mobile_outpost_plant = 600;
-		v3->_E0_current_attack_target = 0;
-		v3->_E4_prev_attack_target = 0;
-		if (v4->is_infantry)
-			v5 = entity_40F0A0_get_dx(v3, v3->_A4_idx_in_tile);
-		else
-			v5 = v4->field_4C != 128 ? 7424 : 4096;
-		v6 = v5 + (v2[1] & 0xFFFFE000);
-		v7 = v3->stats;
-		v3->sprite_x_2 = v6;
-		if (v7->is_infantry)
-			v8 = entity_40F100_get_dy(v3, v3->_A4_idx_in_tile);
-		else
-			v8 = v7->field_4C != 128 ? 7424 : 4096;
-		v9 = v2[2] & 0xFFFFE000;
-		v3->entity_8 = 0;
-		v3->sprite_y_2 = v8 + v9;
-		entity_mode_move_attack(v3);
+
+		a1->SetOrder(ENTITY_ORDER_9);
+        a1->_134_param__unitstats_after_mobile_outpost_plant = 600;
+        a1->retaliation_target = 0;
+        a1->_E4_prev_attack_target = 0;
+
+        a1->sprite_x_2 = map_adjust_entity_in_tile_x(a1, param_x);
+        a1->sprite_y_2 = map_adjust_entity_in_tile_y(a1, param_y);
+        a1->entity_8 = 0;
+		entity_mode_move_attack(a1);
 	}
 }
 
 //----- (0041A170) --------------------------------------------------------
-void entity_41A170_evt1524(Entity *a1, int a2)
+void entity_41A170_evt1524(Entity *a1, void *param)
 {
-	int v2; // edi@1
-	Entity *v3; // esi@1
-	UnitStat *v4; // eax@5
-	int v5; // eax@6
-	unsigned int v6; // ecx@8
-	UnitStat *v7; // eax@8
-	int v8; // eax@9
-	int v9; // edx@11
+    auto v2 = (int *)param;
 
-	v2 = a2;
-	v3 = a1;
-	if (a1->player_side == *(_DWORD *)a2
-		&& (a1->_DC_order != 1
-			|| (*(_DWORD *)(a2 + 4) ^ a1->sprite_x_2) & 0xFFFFE000
-			|| (*(_DWORD *)(a2 + 8) ^ a1->sprite_y_2) & 0xFFFFE000))
+    int param_player_side = v2[0];
+    int param_x = v2[1];
+    int param_y = v2[2];
+
+	if (a1->player_side == param_player_side
+		&& (a1->_DC_order != ENTITY_ORDER_MOVE
+			|| !map_is_same_tile(param_x, a1->sprite_x_2)
+			|| !map_is_same_tile(param_y, a1->sprite_y_2)))
 	{
         script_sleep(a1->script, 1);
-		v4 = v3->stats;
-		v3->_DC_order = ENTITY_ORDER_MOVE;
-		if (v4->is_infantry)
-			v5 = entity_40F0A0_get_dx(v3, v3->_A4_idx_in_tile);
-		else
-			v5 = v4->field_4C != 128 ? 7424 : 4096;
-		v6 = v5 + (*(_DWORD *)(v2 + 4) & 0xFFFFE000);
-		v7 = v3->stats;
-		v3->sprite_x_2 = v6;
-		if (v7->is_infantry)
-			v8 = entity_40F100_get_dy(v3, v3->_A4_idx_in_tile);
-		else
-			v8 = v7->field_4C != 128 ? 7424 : 4096;
-		v9 = *(_DWORD *)(v2 + 8);
-		v3->entity_8 = 0;
-		v3->SetMode(entity_mode_418F60);
-		v3->sprite_y_2 = v8 + (v9 & 0xFFFFE000);
+
+        a1->_DC_order = ENTITY_ORDER_MOVE;
+
+        a1->sprite_x_2 = map_adjust_entity_in_tile_x(a1, param_x);
+        a1->sprite_y_2 = map_adjust_entity_in_tile_y(a1, param_y);
+        a1->entity_8 = 0;
+        a1->SetMode(entity_mode_418F60);
 	}
 }
 
@@ -9226,12 +6145,12 @@ void entity_41A400_evt1547(Entity *a1, Entity *a2)
 
 	v2 = a1;
 	v3 = a2;
-	if (a2 != a1->_E0_current_attack_target)
+	if (a2 != a1->retaliation_target)
 	{
         script_sleep(a1->script, 1);
 		v2->_DC_order = ENTITY_ORDER_3;
-		v2->_E0_current_attack_target = v3;
-		v2->_E0_current_attack_target_entity_id = v3->entity_id;
+		v2->retaliation_target = v3;
+		v2->retaliation_target_id = v3->entity_id;
 		v2->_E4_prev_attack_target = 0;
 		v2->_134_param__unitstats_after_mobile_outpost_plant = 600;
 		v2->mode_arrive = entity_mode_418B30;
@@ -9241,7 +6160,7 @@ void entity_41A400_evt1547(Entity *a1, Entity *a2)
 }
 
 //----- (0041A470) --------------------------------------------------------
-void entity_41A470(Entity *a1, Entity *a2)
+void entity_41A470_vehicle_repair_at_station(Entity *a1, Entity *a2)
 {
 	Entity *v2; // esi@1
 	Entity *v3; // edi@1
@@ -9252,11 +6171,11 @@ void entity_41A470(Entity *a1, Entity *a2)
 	v3 = a2;
     script_sleep(a1->script, 1);
 	v2->_DC_order = ENTITY_ORDER_10;
-	v2->_E0_current_attack_target = v3;
-	v2->_E0_current_attack_target_entity_id = v3->entity_id;
+	v2->retaliation_target = v3;
+	v2->retaliation_target_id = v3->entity_id;
 	v2->_E4_prev_attack_target = 0;
 	v2->_134_param__unitstats_after_mobile_outpost_plant = 600;
-	v2->mode_arrive = entity_mode_419230;
+	v2->mode_arrive = entity_mode_419230_arrive_at_repairbay;
 	v3->sprite->field_88_unused = 1;
 	v2->sprite_x_2 = v3->sprite->x + *(_DWORD *)(v3->stru60.ptr_14 + 4);
 	v4 = *(_DWORD *)(v3->stru60.ptr_14 + 8);
@@ -9296,7 +6215,7 @@ void entity_41A510_evt1503(Entity *a1, int a2)
 				{
 					v6 = v5->script;
 					if (v6)
-						script_trigger_event(a1->script, EVT_MSG_1505, v4, v6);
+						script_trigger_event(a1->script, MSG_RECEIVE_EXPERIENCE, v4, v6);
 				}
 			}
 			v7 = v2->hitpoints - (_DWORD)v4;
@@ -9304,13 +6223,13 @@ void entity_41A510_evt1503(Entity *a1, int a2)
 			if (v7 <= 0)
 			{
                 script_sleep(v2->script, 1);
-				v8 = v2->_E0_current_attack_target;
+				v8 = v2->retaliation_target;
 				if (v8)
 				{
 					v9 = v8->entity_id;
 					if (v9)
 					{
-						if (v9 == v2->_E0_current_attack_target_entity_id
+						if (v9 == v2->retaliation_target_id
 							&& v8->script->script_type == SCRIPT_REPAIR_STATION_HANDLER)
 						{
 							*((_DWORD *)v8->state + 2) = 0;
@@ -9327,11 +6246,11 @@ void entity_41A510_evt1503(Entity *a1, int a2)
 }
 
 //----- (0041A610) --------------------------------------------------------
-void entity_41A610_evt1503(Entity *a1, void *a2)
+void entity_do_damage(Entity *a1, Sprite *a2)
 {
 	Entity *v2; // esi@1
 	UnitStat *v3; // eax@2
-	void *v4; // edi@3
+	int v4; // edi@3
 	Entity *v5; // eax@8
 	Script *v6; // eax@10
 	int v7; // eax@12
@@ -9341,19 +6260,19 @@ void entity_41A610_evt1503(Entity *a1, void *a2)
 	{
 		v3 = a1->stats;
 		if (v3->is_infantry)
-			v4 = (void *)*((_WORD *)a2 + 70);
+			v4 = a2->field_8C_infantry_damage;
 		else
-			v4 = (void *)(v3->speed ? *((_WORD *)a2 + 71) : (int)*((_WORD *)a2 + 72));
+			v4 = v3->speed ? a2->field_8E_vehicle_damage : a2->field_90_building_damage;
 		if (a1->hitpoints > 0)
 		{
-			v5 = (Entity *)*((_DWORD *)a2 + 32);
+			v5 = (Entity *)a2->_80_entity__stru29__sprite__initial_hitpoints;
 			if (v5)
 			{
-				if (v5->entity_id == *((_DWORD *)a2 + 33))
+				if (v5->entity_id == a2->field_84)
 				{
 					v6 = v5->script;
 					if (v6)
-						script_trigger_event(a1->script, EVT_MSG_1505, v4, v6);
+						script_trigger_event(a1->script, MSG_RECEIVE_EXPERIENCE, (void *)v4, v6);
 				}
 			}
 			v7 = v2->hitpoints - (_DWORD)v4;
@@ -9371,7 +6290,7 @@ void entity_41A610_evt1503(Entity *a1, void *a2)
 }
 
 //----- (0041A6D0) --------------------------------------------------------
-void entity_41A6D0_evt1497(Entity *a1, Entity *a2)
+void entity_on_attacked_default(Entity *a1, Entity *a2)
 {
 	Entity *v2; // esi@1
 	enum UNIT_ID v3; // eax@1
@@ -9393,9 +6312,9 @@ void entity_41A6D0_evt1497(Entity *a1, Entity *a2)
 		|| v3 == UNIT_STATS_MUTE_VANDAL && a1->_DC_order == ENTITY_ORDER_3
 		|| v3 == UNIT_STATS_SURV_TECHNICIAN && a1->_DC_order == ENTITY_ORDER_3
 		|| v3 == UNIT_STATS_MUTE_MEKANIK && a1->_DC_order == ENTITY_ORDER_3
-		|| (v4 = a1->_DC_order, v4 != ENTITY_ORDER_MOVE) && v4 != ENTITY_ORDER_0
-		|| (v5 = a1->sprite, (v5->x ^ a1->sprite_x_2) & 0xFFFFE000)
-		|| (v5->y ^ a1->sprite_y_2) & 0xFFFFE000)
+		|| (v4 = a1->GetOrder(), v4 != ENTITY_ORDER_MOVE) && v4 != ENTITY_ORDER_0
+		|| (v5 = a1->sprite, !map_is_same_tile(v5->x, a1->sprite_x_2))
+		|| !map_is_same_tile(v5->y, a1->sprite_y_2))
 	{
 		a1->_E4_prev_attack_target = a2;
 		a1->_E4_prev_attack_target_entity_id = a2->entity_id;
@@ -9431,10 +6350,10 @@ void entity_41A6D0_evt1497(Entity *a1, Entity *a2)
 	}
 	else
 	{
-		a1->_E0_current_attack_target = a2;
-		a1->_E0_current_attack_target_entity_id = a2->entity_id;
+		a1->retaliation_target = a2;
+		a1->retaliation_target_id = a2->entity_id;
 		a1->_E4_prev_attack_target = 0;
-		a1->_DC_order = ENTITY_ORDER_8;
+		a1->SetOrder(ENTITY_ORDER_8);
 		a1->entity_8 = 0;
 		entity_mode_move_attack(a1);
         script_sleep(v2->script, 1);
@@ -9465,45 +6384,25 @@ void entity_41A850_evt1507_mess_with_stru11(Entity *a1, void *param)
 //----- (0041A890) --------------------------------------------------------
 void entity_41A890_evt1528(Entity *a1)
 {
-	Entity *v1; // esi@1
 	Entity *v2; // eax@2
-	UnitStat *v3; // eax@6
-	int v4; // eax@7
-	unsigned int v5; // edx@9
-	UnitStat *v6; // eax@9
-	int v7; // eax@10
-	unsigned int v8; // edx@12
 
-	v1 = a1;
 	if (sub_44CA50(a1->unit_id))
-		v2 = entity_44CA70_find(v1, UNIT_STATS_SURV_OUTPOST, v1->player_side);
+		v2 = entity_44CA70_find(a1, UNIT_STATS_SURV_OUTPOST, a1->player_side);
 	else
-		v2 = entity_44CA70_find(v1, UNIT_STATS_MUTE_CLANHALL, v1->player_side);
+		v2 = entity_44CA70_find(a1, UNIT_STATS_MUTE_CLANHALL, a1->player_side);
 	if (v2)
 	{
-		v1->_DC_order = ENTITY_ORDER_4;
-		v1->_E0_current_attack_target = v2;
-		v1->_E0_current_attack_target_entity_id = v2->entity_id;
-		entity_mode_move_attack(v1);
+        a1->SetOrder(ENTITY_ORDER_4);
+        a1->retaliation_target = v2;
+        a1->retaliation_target_id = v2->entity_id;
+		entity_mode_move_attack(a1);
 	}
 	else
 	{
-		v3 = v1->stats;
-		if (v3->is_infantry)
-			v4 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
-		else
-			v4 = v3->field_4C != 128 ? 7424 : 4096;
-		v5 = v4 + (v1->sprite->x & 0xFFFFE000);
-		v6 = v1->stats;
-		v1->sprite_x = v5;
-		if (v6->is_infantry)
-			v7 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
-		else
-			v7 = v6->field_4C != 128 ? 7424 : 4096;
-		v8 = v1->sprite->y & 0xFFFFE000;
-		v1->_DC_order = ENTITY_ORDER_MOVE;
-		v1->sprite_y = v7 + v8;
-		entity_mode_move_attack(v1);
+        a1->sprite_x = map_adjust_entity_in_tile_x(a1, a1->sprite->x);
+        a1->sprite_y = map_adjust_entity_in_tile_y(a1, a1->sprite->y);
+        a1->SetOrder(ENTITY_ORDER_MOVE);
+		entity_mode_move_attack(a1);
 	}
 }
 
@@ -9528,49 +6427,27 @@ void entity_41A980_evt1509_unset_stru11(Entity *a1, void *param)
 }
 
 //----- (0041A9B0) --------------------------------------------------------
-void entity_41A9B0_unit(Entity *a1, int a2)
+void entity_41A9B0_unit(Entity *a1, void *param)
 {
-	int v2; // ebx@1
-	Entity *v3; // esi@1
-	int map_x; // eax@2
-	int map_y; // eax@4
-	UnitStat *v6; // eax@6
-	int v7; // eax@7
-	unsigned int v8; // ecx@9
-	UnitStat *v9; // eax@9
-	int v10; // eax@10
+    auto param_ = (int *)param;
+    int param_player_side = param_[0];
+    int param_x = param_[1];
+    int param_y = param_[2];
 
-	v2 = a2;
-	v3 = a1;
-	if (a1->player_side == *(_DWORD *)a2)
+	if (a1->player_side == param_player_side)
 	{
-		map_x = *(_DWORD *)(a2 + 4);
-		if (map_x >= 0 && map_x < _4793F8_map_width << 13)
+		if (param_x >= 0 && param_x < map2global(map_get_width()))
 		{
-			map_y = *(_DWORD *)(a2 + 8);
-			if (map_y >= 0 && map_y < _478AAC_map_height << 13)
+			if (param_y >= 0 && param_y < map2global(map_get_height()))
 			{
-				v6 = a1->stats;
-				LOWORD_HEXRAYS(a1->field_2A4) = 1;
-				if (v6->is_infantry)
-					v7 = entity_40F0A0_get_dx(a1, a1->_A4_idx_in_tile);
-				else
-					v7 = v6->field_4C != 128 ? 7424 : 4096;
-				v8 = v7 + (*(_DWORD *)(v2 + 4) & 0xFFFFE000);
-				v9 = v3->stats;
-				v3->sprite_width_3 = v8;
-				if (v9->is_infantry)
-					v10 = entity_40F100_get_dy(v3, v3->_A4_idx_in_tile);
-				else
-					v10 = v9->field_4C != 128 ? 7424 : 4096;
-				v3->sprite_height_3 = v10 + (*(_DWORD *)(v2 + 8) & 0xFFFFE000);
-				entity_414440_boxd(v3, &v3->sprite_width_3, &v3->sprite_height_3);
+				a1->sprite_width_3 = map_adjust_entity_in_tile_x(a1, param_x);
+                a1->sprite_height_3 = map_adjust_entity_in_tile_y(a1, param_y);
+
+				entity_414440_boxd(a1, &a1->sprite_width_3, &a1->sprite_height_3);
 			}
 		}
 	}
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
 
 //----- (0041AAA0) --------------------------------------------------------
 bool array_479B98_array_479C60_init()
@@ -9773,7 +6650,7 @@ bool _41B070_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 				{
 					if (*(_DWORD *)(v9 + 20) != *(_DWORD *)(v7 + 20) || (v10 = *(_DWORD *)(v7 + 16), v10 >= 46) && v10 <= 72)
 					{
-						script_trigger_event(0, EVT_MSG_DAMAGE, v5, v6);
+						script_trigger_event(0, CMD_APPLY_DAMAGE, v5, v6);
 						v5->script->flags_20 |= SCRIPT_FLAGS_20_2;
 						v5->script->flags_24 |= v5->script->flags_20;
 					}
@@ -9784,30 +6661,31 @@ bool _41B070_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5)
 	return 0;
 }
 
+
+
 //----- (0041B0E0) --------------------------------------------------------
 bool LVL_SysInit()
 {
-	BOOL result; // eax@1
-
 	currently_running_lvl_sections = 0;
-	result = stru2_list_alloc();
-	if (result)
+	if (stru2_list_alloc())
 	{
-		stru2_list_initialized = 1;
-		result = render_create_window(640, 480, 8, 1, false);
-		if (result)
-		{
-			game_window_created = 1;
-			result = sound_initialize() != 0;
-		}
+        int window_width = 640;
+        int window_height = 480;
+        bool fullsreen = false;
+
+        /*if (render_create_window(window_width, window_height, fullsreen))*/ {
+            if (render_init(window_width, window_height, 8, fullsreen)) {
+                return sound_initialize() != false;
+            }
+        }
 	}
-	return result;
+
+	return false;
 }
 
 //----- (0041B140) --------------------------------------------------------
 DataHunk *LVL_LoadLevel(const char *filename_)
 {
-	char cwd[1024];
 	char filename[1024];
 
 	const char *ext = strrchr(filename_, '.');
@@ -9815,8 +6693,8 @@ DataHunk *LVL_LoadLevel(const char *filename_)
 	{
 		sprintf(
 			filename,
-			(const char *)aSLevelsS,
-			_getcwd(cwd, sizeof(cwd)),//game_data_installation_dir,
+            "%s\\LEVELS\\%s",
+            OsGetCurrentDirectory().c_str(),//game_data_installation_dir,
 			filename_);
 	}
 	else if (!_stricmp(ext, ".lvl"))
@@ -9824,7 +6702,7 @@ DataHunk *LVL_LoadLevel(const char *filename_)
 		sprintf(
 			filename,
 			(const char *)aSLevelsSS,
-			_getcwd(cwd, sizeof(cwd)),//game_data_root_dir
+            OsGetCurrentDirectory().c_str(),//game_data_root_dir,
 			get_resource_res_subfolder(),
 			filename_
 		);
@@ -9854,10 +6732,6 @@ DataHunk *LVL_LoadLevel(const char *filename_)
 //----- (0041B1A0) --------------------------------------------------------
 bool LVL_RunLevel(DataHunk *lvl)
 {
-	BOOL result; // eax@1
-	DataSectionOffset *v2; // eax@2
-
-	result = 0;
 	_479DE8_boxd_initialized = 0;
 	_479DCC_cplc_initialized = 0;
 	_479DC0_render_string_list_initialized = 0;
@@ -9873,58 +6747,45 @@ bool LVL_RunLevel(DataHunk *lvl)
 	dword_479DBC = 0;
 	if (!currently_running_lvl_sections)
 	{
-		v2 = lvl->section_table;
 		currently_running_lvl = lvl;
-		currently_running_lvl_sections = v2;
-		result = script_list_alloc();
-		if (result)
+		currently_running_lvl_sections = lvl->section_table;
+		if (script_list_alloc())
 		{
 			is_task_list_initialized = 1;
-			result = timer_init(60u);
-			if (result)
+			if (timer_init(60u))
 			{
 				timer_initialized = 1;
-				result = array_479B98_array_479C60_init();
-				if (result)
+				if (array_479B98_array_479C60_init())
 				{
 					dword_479DBC = 1;
-					result = stru2_list_init_elements();
-					if (result)
+					if (stru2_list_init_elements())
 					{
 						stru2_list_elements_initialized = 1;
-						result = draw_list_alloc();
-						if (result)
+						if (draw_list_alloc())
 						{
 							draw_list_initialized = 1;
-							result = LVL_InitMapd();
-							if (result)
+							if (LVL_InitMapd())
 							{
 								_479DF0_mapd_initialized = 1;
-								result = sprite_list_alloc();
-								if (result)
+								if (sprite_list_alloc())
 								{
 									_479DD0_mobd_initialized = 1;
-									result = boxd_init();
-									if (result)
+									if (boxd_init())
 									{
 										_479DE8_boxd_initialized = 1;
-										result = cplc_init();
-										if (result)
+										if (cplc_init())
 										{
 											_479DCC_cplc_initialized = 1;
-											result = render_string_list_alloc();
-											if (result)
+											if (render_string_list_alloc())
 											{
 												_479DC0_render_string_list_initialized = 1;
-												result = stru1_init_anim();
-												if (result)
+												if (stru1_init_anim())
 												{
 													stru1_global_obj_anim_initialized = 1;
-													result = input_initialize();
-													if (result)
+													if (input_initialize())
 													{
 														input_initialized = 1;
-														result = 1;
+                                                        return true;
 													}
 												}
 											}
@@ -9938,21 +6799,8 @@ bool LVL_RunLevel(DataHunk *lvl)
 			}
 		}
 	}
-	return result;
+	return false;
 }
-// 479DB8: using guessed type int is_task_list_initialized;
-// 479DBC: using guessed type int dword_479DBC;
-// 479DC0: using guessed type int _479DC0_render_string_list_initialized;
-// 479DC4: using guessed type int draw_list_initialized;
-// 479DCC: using guessed type int _479DCC_cplc_initialized;
-// 479DD0: using guessed type int _479DD0_mobd_initialized;
-// 479DD4: using guessed type int timer_initialized;
-// 479DD8: using guessed type int input_initialized;
-// 479DE0: using guessed type int stru1_global_obj_anim_initialized;
-// 479DE4: using guessed type int game_window_created;
-// 479DE8: using guessed type int _479DE8_boxd_initialized;
-// 479DEC: using guessed type int stru2_list_elements_initialized;
-// 479DF0: using guessed type int _479DF0_mapd_initialized;
 
 //----- (0041B2E0) --------------------------------------------------------
 void LVL_Deinit()
@@ -9997,19 +6845,6 @@ void LVL_Deinit()
 	currently_running_lvl = 0;
 	currently_running_lvl_sections = 0;
 }
-// 479DB8: using guessed type int is_task_list_initialized;
-// 479DBC: using guessed type int dword_479DBC;
-// 479DC0: using guessed type int _479DC0_render_string_list_initialized;
-// 479DC4: using guessed type int draw_list_initialized;
-// 479DCC: using guessed type int _479DCC_cplc_initialized;
-// 479DD0: using guessed type int _479DD0_mobd_initialized;
-// 479DD4: using guessed type int timer_initialized;
-// 479DD8: using guessed type int input_initialized;
-// 479DE0: using guessed type int stru1_global_obj_anim_initialized;
-// 479DE4: using guessed type int game_window_created;
-// 479DE8: using guessed type int _479DE8_boxd_initialized;
-// 479DEC: using guessed type int stru2_list_elements_initialized;
-// 479DF0: using guessed type int _479DF0_mapd_initialized;
 
 //----- (0041B3F0) --------------------------------------------------------
 void GAME_Deinit()
@@ -10046,13 +6881,10 @@ void *LVL_FindSection(const char *name)
 			if (!currently_running_lvl_sections[++v3].ptr)
 				return 0;
 		}
-		result = currently_running_lvl_sections[v3].ptr;
+		return currently_running_lvl_sections[v3].ptr;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+
+    return nullptr;
 }
 
 //----- (0041B470) --------------------------------------------------------
@@ -10067,7 +6899,6 @@ bool LVL_SubstHunk(DataHunk *dst, DataHunk *src, const char *hunk)
 	DataSectionOffset *dst_hunk_name; // eax@8
 	DataSectionOffset *v10; // esi@8
 	void *v11; // ecx@10
-	BOOL result; // eax@11
 	DataSectionOffset *dst_hunk_tAble; // [sp+10h] [bp-4h]@1
 
 	src_hunk_name = src->section_table;
@@ -10101,13 +6932,9 @@ bool LVL_SubstHunk(DataHunk *dst, DataHunk *src, const char *hunk)
 				return 0;
 		}
 		dst_hunk_tAble[dst_hunk_idx].ptr = src_hunk_items;
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+    return false;
 }
 
 //----- (0041B510) --------------------------------------------------------
@@ -10177,17 +7004,17 @@ bool entity_41B510(Entity *a1, Entity *a2)
 	v3 = v2->x;
 	a3 = a2;
 	a2a = a1;
-	if (v3 >= 0 && v3 < _478AB4_map_width_shl_13)
+	if (v3 >= 0 && v3 < map_get_width_global())
 	{
 		v4 = v2->y;
-		if (v4 >= 0 && v4 < _478FF0_map_height_shl_13)
+		if (v4 >= 0 && v4 < map_get_height_global())
 		{
 			v5 = a2->sprite;
 			v6 = v5->x;
-			if (v6 >= 0 && v6 < _478AB4_map_width_shl_13)
+			if (v6 >= 0 && v6 < map_get_width_global())
 			{
 				v7 = v5->y;
-				if (v7 >= 0 && v7 < _478FF0_map_height_shl_13)
+				if (v7 >= 0 && v7 < map_get_height_global())
 				{
 					v8 = v3 >> 13;
 					v9 = v6 >> 13;
@@ -10195,8 +7022,8 @@ bool entity_41B510(Entity *a1, Entity *a2)
 					v11 = v7 >> 13;
 					if (v8 == v9 && v10 == v11)
 						return 1;
-					v13 = _4793F8_map_width;
-					v14 = Map_get_tile(v8, v10);
+					v13 = map_get_width();
+					v14 = boxd_get_tile(v8, v10);
 					if (v10 > v11)
 					{
 						v32 = v9 - v8;
@@ -10230,7 +7057,7 @@ bool entity_41B510(Entity *a1, Entity *a2)
 										v21 = v57-- == 0;
 										if (v21)
 											return 1;
-										v13 = _4793F8_map_width;
+										v13 = map_get_width();
 									}
 									return 0;
 								}
@@ -10260,7 +7087,7 @@ bool entity_41B510(Entity *a1, Entity *a2)
 										v21 = v56-- == 0;
 										if (v21)
 											return 1;
-										v13 = _4793F8_map_width;
+										v13 = map_get_width();
 									}
 									return 0;
 								}
@@ -10293,7 +7120,7 @@ bool entity_41B510(Entity *a1, Entity *a2)
 									v21 = v54-- == 0;
 									if (v21)
 										return 1;
-									v13 = _4793F8_map_width;
+									v13 = map_get_width();
 									v35 = v60;
 								}
 								return 0;
@@ -10321,7 +7148,7 @@ bool entity_41B510(Entity *a1, Entity *a2)
 									v21 = v55-- == 0;
 									if (v21)
 										return 1;
-									v13 = _4793F8_map_width;
+									v13 = map_get_width();
 								}
 								return 0;
 							}
@@ -10360,7 +7187,7 @@ bool entity_41B510(Entity *a1, Entity *a2)
 										v21 = v53-- == 0;
 										if (v21)
 											return 1;
-										v13 = _4793F8_map_width;
+										v13 = map_get_width();
 									}
 									return 0;
 								}
@@ -10390,7 +7217,7 @@ bool entity_41B510(Entity *a1, Entity *a2)
 										v21 = v52-- == 0;
 										if (v21)
 											return 1;
-										v13 = _4793F8_map_width;
+										v13 = map_get_width();
 									}
 									return 0;
 								}
@@ -10423,7 +7250,7 @@ bool entity_41B510(Entity *a1, Entity *a2)
 									v21 = v50-- == 0;
 									if (v21)
 										return 1;
-									v13 = _4793F8_map_width;
+									v13 = map_get_width();
 									v18 = v58;
 								}
 								return 0;
@@ -10451,7 +7278,7 @@ bool entity_41B510(Entity *a1, Entity *a2)
 									v21 = v51-- == 0;
 									if (v21)
 										return 1;
-									v13 = _4793F8_map_width;
+									v13 = map_get_width();
 								}
 								return 0;
 							}
@@ -10463,2079 +7290,6 @@ bool entity_41B510(Entity *a1, Entity *a2)
 		}
 	}
 	return 0;
-}
-
-Entity *debug_pathing_entity = nullptr;
-//----- (0041B970) --------------------------------------------------------
-int Map_41B970_straight_line_pathing(Entity *a1, int target_x, int target_y)
-{
-	Sprite *v5; // edx@1
-	int v8; // eax@2
-	int v9; // ebx@2
-debug_pathing_entity = a1;
-	v5 = a1->sprite;
-    a1->pathing.num_waypoints = 0;
-	if (v5->y > target_y)
-	{
-        // moving up
-        int dx = (target_x - v5->x) / 256;
-        int dy = (v5->y - target_y) / 256;
-		if (dx <= 0)
-		{
-            // up left
-			if (abs(dx) > dy)
-				return boxd_41BA30(v5->x, v5->y, abs(dx), dy, -256, -256, a1);
-            else
-                return boxd_41BC60(v5->x, v5->y, abs(dx), dy, -256, -256, a1);
-		}
-		else
-		{
-            //up right
-			if (dx > dy)
-				return boxd_41BA30(v5->x, v5->y, dx, dy, 256, -256, a1);
-            else
-                return boxd_41BC60(v5->x, v5->y, dx, dy, 256, -256, a1);
-		}
-	}
-	else
-	{
-        // moving down
-        int dx = (target_x - v5->x) / 256;
-        int dy = (target_y - v5->y) / 256;
-		if (dx <= 0)
-		{
-            // down left
-			if (abs(dx) > dy)
-				return boxd_41BA30(v5->x, v5->y, abs(dx), dy, -256, 256, a1);
-            else
-                return boxd_41BC60(v5->x, v5->y, abs(dx), dy, -256, 256, a1);
-		}
-		else
-		{
-            // down right
-			if (dx > dy)
-				return boxd_41BA30(v5->x, v5->y, dx, dy, 256, 256, a1);
-            else
-                return boxd_41BC60(v5->x, v5->y, dx, dy, 256, 256, a1);
-		}
-	}
-}
-
-//----- (0041BA30) --------------------------------------------------------
-int boxd_41BA30(int x, int y, int a3, int a4, int x_step, int y_step, Entity *a1)
-{
-	int v8; // esi@1
-	int v10; // eax@7
-	int v16; // eax@20
-	int a3a; // [sp+1Ch] [bp-9Ch]@3
-	int a8; // [sp+20h] [bp-98h]@3
-	int v23; // [sp+24h] [bp-94h]@3
-	int v26; // [sp+30h] [bp-88h]@1
-	int a11; // [sp+38h] [bp-80h]@3
-	int v29; // [sp+3Ch] [bp-7Ch]@1
-	int v30[10]; // [sp+40h] [bp-78h]@2
-	int a6a[10]; // [sp+68h] [bp-50h]@20
-	int a5a[10]; // [sp+90h] [bp-28h]@20
-
-	a1->pathing.destination_map_x = 0;
-	a1->pathing.destination_map_y = 0;
-
-	int map_x = global2map(x);
-    int map_y = global2map(y);
-    int next_x = x;
-    int next_y = y;
-    DataBoxd_stru0_per_map_unit *tile = Map_get_tile(map_x, map_y);
-	v26 = 2 * a4;
-	v29 = 2 * a4 - 2 * a3;
-	v8 = 2 * a4 - a3;
-    int v19 = 0;
-	for (int i = 0; i < 10; ++i)
-	{
-        v19 = i + 1;
-		v30[i] = 0;
-		a1->_15C_waypoints_xs[i] = -1;
-		a1->_15C_waypoints_ys[i] = -1;
-	}
-	a3a = 0;
-	v23 = 0;
-	a11 = 0;
-	a8 = 0;
-
-	for (int i = a3 - 1; i > 0; --i)
-	{
-        map_x = global2map(next_x);
-        map_y = global2map(next_y);
-
-		if (v8 < 0)
-		{
-			v10 = v26;
-		}
-		else
-		{
-			v10 = v29;
-			next_y += y_step;
-		}
-        next_x += x_step;
-		v8 += v10;
-
-		int next_map_x = global2map(next_x);
-		int next_map_y = global2map(next_y);
-        unsigned __int8 v15 = __OFSUB__(next_map_x, map_x);
-		bool v13 = next_x == map_x;
-        bool v14 = next_x - map_x < 0;
-		if (next_map_x == map_x)
-		{
-			if (next_map_y == map_y)
-				continue;
-			v15 = __OFSUB__(next_map_x, map_x);
-			v13 = next_map_x == map_x;
-			v14 = next_map_x - map_x < 0;
-		}
-		if (!((unsigned __int8)(v14 ^ v15) | v13))
-		{
-			v15 = __OFSUB__(next_map_x, map_x);
-			v14 = next_map_x - map_x < 0;
-			++tile;
-		}
-		if (v14 ^ v15)
-			--tile;
-		if (next_map_y > map_y)
-            tile += _4793F8_map_width;
-		if (next_map_y < map_y)
-            tile -= _4793F8_map_width;
-
-		v16 = Map_40EA50_classify_tile_objects(a1, next_map_x, next_map_y, tile);
-		if (Map_41BE90_add_waypoint(&v19, v16, &a3a, &v23, a1, v30, a5a, a6a, next_map_x, next_map_y, &a11, &a8) != 6)
-			return 1;
-	}
-
-    return boxd_41C060(v19, a1, a3a, v23, a5a, a6a, v30, a8);
-}
-
-void entity_log_pathing(Entity *e) {
-    log("indexer: %u", e->pathing.num_waypoints);
-    if (e->pathing.num_waypoints > 0) {
-        char buf[4096];
-
-        buf[0] = 0;
-        for (int i = 0; i < e->pathing.num_waypoints; ++i) {
-            sprintf(buf + strlen(buf), "(%X,%X), ", e->_15C_waypoints_xs[i], e->_15C_waypoints_ys[i]);
-        }
-        log("_15C_waypoints = [%s]", buf);
-
-        buf[0] = 0;
-        for (int i = 0; i < e->pathing.num_waypoints; ++i) {
-            sprintf(buf + strlen(buf), "(%X,%X), ", e->_1AC_waypoints_xs[i], e->_1AC_waypoints_ys[i]);
-        }
-        log("_1AC_waypoints = [%s]", buf);
-
-        buf[0] = 0;
-        for (int i = 0; i < e->pathing.num_waypoints; ++i) {
-            sprintf(buf + strlen(buf), "(%X,%X), ", e->_1FC_waypoints_xs[i], e->_1FC_waypoints_ys[i]);
-        }
-        log("_1FC_waypoints = [%s]", buf);
-    }
-}
-
-
-//----- (0041BC60) --------------------------------------------------------
-int boxd_41BC60_new(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity)
-{
-    int v8; // esi@1
-    int a3a; // [sp+1Ch] [bp-9Ch]@3
-    int a8; // [sp+20h] [bp-98h]@3
-    int v23; // [sp+24h] [bp-94h]@
-    int a11; // [sp+38h] [bp-80h]@3
-    int v30[10]; // [sp+40h] [bp-78h]@2
-    int v31[10]; // [sp+68h] [bp-50h]@20
-    int v32[10]; // [sp+90h] [bp-28h]@20
-
-    entity->pathing.destination_map_x = 0;
-    entity->pathing.destination_map_y = 0;
-    int map_x = global2map(x);
-    int map_y = global2map(y);
-    auto tile = Map_get_tile(map_x, map_y);
-    v8 = 2 * dx - dy;
-    for (int i = 0; i < 10; ++i) {
-        v30[i] = 0;
-        entity->_15C_waypoints_xs[i] = -1;
-        entity->_15C_waypoints_ys[i] = -1;
-    }
-
-    int v19 = 0;
-    a3a = 0;
-    v23 = 0;
-    a11 = 0;
-    a8 = 0;
-    if (dy == 0)
-        return boxd_41C060(0, entity, 0, 0, v32, v31, v30, 0);
-
-    for (int current_y = dy - 1; current_y >= 0; --current_y)
-    {
-        if (v8 < 0)
-        {
-            v8 += 2 * dx;
-        }
-        else
-        {
-            v8 += 2 * dx - 2 * dy;
-            x += x_step;
-        }
-
-        y += y_step;
-        int new_map_x = global2map(x);
-        int new_map_y = global2map(y);
-        if (new_map_x == map_x && new_map_y == map_y) {
-            continue;
-        }
-        if (new_map_x > map_x)
-            ++tile;
-        else if (new_map_x < map_x)
-            --tile;
-        if (new_map_y > map_y)
-            tile += _4793F8_map_width;
-        else if (new_map_y < map_y)
-            tile -= _4793F8_map_width;
-
-        map_x = new_map_x;
-        map_y = new_map_y;
-        int v16 = Map_40EA50_classify_tile_objects(entity, new_map_x, new_map_y, tile);
-        int r = Map_41BE90_add_waypoint(&v19, v16, &a3a, &v23, entity, v30, v32, v31, new_map_x, new_map_y, &a11, &a8);
-if (entity->player_side == player_side) {
-//log("PATHING map(%X,%X)\tclassf %u\twayp %u", map_x, map_y, v16, r);
-}
-        if (r != 6) {
-if (entity->player_side == player_side) {
-//log("PATHING complete(1): %u", r);
-//entity_log_pathing(entity);
-}
-            return 1;
-        }
-    }
-
-    int result = boxd_41C060(v19, entity, a3a, v23, v32, v31, v30, a8);
-
-if (entity->player_side == player_side) {
-//log("PATHING complete(2): %u", result);
-//entity_log_pathing(entity);
-}
-    return result;
-}
-
-//----- (0041BC60) --------------------------------------------------------
-int boxd_41BC60_old(int x, int y, int a3, int a4, int a5, int a6, Entity *a7)
-{
-	int v7; // ebx@1
-	int v8; // esi@1 
-    int v9; // eax@1
-	int v10; // eax@7
-	int v11; // esi@9
-	int v12; // edi@9 
-    bool v13; // zf@9
-    bool v14; // sf@9
-    unsigned __int8 v15; // of@9
-    int v16; // eax@20
-    DataBoxd_stru0_per_map_unit *a4a; // [sp+10h] [bp-A8h]@1
-    int v19; // [sp+14h] [bp-A4h]@1
-	int v20; // [sp+18h] [bp-A0h]@1
-	int a3a; // [sp+1Ch] [bp-9Ch]@3
-	int a8; // [sp+20h] [bp-98h]@3
-	int v23; // [sp+24h] [bp-94h]@3
-	int v24; // [sp+28h] [bp-90h]@1
-	int v25; // [sp+2Ch] [bp-8Ch]@5 
-    int v26; // [sp+30h] [bp-88h]@1
-	int v27; // [sp+34h] [bp-84h]@9
-	int a11; // [sp+38h] [bp-80h]@3
-	int v29; // [sp+3Ch] [bp-7Ch]@1
-	int v30[10]; // [sp+40h] [bp-78h]@2
-	int v31[10]; // [sp+68h] [bp-50h]@20
-	int v32[10]; // [sp+90h] [bp-28h]@20 
-    int v33; // [sp+C0h] [bp+8h]@3
-
-    a7->pathing.destination_map_x = 0;
-    a7->pathing.destination_map_y = 0;
-    v20 = y >> 13;
-    v7 = x >> 13;
-	v24 = x;
-    a4a = Map_get_tile(x >> 13, y >> 13);
-    v26 = 2 * a3;
-    v29 = 2 * a3 - 2 * a4;
-    v8 = 2 * a3 - a4;
-    v9 = 0;
-    v19 = 0;
-    do
-    {
-        v30[v9] = 0;
-        a7->_15C_waypoints_xs[v9] = -1;
-        a7->_15C_waypoints_ys[v19] = -1;
-        v9 = v19 + 1;
-        v15 = __OFSUB__(v19 + 1, 10);
-        v14 = v19++ - 9 < 0;
-    } while (v14 ^ v15);
-    v19 = 0;
-	a3a = 0;
-	v23 = 0;
-	a11 = 0;
-	a8 = 0;
-    v13 = a4 == 0;
-    v33 = a4 - 1;
-    if (v13)
-        return boxd_41C060(v19, a7, a3a, v23, v32, v31, v30, a8);
-    while (1)
-	{
-		if (v8 < 0)
-		{
-            v10 = v26;
-		}
-		else
-		{
-			v10 = v29;
-            x += a5;
-			v24 = x;
-		}
-		v25 = v10 + v8;
-        y += a6;
-		v11 = x >> 13;
-		v12 = y >> 13;
-        v15 = __OFSUB__(x >> 13, v7);
-        v13 = x >> 13 == v7;
-        v14 = (x >> 13) - v7 < 0;
-		v27 = y;
-		if (x >> 13 == v7)
-		{
-            if (v12 == v20)
-                goto LABEL_22;
-			v15 = __OFSUB__(v11, v7);
-			v13 = v11 == v7;
-			v14 = v11 - v7 < 0;
-		}
-		if (!((unsigned __int8)(v14 ^ v15) | v13))
-		{
-			v15 = __OFSUB__(v11, v7);
-			v14 = v11 - v7 < 0;
-			++a4a;
-		}
-		if (v14 ^ v15)
-			--a4a;
-		if (v12 > v20)
-            a4a += _4793F8_map_width;
-		if (v12 < v20)
-            a4a -= _4793F8_map_width;
-        v7 = x >> 13;
-        v20 = y >> 13;
-        v16 = Map_40EA50_classify_tile_objects(a7, v11, v12, a4a);
-        if (Map_41BE90_add_waypoint(&v19, v16, &a3a, &v23, a7, v30, v32, v31, v11, v12, &a11, &a8) != 6)
-			return 1;
-		y = v27;
-		x = v24;
-    LABEL_22:
-        v13 = v33-- == 0;
-        if (v13)
-            return boxd_41C060(v19, a7, a3a, v23, v32, v31, v30, a8);
-		v8 = v25;
-	}
-}
-
-int boxd_41BC60(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity) {
-    int one = boxd_41BC60_new(x, y, dx, dy, x_step, y_step, entity);
-entity->pathing.num_waypoints = 0; // reset
-    int two = boxd_41BC60_old(x, y, dx, dy, x_step, y_step, entity);
-    assert(one == two);
-    return two;
-}
-
-
-DataBoxd_stru0_per_map_unit *Map_get_tile(int map_x, int map_y) {
-    if (map_x < 0 || map_x >= _4793F8_map_width) {
-        return nullptr;
-    }
-    if (map_y < 0 || map_y >= _478AAC_map_height) {
-        return nullptr;
-    }
-
-    return &_478AA8_boxd_stru0_array[map_x + _4793F8_map_width * map_y];
-}
-
-//----- (0041BE90) --------------------------------------------------------
-int Map_41BE90_add_waypoint(
-    _DWORD *a1, int tile_classification_result, _DWORD *a3, _DWORD *a4, Entity *a5,
-    int *a6, int *a7, int *a8, int map_x, int map_y, _DWORD *a11, _DWORD *a12
-)
-{
-	int v13; // edi@3
-	int v17; // ecx@29
-
-	switch (tile_classification_result)
-	{
-	case 1:
-		if (!a5->pathing.field_54)
-			goto LABEL_6;
-		v13 = 0;
-		break;
-	case 3:
-		if (a5->pathing.field_50)
-			goto LABEL_6;
-        v13 = 0;
-        break;
-	case 2:
-		v13 = 0;
-		break;
-	default:
-	LABEL_6:
-		v13 = 1;
-		a5->_1AC_waypoints_xs[a5->pathing.num_waypoints] = map_x;
-		a5->_1AC_waypoints_ys[a5->pathing.num_waypoints] = map_y;
-		break;
-	}
-
-	if (tile_classification_result == 0)
-	{
-		a5->_1FC_waypoints_xs[a5->pathing.num_waypoints] = map_x;
-		a5->_1FC_waypoints_ys[a5->pathing.num_waypoints] = map_y;
-        *a3 = 1;
-        a6[a5->pathing.num_waypoints] = 0;
-	}
-	if (tile_classification_result == 3)
-		*a12 = 1;
-	if (tile_classification_result == 2)
-	{
-		*a4 = 1;
-	}
-	else
-	{
-		*a11 = 1;
-	}
-	if (tile_classification_result == 2 && !*a3 && !*a11)
-	{
-        a5->pathing.destination_map_x = map_x;
-		a5->pathing.destination_map_y = map_y;
-	}
-	if (*a1)
-	{
-		if (*a1 == 1)
-		{
-			if (!v13)
-			{
-				a5->_15C_waypoints_xs[a5->pathing.num_waypoints] = map_x;
-				a5->_15C_waypoints_ys[a5->pathing.num_waypoints] = map_y;
-				if (++a5->pathing.num_waypoints == 10)
-					return 1;
-				*a1 = 0;
-			}
-			if (tile_classification_result == 1 || tile_classification_result == 3)
-			{
-				if (*a3)
-				{
-					v17 = a5->pathing.num_waypoints;
-					if (!a6[v17])
-					{
-						a7[v17] = map_x;
-						a8[a5->pathing.num_waypoints] = map_y;
-						a6[a5->pathing.num_waypoints] = 1;
-						return 6;
-					}
-				}
-			}
-		}
-	}
-	else if (v13)
-	{
-		*a1 = 1;
-	}
-	return 6;
-}
-
-//----- (0041C060) --------------------------------------------------------
-int boxd_41C060(int a1, Entity *a2, int a3, int a4, int *a5, int *a6, int *a7, int a8)
-{
-	int v8; // eax@3
-	int result; // eax@7
-
-	if (a1)
-	{
-		if (a1 != 1)
-			goto LABEL_21;
-		v8 = a2->pathing.num_waypoints;
-		if (!v8 && !a3 && !a4 && !a8)
-			return 4;
-		if (v8)
-		{
-			if (!a3)
-				return 1;
-		}
-		else if (!a3)
-		{
-			return 2;
-		}
-		if (a7[v8])
-		{
-			a2->_15C_waypoints_xs[v8] = a5[v8];
-			a2->_15C_waypoints_ys[v8] = a6[v8];
-			++a2->pathing.num_waypoints;
-			return 3;
-		}
-		if (v8)
-			result = 1;
-		else
-			LABEL_21:
-		result = 5;
-	}
-	else
-	{
-		result = a2->pathing.num_waypoints != 0;
-	}
-	return result;
-}
-
-//----- (0041C130) --------------------------------------------------------
-bool boxd_41C130(int x, int y, int z, int w, Entity *entity)
-{
-	int v5; // esi@1
-	BOOL result; // eax@4
-
-	v5 = entity->stats->field_4C;
-	if (v5 == 128 || v5 == 512)
-	{
-		result = boxd_41C190(x, y, z, w, entity);
-	}
-	else if (entity_is_xl_vehicle(entity))
-	{
-		result = boxd_41C250(x, y, z, w, entity);
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
-//----- (0041C190) --------------------------------------------------------
-bool boxd_41C190(int x, int y, int z, int w, Entity *a5)
-{
-	int v5; // eax@2
-	int v6; // esi@2
-	int v8; // eax@7
-	int v9; // esi@7
-	int v10; // [sp-14h] [bp-1Ch]@3
-	int v11; // [sp-10h] [bp-18h]@3
-	int v12; // [sp-Ch] [bp-14h]@3
-	int v13; // [sp-8h] [bp-10h]@3
-	Entity *v14; // [sp-4h] [bp-Ch]@3
-
-	if (y > w)
-	{
-		v8 = (z - x) >> 8;
-		v9 = (y - w) >> 8;
-		if (v8 <= 0)
-		{
-			v14 = a5;
-			v13 = -256;
-			v12 = -256;
-			v11 = (y - w) >> 8;
-			v10 = -v8;
-			if (-v8 > v9)
-				return boxd_41C660(x, y, v10, v9, -256, -256, a5);
-		}
-		else
-		{
-			v14 = a5;
-			v13 = -256;
-			v12 = 256;
-			v11 = (y - w) >> 8;
-			v10 = (z - x) >> 8;
-			if (v8 > v9)
-				return boxd_41C660(x, y, v8, v9, 256, -256, a5);
-		}
-	}
-	else
-	{
-		v5 = (z - x) >> 8;
-		v6 = (w - y) >> 8;
-		if (v5 <= 0)
-		{
-			v14 = a5;
-			v13 = 256;
-			v12 = -256;
-			v11 = (w - y) >> 8;
-			v10 = -v5;
-			if (-v5 > v6)
-				return boxd_41C660(x, y, v10, v6, -256, 256, a5);
-		}
-		else
-		{
-			v14 = a5;
-			v13 = 256;
-			v12 = 256;
-			v11 = (w - y) >> 8;
-			v10 = (z - x) >> 8;
-			if (v5 > v6)
-				return boxd_41C660(x, y, v5, v6, 256, 256, a5);
-		}
-	}
-	return boxd_41C890(x, y, v10, v11, v12, v13, v14);
-}
-
-//----- (0041C250) --------------------------------------------------------
-bool boxd_41C250(int x, int y, int z, int w, Entity *a5)
-{
-	int v5; // esi@1
-	int v6; // edi@1
-	int v7; // ebp@2
-	int v8; // ebx@2
-	int v10; // edx@12
-	int v11; // ebp@12
-	int v12; // ecx@12
-	int v13; // ebp@21
-	int v14; // ebx@21
-	int v15; // edx@22
-	int v16; // ecx@22
-	int v17; // ebp@31
-
-	v5 = y;
-	v6 = x;
-	if (y > w)
-	{
-		v13 = (z - x) >> 8;
-		v14 = (y - w) >> 8;
-		if (v13 <= 0)
-		{
-			v17 = -v13;
-			if (v17 <= v14)
-			{
-				if (boxd_41C890(x - 4096, y + 4096, v17, v14, -256, -256, a5)
-					&& boxd_41C890(v6 + 4096, v5 - 4096, v17, v14, -256, -256, a5)
-					&& boxd_41C890(v6, v5, v17, v14, -256, -256, a5))
-				{
-					return 1;
-				}
-			}
-			else if (boxd_41C660(x + 4096, y - 4096, v17, v14, -256, -256, a5)
-				&& boxd_41C660(v6 - 4096, v5 + 4096, v17, v14, -256, -256, a5)
-				&& boxd_41C660(v6, v5, v17, v14, -256, -256, a5))
-			{
-				return 1;
-			}
-		}
-		else
-		{
-			v15 = y - 4096;
-			v16 = x - 4096;
-			if (v13 <= v14)
-			{
-				if (boxd_41C890(v16, v15, v13, v14, 256, -256, a5)
-					&& boxd_41C890(v6 + 4096, v5 + 4096, v13, v14, 256, -256, a5)
-					&& boxd_41C890(v6, v5, v13, v14, 256, -256, a5))
-				{
-					return 1;
-				}
-			}
-			else if (boxd_41C660(v16, v15, v13, v14, 256, -256, a5)
-				&& boxd_41C660(v6 + 4096, v5 + 4096, v13, v14, 256, -256, a5)
-				&& boxd_41C660(v6, v5, v13, v14, 256, -256, a5))
-			{
-				return 1;
-			}
-		}
-	}
-	else
-	{
-		v7 = (z - x) >> 8;
-		v8 = (w - y) >> 8;
-		if (v7 <= 0)
-		{
-			v10 = y - 4096;
-			v11 = -v7;
-			v12 = x - 4096;
-			if (v11 <= v8)
-			{
-				if (boxd_41C890(v12, v10, v11, v8, -256, 256, a5)
-					&& boxd_41C890(v6 + 4096, v5 + 4096, v11, v8, -256, 256, a5)
-					&& boxd_41C890(v6, v5, v11, v8, -256, 256, a5))
-				{
-					return 1;
-				}
-			}
-			else if (boxd_41C660(v12, v10, v11, v8, -256, 256, a5)
-				&& boxd_41C660(v6 + 4096, v5 + 4096, v11, v8, -256, 256, a5)
-				&& boxd_41C660(v6, v5, v11, v8, -256, 256, a5))
-			{
-				return 1;
-			}
-		}
-		else if (v7 <= v8)
-		{
-			if (boxd_41C890(x - 4096, y + 4096, v7, v8, 256, 256, a5)
-				&& boxd_41C890(v6 + 4096, v5 - 4096, v7, v8, 256, 256, a5)
-				&& boxd_41C890(v6, v5, v7, v8, 256, 256, a5))
-			{
-				return 1;
-			}
-		}
-		else if (boxd_41C660(x + 4096, y - 4096, v7, v8, 256, 256, a5)
-			&& boxd_41C660(v6 - 4096, v5 + 4096, v7, v8, 256, 256, a5)
-			&& boxd_41C660(v6, v5, v7, v8, 256, 256, a5))
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
-
-//----- (0041C660) --------------------------------------------------------
-bool boxd_41C660(int x, int y, int width, int height, int a5, int a6, Entity *a7)
-{
-	int v7; // esi@1
-	int v8; // ebx@1
-	int v9; // eax@2
-	int v10; // edx@4
-	int v11; // eax@5
-	int v12; // eax@7
-	Entity *v13; // ebp@15
-	Sprite *v14; // eax@15
-	DataBoxd_stru0_per_map_unit *v15; // edi@15
-	int v17; // eax@19
-	int v18; // eax@19
-	bool v19; // zf@19
-	int v20; // ecx@21
-	int v21; // eax@23
-	int v22; // eax@23
-	int v23; // ecx@23
-	bool v24; // sf@27
-	unsigned __int8 v25; // of@27
-	int v26; // [sp+10h] [bp-14h]@1
-	int v27; // [sp+14h] [bp-10h]@1
-	int v28; // [sp+18h] [bp-Ch]@19
-	int v29; // [sp+1Ch] [bp-8h]@15
-	int v30; // [sp+20h] [bp-4h]@15
-	int a3a; // [sp+28h] [bp+4h]@19
-	int a4a; // [sp+2Ch] [bp+8h]@19
-	Entity *a7a; // [sp+38h] [bp+14h]@23
-
-	v7 = x >> 13;
-	v8 = y >> 13;
-	v26 = y;
-	v27 = x;
-	if (a5 <= 0)
-		v9 = -(width >> 5);
-	else
-		v9 = width >> 5;
-	v10 = v7 + v9;
-	if (a6 <= 0)
-		v11 = -(height >> 5);
-	else
-		v11 = height >> 5;
-	v12 = v8 + v11;
-	if (v7 >= 0
-		&& v7 < _4793F8_map_width
-		&& v8 >= 0
-		&& v8 < _478AAC_map_height
-		&& v10 >= 0
-		&& v10 < _4793F8_map_width
-		&& v12 >= 0
-		&& v12 < _478AAC_map_height)
-	{
-		v13 = a7;
-		v14 = a7->sprite;
-		v30 = v14->y >> 13;
-		v29 = v14->x >> 13;
-		v15 = Map_get_tile(v7, v8);
-		switch (boxd_40ED00(a7, v15))
-		{
-		case 1:
-			if (a7->pathing.field_54)
-				break;
-			return 0;
-		case 3:
-			if (a7->pathing.field_50)
-				return 0;
-			break;
-		case 2:
-			break;
-		default:
-			return 0;
-		}
-		v17 = 2 * height;
-		a4a = v17;
-		v28 = v17 - 2 * width;
-		v18 = v17 - width;
-		v19 = width == 0;
-		a3a = width - 1;
-		if (v19)
-			return 1;
-		while (1)
-		{
-			if (v18 < 0)
-			{
-				v20 = a4a;
-			}
-			else
-			{
-				v20 = v28;
-				v26 += a6;
-			}
-			a7a = (Entity *)(v20 + v18);
-			v21 = a5 + v27;
-			v27 = v21;
-			v22 = v21 >> 13;
-			v23 = v26 >> 13;
-			if (v22 != v7 || v23 != v8)
-				break;
-		LABEL_39:
-			v19 = a3a-- == 0;
-			if (v19)
-				return 1;
-			v18 = (int)a7a;
-		}
-		if (v22 == v29 && v23 == v30)
-			return 1;
-		v25 = __OFSUB__(v22, v7);
-		v24 = v22 - v7 < 0;
-		if (v22 > v7)
-		{
-			++v15;
-			v25 = __OFSUB__(v22, v7);
-			v24 = v22 - v7 < 0;
-		}
-		if (v24 ^ v25)
-			--v15;
-		if (v23 > v8)
-			v15 += _4793F8_map_width;
-		if (v23 < v8)
-			v15 -= _4793F8_map_width;
-		v8 = v26 >> 13;
-		v7 = v22;
-		switch (boxd_40ED00(v13, v15))
-		{
-		case 1:
-			if (v13->pathing.field_54)
-				goto LABEL_39;
-			return 0;
-		case 3:
-			if (!v13->pathing.field_50)
-				goto LABEL_39;
-			return 0;
-		case 2:
-			goto LABEL_39;
-		default:
-			return 0;
-		}
-	}
-	return 0;
-}
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
-
-//----- (0041C890) --------------------------------------------------------
-bool boxd_41C890(int x, int y, int width, int height, int a5, int a6, Entity *a7)
-{
-	int v7; // esi@1
-	int v8; // ebx@1
-	int v9; // eax@2
-	int v10; // edx@4
-	int v11; // eax@5
-	int v12; // eax@7
-	Entity *v13; // ebp@15
-	Sprite *v14; // eax@15
-	DataBoxd_stru0_per_map_unit *v15; // edi@15
-	int v17; // eax@19
-	int v18; // eax@19
-	bool v19; // zf@19
-	int v20; // ecx@21
-	int v21; // eax@23
-	int v22; // ecx@23
-	bool v23; // sf@27
-	unsigned __int8 v24; // of@27
-	int v25; // [sp+10h] [bp-14h]@1
-	int v26; // [sp+14h] [bp-10h]@1
-	int v27; // [sp+18h] [bp-Ch]@19
-	int v28; // [sp+1Ch] [bp-8h]@15
-	int v29; // [sp+20h] [bp-4h]@15
-	int a3a; // [sp+28h] [bp+4h]@19
-	int a4a; // [sp+2Ch] [bp+8h]@19
-	Entity *a7a; // [sp+38h] [bp+14h]@23
-
-	v7 = x >> 13;
-	v8 = y >> 13;
-	v26 = y;
-	v25 = x;
-	if (a5 <= 0)
-		v9 = -(width >> 5);
-	else
-		v9 = width >> 5;
-	v10 = v7 + v9;
-	if (a6 <= 0)
-		v11 = -(height >> 5);
-	else
-		v11 = height >> 5;
-	v12 = v8 + v11;
-	if (v7 >= 0
-		&& v7 < _4793F8_map_width
-		&& v8 >= 0
-		&& v8 < _478AAC_map_height
-		&& v10 >= 0
-		&& v10 < _4793F8_map_width
-		&& v12 >= 0
-		&& v12 < _478AAC_map_height)
-	{
-		v13 = a7;
-		v14 = a7->sprite;
-		v29 = v14->y >> 13;
-		v28 = v14->x >> 13;
-		v15 = Map_get_tile(v7, v8);
-		switch (boxd_40ED00(a7, v15))
-		{
-		case 1:
-			if (a7->pathing.field_54)
-				break;
-			return 0;
-		case 3:
-			if (a7->pathing.field_50)
-				return 0;
-			break;
-		case 2:
-			break;
-		default:
-			return 0;
-		}
-		v17 = 2 * width;
-		a3a = v17;
-		v27 = v17 - 2 * height;
-		v18 = v17 - height;
-		v19 = height == 0;
-		a4a = height - 1;
-		if (v19)
-			return 1;
-		while (1)
-		{
-			if (v18 < 0)
-			{
-				v20 = a3a;
-			}
-			else
-			{
-				v20 = v27;
-				v25 += a5;
-			}
-			a7a = (Entity *)(v20 + v18);
-			v26 += a6;
-			v21 = v25 >> 13;
-			v22 = v26 >> 13;
-			if (v25 >> 13 != v7 || v22 != v8)
-				break;
-		LABEL_39:
-			v19 = a4a-- == 0;
-			if (v19)
-				return 1;
-			v18 = (int)a7a;
-		}
-		if (v21 == v28 && v22 == v29)
-			return 1;
-		v24 = __OFSUB__(v21, v7);
-		v23 = v21 - v7 < 0;
-		if (v21 > v7)
-		{
-			++v15;
-			v24 = __OFSUB__(v21, v7);
-			v23 = v21 - v7 < 0;
-		}
-		if (v23 ^ v24)
-			--v15;
-		if (v22 > v8)
-			v15 += _4793F8_map_width;
-		if (v22 < v8)
-			v15 -= _4793F8_map_width;
-		v8 = v26 >> 13;
-		v7 = v25 >> 13;
-		switch (boxd_40ED00(v13, v15))
-		{
-		case 1:
-			if (v13->pathing.field_54)
-				goto LABEL_39;
-			return 0;
-		case 3:
-			if (!v13->pathing.field_50)
-				goto LABEL_39;
-			return 0;
-		case 2:
-			goto LABEL_39;
-		default:
-			return 0;
-		}
-	}
-	return 0;
-}
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
-
-//----- (0041CAC0) --------------------------------------------------------
-bool is_game_loading()
-{
-	return game_load_in_progress;
-}
-// 479FBC: using guessed type int game_load_in_progress;
-
-//----- (0041CAD0) --------------------------------------------------------
-bool is_game_saving()
-{
-	return game_save_in_progress;
-}
-// 479FC0: using guessed type int game_save_in_progress;
-
-//----- (0041CAE0) --------------------------------------------------------
-bool _41CAE0_prepare_to_load_level(const char *a1, enum LEVEL_ID level)
-{
-	BOOL result; // eax@3
-
-	if (game_load_in_progress || game_save_in_progress)
-	{
-		result = 0;
-	}
-	else
-	{
-        strcpy(current_savegame_filename, a1);
-		game_saveload_level_idx = level;
-		game_load_in_progress = 1;
-        result = 1;
-	}
-	return result;
-}
-
-//----- (0041CB30) --------------------------------------------------------
-bool _41CB30_prepare_to_save_level(const char *a1, enum LEVEL_ID level)
-{
-	BOOL result; // eax@3
-
-	if (game_load_in_progress || game_save_in_progress)
-	{
-		result = 0;
-	}
-	else
-	{
-        strcpy(current_savegame_filename, a1);
-		result = 1;
-		game_saveload_level_idx = level;
-		game_save_in_progress = 1;
-	}
-	return result;
-}
-
-//----- (0041CB80) --------------------------------------------------------
-enum LEVEL_ID get_saveload_level_id()
-{
-	return game_saveload_level_idx;
-}
-
-//----- (0041CB90) --------------------------------------------------------
-OilDepositSaveStruct *GAME_Save_PackOilData(size_t *oil_data_size)
-{
-	OilDeposit *i; // eax@1
-	OilDepositSaveStruct *result; // eax@3
-	OilDeposit *v3; // edx@5
-	OilDepositSaveStruct *j; // ecx@5
-	int *v5; // ecx@6
-
-	*oil_data_size = 4;
-	for (i = oilspot_list_head; (OilDeposit **)i != &oilspot_list_head; i = i->next)
-		*oil_data_size += 16;
-	result = (OilDepositSaveStruct *)malloc(*oil_data_size);
-	if (result)
-	{
-		v3 = oilspot_list_head;
-		for (j = result; (OilDeposit **)v3 != &oilspot_list_head; j = (OilDepositSaveStruct *)(v5 + 1))
-		{
-			j->field_0 = v3->oil_left;
-			v5 = &j->width_x256;
-			*v5 = v3->sprite->x;
-			++v5;
-			*v5 = v3->sprite->y;
-			++v5;
-			*v5 = v3->drillrig_entity_id;
-			v3 = v3->next;
-		}
-		j->field_0 = -1;
-	}
-	else
-	{
-		errmsg_save[1] = aMemory;
-	}
-	return result;
-}
-
-//----- (0041CC20) --------------------------------------------------------
-int GAME_Load_UnpackOilData(OilDepositSaveStruct *a1)
-{
-	OilDepositSaveStruct *v1; // edi@1
-	OilDeposit *v2; // esi@2
-	Sprite *v3; // eax@6
-	int *v4; // edi@7
-	int v5; // eax@7
-	int v6; // edx@9
-	_DWORD *v7; // edi@9
-	int v8; // ecx@9
-	int v9; // edx@9
-	OilDeposit *v10; // eax@9
-	OilDeposit *v11; // ecx@9
-	int result; // eax@10
-
-	v1 = a1;
-	if (a1->field_0 == -1)
-	{
-		result = 1;
-	}
-	else
-	{
-		while (1)
-		{
-			v2 = oilspot_list_free_pool;
-			if (oilspot_list_free_pool)
-				oilspot_list_free_pool = oilspot_list_free_pool->next;
-			else
-				v2 = 0;
-			if (!v2)
-				break;
-			v3 = sprite_create_scripted(MOBD_OIL_PATCH, 0, UNIT_Handler_OilPatch, SCRIPT_COROUTINE, 0);
-			v2->sprite = v3;
-			if (!v3)
-				break;
-			v4 = &v1->width_x256;
-			v3->script->param = v2;
-			v5 = *(v4 - 1);
-			v2->oil_left = v5;
-			if (v5 <= 0)
-				v2->sprite->drawjob->flags |= 0x40000000u;
-			v6 = *v4;
-			v7 = v4 + 1;
-			v2->sprite->x = v6;
-			v8 = *v7;
-			++v7;
-			v2->sprite->y = v8;
-			v9 = *v7;
-			v1 = (OilDepositSaveStruct *)(v7 + 1);
-			v2->drillrig_entity_id = v9;
-			v10 = oildeposit_list_end;
-			v11 = oildeposit_list_end->next;
-			v2->prev = oildeposit_list_end;
-			v2->next = v11;
-			v10->next->prev = v2;
-			v10->next = v2;
-			if (v1->field_0 == -1)
-				return 1;
-		}
-		result = 0;
-	}
-	return result;
-}
-
-//----- (0041CCE0) --------------------------------------------------------
-bool GAME_Save_PackEntity(Entity *entity, int save_data, int save_data_size)
-{
-	Entity *v3; // ebp@1
-	EntitySerialized *v4; // ebx@1
-	Entity *v5; // eax@1
-	int v6; // edx@1
-	int v7; // eax@3
-	int v8; // ecx@4
-	Script *v9; // esi@9
-	BOOL result; // eax@10
-	EntityTurret *v19; // eax@25
-	Script *v21; // edi@26
-	Entity *v29; // ecx@43
-	int v30; // edx@43
-	int v31; // eax@44
-	Entity *v64; // eax@124
-	int v65; // edx@124
-	int v66; // eax@126
-	int v67; // ecx@127
-	Entity *v68; // eax@132
-	int v69; // edx@132
-	int v70; // eax@134
-	int v71; // ecx@135
-	Entity *v72; // eax@140
-	int v73; // edx@140
-	int v74; // eax@142
-	int v75; // ecx@143
-	Entity *v76; // eax@148
-	int v77; // ecx@148
-	int v78; // eax@150
-	int v79; // edx@151
-	int v80; // eax@156
-	int *v81; // ecx@156
-	enum UNIT_ID v82; // eax@158
-	char *v83; // ebp@159
-	char *v84; // ebx@159
-	int v85; // eax@160
-	int v86; // edx@160
-	int v87; // eax@162
-	int v88; // ecx@163
-	int v89; // eax@168
-	int v90; // edx@168
-	int v91; // eax@170
-	int v92; // ecx@171
-	int v93; // eax@176
-	int v94; // edx@176
-	int v95; // eax@178
-	int v96; // ecx@179
-	int *v97; // eax@184
-	int v98; // ebp@184
-	int v99; // edx@184
-	int v100; // ecx@185
-	int v101; // ecx@186
-	void *v102; // ebp@191
-	OilDeposit *v103; // ecx@192
-	OilDeposit *v104; // eax@194
-	int v105; // edx@194
-	OilDeposit *v106; // eax@199
-	OilDeposit *v107; // esi@199
-	int v108; // eax@201
-	Entity *v109; // edx@202
-	enum UNIT_ID v110; // eax@207
-	int v116; // eax@217
-	int v117; // eax@218
-	int v118; // esi@221
-	char *v127; // [sp-4h] [bp-18h]@68
-	EntityTurret *v128; // [sp+10h] [bp-4h]@25
-
-	v3 = entity;
-	v4 = (EntitySerialized *)save_data;
-	v5 = entity->entity_8;
-	v6 = entity->entity_118_entity_id;
-	if (!v5)
-		goto LABEL_8;
-	if (v6 != -1)
-	{
-		v8 = v5->entity_id;
-		if (v8 && v8 == v6 && !v5->destroyed)
-		{
-			v7 = v5->entity_id;
-			goto LABEL_9;
-		}
-	LABEL_8:
-		v7 = -1;
-		goto LABEL_9;
-	}
-	v7 = v5->entity_id;
-LABEL_9:
-	v4->id = v7;
-	v9 = v3->script;
-	if (v9->routine_type != SCRIPT_FUNCTION)
-	{
-		errmsg_save[1] = aTaskIsWrongTyp;
-		return 0;
-	}
-    v4->entity_task_event = v9->script_type;
-	v4->entity_task_handler_idx = get_handler_id(v9->handler);
-	v4->entity_task_message_handler_idx = get_handler_id(v9->event_handler);
-	v4->entity_task_field_20 = v9->flags_20;
-	v4->entity_task_field_14 = v9->num_runs_to_skip;
-	v4->entity_task_field_24 = v9->flags_24;
-	v4->entity_task_field_28 = v9->_28_yield_flags;
-	v4->entity_task_field_2C = v9->field_2C;
-	v4->unit_stats_idx = v3->unit_id;
-	v4->player_side = v3->player_side;
-	v19 = v3->turret;
-	v128 = v19;
-	if (v19)
-	{
-		v21 = v19->sprite_task;
-		if (v19->sprite_task->routine_type != SCRIPT_FUNCTION)
-		{
-			errmsg_save[1] = aTaskIsWrongTyp;
-			return 0;
-		}
-		v4->turret_sprite_task_event = v21->script_type;
-		v4->turret_sprite_task_handler_idx = get_handler_id(v21->handler);
-		v4->turret_sprite_task_message_handler_idx = get_handler_id(v21->event_handler);
-		v4->turret_sprite_task_field_20 = v21->flags_20;
-		v4->turret_sprite_task_field_14 = v21->num_runs_to_skip;
-		v4->turret_sprite_task_field_24 = v21->flags_24;
-		v4->turret_sprite_task_field_28 = v21->_28_yield_flags;
-		v4->turret_sprite_task_field_2C = v21->field_2C;
-		result = GAME_Save_PackSprite(v128->turret_sprite, &v4->turret_sprite);
-		if (!result)
-			return result;
-		v29 = v128->_C_entity;
-		v30 = v128->_C_entity_idx;
-		if (!v29 || (v31 = v29->entity_id, v30 != -1) && (!v31 || v31 != v30 || v29->destroyed))
-			v31 = -1;
-		v4->turret_C_entity_id = v31;
-		v4->turret_mode = get_handler_id(v128->handler);
-		if (v4->turret_mode < 0)
-		{
-			sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown turret mode");
-		LABEL_224:
-			errmsg_save[1] = byte_479EF8;
-			return 0;
-		}
-		v4->turret_mobd_lookup_id = v128->mobd_lookup_id;
-		v4->turret_field_18 = v128->field_18;
-		v4->turret_field_1C = v128->field_1C;
-		v4->turret_field_20 = v128->field_20;
-		v4->turret_field_2C = v128->field_2C;
-		v4->turret_entity__or__C_entity_id = v128->_C_entity_idx;
-		v4->turret_field_34 = v128->field_34;
-	}
-	else
-	{
-		v4->turret_sprite_task_handler_idx = 0;
-	}
-
-	v4->entity_mode = v3->ModeHandlerId();
-	if (v4->entity_mode < 0)
-	{
-		sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown mode");
-		goto LABEL_224;
-	}
-
-	v4->entity_mode_idle = get_handler_id(v3->mode_idle);
-	if (v4->entity_mode_idle < 0)
-	{
-		sprintf(byte_479EF8, "unit %d %s", v3->unit_id, "unknown idle mode");
-		goto LABEL_224;
-	}
-
-	v4->entity_mode_arrive = get_handler_id(v3->mode_arrive);
-	if (v4->entity_mode_arrive < 0)
-	{
-		sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown arrive mode");
-		goto LABEL_224;
-	}
-
-	v4->entity_mode_attacked = get_handler_id(v3->mode_attacked);
-	if (v4->entity_mode_attacked < 0)
-	{
-        sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown attacked mode");
-        goto LABEL_224;
-	}
-
-	v4->entity_mode_return = get_handler_id(v3->mode_return);
-	if (v4->entity_mode_return < 0)
-	{
-		sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown return mode");
-		goto LABEL_224;
-	}
-
-	v4->entity_mode_turn_return = get_handler_id(v3->mode_turn_return);
-	if (v4->entity_mode_turn_return < 0)
-	{
-		sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown turn-return mode");
-		goto LABEL_224;
-	}
-
-	v4->entity_message_handler_idx = get_handler_id(v3->event_handler);
-	if (v4->entity_message_handler_idx < 0)
-	{
-        sprintf(byte_479EF8, aUnitDS, v3->unit_id, "unknown message handler");
-        goto LABEL_224;
-	}
-
-	result = GAME_Save_PackSprite(v3->sprite, &v4->entity_sprite);
-	if (!result)
-		return result;
-	v4->entity_field_78 = v3->field_78;
-	v4->entity_mobd_idx = (MOBD_ID)v3->current_mobd_lookup_idx;
-	v4->entity_field_80 = v3->field_80;
-	v4->entity_field_84 = v3->field_84;
-	v4->entity_field_88 = v3->_88_dst_orientation;
-	v4->entity_hitpoints = v3->hitpoints;
-	v4->entity_field_94 = v3->field_94;
-	v4->entity_98__465610_damage_multipliers_idx = v3->_98_465610_accuracy_dmg_bonus_idx;
-	v4->entity_9C_hp_regen_condition = v3->_9C_hp_regen_condition;
-	v4->entity_A0_hp_regen_condition = v3->_A0_hp_regen_condition;
-	v4->field_A4 = v3->_A4_idx_in_tile;
-	v4->entity_sprite_width_shr13 = v3->sprite_map_x;
-	v4->entity_sprite_height_shr13 = v3->sprite_map_y;
-	v4->entity_sprite_width = v3->sprite_x;
-	v4->entity_sprite_height = v3->sprite_y;
-	v4->field_B8 = v3->_B8_move_dst_x;
-	v4->field_BC = v3->_B8_move_dst_y;
-	v4->field_C0 = v3->_C0_mobd_anim_speed_related;
-	v4->field_C4 = v3->field_C4;
-	v4->field_C8 = v3->field_C8;
-	v4->field_CC = v3->field_CC;
-	v4->field_D0 = v3->field_D0;
-	v4->field_D4 = v3->field_D4;
-	v4->field_D8 = v3->field_D8;
-	v4->field_DC = v3->_DC_order;
-	v64 = v3->_E0_current_attack_target;
-	v65 = v3->_E0_current_attack_target_entity_id;
-	if (!v64)
-		goto LABEL_243;
-	if (v65 == -1)
-	{
-		v66 = v64->entity_id;
-		goto LABEL_132;
-	}
-	v67 = v64->entity_id;
-	if (v67 && v67 == v65 && !v64->destroyed)
-		v66 = v64->entity_id;
-	else
-		LABEL_243:
-	v66 = -1;
-LABEL_132:
-	v4->entity_EC_outpost_clanhall_entity_id = v66;
-	v68 = v3->_E4_prev_attack_target;
-	v69 = v3->_E4_prev_attack_target_entity_id;
-	if (!v68)
-		goto LABEL_139;
-	if (v69 != -1)
-	{
-		v71 = v68->entity_id;
-		if (v71 && v71 == v69 && !v68->destroyed)
-		{
-			v70 = v68->entity_id;
-			goto LABEL_140;
-		}
-	LABEL_139:
-		v70 = -1;
-		goto LABEL_140;
-	}
-	v70 = v68->entity_id;
-LABEL_140:
-	v4->entity_E4_entity_id = v70;
-	v4->_E0_current_attack_target_entity_id = v3->_E0_current_attack_target_entity_id;
-	v4->_E4_prev_attack_target_entity_id = v3->_E4_prev_attack_target_entity_id;
-	v4->entity_F4_entity_118_entity_id = v3->entity_118_entity_id;
-	v4->entity_sprite_width_2 = v3->sprite_x_2;
-	v4->entity_sprite_height_2 = v3->sprite_y_2;
-	v72 = v3->entity_118;
-	v73 = v3->entity_118_entity_id;
-	if (!v72)
-		goto LABEL_244;
-	if (v73 == -1)
-	{
-		v74 = v72->entity_id;
-		goto LABEL_148;
-	}
-	v75 = v72->entity_id;
-	if (v75 && v75 == v73 && !v72->destroyed)
-		v74 = v72->entity_id;
-	else
-		LABEL_244:
-	v74 = -1;
-LABEL_148:
-	v4->entity_entity_118_entity_id = v74;
-	v4->entity_field_11C = v3->_11C__infantry_sprite_y___drillrig_oil_spot;
-	v4->entity_field_120 = v3->_120__infantry_sprite_x;
-	v4->entity_field_124 = v3->field_124;
-	v4->entity_field_128 = (int)v3->_128_spawn_param;
-	v4->entity_field_12C = v3->_12C_prison_bunker_spawn_type;
-	v4->entity_entity_id = v3->entity_id;
-	v4->entity_field_134 = v3->_134_param__unitstats_after_mobile_outpost_plant;
-	v4->entity_field_138 = v3->field_138;
-	v4->entity_field_13C = v3->field_13C;
-	v4->entity_field_140 = v3->field_140;
-	v4->entity_field_144 = v3->field_144;
-	v4->entity_field_148 = v3->field_148;
-	v4->entity_field_14C = v3->field_14C;
-	v4->entity_field_150 = v3->field_150;
-	v4->entity_field_154 = v3->field_154;
-	v4->entity_field_158 = v3->field_158;
-	memcpy(v4->entity_array_15C, v3->_15C_waypoints_xs, sizeof(v4->entity_array_15C));
-	memcpy(v4->entity_array_184, v3->_15C_waypoints_ys, sizeof(v4->entity_array_184));
-	memcpy(v4->entity_array_1AC, v3->_1AC_waypoints_xs, sizeof(v4->entity_array_1AC));
-	memcpy(v4->entity_array_1D4, v3->_1AC_waypoints_ys, sizeof(v4->entity_array_1D4));
-	memcpy(v4->entity_array_1FC, v3->_1FC_waypoints_xs, sizeof(v4->entity_array_1FC));
-    memcpy(v4->entity_array_224, v3->_1FC_waypoints_ys, sizeof(v4->entity_array_224));
-	memcpy(v4->entity_array_24C, &v3->pathing, sizeof(v4->entity_array_24C));
-	v76 = v3->entity_27C;
-	v77 = v3->entity_27C_entity_id;
-	if (!v76)
-		goto LABEL_155;
-	if (v77 != -1)
-	{
-		v79 = v76->entity_id;
-		if (v79 && v79 == v77 && !v76->destroyed)
-		{
-			v78 = v76->entity_id;
-			goto LABEL_156;
-		}
-	LABEL_155:
-		v78 = -1;
-		goto LABEL_156;
-	}
-	v78 = v76->entity_id;
-LABEL_156:
-	v4->entity_27C_entity_id = v78;
-	v4->entity_27C_entity_id_2 = v3->entity_27C_entity_id;
-	v80 = 0;
-	v81 = v4->entity_array_294;
-	do
-	{
-		*v81 = v3->array_294[v80++];
-		++v81;
-	} while (v80 < 7);
-	LOWORD_HEXRAYS(v4->entity_array_294[7]) = v3->field_29C;
-	HIWORD_HEXRAYS(v4->entity_array_294[7]) = HIWORD_HEXRAYS(v3->field_29C);
-	v4->field_2E8 = v3->field_2A0;
-	v4->field_2EA = HIWORD_HEXRAYS(v3->field_2A0);
-	v82 = v3->unit_id;
-	switch (v82)
-	{
-	case 0x17u:
-	case 0x18u:
-		v83 = (char *)v3->state;
-		v84 = (char *)&v4->field_2EC;
-		if (!v83)
-		{
-			*(_DWORD *)v84 = -67108864;
-			return 1;
-		}
-		*(_DWORD *)v84 = *(_DWORD *)v83;
-		v85 = *((_DWORD *)v83 + 1);
-		v86 = *((_DWORD *)v83 + 6);
-		if (!v85)
-			goto LABEL_167;
-		if (v86 == -1)
-		{
-			v87 = *(_DWORD *)(v85 + 304);
-		}
-		else
-		{
-			v88 = *(_DWORD *)(v85 + 304);
-			if (!v88 || v88 != v86 || *(_DWORD *)(v85 + 140))
-				LABEL_167:
-			v87 = -1;
-			else
-				v87 = *(_DWORD *)(v85 + 304);
-		}
-		*((_DWORD *)v84 + 1) = v87;
-		v89 = *((_DWORD *)v83 + 2);
-		v90 = *((_DWORD *)v83 + 5);
-		if (!v89)
-			goto LABEL_175;
-		if (v90 == -1)
-		{
-			v91 = *(_DWORD *)(v89 + 304);
-		}
-		else
-		{
-			v92 = *(_DWORD *)(v89 + 304);
-			if (!v92 || v92 != v90 || *(_DWORD *)(v89 + 140))
-				LABEL_175:
-			v91 = -1;
-			else
-				v91 = *(_DWORD *)(v89 + 304);
-		}
-		*((_DWORD *)v84 + 2) = v91;
-		v93 = *((_DWORD *)v83 + 3);
-		v94 = *((_DWORD *)v83 + 4);
-		if (!v93)
-			goto LABEL_183;
-		if (v94 == -1)
-		{
-			v95 = *(_DWORD *)(v93 + 304);
-		}
-		else
-		{
-			v96 = *(_DWORD *)(v93 + 304);
-			if (!v96 || v96 != v94 || *(_DWORD *)(v93 + 140))
-				LABEL_183:
-			v95 = -1;
-			else
-				v95 = *(_DWORD *)(v93 + 304);
-		}
-		*((_DWORD *)v84 + 3) = v95;
-		*((_DWORD *)v84 + 4) = *((_DWORD *)v83 + 4);
-		*((_DWORD *)v84 + 5) = *((_DWORD *)v83 + 5);
-		*((_DWORD *)v84 + 6) = *((_DWORD *)v83 + 6);
-		*((_DWORD *)v84 + 7) = *((_DWORD *)v83 + 7);
-		v97 = (int *)(v84 + 32);
-		v98 = v83 - v84;
-		v99 = 20;
-		do
-		{
-			v100 = *(int *)((char *)v97 + v98);
-			if (v100)
-				v101 = *(_DWORD *)(v100 + 304);
-			else
-				v101 = -1;
-			*v97 = v101;
-			++v97;
-			--v99;
-		} while (v99);
-		return 1;
-	case 0x19u:
-		v102 = v3->state;
-		v4->field_2EC = *(_DWORD *)v102;
-		v4[1].id = *((_DWORD *)v102 + 1);
-		v4[1].entity_task_event = (SCRIPT_TYPE)*((_DWORD *)v102 + 2);
-		return 1;
-	case 0x2Eu:
-	case 0x2Fu:
-	case 0x30u:
-	case 0x31u:
-	case 0x32u:
-	case 0x33u:
-	case 0x3Au:
-	case 0x3Bu:
-	case 0x3Cu:
-	case 0x3Du:
-	case 0x3Eu:
-	case 0x3Fu:
-	case 0x40u:
-	case 0x41u:
-	case 0x42u:
-		v103 = (OilDeposit *)v3->state;
-		if (v82 == 46 || v82 == 47)
-		{
-			v104 = oilspot_list_head;
-			v105 = 0;
-			if ((OilDeposit **)oilspot_list_head == &oilspot_list_head)
-			{
-			LABEL_197:
-				v105 = -1;
-			}
-			else
-			{
-				while (v104 != v103->next)
-				{
-					v104 = v104->next;
-					++v105;
-					if ((OilDeposit **)v104 == &oilspot_list_head)
-						goto LABEL_197;
-				}
-			}
-			v4->field_2EC = v105;
-		}
-		v4[1].id = (int)v103->prev;
-		v4[1].entity_task_event = (enum SCRIPT_TYPE)(int)v103->sprite;
-		LOWORD_HEXRAYS(v4[1].entity_task_handler_idx) = v103->oil_left;
-		HIWORD_HEXRAYS(v4[1].entity_task_handler_idx) = HIWORD_HEXRAYS(v103->oil_left);
-		v106 = v103[1].next;
-		v107 = v103[1].prev;
-		if (!v106)
-			goto LABEL_206;
-		if (v107 == (OilDeposit *)-1)
-		{
-			v108 = (int)v106[12].drillrig;
-		}
-		else
-		{
-			v109 = v106[12].drillrig;
-			if (!v109 || (OilDeposit *)v109 != v107 || v106[5].drillrig_entity_id)
-				LABEL_206:
-			v108 = -1;
-			else
-				v108 = (int)v106[12].drillrig;
-		}
-		v4[1].entity_task_message_handler_idx = v108;
-		v4[1].entity_task_field_20 = (int)v103[1].prev;
-		v4[1].entity_task_field_14 = v103[1].oil_left;
-		v110 = v3->unit_id;
-		if (v110 != UNIT_STATS_SURV_RESEARCH_LAB && v110 != UNIT_STATS_MUTE_ALCHEMY_HALL || !v103->sprite)
-			goto LABEL_225;
-
-        int v113; v113 = v103->next[2].oil_left;
-		v4[1].entity_task_field_24 = get_handler_id(*(void **)(v113 + 0));
-		v4[1].entity_task_field_28 = *(_DWORD *)(v113 + 4);
-		v4[1].entity_task_field_2C = *(_DWORD *)(v113 + 8);
-		v4[1].unit_stats_idx = (UNIT_ID)*(_DWORD *)(v113 + 12);
-		v116 = *(_DWORD *)(v113 + 16);
-		if (v116)
-			v117 = *(_DWORD *)(v116 + 304);
-		else
-			v117 = -1;
-		v4[1].player_side = v117;
-		result = GAME_Save_PackSprite(*(Sprite **)(v113 + 24), (SpriteSerialized *)&v4[1].turret_sprite_task_event);
-		if (result)
-		{
-			v118 = *(_DWORD *)(v113 + 28);
-			if (*(_DWORD *)(v118 + 24) != SCRIPT_FUNCTION)
-			{
-				errmsg_save[1] = aTaskIsWrongTyp;
-                sprintf(byte_479EF8, aUnitDS, v3->unit_id, "bad upgrade task");
-				goto LABEL_224;
-			}
-			v4[1].turret_sprite.y = *(_DWORD *)(v118 + 12);
-            v4[1].turret_sprite.z_index = get_handler_id(*(void **)(v118 + 64));
-			v4[1].turret_sprite.x_speed = get_handler_id(*(void **)(v118 + 52));
-			v4[1].turret_sprite.y_speed = *(_DWORD *)(v118 + 32);
-			v4[1].turret_sprite.z_speed = *(_DWORD *)(v118 + 20);
-			v4[1].turret_sprite._inside_mobd_item = *(_DWORD *)(v118 + 36);
-			v4[1].turret_sprite._54_inside_mobd_ptr4 = *(_DWORD *)(v118 + 40);
-			v4[1].turret_sprite._60_mobd_anim_speed = *(_DWORD *)(v118 + 44);
-			result = 1;
-		}
-		break;
-	default:
-	LABEL_225:
-		result = 1;
-		break;
-	}
-	return result;
-}
-
-//----- (0041DA20) --------------------------------------------------------
-bool GAME_Save_PackSprite(Sprite *a1, SpriteSerialized *out)
-{
-    DataMobdItem_stru0 **v2; // eax@1
-	DataMobdItem_stru0 *v3; // eax@4
-	BOOL result; // eax@5
-
-	out->mobd_idx = a1->mobd_id;
-	out->x = a1->x;
-	out->y = a1->y;
-	out->z_index = a1->z_index;
-	out->x_speed = a1->x_speed;
-	out->y_speed = a1->y_speed;
-	out->z_speed = a1->z_speed;
-	v2 = a1->_inside_mobd_item;
-	if (v2)
-		out->_inside_mobd_item = (unsigned int)v2 - (unsigned int)currently_running_lvl_mobd[out->mobd_idx].items;
-	else
-		out->_inside_mobd_item = -1;
-	v3 = a1->_54_inside_mobd_ptr4;
-	if (v3)
-	{
-		out->_54_inside_mobd_ptr4 = (char *)v3 - (char *)currently_running_lvl_mobd[out->mobd_idx].items;
-		out->_60_mobd_anim_speed = a1->_60_mobd_anim_speed;
-		result = 1;
-	}
-	else
-	{
-		out->_54_inside_mobd_ptr4 = -1;
-		out->_60_mobd_anim_speed = a1->_60_mobd_anim_speed;
-		result = 1;
-	}
-	return result;
-}
-
-//----- (0041E8E0) --------------------------------------------------------
-Sprite *GAME_Load_UnpackSprite(SpriteSerialized *serialized)
-{
-	SpriteSerialized *v1; // edi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // esi@1
-	int v4; // edx@2
-	int v5; // eax@3
-    DataMobdItem_stru0 **v7; // eax@4
-	DataMobdItem_stru0 *v8; // edx@5
-    DataMobdItem_stru0 **v9; // eax@5
-	int v11; // eax@7
-	char *v12; // eax@8
-
-	v1 = serialized;
-	v2 = sprite_create(serialized->mobd_idx, 0, 0);
-	v3 = v2;
-	if (!v2)
-		return v3;
-	v2->x = v1->x;
-	v2->y = v1->y;
-	v2->z_index = v1->z_index;
-	v2->x_speed = v1->x_speed;
-	v2->y_speed = v1->y_speed;
-	v2->z_speed = v1->z_speed;
-	v4 = v1->_inside_mobd_item;
-	if (v4 == -1)
-	{
-		v11 = v1->_54_inside_mobd_ptr4;
-		if (v11 != -1)
-		{
-			v12 = (char *)currently_running_lvl_mobd[v1->mobd_idx].items + v11;
-			v3->_54_inside_mobd_ptr4 = (DataMobdItem_stru0 *)v12;
-			v3->pstru58 = (Sprite_stru58 *)*((_DWORD *)v12 + 4);
-		}
-		goto LABEL_9;
-	}
-	sprite_load_mobd(v2, v4);
-	v5 = v1->_54_inside_mobd_ptr4;
-	if (v5 == -1)
-	{
-	LABEL_9:
-		v3->_60_mobd_anim_speed  = v1->_60_mobd_anim_speed;
-		return v3;
-	}
-	v7 = v3->_inside_mobd_item + 1;
-	v3->_54_inside_mobd_ptr4 = (DataMobdItem_stru0 *)&currently_running_lvl_mobd[v1->mobd_idx].items->_[v5 / 4];
-	v3->_inside_mobd_item_2 = v7;
-	if (v7[0] != v3->_54_inside_mobd_ptr4)
-	{
-		do
-		{
-			v8 = v3->_54_inside_mobd_ptr4;
-			v9 = v3->_inside_mobd_item_2 + 1;
-			v3->_inside_mobd_item_2 = v9;
-		} while (v9[0] != v8);
-	}
-	v3->pstru58 = (Sprite_stru58 *)v3->_54_inside_mobd_ptr4->ptr_10;
-	v3->_60_mobd_anim_speed  = v1->_60_mobd_anim_speed;
-	return v3;
-}
-
-//----- (0041E9B0) --------------------------------------------------------
-char *GAME_Save_PackProductionInfo(size_t *size)
-{
-	size_t *v1; // ebx@1
-	ProductionGroup *v2; // esi@1
-	ProductionGroup *i; // edx@2
-    ProductionOption *v4; // eax@3
-	char *result; // eax@7
-	//ProductionGroup *v6; // ecx@9
-	ProductionGroup *v7; // edx@10
-	char *v8; // ebp@10
-    ProductionOption *v9; // ecx@11
-	Entity *v10; // esi@11
-	int v11; // esi@12
-	char *v12; // esi@14
-	//ProductionGroup *v13; // [sp+10h] [bp-Ch]@9
-	char *v14; // [sp+14h] [bp-8h]@10
-	char *v15; // [sp+18h] [bp-4h]@7
-
-	v1 = size;
-	*size = 20;
-	for (int j = PRODUCTION_GROUP_INFANTRY; j <= PRODUCTION_GROUP_AIRCRAFT; ++j)
-	{
-        v2 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)j);
-		for (i = v2->prev; i != v2; i = i->prev)
-		{
-            *size += 16;
-			for (v4 = i->prev_option; v4 != (ProductionOption *)&i->next_option; v4 = v4->prev) {
-				*size += 24;
-            }
-		}
-	//	v2 += 19;
-	}
-    //while ((int)v2 < (int) & _47C914_sidebar);
-
-	result = (char *)malloc(*size);
-	v15 = result;
-	if (result)
-	{
-		//v6 = &_47C798_infantry_pg;
-		//v13 = &_47C798_infantry_pg;
-        for (int i = PRODUCTION_GROUP_INFANTRY; i <= PRODUCTION_GROUP_AIRCRAFT; ++i)
-		{
-            auto v6 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)i);
-            auto v13 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)i);
-			v7 = v6->prev;
-			v8 = result;
-			*(_DWORD *)result = 0;
-			result += 4;
-			v14 = v8;
-			if (v7 != v6)
-			{
-				do
-				{
-					v9 = v7->prev_option;
-					++*(_DWORD *)v8;
-					v10 = v7->_C_entity;
-					if (v10)
-						v11 = v10->entity_id;
-					else
-						v11 = -1;
-					*(_DWORD *)result = v11;
-					*((_DWORD *)result + 1) = v7->group_id;
-					*((_DWORD *)result + 2) = v7->_44_mobd_lookup_idx;
-					v12 = result + 12;
-					result += 16;
-					*(_DWORD *)v12 = 0;
-					if ((ProductionOption **)v9 != &v7->next_option)
-					{
-						do
-						{
-							result += 24;
-							++*(_DWORD *)v12;
-							*((_DWORD *)result - 6) = v9->unit_id;
-							*((_DWORD *)result - 5) = v9->mobd_lookup_table_offset;
-							*((_DWORD *)result - 4) = v9->_14_pcost;
-							*((_DWORD *)result - 3) = v9->field_18;
-							*((_DWORD *)result - 2) = v9->cost;
-							*((_DWORD *)result - 1) = v9->production_time_x60;
-							v9 = v9->prev;
-						} while (v9 != (ProductionOption *)&v7->next_option);
-						v8 = v14;
-					}
-					v7 = v7->prev;
-					v6 = v13;
-				} while (v7 != v13);
-			}
-			//v6 += 19;
-			//v13 = v6;
-		}
-        //while ((int)v6 < (int) & _47C914_sidebar);
-		result = (char *)(&v15[4 * *v1] >= result ? (unsigned int)v15 : 0);
-	}
-	else
-	{
-		errmsg_save[1] = aMemory;
-	}
-	return result;
-}
-
-//----- (0041EAF0) --------------------------------------------------------
-bool GAME_Load_UnpackProductionInfo(void *a1)
-{
-	int v1; // esi@1
-	void *v2; // ebx@1
-	_DWORD *v3; // eax@2
-	ProductionGroup *v4; // edi@3
-	_DWORD *v6; // eax@16
-	__int32 v7; // ecx@21
-	ProductionOption *v8; // ebp@21
-	int v9; // edx@21
-	int v10; // eax@21
-	Entity *v11; // ecx@21
-	ProductionGroup **v12; // ecx@22
-	ProductionGroup *v13; // eax@22
-	ProductionGroup *v14; // edx@23
-	ProductionGroup *v15; // eax@28
-	ProductionGroup *v16; // edx@28
-	Entity *v17; // ecx@29
-	enum UNIT_ID v18; // eax@29
-	ProductionOption *v19; // esi@34
-	int v20; // edx@37
-	int v21; // eax@37
-	ProductionOption *v22; // eax@39
-	int v24; // [sp+10h] [bp-14h]@1
-	int v25; // [sp+14h] [bp-10h]@31
-	_DWORD *v26; // [sp+18h] [bp-Ch]@3
-	int v27; // [sp+1Ch] [bp-8h]@2
-	_DWORD *v28; // [sp+20h] [bp-4h]@2
-
-	v1 = 0;
-	v2 = a1;
-	v24 = 0;
-	while (1)
-	{
-		v3 = (int *)v2;
-		v2 = (char *)v2 + 4;
-		v28 = v3;
-		v27 = 0;
-		if (*v3 > 0)
-			break;
-	LABEL_42:
-		v24 = ++v1;
-		if (v1 >= 5)
-			return 1;
-	}
-	while (1)
-	{
-		v4 = production_group_free_pool;
-		v26 = (int *)v2;
-		if (production_group_free_pool)
-			production_group_free_pool = production_group_free_pool->next;
-		else
-			v4 = 0;
-		if (!v4)
-			return 0;
-
-		v4->_C_entity = entityRepo->FindById(*(_DWORD *)v2);
-		switch (v1)
-		{
-		case 2:
-			_47B3D0_building_production_group = v4;
-			break;
-		case 3:
-			_47B3B8_tower_production_group = v4;
-			break;
-		case 4:
-			_47B3D4_aircraft_production_group = v4;
-			break;
-		default:
-			if (v4->_C_entity)
-			{
-				v6 = (int *)v4->_C_entity->state;
-				if (!v6)
-					return 0;
-				v6[4] = (int)v4;
-			}
-			break;
-		}
-		v7 = *((_DWORD *)v2 + 1);
-		v8 = (ProductionOption *)&v4->next_option;
-		v4->group_id = (PRODUCTION_GROUP_ID)v7;
-		v4->_44_mobd_lookup_idx = *((_DWORD *)v2 + 2);
-		v9 = v7;
-		v10 = v4->_44_mobd_lookup_idx + 16 * v7;
-		v11 = v4->_C_entity;
-		v4->prev_option = (ProductionOption *)&v4->next_option;
-		v8->next = v8;
-		v4->field_20 = -1;
-		v4->field_40 = v10;
-
-        v12 = (ProductionGroup **)ProductionGroupAccessor(v4->group_id);
-        v13 = ProductionGroupAccessor(v4->group_id)->next;
-		if (entity_check_type(v11, v9) && v13 != (ProductionGroup *)v12)
-		{
-			v14 = ProductionGroupAccessor(v4->group_id)->next;
-			if ((ProductionGroup **)v13 != v12)
-			{
-				do
-				{
-					if (v13->_C_entity->unit_id == UNIT_STATS_MUTE_BLACKSMITH)
-						break;
-					v14 = v13;
-					v13 = v13->next;
-				} while (v13 != (ProductionGroup *)v12);
-				v1 = v24;
-			}
-			v14->next = v4;
-			v4->prev = v14;
-			v4->next = v13;
-			v13->prev = v4;
-		}
-		else
-		{
-			v15 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)v1);
-			v16 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)v1)->next;
-			v4->next = v16;
-			v4->prev = v15;
-			v16->prev = v4;
-            v15->next = v4;
-		}
-		v17 = v4->_C_entity;
-		v18 = v17->unit_id;
-		if ((int)v18 < 58 || (int)v18 > 62)
-			return 0;
-		entity_410950(v17, LOBYTE_HEXRAYS(_4701B8_mobd_lookups_per_ProductionGroup_field44[2 * v4->_44_mobd_lookup_idx]));
-		v4->sprite = 0;
-		v2 = (char *)v2 + 16;
-		v25 = 0;
-		if (v26[3] > 0)
-		{
-			do
-			{
-				if (v8->next == v8)
-					script_trigger_event(0, EVT_MSG_1514, 0, _47CA18_sidebar_production_buttons[v4->group_id]->task);
-				v19 = production_option_list_free_pool;
-				if (production_option_list_free_pool)
-					production_option_list_free_pool = production_option_list_free_pool->next;
-				else
-					v19 = 0;
-				v19->field_2C = v4->field_40;
-				v19->stru21prod_unit_id = (enum UNIT_ID)(int)v4->_C_entity;
-				v19->unit_id = (UNIT_ID)*(_DWORD *)v2;
-				v19->mobd_lookup_table_offset = *((_DWORD *)v2 + 1);
-				v19->field_18 = *((_DWORD *)v2 + 3);
-				v20 = *((_DWORD *)v2 + 4);
-				v19->cost = v20;
-				v19->production_time_x60 = *((_DWORD *)v2 + 5);
-				v21 = *((_DWORD *)v2 + 2);
-				v19->_14_pcost = v21;
-				if (v21 > 0)
-					stru37_list_427EB0_enqueue_infantry(
-					(int *)&game_globals_per_player + *(_DWORD *)(v19->stru21prod_unit_id + 20),
-						&v19->_14_pcost,
-						v19->cost,
-						(v20 << 8) / v19->production_time_x60,
-						task_mobd17_cursor,
-						v19,
-						v19->field_2C);
-				v19->field_1C = 0;
-				v19->field_20 = 0;
-				v19->prev = v8;
-				v22 = v8->next;
-				v19->next = v8->next;
-				v2 = (char *)v2 + 24;
-				v22->prev = v19;
-				v8->next = v19;
-				++v25;
-			} while (v25 < v26[3]);
-			v1 = v24;
-		}
-		if (++v27 >= *v28)
-			goto LABEL_42;
-	}
 }
 
 //----- (0041ED90) --------------------------------------------------------
@@ -12637,7 +7391,7 @@ LABEL_19:
 	}
 LABEL_24:
 	v9->field_28 = *(_DWORD *)(a2 + 12);
-	v9->field_2C = *(_DWORD *)(a2 + 16);
+	v9->_2C_ai_importance = *(_DWORD *)(a2 + 16);
 	v12 = *(_DWORD *)(a2 + 20);
 	v9->field_30 = v12;
 	if (v12 < 0)
@@ -12652,3003 +7406,14 @@ LABEL_24:
 	v9->_10_prev = &v9->_C_next;
 }
 
-//----- (0041EF20) --------------------------------------------------------
-void *GAME_Save_PackAiPlayers(size_t *size)
-{
-	Script **v1; // ebp@1
-	stru24 *v2; // ebx@3
-	stru24 *i; // eax@3
-	stru24 *j; // edx@5
-	stru24_struC *v5; // eax@6
-	int v6; // esi@7
-	void **v7; // eax@7
-	stru24_WandererNode *k; // eax@10
-	stru24_stru40 *l; // eax@12
-	stru24_AttackerNode *m; // eax@14
-	stru24_AttackerNode *n; // eax@16
-	stru24_stru94 *ii; // eax@18
-	stru24_PowerPlantNode *jj; // eax@20
-	stru24_DrillRigNode *kk; // edx@22
-	stru24_stru160 *v15; // eax@23
-	int v16; // esi@24
-	void **v17; // eax@24
-	stru24_OilTankerNode **ll; // eax@26
-	stru24_OilTankerNode *mm; // eax@29
-	stru24 *nn; // esi@31
-	stru24_struC **i1; // eax@32
-	stru24 *i2; // esi@35
-	stru24_struC **i3; // eax@36
-	stru24 *i4; // esi@39
-	stru24_struC **i5; // eax@40
-	stru24_stru160 *v26; // eax@43
-	int v27; // edx@44
-	stru24_stru160 *v28; // eax@44
-	stru24_stru26C *i6; // eax@46
-	stru24_stru310 *i7; // eax@48
-	int i8; // eax@50
-	void *result; // eax@53
-	int v33; // ecx@55
-	void *i19; // ebx@55
-	int v35; // edx@56
-	Script *v36; // eax@56
-	stru24 *v37; // esi@57
-	void *v38; // ebp@57
-	stru24 *i9; // eax@65
-	stru24 *v45; // edi@67
-	void *v46; // eax@68
-	stru24_struC *v47; // edx@68
-	_DWORD *v48; // esi@69
-	stru24_struC *v49; // eax@69
-	int v50; // ecx@69
-	int v51; // eax@69
-	stru24 *i10; // eax@75
-	stru24 *i11; // eax@77
-	stru24 *i12; // eax@79
-	stru24 *i13; // eax@81
-	stru24 *i14; // eax@83
-	stru24 *i15; // eax@85
-	stru24_DrillRigNode *v58; // edi@87
-	int v59; // eax@88
-	void *v60; // ecx@88
-	stru24_PowerPlantNode *v61; // eax@90
-	Entity *v62; // eax@91
-	int v63; // eax@95
-	int v64; // eax@95
-	stru24_struC *v65; // edx@95
-	_DWORD *v66; // esi@96
-	stru24_stru160 *v67; // eax@96
-	int v68; // ecx@96
-	stru24_stru160 *v69; // eax@96
-	stru24_DrillRigNode *i16; // eax@100
-	stru24 *i17; // eax@103
-	stru24_struC *i18; // edi@105
-	_DWORD *v73; // esi@106
-	stru24_struC *v74; // eax@106
-	stru24_struC *i20; // edi@109
-	_DWORD *v76; // esi@110
-	stru24_struC *v77; // eax@110
-	stru24_struC *v78; // edx@113
-	stru24_stru160 *v79; // eax@114
-	int v80; // ecx@114
-	stru24_stru160 *v81; // eax@114
-	stru24 *v82; // ecx@118
-	stru24_struC *v83; // edi@118
-	_DWORD *v84; // esi@119
-	stru24_struC *v85; // eax@119
-	stru24_stru26C *i21; // eax@123
-	stru24_stru310 *i22; // ecx@127
-	stru24_stru310 *i23; // ecx@129
-	int v89; // edx@130
-	int v90; // edx@131
-	Script *v91; // ecx@134
-	_DWORD *v92; // ecx@135
-	stru24 *v93; // [sp+10h] [bp-30h]@57
-	int v94; // [sp+14h] [bp-2Ch]@55
-	_DWORD *v95; // [sp+18h] [bp-28h]@95
-	char *v96; // [sp+1Ch] [bp-24h]@87
-	void *v97; // [sp+20h] [bp-20h]@53
-	int v98[7]; // [sp+24h] [bp-1Ch]@57
-
-	*size = 0;
-	v1 = task_ai_players;
-	do
-	{
-		if (*v1)
-		{
-			v2 = (stru24 *)(*v1)->param;
-			*size += 284;
-			for (i = (stru24 *)v2->enemy_list_108; (stru24_EnemyNode **)i != &v2->enemy_list_108; i = i->next)
-				*size += 4;
-			for (j = v2->next; j != v2; j = j->next)
-			{
-				*size += 44;
-				v5 = j->struC;
-				if (v5)
-				{
-					v6 = (int)&v5->_C_param;
-					v7 = (void **)v5->_C_param;
-					if (v7 != (void **)v6)
-					{
-						do
-						{
-							*size += 4;
-							v7 = (void **)*v7;
-						} while (v7 != &j->struC->_C_param);
-					}
-				}
-			}
-			for (k = v2->wanderer_list_18; (stru24_WandererNode **)k != &v2->wanderer_list_18; k = k->next)
-				*size += 4;
-			for (l = v2->list_40_30; (stru24_stru40 **)l != &v2->list_40_30; l = l->next)
-				*size += 4;
-			for (m = v2->attacker_list_48; (stru24_AttackerNode **)m != &v2->attacker_list_48; m = m->next)
-				*size += 4;
-			for (n = v2->marshalling_nodes_list__evmission8_only_60;
-				(stru24_AttackerNode **)n != &v2->marshalling_nodes_list__evmission8_only_60;
-				n = n->next)
-			{
-				*size += 4;
-			}
-			for (ii = v2->list_94_78; (stru24_stru94 **)ii != &v2->list_94_78; ii = ii->next)
-				*size += 20;
-			for (jj = v2->power_plant_list_F4; (stru24_PowerPlantNode **)jj != &v2->power_plant_list_F4; jj = jj->next)
-				*size += 4;
-			for (kk = v2->drill_rig_list_9C; (stru24_DrillRigNode **)kk != &v2->drill_rig_list_9C; kk = kk->next)
-			{
-				*size += 60;
-				v15 = kk->pstru24_stru160;
-				if (v15)
-				{
-					v16 = (int)&v15->_C_next;
-					v17 = (void **)v15->_C_next;
-					if (v17 != (void **)v16)
-					{
-						do
-						{
-							*size += 4;
-							v17 = (void **)*v17;
-						} while (v17 != &kk->pstru24_stru160->_C_next);
-					}
-				}
-				for (ll = &kk->_8_next->next; ll != &kk->_8_next; ll = (stru24_OilTankerNode **)*ll)
-					*size += 4;
-			}
-			for (mm = v2->tanker_list_DC; (stru24_OilTankerNode **)mm != &v2->tanker_list_DC; mm = mm->next)
-				*size += 4;
-			for (nn = (stru24 *)v2->list_11C; (stru24_stru160 **)nn != &v2->list_11C; nn = nn->next)
-			{
-				*size += 40;
-				for (i1 = &nn->struC->next; i1 != &nn->struC; i1 = (stru24_struC **)*i1)
-					*size += 4;
-			}
-			for (i2 = (stru24 *)v2->field_168; (int *)i2 != &v2->field_168; i2 = i2->next)
-			{
-				*size += 40;
-				for (i3 = &i2->struC->next; i3 != &i2->struC; i3 = (stru24_struC **)*i3)
-					*size += 4;
-			}
-			for (i4 = (stru24 *)v2->list_1B4; (stru24_stru160 **)i4 != &v2->list_1B4; i4 = i4->next)
-			{
-				*size += 40;
-				for (i5 = &i4->struC->next; i5 != &i4->struC; i5 = (stru24_struC **)*i5)
-					*size += 4;
-			}
-			v26 = v2->field_24C;
-			if (v26)
-			{
-				v27 = (int)&v26->_C_next;
-				v28 = (stru24_stru160 *)v26->_C_next;
-				if (v28 != (stru24_stru160 *)v27)
-				{
-					do
-					{
-						*size += 4;
-						v28 = v28->next;
-					} while (v28 != (stru24_stru160 *)((char *)v2->field_24C + 12));
-				}
-			}
-			for (i6 = v2->list_260; (stru24_stru26C **)i6 != &v2->list_260; i6 = i6->next)
-				*size += 4;
-			for (i7 = v2->list_310_2EC; (stru24_stru310 **)i7 != &v2->list_310_2EC; i7 = i7->next)
-				*size += 28;
-			for (i8 = (int)v2->list_318; (stru24_stru310 **)i8 != &v2->list_318; i8 = *(_DWORD *)i8)
-				*size += 28;
-		}
-		++v1;
-	} while ((int)v1 < (int)&unk_4778EC);
-	result = malloc(*size);
-	v97 = result;
-	if (!result)
-	{
-		errmsg_save[1] = aMemory;
-		return result;
-	}
-	v33 = 0;
-	i19 = result;
-	v94 = 0;
-	while (1)
-	{
-		v35 = v33;
-		v36 = task_ai_players[v33];
-		if (v36)
-			break;
-	LABEL_140:
-		v94 = ++v33;
-		if (v33 >= 7)
-			return v97;
-	}
-	v37 = (stru24 *)v36->param;
-	v38 = i19;
-	v98[v35] = (int)i19;
-	memset(i19, 0, 0x11Cu);
-	i19 = (char *)i19 + 284;
-	v93 = v37;
-
-	*(_DWORD *)v38 = get_handler_id(task_ai_players[v35]->handler);
-	if (*(_DWORD *)v38 >= 0)
-	{
-		for (i9 = (stru24 *)v37->enemy_list_108; (stru24_EnemyNode **)i9 != &v37->enemy_list_108; i9 = i9->next)
-		{
-			i19 = (char *)i19 + 4;
-			++*((_DWORD *)v38 + 10);
-			*((_DWORD *)i19 - 1) = i9->_8_entity->entity_id;
-		}
-		v45 = v37->next;
-		if (v37->next != v37)
-		{
-			do
-			{
-				v46 = i19;
-				i19 = (char *)i19 + 44;
-				++*((_DWORD *)v38 + 1);
-				*((_DWORD *)i19 - 11) = v45->_8_entity->entity_id;
-				v47 = v45->struC;
-				if (v47)
-				{
-					v48 = (int *)v46 + 1;
-					sub_41ED90((char *)v46 + 4, v47);
-					v49 = v45->struC;
-					v50 = (int)&v49->_C_param;
-					v51 = (int)v49->_C_param;
-					if (v51 != v50)
-					{
-						do
-						{
-							i19 = (char *)i19 + 4;
-							++*v48;
-							*((_DWORD *)i19 - 1) = *(_DWORD *)(*(_DWORD *)(v51 + 12) + 304);
-							v51 = *(_DWORD *)v51;
-						} while ((void **)v51 != &v45->struC->_C_param);
-					}
-				}
-				else
-				{
-					*((_DWORD *)v46 + 1) = 0;
-				}
-				v45 = v45->next;
-			} while (v45 != v93);
-			v37 = v93;
-		}
-		for (i10 = (stru24 *)v37->wanderer_list_18; (stru24_WandererNode **)i10 != &v37->wanderer_list_18; i10 = i10->next)
-		{
-			i19 = (char *)i19 + 4;
-			++*((_DWORD *)v38 + 2);
-			*((_DWORD *)i19 - 1) = i10->struC->field_130;
-		}
-		for (i11 = (stru24 *)v37->list_40_30; (stru24_stru40 **)i11 != &v37->list_40_30; i11 = i11->next)
-		{
-			i19 = (char *)i19 + 4;
-			++*((_DWORD *)v38 + 3);
-			*((_DWORD *)i19 - 1) = i11->struC->field_130;
-		}
-		for (i12 = (stru24 *)v37->attacker_list_48; (stru24_AttackerNode **)i12 != &v37->attacker_list_48; i12 = i12->next)
-		{
-			i19 = (char *)i19 + 4;
-			++*((_DWORD *)v38 + 4);
-			*((_DWORD *)i19 - 1) = i12->struC->field_130;
-		}
-		for (i13 = (stru24 *)v37->marshalling_nodes_list__evmission8_only_60;
-			(stru24_AttackerNode **)i13 != &v37->marshalling_nodes_list__evmission8_only_60;
-			i13 = i13->next)
-		{
-			i19 = (char *)i19 + 4;
-			++*((_DWORD *)v38 + 5);
-			*((_DWORD *)i19 - 1) = i13->struC->field_130;
-		}
-		for (i14 = (stru24 *)v37->list_94_78; (stru24_stru94 **)i14 != &v37->list_94_78; i14 = i14->next)
-		{
-			i19 = (char *)i19 + 20;
-			++*((_DWORD *)v38 + 6);
-			*((_DWORD *)i19 - 5) = i14->_8_entity->entity_id;
-			*((_DWORD *)i19 - 4) = (int)i14->struC;
-			*((_DWORD *)i19 - 3) = (int)i14->list_10_convoy_head;
-			*((_DWORD *)i19 - 2) = (int)i14->wanderer_list_18;
-			*((_DWORD *)i19 - 1) = (int)i14->list_10_convoy;
-		}
-		for (i15 = (stru24 *)v37->power_plant_list_F4;
-			(stru24_PowerPlantNode **)i15 != &v37->power_plant_list_F4;
-			i15 = i15->next)
-		{
-			i19 = (char *)i19 + 4;
-			++*((_DWORD *)v38 + 9);
-			*((_DWORD *)i19 - 1) = i15->_8_entity->entity_id;
-		}
-		v58 = v37->drill_rig_list_9C;
-		v96 = (char *)&v37->drill_rig_list_9C;
-		if ((stru24_DrillRigNode **)v58 != &v37->drill_rig_list_9C)
-		{
-			do
-			{
-				v59 = *((_DWORD *)v38 + 7) + 1;
-				v60 = i19;
-				*((_DWORD *)v38 + 7) = v59;
-				if (v93->_2E8_drillrig_node == v58)
-					*((_DWORD *)v38 + 57) = v59;
-				*(_DWORD *)i19 = v58->entity->entity_id;
-				v61 = v58->ptr_28;
-				if (v61)
-				{
-					v62 = v61->entity;
-					if (v62)
-						*((_DWORD *)i19 + 11) = v62->entity_id;
-					else
-						*((_DWORD *)i19 + 11) = -1;
-				}
-				else
-				{
-					*((_DWORD *)i19 + 11) = -1;
-				}
-				v63 = v58->field_2C;
-				*((_DWORD *)i19 + 13) = 0;
-				*((_DWORD *)i19 + 12) = v63;
-				v64 = (int)i19 + 52;
-				*((_DWORD *)i19 + 14) = v58->field_34;
-				v65 = (stru24_struC *)v58->pstru24_stru160;
-				i19 = (char *)i19 + 60;
-				v95 = (_DWORD *)v64;
-				if (v65)
-				{
-					v66 = (int *)v60 + 1;
-					sub_41ED90((char *)v60 + 4, v65);
-					v67 = v58->pstru24_stru160;
-					v68 = (int)&v67->_C_next;
-					v69 = (stru24_stru160 *)v67->_C_next;
-					if (v69 != (stru24_stru160 *)v68)
-					{
-						do
-						{
-							i19 = (char *)i19 + 4;
-							++*v66;
-							*((_DWORD *)i19 - 1) = *((_DWORD *)v69->_C_next + 76);
-							v69 = v69->next;
-						} while (v69 != (stru24_stru160 *)((char *)v58->pstru24_stru160 + 12));
-					}
-				}
-				else
-				{
-					*((_DWORD *)v60 + 1) = 0;
-				}
-				for (i16 = (stru24_DrillRigNode *)v58->_8_next; (stru24_OilTankerNode **)i16 != &v58->_8_next; i16 = i16->next)
-				{
-					i19 = (char *)i19 + 4;
-					++*v95;
-					*((_DWORD *)i19 - 1) = (int)i16->_C_prev[19].next;
-				}
-				v58 = v58->next;
-			} while ((char *)v58 != v96);
-		}
-		for (i17 = (stru24 *)v93->tanker_list_DC; (stru24_OilTankerNode **)i17 != &v93->tanker_list_DC; i17 = i17->next)
-		{
-			i19 = (char *)i19 + 4;
-			++*((_DWORD *)v38 + 8);
-			*((_DWORD *)i19 - 1) = i17->struC->field_130;
-		}
-		for (i18 = (stru24_struC *)v93->list_11C; (stru24_stru160 **)i18 != &v93->list_11C; i18 = i18->next)
-		{
-			v73 = (int *)i19;
-			++*((_DWORD *)v38 + 11);
-			sub_41ED90(i19, i18);
-			v74 = (stru24_struC *)i18->_C_param;
-			for (i19 = (char *)i19 + 40; (void **)v74 != &i18->_C_param; v74 = v74->next)
-			{
-				i19 = (char *)i19 + 4;
-				++*v73;
-				*((_DWORD *)i19 - 1) = *((_DWORD *)v74->_C_param + 76);
-			}
-		}
-		for (i20 = (stru24_struC *)v93->field_168; (int *)i20 != &v93->field_168; i20 = i20->next)
-		{
-			v76 = (int *)i19;
-			++*((_DWORD *)v38 + 12);
-			sub_41ED90(i19, i20);
-			v77 = (stru24_struC *)i20->_C_param;
-			for (i19 = (char *)i19 + 40; (void **)v77 != &i20->_C_param; v77 = v77->next)
-			{
-				i19 = (char *)i19 + 4;
-				++*v76;
-				*((_DWORD *)i19 - 1) = *((_DWORD *)v77->_C_param + 76);
-			}
-		}
-		v78 = (stru24_struC *)v93->field_24C;
-		if (v78)
-		{
-			sub_41ED90((char *)v38 + 56, v78);
-			v79 = v93->field_24C;
-			v80 = (int)&v79->_C_next;
-			v81 = (stru24_stru160 *)v79->_C_next;
-			if (v81 != (stru24_stru160 *)v80)
-			{
-				do
-				{
-					i19 = (char *)i19 + 4;
-					++*((_DWORD *)v38 + 14);
-					*((_DWORD *)i19 - 1) = *((_DWORD *)v81->_C_next + 76);
-					v81 = v81->next;
-				} while (v81 != (stru24_stru160 *)((char *)v93->field_24C + 12));
-			}
-		}
-		else
-		{
-			*((_DWORD *)v38 + 14) = 0;
-		}
-		v82 = v93;
-		v83 = (stru24_struC *)v93->list_1B4;
-		if ((stru24_stru160 **)v83 != &v93->list_1B4)
-		{
-			do
-			{
-				v84 = (int *)i19;
-				++*((_DWORD *)v38 + 13);
-				sub_41ED90(i19, v83);
-				v85 = (stru24_struC *)v83->_C_param;
-				for (i19 = (char *)i19 + 40; (void **)v85 != &v83->_C_param; v85 = v85->next)
-				{
-					i19 = (char *)i19 + 4;
-					++*v84;
-					*((_DWORD *)i19 - 1) = *((_DWORD *)v85->_C_param + 76);
-				}
-				v83 = v83->next;
-			} while ((stru24_stru160 **)v83 != &v93->list_1B4);
-			v82 = v93;
-		}
-		*((_DWORD *)v38 + 24) = v82->field_250;
-		*((_DWORD *)v38 + 25) = v82->field_254;
-		*((_DWORD *)v38 + 26) = v82->field_258;
-		*((_DWORD *)v38 + 27) = v82->field_25C;
-		*((_DWORD *)v38 + 28) = 0;
-		for (i21 = v82->list_260; (stru24_stru26C **)i21 != &v82->list_260; i21 = i21->next)
-		{
-			i19 = (char *)i19 + 4;
-			++*((_DWORD *)v38 + 28);
-			*((_DWORD *)i19 - 1) = i21->field_8;
-			if (v82->ptr_274 == i21)
-				*((_DWORD *)v38 + 29) = *((_DWORD *)v38 + 28);
-		}
-		*((_DWORD *)v38 + 30) = v93->_278_x_offset;
-		*((_DWORD *)v38 + 31) = v93->_27C_y_offset;
-		memcpy((char *)v38 + 128, v93->field_280, 0x28u);
-		*((_DWORD *)v38 + 42) = v93->field_2AC;
-		*((_DWORD *)v38 + 43) = v93->list_58_and_70_size;
-		*((_DWORD *)v38 + 44) = v93->field_2B4;
-		*((_DWORD *)v38 + 45) = v93->field_2B8;
-		*((_DWORD *)v38 + 46) = v93->field_2BC;
-		*((_DWORD *)v38 + 47) = v93->field_2C0;
-		*((_DWORD *)v38 + 48) = v93->array_2C8_idx;
-		memcpy((char *)v38 + 196, v93->array_2C8, 0x20u);
-		for (i22 = v93->list_310_2EC; (stru24_stru310 **)i22 != &v93->list_310_2EC; i22 = i22->next)
-		{
-			i19 = (char *)i19 + 28;
-			++*((_DWORD *)v38 + 58);
-			*((_DWORD *)i19 - 6) = i22->unit_id;
-			*((_DWORD *)i19 - 5) = i22->x;
-			*((_DWORD *)i19 - 4) = i22->y;
-			*((_DWORD *)i19 - 3) = i22->x_offset;
-			*((_DWORD *)i19 - 2) = i22->y_offset;
-			*((_DWORD *)i19 - 1) = i22->field_20;
-		}
-		for (i23 = v93->list_318; (stru24_stru310 **)i23 != &v93->list_318; i19 = (char *)i19 + 28)
-		{
-			++*((_DWORD *)v38 + 59);
-			v89 = (int)i23->field_8;
-			if (v89)
-				v90 = *(_DWORD *)(v89 + 304);
-			else
-				v90 = -1;
-			*(_DWORD *)i19 = v90;
-			*((_DWORD *)i19 + 1) = i23->unit_id;
-			*((_DWORD *)i19 + 2) = i23->x;
-			*((_DWORD *)i19 + 3) = i23->y;
-			*((_DWORD *)i19 + 4) = i23->x_offset;
-			*((_DWORD *)i19 + 5) = i23->y_offset;
-			*((_DWORD *)i19 + 6) = i23->field_20;
-			i23 = i23->next;
-		}
-		*((_DWORD *)v38 + 60) = v93->field_344;
-		*((_DWORD *)v38 + 61) = v93->field_348;
-		*((_DWORD *)v38 + 62) = v93->field_34C;
-		*((_DWORD *)v38 + 63) = v93->field_350;
-		*((_DWORD *)v38 + 65) = v93->field_354;
-		v91 = v93->task;
-		if (v91)
-		{
-			v92 = (int *)v91->param;
-			if (v92)
-			{
-				*((_DWORD *)v38 + 64) = v92[76];
-			}
-			else
-			{
-				*((_DWORD *)v38 + 64) = -1;
-				v93->task->sprite->field_88_unused = 1;
-				*((_DWORD *)v38 + 67) = v93->task->sprite->x;
-				*((_DWORD *)v38 + 68) = v93->task->sprite->y;
-			}
-		}
-		else
-		{
-			*((_DWORD *)v38 + 64) = -1;
-			*((_DWORD *)v38 + 66) = -1;
-		}
-		*((_DWORD *)v38 + 69) = v93->level_field_22_or_2A;
-		v33 = v94;
-		*((_DWORD *)v38 + 70) = v93->field_360;
-		goto LABEL_140;
-	}
-	errmsg_save[1] = "unknown mode";
-	return 0;
-}
-// 41EF20: using guessed type int var_1C[7];
-
-//----- (0041F960) --------------------------------------------------------
-bool GAME_Load_UnpackAiPlayers(void *save_data)
-{
-	int v1; // eax@1
-	char *v2; // edi@1
-	Script *v3; // ecx@2
-	stru24 *v4; // ebx@3
-	char *v5; // ebp@3
-	int v6; // edi@3
-	unsigned int v7; // eax@3
-	void(*v8)(Script *); // eax@5
-	enum PLAYER_SIDE v9; // eax@8
-	int v10; // esi@8
-	stru24_EnemyNode *v11; // ecx@9
-	stru24_stru10_convoy *v14; // esi@23
-	_DWORD *v16; // ebp@32
-	stru24_stru160 *v17; // eax@33
-	int v18; // edi@37
-	stru24_AttackerNode *v19; // eax@38
-	int v23; // esi@54
-	stru24_WandererNode *v24; // ecx@55
-	int v27; // esi@68
-	stru24_stru40 *v28; // ecx@69
-	int v31; // esi@82
-	stru24_AttackerNode *v32; // eax@83
-	Entity *v35; // ecx@94
-	int v36; // esi@96
-	stru24_AttackerNode *v37; // eax@97
-	Entity *v40; // ecx@108
-	int i; // ebp@110
-	stru24_stru94 *v42; // esi@111
-	void *v44; // ecx@120
-	int v45; // eax@120
-	int j; // esi@123
-	stru24_PowerPlantNode *v47; // eax@124
-	int v50; // eax@134
-	stru24_DrillRigNode *v51; // esi@135
-	int v52; // edi@135
-	stru24 *v54; // eax@146
-	_DWORD *v55; // ebp@152
-	int *v56; // edi@152
-	stru24_DrillRigNode *v57; // ecx@152
-	stru24_stru160 *v58; // eax@153
-	stru24_AttackerNode *v59; // eax@158
-	int v62; // ecx@173
-	int v63; // ebp@173
-	stru24_OilTankerNode *v64; // eax@174
-	int v65; // edi@178
-	char *v67; // edi@185
-	int k; // esi@185
-	stru24_OilTankerNode *v69; // eax@186
-	int v70; // edx@190
-	stru24_stru160 *v72; // esi@197
-	_DWORD *v73; // edi@197
-	int v74; // ebp@201
-	stru24_AttackerNode *v75; // eax@202
-	int v76; // edx@206
-	Entity *v78; // edx@213
-	stru24_stru160 *v79; // esi@218
-	_DWORD *v80; // edi@218
-	int v81; // ebp@222
-	stru24_AttackerNode *v82; // eax@223
-	int v83; // edx@227
-	Entity *v85; // edx@234
-	stru24_stru160 *v86; // eax@237
-	stru24_stru160 *v87; // eax@240
-	_DWORD *v88; // esi@241
-	int v89; // ebp@242
-	stru24_AttackerNode *v90; // eax@243
-	int v91; // edx@247
-	stru24_stru160 *v93; // esi@259
-	_DWORD *v94; // edi@259
-	int v95; // ebp@263
-	stru24_AttackerNode *v96; // eax@264
-	int v97; // edx@268
-	Entity *v99; // ecx@275
-	int v100; // edx@278
-	int *v101; // edi@279
-	stru24_stru26C *v102; // eax@280
-	int v103; // ecx@284
-	int v104; // ecx@284
-	int v105; // esi@287
-	int v106; // edi@287
-	int l; // ecx@287
-	stru24_stru310 *v108; // eax@288
-	stru24_stru310 *v109; // eax@294
-	int v111; // eax@304
-	int v112; // ecx@306
-	enum UNIT_ID v113; // ecx@307
-	int a2; // [sp+10h] [bp-18h]@3
-	char *v117; // [sp+14h] [bp-14h]@3
-	int v118; // [sp+18h] [bp-10h]@22
-	int v119; // [sp+18h] [bp-10h]@157
-	int v120; // [sp+18h] [bp-10h]@196
-	int v121; // [sp+18h] [bp-10h]@217
-	int v122; // [sp+18h] [bp-10h]@258
-	_DWORD *v123; // [sp+1Ch] [bp-Ch]@152
-	int v124; // [sp+20h] [bp-8h]@1
-	int v125; // [sp+24h] [bp-4h]@139
-
-	v1 = 0;
-	v2 = (char *)save_data;
-	v124 = 0;
-	while (1)
-	{
-		v3 = task_ai_players[v1];
-		if (!v3)
-			goto LABEL_316;
-		v4 = (stru24 *)v3->param;
-		v5 = v2;
-		v6 = (int)(v2 + 284);
-		v117 = v5;
-		v7 = *(_DWORD *)v5;
-		a2 = v6;
-		v3->handler = (void(*)(Script *))get_handler(v7 - 1);
-        v3->debug_handler_name = get_handler_name(v7 - 1);
-        if (!v3->handler)
-            return 0;
-		v9 = (PLAYER_SIDE)*((_DWORD *)v5 + 40);
-		v4->_2A0_player_side = v9;
-		v10 = 0;
-		v4->_2A8_p_globals_cash = &game_globals_per_player.cash[v9];
-		v4->_2DC_unit_id = (UNIT_ID)*((_DWORD *)v5 + 54);
-		if (*((_DWORD *)v5 + 10) > 0)
-			break;
-	LABEL_22:
-		v118 = 0;
-		if (*((_DWORD *)v5 + 1) > 0)
-		{
-			do
-			{
-				v14 = v4->list_10_convoy_head;
-				if (v14)
-					v4->list_10_convoy_head = v14->next;
-				else
-					v14 = 0;
-				if (!v14)
-					return 0;
-
-                auto v15 = entityRepo->FindById(*(_DWORD *)v6);
-				v14->_8_entity = v15;
-				v16 = (_DWORD *)(v6 + 4);
-				v15->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v14;
-				a2 = v6 + 44;
-				if (*(_DWORD *)(v6 + 4))
-				{
-					v17 = v4->list_160_head;
-					if (v17)
-					{
-						v14->field_C = (int)v17;
-						v4->list_160_head = v4->list_160_head->next;
-					}
-					else
-					{
-						v14->field_C = 0;
-					}
-					if (!v14->field_C)
-						return 0;
-					sub_41EE20(v4, (int)v16, (stru24_stru160 *)v14->field_C);
-					v18 = 0;
-					if (*v16 > 0)
-					{
-						do
-						{
-							v19 = v4->attacker_list_free_pool;
-							if (v19)
-								v4->attacker_list_free_pool = v19->next;
-							else
-								v19 = 0;
-							if (!v19)
-								return 0;
-							a2 += 4;
-                            auto v22 = entityRepo->FindById(*(_DWORD *)a2);
-							v19->entity = v22;
-							if (v22)
-							{
-								v19->list_8 = (stru24_stru160 *)v14->field_C;
-								v19->entity->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v19;
-								v19->next = *(stru24_AttackerNode **)(v14->field_C + 12);
-								v19->prev = (stru24_AttackerNode *)(v14->field_C + 12);
-								*(_DWORD *)(*(_DWORD *)(v14->field_C + 12) + 4) = (int)v19;
-								*(_DWORD *)(v14->field_C + 12) = (int)v19;
-							}
-							else
-							{
-								v19->next = v4->attacker_list_free_pool;
-								v4->attacker_list_free_pool = v19;
-							}
-						} while (++v18 < *v16);
-					}
-					*(_DWORD *)v14->field_C = (int)v4->list_11C;
-					*(_DWORD *)(v14->field_C + 4) = (int)((char *)v4 + 284);
-					v4->list_11C->prev = (stru24_stru160 *)v14->field_C;
-					v4->list_11C = (stru24_stru160 *)v14->field_C;
-				}
-				else
-				{
-					v14->field_C = 0;
-				}
-				v14->next = (stru24_stru10_convoy *)v4->next;
-				v14->prev = (stru24_stru10_convoy *)v4;
-				v6 = a2;
-				v4->next->prev = (stru24 *)v14;
-				v4->next = (stru24 *)v14;
-			} while (++v118 < *((_DWORD *)v117 + 1));
-		}
-		v23 = 0;
-		if (*((_DWORD *)v117 + 2) > 0)
-		{
-			do
-			{
-				v24 = v4->wanderer_list_free_pool;
-				if (v24)
-					v4->wanderer_list_free_pool = v24->next;
-				else
-					v24 = 0;
-				if (!v24)
-					return 0;
-				v6 += 4;
-				a2 = v6;
-                auto v26 = entityRepo->FindById(*(_DWORD *)v6);
-				v24->entity = v26;
-				if (v26)
-				{
-					v24->entity->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v24;
-					v24->next = v4->wanderer_list_18;
-					v24->prev = (stru24_WandererNode *)&v4->wanderer_list_18;
-					v4->wanderer_list_18->prev = v24;
-					v4->wanderer_list_18 = v24;
-				}
-				else
-				{
-					v24->next = v4->wanderer_list_free_pool;
-					v4->wanderer_list_free_pool = v24;
-				}
-			} while (++v23 < *((_DWORD *)v117 + 2));
-		}
-		v27 = 0;
-		if (*((_DWORD *)v117 + 3) > 0)
-		{
-			do
-			{
-				v28 = v4->list_40_head;
-				if (v28)
-					v4->list_40_head = v28->next;
-				else
-					v28 = 0;
-				if (!v28)
-					return 0;
-				v6 += 4;
-				a2 = v6;
-                auto v30 = entityRepo->FindById(*(_DWORD *)v6);
-				v28->_C__entity = v30;
-				if (v30)
-				{
-					v28->_C__entity->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v28;
-					v28->next = v4->list_40_30;
-					v28->prev = (stru24_stru40 *)&v4->list_40_30;
-					v4->list_40_30->prev = v28;
-					v4->list_40_30 = v28;
-				}
-				else
-				{
-					v28->next = v4->list_40_head;
-					v4->list_40_head = v28;
-				}
-			} while (++v27 < *((_DWORD *)v117 + 3));
-		}
-		v31 = 0;
-		if (*((_DWORD *)v117 + 4) > 0)
-		{
-			do
-			{
-				v32 = v4->attacker_list_free_pool;
-				if (v32)
-					v4->attacker_list_free_pool = v32->next;
-				else
-					v32 = 0;
-				if (!v32)
-					return 0;
-				v6 += 4;
-				a2 = v6;
-                auto v34 = entityRepo->FindById(*(_DWORD *)v6);
-				v32->entity = v34;
-				if (v34)
-				{
-					v35 = v32->entity;
-					v32->list_8 = 0;
-					v35->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v32;
-					v32->next = v4->attacker_list_48;
-					v32->prev = (stru24_AttackerNode *)&v4->attacker_list_48;
-					v4->attacker_list_48->prev = v32;
-					v4->attacker_list_48 = v32;
-				}
-				else
-				{
-					v32->next = v4->attacker_list_free_pool;
-					v4->attacker_list_free_pool = v32;
-				}
-			} while (++v31 < *((_DWORD *)v117 + 4));
-		}
-		v36 = 0;
-		if (*((_DWORD *)v117 + 5) > 0)
-		{
-			do
-			{
-				v37 = v4->attacker_list_free_pool;
-				if (v37)
-					v4->attacker_list_free_pool = v37->next;
-				else
-					v37 = 0;
-				if (!v37)
-					return 0;
-				v6 += 4;
-				a2 = v6;
-
-                auto v39 = entityRepo->FindById(*(_DWORD *)v6);
-				v37->entity = v39;
-				if (v39)
-				{
-					v40 = v37->entity;
-					v37->list_8 = 0;
-					v40->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v37;
-					v37->next = v4->marshalling_nodes_list__evmission8_only_60;
-					v37->prev = (stru24_AttackerNode *)&v4->marshalling_nodes_list__evmission8_only_60;
-					v4->marshalling_nodes_list__evmission8_only_60->prev = v37;
-					v4->marshalling_nodes_list__evmission8_only_60 = v37;
-				}
-				else
-				{
-					v37->next = v4->attacker_list_free_pool;
-					v4->attacker_list_free_pool = v37;
-				}
-			} while (++v36 < *((_DWORD *)v117 + 5));
-		}
-		for (i = 0; i < *((_DWORD *)v117 + 6); a2 = v6)
-		{
-			v42 = v4->list_94_head;
-			if (v42)
-				v4->list_94_head = v42->next;
-			else
-				v42 = 0;
-			if (!v42)
-				return 0;
-
-            auto v43 = entityRepo->FindById(*(_DWORD *)v6);
-			v42->_8_entity = v43;
-			v43->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v42;
-			v42->_14_cost = *(_DWORD *)(v6 + 8);
-			v42->_18_cost_per_time_step = *(_DWORD *)(v6 + 12);
-			v44 = *(void **)(v6 + 16);
-			v42->_8_entity_script_param = (int)v44;
-			v45 = *(_DWORD *)(v6 + 4);
-			v42->_C_cost = v45;
-			if (v45 > 0)
-				stru37_list_427D80_enqueue_item(
-				(int *)(4 * v4->_2A0_player_side + 4704680),
-					&v42->_C_cost,
-					v42->_14_cost,
-					v42->_18_cost_per_time_step,
-					v42->_8_entity->script,
-					v44,
-					-1);
-			v42->next = v4->list_94_78;
-			v42->prev = (stru24 *)((char *)v4 + 120);
-			v6 += 20;
-			++i;
-			v4->list_94_78->prev = (stru24 *)v42;
-			v4->list_94_78 = v42;
-		}
-		for (j = 0; j < *((_DWORD *)v117 + 9); v4->power_plant_list_F4 = v47)
-		{
-			v47 = v4->power_plant_list_free_pool;
-			if (v47)
-				v4->power_plant_list_free_pool = v47->next;
-			else
-				v47 = 0;
-			if (!v47)
-				return 0;
-			v6 += 4;
-			a2 = v6;
-
-            auto v49 = entityRepo->FindById(*(_DWORD *)v6);
-			v47->entity = v49;
-			++j;
-			v49->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v47;
-			v47->next = v4->power_plant_list_F4;
-			v47->prev = (stru24_PowerPlantNode *)&v4->power_plant_list_F4;
-			v4->power_plant_list_F4->prev = v47;
-		}
-		v50 = 0;
-		if (*((_DWORD *)v117 + 7) > 0)
-		{
-			do
-			{
-				v51 = v4->drill_rig_list_free_pool;
-				v52 = a2;
-				if (v51)
-					v4->drill_rig_list_free_pool = v51->next;
-				else
-					v51 = 0;
-				if (!v51)
-					return 0;
-				v125 = v50 + 1;
-				if (*((_DWORD *)v117 + 57) == v50 + 1)
-					v4->_2E8_drillrig_node = v51;
-
-                auto v53 = entityRepo->FindById(*(_DWORD *)a2);
-				v51->entity = v53;
-				v53->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v51;
-				v51->ptr_28 = 0;
-				v54 = (stru24 *)v4->power_plant_list_F4;
-				if ((stru24_PowerPlantNode **)v54 != &v4->power_plant_list_F4)
-				{
-					while (v54->_8_entity->entity_id != *(_DWORD *)(a2 + 44))
-					{
-						v54 = v54->next;
-						if ((stru24_PowerPlantNode **)v54 == &v4->power_plant_list_F4)
-							goto LABEL_151;
-					}
-					v51->ptr_28 = (stru24_PowerPlantNode *)v54;
-				LABEL_151:
-					v52 = a2;
-				}
-				v55 = (_DWORD *)(a2 + 4);
-				v51->field_2C = *(_DWORD *)(v52 + 48);
-				v51->field_30 = *(_DWORD *)(v52 + 52);
-				v123 = (_DWORD *)(v52 + 52);
-				v51->field_34 = *(_DWORD *)(v52 + 56);
-				v56 = (int *)(v52 + 60);
-				v57 = v4->drill_rig_list_9C;
-				v51->prev = (stru24_DrillRigNode *)&v4->drill_rig_list_9C;
-				v51->next = v57;
-				a2 = (int)v56;
-				v4->drill_rig_list_9C->prev = v51;
-				v4->drill_rig_list_9C = v51;
-				if (*v55)
-				{
-					v58 = v4->list_160_head;
-					if (v58)
-					{
-						v51->pstru24_stru160 = v58;
-						v4->list_160_head = v4->list_160_head->next;
-					}
-					else
-					{
-						v51->pstru24_stru160 = 0;
-					}
-					if (!v51->pstru24_stru160)
-						return 0;
-					sub_41EE20(v4, (int)v55, v51->pstru24_stru160);
-					v119 = 0;
-					if (*v55 > 0)
-					{
-						do
-						{
-							v59 = v4->attacker_list_free_pool;
-							if (v59)
-								v4->attacker_list_free_pool = v59->next;
-							else
-								v59 = 0;
-							if (!v59)
-								return 0;
-							++v56;
-							a2 = (int)v56;
-
-                            auto v61 = entityRepo->FindById(*v56);
-							v59->entity = v61;
-							if (v61)
-							{
-								v59->list_8 = v51->pstru24_stru160;
-								v59->entity->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v59;
-								v59->next = (stru24_AttackerNode *)v51->pstru24_stru160->_C_next;
-								v59->prev = (stru24_AttackerNode *)&v51->pstru24_stru160->_C_next;
-								*((_DWORD *)v51->pstru24_stru160->_C_next + 1) = (int)v59;
-								v51->pstru24_stru160->_C_next = v59;
-							}
-							else
-							{
-								v59->next = v4->attacker_list_free_pool;
-								v4->attacker_list_free_pool = v59;
-							}
-						} while (++v119 < *v55);
-					}
-				}
-				else
-				{
-					v51->pstru24_stru160 = 0;
-				}
-				v62 = (int)&v51->_8_next;
-				v63 = 0;
-				v51->_C_prev = (stru24_OilTankerNode *)&v51->_8_next;
-				*(_DWORD *)v62 = v62;
-				for (v51->field_18 = 0; v63 < *v123; *(_DWORD *)v62 = (int)v64)
-				{
-					v64 = v4->tanker_list_free_pool;
-					if (v64)
-						v4->tanker_list_free_pool = v64->next;
-					else
-						v64 = 0;
-					if (!v64)
-						return 0;
-					v65 = *(_DWORD *)a2;
-					a2 += 4;
-
-                    auto v66 = entityRepo->FindById(*(_DWORD *)a2);
-					v64->entity = v66;
-					v64->drillrig_node = v51;
-					++v63;
-					v66->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v64;
-					v64->next = *(stru24_OilTankerNode **)v62;
-					v64->prev = (stru24_OilTankerNode *)v62;
-					*(_DWORD *)(*(_DWORD *)v62 + 4) = (int)v64;
-				}
-				v50 = v125;
-			} while (v125 < *((_DWORD *)v117 + 7));
-		}
-		v67 = v117;
-		for (k = 0; k < *((_DWORD *)v117 + 8); v4->tanker_list_DC = v69)
-		{
-			v69 = v4->tanker_list_free_pool;
-			if (v69)
-				v4->tanker_list_free_pool = v69->next;
-			else
-				v69 = 0;
-			if (!v69)
-				return 0;
-			v70 = *(_DWORD *)a2;
-			a2 += 4;
-
-            auto v71 = entityRepo->FindById(*(_DWORD *)a2);
-			v69->entity = v71;
-			v69->drillrig_node = 0;
-			++k;
-			v71->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v69;
-			v69->next = v4->tanker_list_DC;
-			v69->prev = (stru24_OilTankerNode *)&v4->tanker_list_DC;
-			v4->tanker_list_DC->prev = v69;
-		}
-		v120 = 0;
-		if (*((_DWORD *)v117 + 11) > 0)
-		{
-			while (1)
-			{
-				v72 = v4->list_160_head;
-				v73 = (_DWORD *)a2;
-				if (v72)
-					v4->list_160_head = v72->next;
-				else
-					v72 = 0;
-				if (!v72)
-					return 0;
-				sub_41EE20(v4, a2, v72);
-				v72->next = v4->list_11C;
-				v72->prev = (stru24_stru160 *)&v4->list_11C;
-				a2 += 40;
-				v74 = 0;
-				v4->list_11C->prev = v72;
-				v4->list_11C = v72;
-				if (*v73 > 0)
-				{
-					do
-					{
-						v75 = v4->attacker_list_free_pool;
-						if (v75)
-							v4->attacker_list_free_pool = v75->next;
-						else
-							v75 = 0;
-						if (!v75)
-							return 0;
-						v76 = *(_DWORD *)a2;
-						a2 += 4;
-
-                        auto v77 = entityRepo->FindById(*(_DWORD *)a2);
-						v75->entity = v77;
-						if (v77)
-						{
-							v78 = v75->entity;
-							v75->list_8 = v72;
-							v78->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v75;
-							v75->next = (stru24_AttackerNode *)v72->_C_next;
-							v75->prev = (stru24_AttackerNode *)&v72->_C_next;
-							*((_DWORD *)v72->_C_next + 1) = (int)v75;
-							v72->_C_next = v75;
-						}
-						else
-						{
-							v75->next = v4->attacker_list_free_pool;
-							v4->attacker_list_free_pool = v75;
-						}
-					} while (++v74 < *v73);
-				}
-				if (++v120 >= *((_DWORD *)v117 + 11))
-				{
-					v67 = v117;
-					break;
-				}
-			}
-		}
-		v121 = 0;
-		if (*((_DWORD *)v67 + 12) > 0)
-		{
-			do
-			{
-				v79 = v4->list_160_head;
-				v80 = (_DWORD *)a2;
-				if (v79)
-					v4->list_160_head = v79->next;
-				else
-					v79 = 0;
-				if (!v79)
-					return 0;
-				sub_41EE20(v4, a2, v79);
-				v79->next = (stru24_stru160 *)v4->field_168;
-				v79->prev = (stru24_stru160 *)&v4->field_168;
-				a2 += 40;
-				v81 = 0;
-				*(_DWORD *)(v4->field_168 + 4) = (int)v79;
-				v4->field_168 = (int)v79;
-				if (*v80 > 0)
-				{
-					do
-					{
-						v82 = v4->attacker_list_free_pool;
-						if (v82)
-							v4->attacker_list_free_pool = v82->next;
-						else
-							v82 = 0;
-						if (!v82)
-							return 0;
-						v83 = *(_DWORD *)a2;
-						a2 += 4;
-
-                        auto v84 = entityRepo->FindById(*(_DWORD *)a2);
-						v82->entity = v84;
-						if (v84)
-						{
-							v85 = v82->entity;
-							v82->list_8 = v79;
-							v85->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v82;
-							v82->next = (stru24_AttackerNode *)v79->_C_next;
-							v82->prev = (stru24_AttackerNode *)&v79->_C_next;
-							*((_DWORD *)v79->_C_next + 1) = (int)v82;
-							v79->_C_next = v82;
-						}
-						else
-						{
-							v82->next = v4->attacker_list_free_pool;
-							v4->attacker_list_free_pool = v82;
-						}
-					} while (++v81 < *v80);
-				}
-			} while (++v121 < *((_DWORD *)v117 + 12));
-		}
-		v86 = v4->list_160_head;
-		if (v86)
-		{
-			v4->field_24C = v86;
-			v4->list_160_head = v86->next;
-		}
-		else
-		{
-			v4->field_24C = 0;
-		}
-		v87 = v4->field_24C;
-		if (!v87)
-			return 0;
-		v88 = (int *)(v117 + 56);
-		if (*((_DWORD *)v117 + 14))
-		{
-			sub_41EE20(v4, (int)(v117 + 56), v4->field_24C);
-			v89 = 0;
-			if (*v88 > 0)
-			{
-				do
-				{
-					v90 = v4->attacker_list_free_pool;
-					if (v90)
-						v4->attacker_list_free_pool = v90->next;
-					else
-						v90 = 0;
-					if (!v90)
-						return 0;
-					v91 = *(_DWORD *)a2;
-					a2 += 4;
-
-                    auto v92 = entityRepo->FindById(*(_DWORD *)a2);
-					v90->entity = v92;
-					if (v92)
-					{
-						v90->list_8 = v4->field_24C;
-						v90->entity->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v90;
-						v90->next = (stru24_AttackerNode *)v4->field_24C->_C_next;
-						v90->prev = (stru24_AttackerNode *)&v4->field_24C->_C_next;
-						*((_DWORD *)v4->field_24C->_C_next + 1) = (int)v90;
-						v4->field_24C->_C_next = v90;
-					}
-					else
-					{
-						v90->next = v4->attacker_list_free_pool;
-						v4->attacker_list_free_pool = v90;
-					}
-				} while (++v89 < *v88);
-			}
-		}
-		else
-		{
-			v87->_C_next = &v87->_C_next;
-			v4->field_24C->_10_prev = &v4->field_24C->_C_next;
-			v4->field_24C->field_1C = 0;
-			v4->field_24C->field_8 = 0;
-			v4->field_24C->field_24 = 0;
-			v4->field_24C->field_2C = 0;
-		}
-		v122 = 0;
-		if (*((_DWORD *)v117 + 13) > 0)
-		{
-			do
-			{
-				v93 = v4->list_160_head;
-				v94 = (_DWORD *)a2;
-				if (v93)
-					v4->list_160_head = v93->next;
-				else
-					v93 = 0;
-				if (!v93)
-					return 0;
-				sub_41EE20(v4, a2, v93);
-				v93->next = v4->list_1B4;
-				v93->prev = (stru24_stru160 *)&v4->list_1B4;
-				a2 += 40;
-				v95 = 0;
-				v4->list_1B4->prev = v93;
-				v4->list_1B4 = v93;
-				if (*v94 > 0)
-				{
-					do
-					{
-						v96 = v4->attacker_list_free_pool;
-						if (v96)
-							v4->attacker_list_free_pool = v96->next;
-						else
-							v96 = 0;
-						if (!v96)
-							return 0;
-						v97 = *(_DWORD *)a2;
-						a2 += 4;
-
-                        auto v98 = entityRepo->FindById(*(_DWORD *)a2);
-						v96->entity = v98;
-						if (v98)
-						{
-							v99 = v96->entity;
-							v96->list_8 = v93;
-							v99->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v96;
-							v96->next = (stru24_AttackerNode *)v93->_C_next;
-							v96->prev = (stru24_AttackerNode *)&v93->_C_next;
-							*((_DWORD *)v93->_C_next + 1) = (int)v96;
-							v93->_C_next = v96;
-						}
-						else
-						{
-							v96->next = v4->attacker_list_free_pool;
-							v4->attacker_list_free_pool = v96;
-						}
-					} while (++v95 < *v94);
-				}
-			} while (++v122 < *((_DWORD *)v117 + 13));
-		}
-		v4->field_250 = *((_DWORD *)v117 + 24);
-		v4->field_254 = *((_DWORD *)v117 + 25);
-		v4->field_258 = *((_DWORD *)v117 + 26);
-		v4->field_25C = *((_DWORD *)v117 + 27);
-		v100 = 0;
-		if (*((_DWORD *)v117 + 28) > 0)
-		{
-			v101 = (int *)a2;
-			do
-			{
-				v102 = v4->list_26C_head;
-				if (v102)
-					v4->list_26C_head = v102->next;
-				else
-					v102 = 0;
-				if (!v102)
-					return 0;
-				v103 = *v101;
-				++v101;
-				v102->field_8 = v103;
-				v102->next = v4->list_260;
-				v102->prev = (stru24_stru26C *)&v4->list_260;
-				a2 = (int)v101;
-				v4->list_260->prev = v102;
-				v4->list_260 = v102;
-				v104 = v100 + 1;
-				if (*((_DWORD *)v117 + 29) == v100 + 1)
-					v4->ptr_274 = v102;
-				++v100;
-			} while (v104 < *((_DWORD *)v117 + 28));
-		}
-		v4->_278_x_offset = *((_DWORD *)v117 + 30);
-		v4->_27C_y_offset = *((_DWORD *)v117 + 31);
-		memcpy(v4->field_280, v117 + 128, sizeof(v4->field_280));
-		v4->_2A4_player_side = (PLAYER_SIDE)*((_DWORD *)v117 + 41);
-		v4->field_2AC = *((_DWORD *)v117 + 42);
-		v4->list_58_and_70_size = *((_DWORD *)v117 + 43);
-		v4->field_2B4 = *((_DWORD *)v117 + 44);
-		v4->field_2B8 = *((_DWORD *)v117 + 45);
-		v4->field_2BC = *((_DWORD *)v117 + 46);
-		v4->field_2C0 = *((_DWORD *)v117 + 47);
-		v4->array_2C8_idx = *((_DWORD *)v117 + 48);
-		memcpy(v4->array_2C8, v117 + 196, 0x14u);
-		v105 = a2;
-		v4->_2DC_unit_id = (UNIT_ID)*((_DWORD *)v117 + 54);
-		v4->_2E0_unit_id = (UNIT_ID)*((_DWORD *)v117 + 55);
-		v4->field_2E4 = *((_DWORD *)v117 + 56);
-		v106 = 0;
-		for (l = 0; l < *((_DWORD *)v117 + 58); a2 = v105)
-		{
-			v108 = v4->list_310_head;
-			if (v108)
-				v4->list_310_head = v108->next;
-			else
-				v108 = 0;
-			if (!v108)
-				return 0;
-			v108->field_8 = 0;
-			v108->unit_id = (UNIT_ID)*(_DWORD *)(v105 + 4);
-			v108->x = *(_DWORD *)(v105 + 8);
-			v108->y = *(_DWORD *)(v105 + 12);
-			v108->x_offset = *(_DWORD *)(v105 + 16);
-			v108->y_offset = *(_DWORD *)(v105 + 20);
-			v108->field_20 = *(_DWORD *)(v105 + 24);
-			v105 += 28;
-			++l;
-		}
-		if (*((_DWORD *)v117 + 59) > 0)
-		{
-			do
-			{
-				v109 = v4->list_310_head;
-				if (v109)
-					v4->list_310_head = v109->next;
-				else
-					v109 = 0;
-				if (!v109)
-					return 0;
-
-				v109->field_8 = entityRepo->FindById(*(_DWORD *)v105);
-				v109->unit_id = (UNIT_ID)*(_DWORD *)(v105 + 4);
-				v109->x = *(_DWORD *)(v105 + 8);
-				v109->y = *(_DWORD *)(v105 + 12);
-				v109->x_offset = *(_DWORD *)(v105 + 16);
-				v109->y_offset = *(_DWORD *)(v105 + 20);
-				v109->field_20 = *(_DWORD *)(v105 + 24);
-				v105 += 28;
-				++v106;
-				a2 = v105;
-			} while (v106 < *((_DWORD *)v117 + 59));
-		}
-		v4->field_344 = *((_DWORD *)v117 + 60);
-		v4->field_348 = *((_DWORD *)v117 + 61);
-		v4->field_350 = *((_DWORD *)v117 + 63);
-		v4->field_354 = *((_DWORD *)v117 + 65);
-		v111 = *((_DWORD *)v117 + 62);
-		v4->field_34C = v111;
-		if (v111 > 0)
-			stru37_list_427D80_enqueue_item(v4->_2A8_p_globals_cash, &v4->field_34C, v4->field_348, v4->field_354, 0, 0, -1);
-		v112 = *((_DWORD *)v117 + 64);
-		if (v112 == -1)
-		{
-			v113 = (UNIT_ID)*((_DWORD *)v117 + 66);
-			if (v113 == -1)
-				v4->task = 0;
-			else
-				v4->task = spawn_unit(v113, *((_DWORD *)v117 + 67), *((_DWORD *)v117 + 68), v4->_2A0_player_side)->script;
-		}
-		else
-		{
-            auto v114 = entityRepo->FindById(v112);
-            if (v114) {
-                v4->task = v114->script;
-            }
-		}
-		v2 = (char *)a2;
-		v4->level_field_22_or_2A = *((_DWORD *)v117 + 69);
-		v1 = v124;
-		v4->field_360 = *((_DWORD *)v117 + 70);
-	LABEL_316:
-		v124 = ++v1;
-		if (v1 >= 7)
-			return 1;
-	}
-	while (1)
-	{
-		v11 = v4->enemy_list_free_pool;
-		if (v11)
-			v4->enemy_list_free_pool = v11->next;
-		else
-			v11 = 0;
-		if (!v11)
-			return 0;
-		v6 += 4;
-		a2 = v6;
-
-        auto v13 = entityRepo->FindById(*(_DWORD *)v6);
-		v11->entity = v13;
-		if (v13)
-		{
-			v11->entity->_24_ai_node_per_player_side._0_ai_node_per_player_side[v4->_2A0_player_side] = (int)v11;
-			v11->next = v4->enemy_list_108;
-			v11->prev = (stru24_EnemyNode *)&v4->enemy_list_108;
-			v4->enemy_list_108->prev = v11;
-			v4->enemy_list_108 = v11;
-		}
-		else
-		{
-			v11->next = v4->enemy_list_free_pool;
-			v4->enemy_list_free_pool = v11;
-		}
-		if (++v10 >= *((_DWORD *)v5 + 10))
-			goto LABEL_22;
-	}
-}
-// 46560C: using guessed type int num_script_handlers;
-
-//----- (00420A90) --------------------------------------------------------
-_BYTE *GAME_Save_PackMapInfo(int *a1)
-{
-	int v1; // ebx@1
-	MapdScrlImageTile **v2; // edi@1
-	_BYTE *result; // eax@1
-	_BYTE *v4; // esi@3
-	char v5; // cl@6
-	int v6; // [sp+8h] [bp-Ch]@4
-	int *v7; // [sp+10h] [bp-4h]@1
-
-	v7 = a1;
-	v1 = (_478AAC_map_height + 4) * (_4793F8_map_width + 4);
-	v2 = map_fog_of_war_scrl_tiles;
-	result = (char *)malloc(v1);
-	if (result)
-	{
-		v4 = result;
-		if (v1 > 0)
-		{
-			v6 = v1;
-			do
-			{
-				if (!*v2)
-					goto LABEL_17;
-				v5 = 0;
-				while (fog_of_war_scrl_source->tiles[v5] != *v2)
-				{
-					if (++v5 >= 16)
-						goto LABEL_11;
-				}
-				*v4 = v5;
-			LABEL_11:
-				if (v5 == 16)
-					LABEL_17 :
-					*v4 = 0;
-				++v2;
-				++v4;
-				--v6;
-			} while (v6);
-		}
-		*v7 = v1;
-	}
-	else
-	{
-		errmsg_save[1] = aMemory;
-	}
-	return result;
-}
-
-//----- (00420B30) --------------------------------------------------------
-MiscSaveStruct *GAME_Save_PackMiscInfo(size_t *a1)
-{
-	void *v1; // ebp@1
-	size_t *v2; // esi@1
-	size_t v3; // eax@1
-	MiscSaveStruct *result; // eax@1
-	MiscSaveStruct *v5; // ebx@1
-	int v6; // eax@4
-	Entity **v7; // eax@6
-	int *v8; // edx@6
-	int v9; // ecx@8
-	int v13; // edi@21
-	int v21; // eax@35
-
-	v1 = _47C970_sidebar_task->param;
-	v2 = a1;
-	v3 = stru13construct_list_get_saveload_packed_size() + 376;// + sizeof(MiscSaveStruct)
-	*v2 = v3;
-	result = (MiscSaveStruct *)malloc(v3);
-	v5 = result;
-	if (result)
-	{
-		result->size = stru13construct_list_get_saveload_packed_size();
-		memcpy(&v5->stru13stru0, &_47A608_stru13_associated_array, sizeof(v5->stru13stru0));
-		v5->field_30 = _47B3E0_unit_int_outpost_clanhall;
-		memcpy(&v5->outpost_levels, &_47B3E0_outpost_levels, sizeof(v5->outpost_levels));
-		v5->max_outpost_level = max_outpost_level;
-		memcpy(&v5->clanhall_levels, &_477378_clanhall, sizeof(v5->clanhall_levels));
-		v5->max_clanhall_level = max_clanhall_level;
-		memcpy(&v5->machineshop_levels, &_47739C_machineshop, sizeof(v5->machineshop_levels));
-		v5->max_machineshop_level = max_machineshop_level;
-		memcpy(&v5->beastenclosure_levels, &_477318_beastenclosure, sizeof(v5->beastenclosure_levels));
-		v5->max_beastenclosure_level = max_beastenclosure_level;
-		memcpy(&v5->stru19_unit, &_47C978_production, sizeof(v5->stru19_unit));
-		v5->num_player_units = UNIT_num_player_units;
-		v5->num_total_units = UNIT_num_nonplayer_units;
-		v5->num_players_towers = num_players_towers;
-		v5->field_174 = _4269B0_task_attachment__4_some_task_flags;
-		v5->__47A3D0_unit = _47A3D0_unit;
-		v5->_47A3D4_unit = _47A3D4_tanker_convoy_units_left;
-		v5->_47A3D8_unit = _47A3D8_num_convoy_tankers_still_to_arrive;
-		if (entity_scout)
-			v6 = entity_scout->entity_id;
-		else
-			v6 = -1;
-		v5->scout_entity_id = v6;
-		v7 = _47B3C0_player_outposts_clanhalls;
-		v8 = v5->outposts_clanhalls_entity_ids;
-		do
-		{
-			if (*v7)
-				v9 = (*v7)->entity_id;
-			else
-				v9 = -1;
-			*v8 = v9;
-			++v7;
-			++v8;
-		} while ((int)v7 < (int) & _47B3D0_building_production_group);
-		v5->_47A370_unit = _4269B0_task_attachment__num_units_spawned;
-		v5->_47A2F8_unit = _4269B0_task_attachment__num_units_created_manually;
-		v5->dword_47CA2C = _47CA2C_should_airstrike_mess_with_sidebar;
-		v5->_47C970_stru0_ptr_3C_handler = get_handler_id(*(void **)v1);
-		if (result)
-		{
-			v5->field_128 = *((_DWORD *)v1 + 1);
-			result = (MiscSaveStruct *)GAME_Save_PackSprite(*((Sprite **)v1 + 2), (SpriteSerialized *)&v5->field_12C);
-			if (result)
-			{
-				v13 = *((_DWORD *)v1 + 4);
-				if (*(_DWORD *)(v13 + 24) == 1)
-				{
-					v5->field_154 = *(_DWORD *)(v13 + 12);
-					v5->_158_script_handler_id = get_handler_id(*(void **)(v13 + 64));
-					v5->_15C_script_handler_id = get_handler_id(*(void **)(v13 + 52));
-					v5->field_160 = *(_DWORD *)(v13 + 32);
-					v5->field_164 = *(_DWORD *)(v13 + 20);
-					v5->field_168 = *(_DWORD *)(v13 + 36);
-					v5->field_16C = *(_DWORD *)(v13 + 40);
-					v5->field_170 = *(_DWORD *)(v13 + 44);
-					if (stru13construct_list_saveload_pack(&v5->field_178))
-					{
-						result = v5;
-					}
-					else
-					{
-						errmsg_save[1] = aBadConstructs;
-						free(v5);
-						result = 0;
-					}
-				}
-				else
-				{
-					errmsg_save[1] = aTaskIsWrongTyp;
-					result = 0;
-				}
-			}
-		}
-		else
-		{
-			errmsg_save[1] = aBadMode;
-		}
-	}
-	else
-	{
-		errmsg_save[1] = aMemory;
-	}
-	return result;
-}
-
-//----- (00420E30) --------------------------------------------------------
-bool GAME_Load_UnpackMiscInfo(void *save_data)
-{
-	void *v1; // ebx@1
-	int v3; // ecx@1
-	_DWORD *v6; // esi@8
-	unsigned int v8; // eax@15
-	void(*v9)(Script *); // edx@17
-	BOOL result; // eax@20
-
-	task_sidebar_attachment *v13; // esi@28
-	unsigned int v14; // eax@29
-	Script *v15; // eax@35
-
-	v1 = save_data;
-	memcpy(&_47A608_stru13_associated_array, (char *)save_data + 4, sizeof(_47A608_stru13_associated_array));
-	_47B3E0_unit_int_outpost_clanhall = *((_DWORD *)save_data + 12);
-	memcpy(&_47B3E0_outpost_levels, (char *)save_data + 52, sizeof(_47B3E0_outpost_levels));
-	max_outpost_level = *((_DWORD *)save_data + 22);
-	memcpy(&_477378_clanhall, (char *)save_data + 92, sizeof(_477378_clanhall));
-	max_clanhall_level = *((_DWORD *)save_data + 32);
-	memcpy(&_47739C_machineshop, (char *)save_data + 132, sizeof(_47739C_machineshop));
-	max_machineshop_level = *((_DWORD *)save_data + 42);
-	memcpy(&_477318_beastenclosure, (char *)save_data + 172, sizeof(_477318_beastenclosure));
-	max_beastenclosure_level = *((_DWORD *)save_data + 52);
-	memcpy(&_47C978_production, (char *)save_data + 212, sizeof(_47C978_production));
-	UNIT_num_player_units = *((_DWORD *)save_data + 59);
-	UNIT_num_nonplayer_units = *((_DWORD *)save_data + 60);
-	num_players_towers = *((_DWORD *)save_data + 61);
-	_4269B0_task_attachment__4_some_task_flags = *((_DWORD *)save_data + 93);
-	_47A3D0_unit = *((_DWORD *)save_data + 62);
-	_47A3D4_tanker_convoy_units_left = *((_DWORD *)save_data + 63);
-	_47A3D8_num_convoy_tankers_still_to_arrive = *((_DWORD *)save_data + 64);
-
-	v3 = *((_DWORD *)save_data + 65);
-	entity_scout = entityRepo->FindById(v3);
-	if (entity_scout)
-	{
-		sprite_create_scripted(
-            MOBD_CURSORS, 0, script_426710_mission_objectives_draw_x_mark, SCRIPT_COROUTINE, 0
-        );
-	}
-
-	v6 = (int *)((int)v1 + 264);
-	for (int i = 0; i < 4; ++i) {
-        _47B3C0_player_outposts_clanhalls[i] = entityRepo->FindById(*v6);
-		++v6;
-	}
-	_47CA2C_should_airstrike_mess_with_sidebar = *((_DWORD *)v1 + 72);
-	v8 = *((_DWORD *)v1 + 86);
-    v9 = (void(*)(Script *))get_handler(v8 - 1);
-	if (v9)
-	{
-		result = (BOOL)script_create_function(*((enum SCRIPT_TYPE *)v1 + 85), v9);
-		if (result)
-		{
-			*(_DWORD *)(result + 52) = (int)get_handler(*((_DWORD *)v1 + 87) - 1);
-			*(_DWORD *)(result + 32) = *((_DWORD *)v1 + 88);
-			*(_DWORD *)(result + 20) = *((_DWORD *)v1 + 89);
-			*(_DWORD *)(result + 36) = *((_DWORD *)v1 + 90);
-			*(_DWORD *)(result + 40) = *((_DWORD *)v1 + 91);
-			*(_DWORD *)(result + 44) = *((_DWORD *)v1 + 92);
-		}
-	}
-	else
-	{
-		result = 0;
-	}
-	_47C970_sidebar_task = (Script *)result;
-	if (result)
-	{
-		result = (BOOL)script_create_local_object((Script *)result, 20);
-		v13 = (task_sidebar_attachment *)result;
-		if (result)
-		{
-			*(_DWORD *)(result + 16) = (int)_47C970_sidebar_task;
-			v14 = *((_DWORD *)v1 + 73) - 1;
-			v13->handler = (void *)get_handler(v14);
-			if (v13->handler)
-			{
-				v13->field_4 = *((_DWORD *)v1 + 74);
-				result = (BOOL)GAME_Load_UnpackSprite((SpriteSerialized *)((char *)v1 + 300));
-				v13->_8_sprite = (Sprite *)result;
-				if (result)
-				{
-					v15 = v13->__47C970_sidebar_task;
-					v13->_C_sprite_sidebar = _47CA08_sidebar_buttons[1]->sprite;
-					v15->param = v13;
-					v13->__47C970_sidebar_task->sprite = v13->_8_sprite;
-					v13->_8_sprite->script = v13->__47C970_sidebar_task;
-					v13->_C_sprite_sidebar->field_88_unused = 1;
-					v13->_C_sprite_sidebar->x = 155648;
-					v13->_C_sprite_sidebar->field_88_unused = 1;
-					v13->_C_sprite_sidebar->y = 73728;
-					v13->_C_sprite_sidebar->z_index = 2;
-					v13->_8_sprite->field_88_unused = 1;
-					v13->_8_sprite->x = 156672;
-					v13->_8_sprite->field_88_unused = 1;
-					v13->_8_sprite->y = 79872;
-					v13->_8_sprite->z_index = 3;
-					v13->_8_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-					if (v13->field_4 <= 1)
-						v13->_8_sprite->drawjob->flags |= 0x40000000u;
-					if (v13->field_4 > 0)
-						script_trigger_event(0, EVT_MSG_1514, 0, _47CA08_sidebar_buttons[1]->task);
-					v13->_8_sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
-					v13->_8_sprite->drawjob->flags |= 0x10000000u;
-					sprite_4272E0_load_mobd_item(v13->_8_sprite, 2276, 0);
-					result = stru13construct_list_saveload_unpack((int)v1 + 376, *(_DWORD *)v1) != 0;
-				}
-			}
-		}
-	}
-	return result;
-}
-
-//----- (004211D0) --------------------------------------------------------
-int GAME_Save()
-{
-    EntitySaveStructIndex *entity_sAve_data_index; // ebp@1
-    OilDepositSaveStruct *oil_save_data; // ebx@3
-    int entity_save_size; // eax@7
-    enum UNIT_ID v5; // ecx@9
-    void *entity_save_data; // eax@20
-    void *entity_sAve_data; // ebp@20
-    int entity_save_data_i; // edi@22
-    int *pentity_save_data_size; // ebx@23
-    void *cpu_players; // esi@29
-    char *production_info; // edi@31
-    _BYTE *map_info; // ebx@34
-    FILE *file; // eax@41
-    FILE *fIle; // esi@41
-    int v17; // ebx@50
-    char *entity_offsets; // ebx@59
-    void *entity_indices; // edi@60
-    int all_data_ok; // [sp+14h] [bp-44h]@1
-    void *entity_savE_data; // [sp+18h] [bp-40h]@1
-    void *cpU_players; // [sp+1Ch] [bp-3Ch]@1
-    char *productiOn_info; // [sp+20h] [bp-38h]@1
-    void *v26; // [sp+24h] [bp-34h]@1
-    MiscSaveStruct *misc_info; // [sp+28h] [bp-30h]@1
-    int save; // [sp+2Ch] [bp-2Ch]@1
-    size_t total_entity_size; // [sp+30h] [bp-28h]@1
-    int max_entity_save_size; // [sp+34h] [bp-24h]@1
-    size_t oil_data_size; // [sp+38h] [bp-20h]@3
-    size_t cpu_players_size; // [sp+3Ch] [bp-1Ch]@29
-    size_t production_info_size; // [sp+40h] [bp-18h]@31
-    size_t map_info_size; // [sp+44h] [bp-14h]@34
-    size_t misc_info_size; // [sp+48h] [bp-10h]@36
-    int minus_1; // [sp+4Ch] [bp-Ch]@1
-    int mapd_cplc_dim[2]; // [sp+50h] [bp-8h]@3
-
-    entity_savE_data = 0;
-    cpU_players = 0;
-    productiOn_info = 0;
-    v26 = 0;
-    misc_info = 0;
-    minus_1 = -1;
-    max_entity_save_size = 0;
-    all_data_ok = 0;
-    total_entity_size = 0;
-    entity_sAve_data_index = (EntitySaveStructIndex *)malloc(0x12B8u);
-    save = (int)entity_sAve_data_index;
-    if (!entity_sAve_data_index)
-    {
-        errmsg_save[0] = aCouldnTAllocat;
-        return 0;
-    }
-    mapd_cplc_dim[1] = _47C380_mapd.mapd_cplc_render_y;
-    mapd_cplc_dim[0] = _47C380_mapd.mapd_cplc_render_x;
-    oil_save_data = GAME_Save_PackOilData(&oil_data_size);
-    if (!oil_save_data)
-    {
-        errmsg_save[0] = aCouldNotSaveOi;
-        goto LABEL_40;
-    }
-
-    for (auto i : entityRepo->FindAll()) {
-        //for (i = entity_list_head; (Entity **)i != &entity_list_head; i = i->next)
-        //{
-        if (!i->destroyed)
-        {
-            entity_save_size = 748;
-            entity_sAve_data_index->entity_field_130 = i->entity_id;
-            if (i->destroyed)
-            {
-                entity_save_size = 0;
-            }
-            else
-            {
-                v5 = i->unit_id;
-                switch (v5)
-                {
-                case 0x17u:
-                case 0x18u:
-                    entity_save_size = 860;
-                    break;
-                case 0x19u:
-                    entity_save_size = 760;
-                    break;
-                case 0x2Eu:
-                case 0x2Fu:
-                case 0x30u:
-                case 0x31u:
-                case 0x32u:
-                case 0x33u:
-                case 0x3Au:
-                case 0x3Bu:
-                case 0x3Cu:
-                case 0x3Du:
-                case 0x3Eu:
-                case 0x3Fu:
-                case 0x40u:
-                case 0x41u:
-                case 0x42u:
-                    entity_save_size = 776;
-                    if ((v5 == 65 || v5 == 66) && *((_DWORD *)i->state + 2))
-                        entity_save_size = 868;
-                    break;
-                default:
-                    break;
-                }
-            }
-            entity_sAve_data_index->entity_save_size = entity_save_size;
-            total_entity_size += entity_save_size;
-            if (entity_save_size > max_entity_save_size)
-                max_entity_save_size = entity_save_size;
-            ++entity_sAve_data_index;
-        }
-    }
-    entity_save_data = malloc(total_entity_size);
-    entity_sAve_data = entity_save_data;
-    entity_savE_data = entity_save_data;
-    if (!entity_save_data)
-    {
-        errmsg_save[0] = aCouldNotAlloca;
-        free(oil_save_data);
-        goto LABEL_40;
-    }
-
-    entity_save_data_i = (int)entity_save_data;
-    pentity_save_data_size = (int *)(save + 4);
-    for (auto v8 : entityRepo->FindAll()) {
-        if (!v8->destroyed)
-        {
-            if (!GAME_Save_PackEntity(v8, entity_save_data_i, *pentity_save_data_size))
-            {
-                free(entity_sAve_data);
-                free(oil_save_data);
-                game_save_in_progress = 0;
-                errmsg_save[0] = aCouldNotSaveUn;
-                return 0;
-            }
-            entity_save_data_i += *pentity_save_data_size;
-            pentity_save_data_size += 2;
-        }
-    }
-
-    cpu_players = GAME_Save_PackAiPlayers(&cpu_players_size);
-    cpU_players = cpu_players;
-    if (!cpu_players)
-    {
-        errmsg_save[0] = aCouldNotSaveCp;
-    LABEL_33:
-        free(entity_sAve_data);
-        free(oil_save_data);
-        goto LABEL_40;
-    }
-    production_info = GAME_Save_PackProductionInfo(&production_info_size);
-    productiOn_info = production_info;
-    if (!production_info)
-    {
-        errmsg_save[0] = aCouldNotSavePr;
-        free(cpu_players);
-        goto LABEL_33;
-    }
-    map_info = GAME_Save_PackMapInfo((int *)&map_info_size);
-    v26 = map_info;
-    if (map_info)
-    {
-        misc_info = GAME_Save_PackMiscInfo(&misc_info_size);
-        if (misc_info)
-        {
-            all_data_ok = 1;
-        }
-        else
-        {
-            errmsg_save[0] = aCouldNotSaveMi;
-            free(map_info);
-            free(production_info);
-            free(cpu_players);
-            free(entity_sAve_data);
-            free(oil_save_data);
-        }
-    }
-    else
-    {
-        errmsg_save[0] = aCouldNotSaveMa;
-        free(production_info);
-        free(cpu_players);
-        free(entity_sAve_data);
-        free(oil_save_data);
-    }
-
-LABEL_40:
-    if (!all_data_ok)
-    {
-    LABEL_80:
-        game_save_in_progress = 0;
-        free((void *)save);
-        return all_data_ok;
-    }
-    all_data_ok = 0;
-    SetFileAttributesA(current_savegame_filename, 0x80u);
-    file = fopen(current_savegame_filename, "wb");
-    fIle = file;
-    if (!file)
-    {
-        game_save_in_progress = 0;
-        errmsg_save[0] = aCouldnTOpenSav;
-        return 0;
-    }
-    if (!fwrite(&player_side, 1u, 4u, file)
-        || !fwrite(&game_globals_per_player, 1u, 0x1Cu, fIle)
-        || !fwrite(game_globals_cpu, 1u, 0xC4u, fIle)
-        || !fwrite(mapd_cplc_dim, 1u, 8u, fIle)
-        || !fwrite(&oil_data_size, 1u, 4u, fIle)
-        || !fwrite(oil_save_data, 1u, oil_data_size, fIle))
-    {
-        goto LABEL_78;
-    }
-    free(oil_save_data);
-
-    v17 = save;
-    for (auto v16 : entityRepo->FindAll()) {
-        //if ((Entity **)entity_list_head != &entity_list_head)
-        if (!v16->destroyed)
-        {
-            if (!fwrite((void *)v17, 1u, 4u, fIle))
-            {
-                free(misc_info);
-                free(v26);
-                free(productiOn_info);
-                free(cpU_players);
-                free(entity_savE_data);
-                goto LABEL_68;
-            }
-            v17 += 8;
-        }
-    }
-    if (!fwrite(&minus_1, 1u, 4u, fIle) || !fwrite(&max_entity_save_size, 1u, 4u, fIle))
-    {
-    LABEL_78:
-        fclose(fIle);
-        if (!all_data_ok)
-            errmsg_save[0] = aCouldnTWriteTo;
-        goto LABEL_80;
-    }
-
-    entity_offsets = (char *)entity_savE_data;
-    entity_indices = (void *)(save + 4);
-    for (auto v18 : entityRepo->FindAll()) {
-        if (!v18->destroyed)
-        {
-            if (fwrite(entity_indices, 1u, 4u, fIle) && fwrite(entity_offsets, 1u, *(_DWORD *)entity_indices, fIle))
-            {
-                entity_offsets += *(_DWORD *)entity_indices;
-                entity_indices = (char *)entity_indices + 8;
-            }
-            else {
-                break;
-            }
-        }
-    }
-
-    free(entity_savE_data);
-    if (fwrite(&cpu_players_size, 1u, 4u, fIle))
-    {
-        if (fwrite(cpU_players, 1u, cpu_players_size, fIle))
-        {
-            free(cpU_players);
-            if (fwrite(&production_info_size, 1u, 4u, fIle))
-            {
-                if (fwrite(productiOn_info, 1u, production_info_size, fIle))
-                {
-                    free(productiOn_info);
-                    if (fwrite(&map_info_size, 1u, 4u, fIle))
-                    {
-                        if (fwrite(v26, 1u, map_info_size, fIle))
-                        {
-                            free(v26);
-                            if (fwrite(&misc_info_size, 1u, 4u, fIle))
-                            {
-                                if (fwrite(misc_info, 1u, misc_info_size, fIle))
-                                {
-                                    free(misc_info);
-                                    all_data_ok = 1;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    entity_indices = (void *)(save + 4);
-
-    free(misc_info);
-    free(v26);
-    free(cpU_players);
-    free(productiOn_info);
-    free(entity_savE_data);
-    free(oil_save_data);
-
-LABEL_68:
-    fclose(fIle);
-    game_save_in_progress = 0;
-    return 0;
-}
-// 479FC0: using guessed type int game_save_in_progress;
-
-//----- (004218B0) --------------------------------------------------------
-int GAME_Load()
-{
-	char v0; // bl@1
-	Sprite *v1; // eax@1
-	Script *v2; // eax@2
-	FILE *v3; // eax@3
-	FILE *v4; // edi@3
-	OilDepositSaveStruct *oil_save_data; // eax@9
-	int i; // ecx@13
-	Entity *v8; // eax@14
-	Entity *v9; // ecx@20
-	Entity *v10; // edx@20
-	void *minus1_sized_block; // ebp@23
-	//Entity *v12; // esi@24
-	enum PLAYER_SIDE v13; // eax@28
-	void *entity_data; // eax@34
-	void *v16; // eax@38
-	void *v17; // esi@38
-	char *v18; // eax@42
-	char *v19; // ebp@42
-	MapdScrlImageTile **v20; // ecx@44
-	char *v21; // edx@44
-	int v22; // esi@45
-	char v23; // al@46
-	MapdScrlImageTile *v24; // eax@48
-	void *v25; // esi@52
-	int result; // eax@56
-	size_t block_size; // [sp+10h] [bp-14h]@8
-	int ptr; // [sp+14h] [bp-10h]@1
-	int v29; // [sp+18h] [bp-Ch]@1
-	int mapd_cplc_dim[2]; // [sp+1Ch] [bp-8h]@7
-
-	v0 = 0;
-	ptr = -1;
-	v29 = 0;
-	v1 = sprite_list_find_by_mobd_id(MOBD_CURSORS);
-	if (!v1
-		|| (v2 = v1->script) == 0
-		|| (task_mobd17_cursor = v2,
-			UNIT_num_player_units = 0,
-			UNIT_num_nonplayer_units = 0,
-			v3 = fopen(current_savegame_filename, "rb"),
-			(v4 = v3) == 0))
-	{
-		game_load_in_progress = 0;
-		return 0;
-	}
-	if (!fread(&player_side, 1u, 4u, v3))
-		goto LABEL_56;
-	if (!fread(&game_globals_per_player, 1u, 0x1Cu, v4))
-		goto LABEL_56;
-	if (!fread(game_globals_cpu, 1u, 0xC4u, v4))
-		goto LABEL_56;
-	if (!fread(mapd_cplc_dim, 1u, 8u, v4))
-		goto LABEL_56;
-	_47C380_mapd.mapd_cplc_render_x = mapd_cplc_dim[0];
-	_47C380_mapd.mapd_cplc_render_y = mapd_cplc_dim[1];
-	if (!fread(&block_size, 1u, 4u, v4))
-		goto LABEL_56;
-	oil_save_data = (OilDepositSaveStruct *)malloc(block_size);
-	if (!oil_save_data)
-		goto LABEL_56;
-	if (!fread(oil_save_data, 1u, block_size, v4))
-		goto LABEL_56;
-	if (!GAME_Load_UnpackOilData(oil_save_data))
-		goto LABEL_56;
-	free(oil_save_data);
-
-	if (!fread(&ptr, 1u, 4u, v4))
-		goto LABEL_56;
-
-	for (i = ptr; ptr != -1; i = ptr)
-	{
-		//v8 = entity_list_free_pool;
-		//if (entity_list_free_pool)
-		//	entity_list_free_pool = entity_list_free_pool->next;
-		//else
-		//	v8 = 0;
-		v8=0;//if (!v8)
-			goto LABEL_59;
-		v8->entity_id = i;
-		if (ptr >= _47DCC4_entity_id_counter)
-			_47DCC4_entity_id_counter = ptr + 1;
-		//v9 = entity_list_47D9AC;
-		//v10 = entity_list_47D9AC->next;
-		//v8->prev = entity_list_47D9AC;
-		//v8->next = v10;
-		//v9->next->prev = v8;
-		//v9->next = v8;
-		if (!fread(&ptr, 1u, 4u, v4))
-			goto LABEL_59;
-	}
-	if (!fread(&block_size, 1u, 4u, v4))
-		goto LABEL_56;
-	minus1_sized_block = malloc(block_size);
-	if (!minus1_sized_block)
-	{
-	LABEL_56:
-		fclose(v4);
-		result = v29;
-		game_load_in_progress = 0;
-		return result;
-	}
-
-	if (entityRepo->CountAll() <= 0)
-	{
-	LABEL_33:
-		free(minus1_sized_block);
-		if (fread(&block_size, 1u, 4u, v4))// max entity save size
-		{
-			entity_data = malloc(block_size);
-			if (entity_data)
-			{
-				if (fread(entity_data, 1u, block_size, v4))
-				{
-					if (GAME_Load_UnpackAiPlayers(entity_data))
-					{
-						free(entity_data);
-						if (fread(&block_size, 1u, 4u, v4))
-						{
-							v16 = malloc(block_size);
-							v17 = v16;
-							if (v16)
-							{
-								if (fread(v16, 1u, block_size, v4))
-								{
-									if (GAME_Load_UnpackProductionInfo(v17))
-									{
-										free(v17);
-										if (fread(&block_size, 1u, 4u, v4))
-										{
-											v18 = (char *)malloc(block_size);
-											v19 = v18;
-											if (v18)
-											{
-												if (fread(v18, 1u, block_size, v4))
-												{
-													v20 = map_fog_of_war_scrl_tiles;
-													v21 = v19;
-													if ((_478AAC_map_height + 4) * (_4793F8_map_width + 4) > 0)
-													{
-														v22 = (_478AAC_map_height + 4) * (_4793F8_map_width + 4);
-														do
-														{
-															v23 = *v21;
-															if (*v21 <= v0 || v23 >= 16)
-															{
-																v24 = 0;
-															}
-															else
-															{
-																v24 = fog_of_war_scrl_source->tiles[v23];
-																v0 = 0;
-															}
-															*v20 = v24;
-															++v20;
-															++v21;
-															--v22;
-														} while (v22);
-													}
-													_44A780_gof_of_war();
-													free(v19);
-													if (fread(&block_size, 1u, 4u, v4))
-													{
-														v25 = malloc(block_size);
-														if (v25)
-														{
-															if (fread(v25, 1u, block_size, v4))
-															{
-																if (GAME_Load_UnpackMiscInfo(v25))
-																{
-																	free(v25);
-																	v29 = 1;
-																}
-															}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		goto LABEL_56;
-	}
-
-	while (fread(&block_size, 1u, 4u, v4)
-		&& fread(minus1_sized_block, 1u, block_size, v4))
-	{
-        auto v12 = EntityFactory().Unpack((EntitySerialized *)minus1_sized_block);
-        if (v12 == nullptr) {
-            break;
-        }
-        entityRepo->Save(v12);
-
-		v13 = v12->player_side;
-		if (v13 == player_side)
-		{
-			++UNIT_num_player_units;
-		}
-		else if (v13)
-		{
-			++UNIT_num_nonplayer_units;
-		}
-	}
-	free(minus1_sized_block);
-LABEL_59:
-	fclose(v4);
-	game_load_in_progress = 0;
-	return 0;
-}
-
-//----- (00421D40) --------------------------------------------------------
-void GAME_OnSaveFailed()
-{
-	auto v0 = script_create_coroutine(
-        SCRIPT_TYPE_INVALID, script_421D60_on_savegame_failed, 0
-    );
-	if (v0)
-		v0->field_1C |= 1;
-}
-
-//----- (00421D60) --------------------------------------------------------
-void script_421D60_on_savegame_failed(Script *a1)
-{
-	unsigned int v1; // esi@1
-	unsigned int v2; // edi@1
-	int v3; // ebx@1
-	int v4; // eax@1
-	RenderString *v5; // eax@1
-	RenderString *v6; // esi@1
-
-	sprintf(str, aSS_0, errmsg_save[0], errmsg_save[1]);
-	v1 = (unsigned int)render_width >> 1;
-	v2 = (unsigned int)render_height >> 1;
-	v3 = _445C00_text(str, 128);
-	v4 = _445C80_text(str, 128);
-	v5 = render_string_create(
-		0,
-		currently_running_lvl_mobd[MOBD_FONT_27].items,
-		v1 - (8 * (v4 + 2) >> 1),
-		v2 - 32,
-		v4 + 2,
-		v3 + 2,
-		0x40000000,
-		8,
-		8);
-	v6 = v5;
-	if (v5)
-	{
-		render_string_445770(v5, str, 0);
-        script_sleep(a1, 180);
-		render_string_list_remove(v6);
-	}
-}
-
-//----- (00421E20) --------------------------------------------------------
-bool is_machine_shop_maxed()
-{
-	return max_machineshop_level >= 5;
-}
-// 479FEC: using guessed type int max_machineshop_level;
-
-//----- (00421E30) --------------------------------------------------------
-void entity_machineshop_on_upgrade_complete(Script *receiver, Script *sender, enum SCRIPT_EVENT message, void *param)
-{
-	Script *v4; // edi@1
-	Script *v5; // ebp@1
-	Entity *v6; // esi@1
-	EntityBuildingState *v7; // eax@1
-	ProductionGroup *v8; // ebx@1
-	int v9; // ecx@1
-	bool v10; // sf@1
-	int v11; // eax@10
-
-	v4 = receiver;
-	v5 = sender;
-	v6 = (Entity *)receiver->param;
-	v7 = (EntityBuildingState *)v6->state;
-	v8 = v7->production_group;
-	v9 = v7->num_upgrades + 1;
-	v10 = v7->num_upgrades - 4 < 0;
-	v7->num_upgrades = v9;
-	if (!((unsigned __int8)(v10 ^ __OFSUB__(v9, 5)) | (v9 == 5)))
-		v7->num_upgrades = 5;
-	if (v6->player_side == player_side)
-	{
-		--__47739C_machineshop_negindex[v7->num_upgrades];
-		++_47739C_machineshop.num_buildings_by_level[v7->num_upgrades];
-		if (v7->num_upgrades > max_machineshop_level)
-			max_machineshop_level = v7->num_upgrades;
-		switch (v7->num_upgrades)
-		{
-		case 2:
-			production_group_enable(v8, UNIT_STATS_SURV_ATV_FLAMETHROWER, 2568);
-			break;
-		case 3:
-			production_group_enable(v8, UNIT_STATS_SURV_ANACONDA_TANK, 2624);
-			production_group_enable(v8, UNIT_STATS_SURV_TANKER, 2616);
-			break;
-		case 4:
-			production_group_enable(v8, UNIT_STATS_SURV_BARRAGE_CRAFT, 2560);
-			break;
-		case 5:
-			production_group_enable(v8, UNIT_STATS_SURV_AUTOCANNON_TANK, 2600);
-			LOBYTE_HEXRAYS(v11) = is_outpost_maxed();
-			if (v11)
-				attempt_unlock_aircraft();
-			break;
-		default:
-			break;
-		}
-	}
-	entity_4109A0_status_bar(v6);
-	EventHandler_DefaultBuildingsHandler(v4, v5, message, param);
-}
-
-//----- (00421F50) --------------------------------------------------------
-void EventHandler_MachineShop(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param)
-{
-	Entity *v4; // esi@1
-
-	v4 = (Entity *)receiver->param;
-	if (!v4->destroyed)
-	{
-		switch (event)
-		{
-		case EVT_MSG_PRODUCTION_READY:
-			v4->sprite->field_88_unused = 1;
-			if (spawn_unit(
-				(enum UNIT_ID)(int)param,
-				v4->stru60.pstru4->x_offset + v4->sprite->x,
-				v4->stru60.pstru4->y_offset + v4->sprite->y,
-				v4->player_side))
-			{
-				if (player_side == v4->player_side)
-				{
-					sound_play(SOUND_SURV_UNIT_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
-					show_message_ex(0, aUnitReady);
-				}
-			}
-			break;
-		case EVT_MSG_UPGRADE_COMPLETE:
-			entity_machineshop_on_upgrade_complete(receiver, sender, event, param);
-			break;
-		case EVT_MSG_SABOTAGE:
-			entity_sabotage(v4, param, entity_mode_machineshop_on_death);
-			break;
-		case EVT_MSG_DESTROY:
-			entity_402E40_destroy((Entity *)receiver->param, entity_mode_machineshop_on_death);
-			break;
-		case EVT_MSG_DAMAGE:
-			entity_402E90_on_damage(v4, param, entity_mode_machineshop_on_death);
-			entity_410520_update_healthbar_color(v4);
-			break;
-		default:
-			EventHandler_DefaultBuildingsHandler(receiver, sender, event, param);
-			break;
-		}
-	}
-}
-
-//----- (004220B0) --------------------------------------------------------
-void entity_4220B0_machineshop(Entity *a1)
-{
-	Entity *v1; // esi@1
-	EntityBuildingState *v2; // edi@1
-
-	v1 = a1;
-	v2 = (EntityBuildingState *)a1->state;
-	v2->same_buildings_count = 0;
-	script_trigger_event_group(a1->script, EVT_MSG_BUILDING_COMPLETE, 0, SCRIPT_SURV_MACHINESHOP_HANDLER);
-	if (!v2->same_buildings_count && player_side == v1->player_side)
-	{
-		max_machineshop_level = 1;
-		memset(&_47739C_machineshop, 0, sizeof(_47739C_machineshop));
-	}
-}
-// 479FEC: using guessed type int max_machineshop_level;
-
-//----- (00422100) --------------------------------------------------------
-void UNIT_Handler_MachineShop(Script *a1)
-{
-	Entity *v1; // esi@1
-	EntityBuildingState *v2; // edi@3
-
-	v1 = (Entity *)a1->param;
-	if (!_47C6DC_dont_execute_unit_handlers)
-	{
-		if (!v1)
-		{
-			v1 = EntityFactory().Create(a1);
-			v1->script->event_handler = EventHandler_MachineShop;
-			map_reveal_fog_around_entity(v1);
-			v1->script->script_type = SCRIPT_SURV_MACHINESHOP_HANDLER;
-			entity_initialize_building(
-				v1,
-				2,
-				entity_mode_machineshop_on_death_no_default,
-				entity_mode_machineshop_set_default_production);
-			v2 = (EntityBuildingState *)v1->state;    // -- START OF INLINED entity_404040_production_clanhall -like sub
-			v2->same_buildings_count = 0;
-			script_trigger_event_group(v1->script, EVT_MSG_BUILDING_COMPLETE, 0, SCRIPT_SURV_MACHINESHOP_HANDLER);
-			if (!v2->same_buildings_count && player_side == v1->player_side)
-			{
-				max_machineshop_level = 1;
-				memset(&_47739C_machineshop, 0, sizeof(_47739C_machineshop));
-			}                                         // -- END OF INLINED
-			if (!v1->sprite->cplc_ptr1_pstru20)
-			{
-				entity_402BB0_set_arrive_handler(v1, entity_mode_4223A0_machineshop);
-				v1->ExecMode();
-				return;
-			}
-			v1->SetMode(entity_mode_4223A0_machineshop);
-		}
-		v1->ExecMode();
-	}
-}
-
-//----- (004221D0) --------------------------------------------------------
-void entity_mode_machineshop_set_default_production(Entity *a1)
-{
-	Entity *v1; // esi@1
-	enum PLAYER_SIDE v2; // eax@1
-	EntityBuildingState *v3; // ebx@1
-	ProductionGroup *v4; // eax@9
-	ProductionGroup *v5; // esi@9
-	enum LEVEL_ID v6; // eax@9
-	unsigned int v7; // ecx@9
-	unsigned int v8; // edx@11
-
-	v1 = a1;
-	v2 = a1->player_side;
-	v3 = (EntityBuildingState *)a1->state;
-	if (v2 == player_side)
-	{
-		if (a1->mode_arrive == entity_mode_machineshop_set_default_production)
-		{
-			v3->same_buildings_count = 0;
-			script_trigger_event_group(a1->script, EVT_MSG_BUILDING_COMPLETE, 0, SCRIPT_SURV_MACHINESHOP_HANDLER);
-			if (!v3->same_buildings_count && player_side == v1->player_side)
-			{
-				max_machineshop_level = 1;
-				memset(&_47739C_machineshop, 0, sizeof(_47739C_machineshop));
-			}
-			v1->mode_arrive = 0;
-			v1->SetMode(entity_mode_403650_building);
-		}
-		if (!v1->sprite->cplc_ptr1_pstru20)
-			show_message_ex(0, aBuildingCompleted);
-		v4 = entity_building_create_production_group(v1, PRODUCTION_GROUP_VEHICLES);
-		v5 = v4;
-		v3->production_group = v4;
-		v6 = current_level_idx;
-		v7 = levels[current_level_idx].disabled_units_mask;
-		if (!(BYTE1(v7) & 0x40))
-		{
-			production_group_enable(v5, UNIT_STATS_SURV_DIRT_BIKE, 2592);
-			v6 = current_level_idx;
-		}
-		v8 = levels[v6].disabled_units_mask;
-		if (!(BYTE1(v8) & 0x80))
-		{
-			production_group_enable(v5, UNIT_STATS_SURV_4x4_PICKUP, 2584);
-			v6 = current_level_idx;
-		}
-		if (!(levels[v6].disabled_units_mask & 0x10000))
-		{
-			production_group_enable(v5, UNIT_STATS_SURV_ATV, 2576);
-			v6 = current_level_idx;
-		}
-		if (!(levels[v6].disabled_units_mask & 0x20000))
-			production_group_enable(v5, UNIT_STATS_SURV_MOBILE_DERRICK, 2228);
-		++_47739C_machineshop.num_buildings_by_level[1];
-	}
-	else if (v2 == 0)
-	{
-		a1->mode_arrive = entity_mode_machineshop_set_default_production;
-	}
-}
-// 479FEC: using guessed type int max_machineshop_level;
-
-//----- (00422330) --------------------------------------------------------
-void entity_mode_machineshop_on_death_no_default(Entity *a1)
-{
-	EntityBuildingState *v1; // esi@1
-	int v2; // edx@2
-	int v3; // eax@2
-	int *v4; // ecx@5
-	int v5; // edx@6
-	ProductionGroup *v6; // ecx@9
-
-	v1 = (EntityBuildingState *)a1->state;
-	if (player_side == a1->player_side)
-	{
-		v2 = max_machineshop_level;                 // INLINED recalc new max level
-		--_47739C_machineshop.num_buildings_by_level[v1->num_upgrades];
-		v3 = v1->num_upgrades;
-		if (v3 == v2 && !_47739C_machineshop.num_buildings_by_level[v3])
-		{
-			if (v3 > 0)
-			{
-				v4 = &_47739C_machineshop.num_buildings_by_level[v3];
-				do
-				{
-					v5 = *(v4 - 1);
-					--v4;
-					--v3;
-				} while (!v5 && v3 > 0);
-			}
-			max_machineshop_level = v3;
-		}
-		v6 = v1->production_group;
-		if (v6)
-		{
-			production_group_446860(v6);
-			v1->production_group = 0;
-		}
-	}
-}
-// 479FEC: using guessed type int max_machineshop_level;
-
-//----- (004223A0) --------------------------------------------------------
-void entity_mode_4223A0_machineshop(Entity *a1)
-{
-	Entity *v1; // esi@1
-	EntityTurret *v2; // eax@5
-
-	v1 = a1;
-	a1->mode_arrive = 0;
-	entity_mode_machineshop_set_default_production(a1);
-	if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20 && !is_player_faction_evolved())
-		sound_play(SOUND_SURV_BUILDING_COMPLETED, 0, _4690A8_unit_sounds_volume, 16, 0);
-	v2 = v1->turret;
-	if (v2)
-		v2->turret_sprite->drawjob->flags &= 0xBFFFFFFF;
-	if (v1->sprite->cplc_ptr1_pstru20)
-	{
-		v1->SetMode(entity_mode_4034B0);
-	}
-	else
-	{
-		v1->SetMode(entity_mode_403650_building);
-	}
-    entity_mode_403650_building(v1);
-}
-
-//----- (00422430) --------------------------------------------------------
-void entity_mode_machineshop_on_death(Entity *a1)
-{
-	Entity *v1; // edi@1
-	EntityBuildingState *v2; // esi@1
-	int v3; // edx@2
-	int v4; // eax@2
-	int *v5; // ecx@5
-	int v6; // edx@6
-	ProductionGroup *v7; // ecx@9
-
-	v1 = a1;
-	v2 = (EntityBuildingState *)a1->state;
-	if (player_side == a1->player_side)
-	{
-		v3 = max_machineshop_level;                 // INLINED recalc new max level
-		--_47739C_machineshop.num_buildings_by_level[v2->num_upgrades];
-		v4 = v2->num_upgrades;
-		if (v4 == v3 && !_47739C_machineshop.num_buildings_by_level[v4])
-		{
-			if (v4 > 0)
-			{
-				v5 = &_47739C_machineshop.num_buildings_by_level[v4];
-				do
-				{
-					v6 = *(v5 - 1);
-					--v5;
-					--v4;
-				} while (!v6 && v4 > 0);
-			}
-			max_machineshop_level = v4;
-		}
-		v7 = v2->production_group;
-		if (v7)
-		{
-			production_group_446860(v7);
-			v2->production_group = 0;
-		}
-	}
-	entity_mode_building_default_on_death(v1);
-}
-// 479FEC: using guessed type int max_machineshop_level;
-
-//----- (004224B0) --------------------------------------------------------
-void _4224B0_update_last_level()
-{
-	enum LEVEL_ID v0; // eax@2
-
-	if (single_player_game)
-	{
-		v0 = current_level_idx;
-		if (current_level_idx >= LEVEL_MUTE_01 && current_level_idx <= LEVEL_MUTE_15)
-		{
-			current_mute_level = current_level_idx - 14;
-			_4243C0_kknd_sve_update_last_level(pKknd_sve);
-			v0 = current_level_idx;
-		}
-		if (v0 >= LEVEL_SURV_01_THE_NEXT_GENERATION && v0 <= LEVEL_SURV_15)
-		{
-			current_surv_level = v0 + 1;
-			_4243C0_kknd_sve_update_last_level(pKknd_sve);
-		}
-	}
-}
-
 //----- (00422500) --------------------------------------------------------
-void GAME_ReadRegistry()
+void GAME_ReadAppConfiguration()
 {
-	DWORD cbData; // [sp+8h] [bp-1Ch]@2
-	HKEY phkResult; // [sp+Ch] [bp-18h]@1
-	DWORD Type; // [sp+10h] [bp-14h]@2
-	BYTE Data[16]; // [sp+14h] [bp-10h]@4
-
-	game_installation_drive_letter = 'C';
-	is_minimal_install = 1;
-	strcpy(game_data_installation_dir, a_);
-	if (!RegOpenKeyExA(
-		HKEY_LOCAL_MACHINE,
-		"SOFTWARE\\Melbourne House\\Krush, Kill 'n' Destroy Xtreme\\1.00.000",
-		0,
-		0x20019u,
-		&phkResult))
-	{
-		cbData = 256;
-		if (!RegQueryValueExA(phkResult, (LPCSTR)reg_GamePath, 0, &Type, (LPBYTE)game_data_installation_dir, &cbData))
-			game_data_installation_dir[cbData] = 0;
-		cbData = sizeof(Data);
-		if (!RegQueryValueExA(phkResult, (LPCSTR)reg_DriveLetter, 0, &Type, Data, &cbData))
-			game_installation_drive_letter = Data[0];
-		cbData = 4;
-		RegQueryValueExA(phkResult, (LPCSTR)reg_MinimumInstall, 0, &Type, (LPBYTE)&is_minimal_install, &cbData);
-		RegCloseKey(phkResult);
-	}
-}
-
-//----- (00422860) --------------------------------------------------------
-void GAME_PrepareSuperLvl(int mapd_idx)
-{
-	int mApd_idx; // ebp@1
-	//char *v2; // eax@1
-	enum LEVEL_ID v3; // ebx@5
-	int v4; // ecx@5
-	char *v5; // edi@5
-	bool v6; // zf@7
-	unsigned int v7; // ecx@8
-	char v8; // dl@8
-	char *v9; // esi@8
-	char *v10; // edi@8
-	char *v11; // esi@8
-	char v12; // cl@8
-	unsigned int v13; // ecx@11
-	char v14; // al@11
-	char *v15; // esi@11
-	//char *v16; // eax@12
-	DataHunk *v17; // eax@12
-	DataMapd *v18; // eax@24
-	//char v19[120]; // [sp+10h] [bp-78h]@1
-
-	mApd_idx = mapd_idx;
-	sprites_lvl = LVL_LoadLevel("supspr.lvl");
-	if (!sprites_lvl)
-	{
-		LVL_Deinit();
-		netz_deinit();
-		GAME_Deinit();
-		if (aSuperSpriteLoa)
-			printf((const char *)aS, aSuperSpriteLoa);
-		exit(0);
-	}
-	v3 = current_level_idx;
-	v4 = -1;
-	v5 = game_data_installation_dir;
-	current_level_idx = LEVEL_INVALID;
-	if (_47A2E4_mess_with_game_dir)
-	{
-		do
-		{
-			if (!v4)
-				break;
-			v6 = *v5++ == 0;
-			--v4;
-		} while (!v6);
-		v7 = ~v4;
-		v8 = v7;
-		v9 = &v5[-(int)v7];
-		v7 >>= 2;
-		memcpy(game_data_root_dir, v9, 4 * v7);
-		v11 = &v9[4 * v7];
-		v10 = &game_data_root_dir[4 * v7];
-		v12 = v8;
-	}
-	else
-	{
-		do
-		{
-			if (!v4)
-				break;
-			v6 = *v5++ == 0;
-			--v4;
-		} while (!v6);
-		v13 = ~v4;
-		v14 = v13;
-		v15 = &v5[-(int)v13];
-		v13 >>= 2;
-		memcpy(game_data_root_dir, v15, 4 * v13);
-		v11 = &v15[4 * v13];
-		v10 = &game_data_root_dir[4 * v13];
-		v12 = v14;
-	}
-	memcpy(v10, v11, v12 & 3);
-
-	current_level_idx = v3;
-	v17 = LVL_LoadLevel("super.lvl");
-	current_level_lvl = v17;
-	if (!v17)
-	{
-		LVL_Deinit();
-		netz_deinit();
-		GAME_Deinit();
-		if (aLvl_loadlevelS)
-			printf((const char *)aS, aLvl_loadlevelS);
-		exit(0);
-	}
-	if (!LVL_SubstHunk(v17, sprites_lvl, (const char *)MOBD))
-	{
-		LVL_Deinit();
-		netz_deinit();
-		GAME_Deinit();
-		if (aLvl_substhunkF)
-			printf((const char *)aS, aLvl_substhunkF);
-		exit(0);
-	}
-	if (!LVL_RunLevel(current_level_lvl))
-	{
-		netz_deinit();
-		GAME_Deinit();
-		if (aLvl_runlevelFa)
-			printf((const char *)aS, aLvl_runlevelFa);
-		exit(0);
-	}
-	v18 = LVL_FindMapd();
-	_40E400_set_palette(&v18[mApd_idx].items->palette);
-	render_default_stru1->field_8 &= 0xBFFFFFFF;
-	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)mApd_idx, 0, 0);
-	render_default_stru1->clip_z = render_width;
-	render_default_stru1->clip_y = 0;
-	render_default_stru1->clip_w = render_height;
-	sprite_47A400.pstru7 = array_466028;
-	if (mApd_idx && mApd_idx != 13)
-		sub_444080(mApd_idx);
-	cplc_select(mApd_idx);
-	cplc_406320();
-}
-// 47A2E4: using guessed type int _47A2E4_mess_with_game_dir;
-// 47A400: using guessed type Sprite sprite_47A400;
-
-//----- (00422AA0) --------------------------------------------------------
-// id:
-//     0  ->  MelbourneHouse & Intro
-//     1  ->  Mission Briefing
-int VIDEO_Play(int id)
-{
-	int v1; // esi@1
-	char **v2; // edi@5
-	//char *v3; // eax@16
-	int result; // eax@17
-	//char *v5; // eax@18
-	DataHunk *v6; // eax@18
-	DataHunk *v7; // ebp@18
-	DataMapdItem *v8; // ecx@23
-	stru1_draw_params *v9; // esi@25
-	stru1_draw_params *v10; // edi@25
-	RenderString *v11; // ebx@25
-	KeyboardInput keyboard_input; // [sp+10h] [bp-1B8h]@9
-	char a1[80]; // [sp+24h] [bp-1A4h]@7
-	char v14[80]; // [sp+74h] [bp-154h]@7
-	//char v15[260]; // [sp+C4h] [bp-104h]@16
-return 1;
-	v1 = id;
-	VIDEO_IsAllocated();
-	stru1_408480_reset_animation();
-	stru1_set_animation(0, 0, 0x80000000, 0);
-	RENDER_SetViewportAndClear();
-	if (!v1)
-	{
-		draw_list_alloc();
-        REND_DirectDrawClearScreen(1);
-		sprintf(a1, (const char *)aSFmvMh_fmv_vbc, app_root_dir);
-		if (VIDEO_ReadAndAllocDrawJob(a1, 0, 0, 100) == 1 && !VIDEO_IsVideoInvalid())
-		{
-			while (1)
-			{
-				input_update_keyboard();
-				input_get_keyboard_state(&keyboard_input);
-				if (keyboard_input.just_pressed_keys_mask)
-					break;
-				VIDEO_DoFrame();
-				draw_list_update_and_draw();
-				TimedMessagePump();
-				if (VIDEO_IsVideoInvalid())
-					goto LABEL_37;
-			}
-			VIDEO_free();
-		}
-	LABEL_37:
-		stru1_set_animation(0, 0, 0x80000000, 0);
-		sprintf(a1, (const char *)aSFmvS, app_root_dir, intro_vbc);
-		if (VIDEO_ReadAndAllocDrawJob(a1, 0, 0, 100) != 1 || VIDEO_IsVideoInvalid())
-			goto LABEL_43;
-		while (1)
-		{
-			input_update_keyboard();
-			input_get_keyboard_state(&keyboard_input);
-			if (keyboard_input.just_pressed_keys_mask)
-				goto LABEL_42;
-			VIDEO_DoFrame();
-			draw_list_update_and_draw();
-			TimedMessagePump();
-			if (VIDEO_IsVideoInvalid())
-				goto LABEL_43;
-		}
-	}
-	if (v1 != 1)
-	{
-		if (v1 != 2 || _47A18C_probably_play_outro_movie != 1)
-			goto LABEL_44;
-		_47A18C_probably_play_outro_movie = 0;
-		v2 = (char **)aSurvout_vbc;
-		if (current_level_idx != 14)
-			v2 = (char **)aEvolvout_vbc;
-		strcpy(v14, (const char *)v2);
-		draw_list_alloc();
-		sprintf(a1, (const char *)aSFmvS, app_root_dir, v14);
-		if (VIDEO_ReadAndAllocDrawJob(a1, 0, 0, 100) != 1 || VIDEO_IsVideoInvalid())
-		{
-		LABEL_43:
-			draw_list_free();
-		LABEL_44:
-			VIDEO_free();
-			return 1;
-		}
-		while (1)
-		{
-			input_update_keyboard();
-			input_get_keyboard_state(&keyboard_input);
-			if (keyboard_input.just_pressed_keys_mask)
-				break;
-			VIDEO_DoFrame();
-			draw_list_update_and_draw();
-			TimedMessagePump();
-			if (VIDEO_IsVideoInvalid())
-				goto LABEL_43;
-		}
-	LABEL_42:
-		VIDEO_free();
-		goto LABEL_43;
-	}
-	if (current_level_idx >= LEVEL_SURV_16 && current_level_idx <= LEVEL_MUTE_25 || is_game_loading())
-		goto LABEL_44;
-	if (!sprites_lvl)
-	{
-		sprites_lvl = LVL_LoadLevel("sprites.lvl");
-		if (!sprites_lvl)
-			return 0;
-	}
-
-	v6 = LVL_LoadLevel(fmv_lvl);
-	v7 = v6;
-	if (!v6)
-		return 0;
-	result = LVL_SubstHunk(v6, sprites_lvl, (const char *)MOBD);
-	if (result)
-	{
-		result = LVL_RunLevel(v7);
-		if (result)
-		{
-			render_default_stru1->field_8 &= 0xBFFFFFFF;
-			render_default_stru1->clip_z = render_width;
-			render_default_stru1->clip_y = 0;
-			render_default_stru1->clip_w = render_height;
-			if (current_level_idx >= LEVEL_MUTE_01)
-			{
-				_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
-				v8 = &LVL_FindMapd()->items[0];
-			}
-			else
-			{
-				_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
-				v8 = &LVL_FindMapd()->items[1];
-			}
-			_40E400_set_palette(&v8->palette);
-			memcpy(&stru_477990, _4785DC_syscolors_palette_entries, 0x400u);
-			sprite_47A400.pstru7 = array_466028;
-			cplc_select(0);
-			cplc_406320();
-			sprintf(v14, (const char *)aSFmvS, app_root_dir, levels[current_level_idx].vbc_filename);
-			v9 = render_create_stru1(0, 38, 31, 320, 240);
-			v10 = render_create_stru1(0, 240, 313, 160, 128);
-			v11 = render_string_create(0, currently_running_lvl_mobd[26].items, 400, 40, 25, 28, 90, 8, 8);
-			VIDEO_ReadAndAllocDrawJob_2(v14, v9, v10, v11, 320, 240, 100);
-			if (!VIDEO_IsVideoInvalid())
-			{
-				while (1)
-				{
-					input_update_keyboard();
-					input_get_keyboard_state(&keyboard_input);
-					if (keyboard_input.just_pressed_keys_mask)
-						break;
-					_4393F0_call_mapd();
-					VIDEO_DoFrame();
-					draw_list_update_and_draw();
-					TimedMessagePump();
-					if (VIDEO_IsVideoInvalid())
-						goto LABEL_30;
-				}
-				VIDEO_free();
-			}
-		LABEL_30:
-			render_string_list_remove(v11);
-			render_remove_stru1(v10);
-			render_remove_stru1(v9);
-			bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-			LVL_Deinit();
-			free(v7);
-			goto LABEL_44;
-		}
-	}
-	return result;
+    OsGetApplicationConfig(
+        &game_installation_drive_letter,
+        &is_minimal_install,
+        game_data_installation_dir
+    );
 }
 
 //----- (00412850) --------------------------------------------------------
@@ -15657,1151 +7422,14 @@ int nullsub_3(void)
     return 1;
 }
 
-//----- (00422F60) --------------------------------------------------------
-void GAME_PrepareLevel()
-{
-	enum LEVEL_ID v0; // edx@1
-	//char *v1; // eax@3
-	//const char *v2; // ST10_4@16
-	//char *v3; // eax@16
-	DataHunk *level_lvl; // eax@16
-	//int v5; // eax@24
-	DataMapd *v6; // eax@28
-	//char filename[120]; // [sp+8h] [bp-78h]@3
-
-	v0 = current_level_idx;
-	if (current_level_idx != prev_level_idx)
-	{
-		prev_level_idx = current_level_idx;
-		if (!sprites_lvl)
-		{
-			sprites_lvl = LVL_LoadLevel("sprites.lvl");
-			if (!sprites_lvl)
-			{
-				LVL_Deinit();
-				netz_deinit();
-				GAME_Deinit();
-				if (aSpriteLoadFail)
-					printf((const char *)aS, aSpriteLoadFail);
-				exit(0);
-			}
-			v0 = current_level_idx;
-		}
-		if (_47A2E4_mess_with_game_dir
-			|| !is_minimal_install
-			|| (v0 < LEVEL_SURV_01_THE_NEXT_GENERATION || v0 > LEVEL_MUTE_15) && (v0 < LEVEL_SURV_16 || v0 > LEVEL_MUTE_25))
-		{
-			strcpy(game_data_root_dir, game_data_installation_dir);
-		}
-		else
-		{
-			sprintf(game_data_root_dir, aC, game_installation_drive_letter);
-			v0 = current_level_idx;
-		}
-
-		level_lvl = LVL_LoadLevel(levels[v0].lvl_filename);
-		current_level_lvl = level_lvl;
-		if (!level_lvl)
-		{
-			LVL_Deinit();
-			netz_deinit();
-			GAME_Deinit();
-			if (aLvl_loadlevelS)
-				printf((const char *)aS, aLvl_loadlevelS);
-			exit(0);
-		}
-		if (!LVL_SubstHunk(level_lvl, sprites_lvl, (const char *)MOBD))
-		{
-			LVL_Deinit();
-			netz_deinit();
-			GAME_Deinit();
-			if (aLvl_substhunkF)
-				printf((const char *)aS, aLvl_substhunkF);
-			exit(0);
-		}
-	}
-
-	LVL_LoadSlv(slvs[is_player_faction_evolved()]);
-	if (!LVL_RunLevel(current_level_lvl))
-	{
-		netz_deinit();
-		GAME_Deinit();
-		if (aLvl_runlevelFa)
-			printf((const char *)aS, aLvl_runlevelFa);
-		exit(0);
-	}
-	stru1_408480_reset_animation();
-	v6 = LVL_FindMapd();
-	_40E400_set_palette((PALETTEENTRY *)&v6->items[1]);
-	sidebar_button_list_alloc();
-	boxd_40E6E0();
-	_44C010_init_mission_globals();
-	sidebar_initialize();
-	stru31_list_alloc();
-	if (!UNIT_Init())
-	{
-		netz_deinit();
-		GAME_Deinit();
-		if (aUnit_initFaile)
-			printf((const char *)aS, aUnit_initFaile);
-		exit(0);
-	}
-	stru37_stru38_list_alloc();
-	nullsub_3();
-	if (_4690AC_level_wav_sound_offset)
-	{
-		_47A01C_sound_id = sound_play_threaded(levels[current_level_idx].wav_filename, 1, _4690AC_level_wav_sound_offset, 16, 0);
-	}
-	render_default_stru1->field_8 &= 0xBFFFFFFF;
-	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
-	_47A010_mapd_item_being_drawn[1] = MAPD_Draw(MAPD_MAP, 1u, 0x20000000);
-	_47A010_mapd_item_being_drawn[1]->draw_job->on_update_handler = drawjob_update_handler_level_background;
-	MAPD_44BD50_alter_tile_flags();
-	render_default_stru1->clip_z = render_width;
-	render_default_stru1->clip_y = 0;
-	render_default_stru1->clip_w = render_height;
-	sprite_47A400.pstru7 = array_466028;
-	if (is_game_loading())
-	{
-		prev_level_idx = -1;
-		cplc_init_scripts();
-		if (!GAME_Load())
-		{
-			LVL_Deinit();
-			netz_deinit();
-			GAME_Deinit();
-			if (aLoadgamestateF)
-				printf((const char *)aS, aLoadgamestateF);
-			exit(0);
-		}
-		game_state = GAME_STATE::MainMenu;
-	}
-	else
-	{
-		cplc_init_sripts_with_reinit();
-	}
-}
-
-//----- (00423320) --------------------------------------------------------
-bool on_level_finished()
-{
-	Bitmap **v0; // esi@1
-	void *v1; // eax@12
-
-	v0 = _47A010_mapd_item_being_drawn;
-	do
-	{
-		if (*v0)
-		{
-			bitmap_list_remove(*v0);
-			*v0 = 0;
-		}
-		++v0;
-	} while ((int)v0 < (int) & _47A01C_sound_id);
-	nullsub_1();
-	stru37_stru38_list_free();
-	_44C5C0_level_cleanup();
-	stru31_list_free();
-	sidebar_deinit();
-	per_player_sprite_palettes_47DC88_free();
-	boxd_40EA30_cleanup();
-	sidebar_list_free();
-	if (game_state != GAME_STATE::GAME_2 || current_level_idx >= LEVEL_SURV_16 && current_level_idx <= LEVEL_MUTE_25)
-	{
-		LVL_Deinit();
-		sound_free_sounds();
-		free(current_level_lvl);
-		free(sprites_lvl);
-		sprites_lvl = 0;
-		prev_level_idx = -1;
-	}
-	else
-	{
-		prev_level_idx = current_level_idx;
-		cplc_4060F0();
-		LVL_Deinit();
-		sound_free_sounds();
-	}
-	if (!single_player_game && !*(_DWORD *)&netz_47A740[2].str_0[0])
-	{
-		v1 = (void *)j_netz_430690();
-		netz_42F650(v1);
-		netz_42F8E0(0);
-	}
-	if (game_state != GAME_STATE::Mission)
-	{
-		if (game_state != GAME_STATE::GAME_2)
-			return 0;
-		return 1;
-	}
-	if (is_game_loading())
-	{
-		prev_level_idx = -1;
-		current_level_idx = get_saveload_level_id();
-		set_player_side_by_level();
-		return 1;
-	}
-	if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
-	{
-		if (current_level_idx != LEVEL_MUTE_15 && current_level_idx != LEVEL_SURV_15)
-		{
-			current_level_idx = (LEVEL_ID)((int)current_level_idx + 1);
-			set_player_side_by_level();
-			return 1;
-		}
-		_47A18C_probably_play_outro_movie = 1;
-	}
-	return 0;
-}
-
-//----- (00423A70) --------------------------------------------------------
-void script_custom_mission_briefing_loop(Script *a1)
-{
-	int v2; // edi@4
-	KeyboardInput keys_state; // [sp+10h] [bp-118h]@5
-	//char name[260]; // [sp+24h] [bp-104h]@4
-
-	if (current_level_idx > LEVEL_SURV_25)
-	{
-		_47A1AC_is_custom_surv_mission = 0;
-		_47A1A8_custom_mission_idx = current_level_idx - LEVEL_MUTE_16;
-	}
-	else
-	{
-		_47A1AC_is_custom_surv_mission = 1;
-		_47A1A8_custom_mission_idx = current_level_idx - LEVEL_SURV_16;
-	}
-	a1->script_type = SCRIPT_TYPE_17;
-
-	srand(GetTickCount());
-	_47C380_mapd.mapd_cplc_render_y = 122880 * (rand() % 6);
-
-	script_4084A0_animation(a1);
-	_47C65C_render_string = render_string_create(0, currently_running_lvl_mobd[80].items, 84, 84, 39, 19, 90, 14, 16);
-	render_string_445AE0(_47C65C_render_string);
-	_47C65C_render_string->field_18 = 0;
-	_47C65C_render_string->num_lines = 0;
-	_47A1B0_custom_mission_briefing_ui = 0;
-	_47A1A4_custom_mission_briefing_line = 0;
-	dword_47A1A0 = 480;
-	_423C60_custom_mission_make_briefing_lines(0);
-	dword_47A19C = 0;
-	v2 = 0;
-	_47A198_custom_mission_briefing_sound_id = sound_play_threaded(custom_missions[_47A1A8_custom_mission_idx + 10 * _47A1AC_is_custom_surv_mission].wav_filename, 0, 16, 16, 0);
-	while (1)
-	{
-		do
-		{
-            script_sleep(a1, 1);
-			input_get_keyboard_state(&keys_state);
-			if (keys_state.just_pressed_keys_mask & INPUT_KEYBOARD_ESCAPE_MASK)
-			{
-				sound_stop(_47A198_custom_mission_briefing_sound_id);
-				_47A198_custom_mission_briefing_sound_id = 0;
-				render_string_list_remove(_47C65C_render_string);
-				_47C65C_render_string = 0;
-				a1->sprite->script = 0;
-				goto LABEL_12;
-			}
-			++v2;
-		} while (v2 != 2);
-		v2 = 0;
-		++_47A1B0_custom_mission_briefing_ui;
-		if (dword_47A19C)
-		{
-			if (!--dword_47A19C)
-				break;
-		}
-		_423C60_custom_mission_make_briefing_lines(1);
-	}
-	sound_stop(_47A198_custom_mission_briefing_sound_id);
-	_47A198_custom_mission_briefing_sound_id = 0;
-	render_string_list_remove(_47C65C_render_string);
-	_47C65C_render_string = 0;
-	a1->sprite->script = 0;
-LABEL_12:
-	sprite_list_remove(a1->sprite);
-	script_408500_anim(a1);
-	game_state = GAME_STATE::GAME_3;
-}
-
-//----- (00423C60) --------------------------------------------------------
-void _423C60_custom_mission_make_briefing_lines(int a1)
-{
-	int v1; // edx@1
-	int v2; // ebx@4
-	int v3; // eax@4
-	char *briefing; // edi@4
-	int line_type; // ebp@9
-	int v6; // esi@17
-	int y; // esi@19
-	int v8; // ebp@20
-	int v9; // eax@22
-	bool v10; // sf@24
-	unsigned __int8 v11; // of@24
-	int v12; // [sp+10h] [bp-8h]@1
-	int v13; // [sp+14h] [bp-4h]@1
-
-	v1 = 0;
-	v13 = a1;
-	v12 = 0;
-	do
-	{
-		if (!v13 || render_string_4059C0(_47C65C_render_string, v1, 0))
-		{
-			v2 = 0;
-			v3 = _47A1A4_custom_mission_briefing_line;
-			briefing = (char *)custom_missions[_47A1A8_custom_mission_idx + 10 * _47A1AC_is_custom_surv_mission].briefing[_47A1A4_custom_mission_briefing_line];
-			if (briefing)
-			{
-				v3 = _47A1A4_custom_mission_briefing_line++ + 1;
-			}
-			else
-			{
-				if (!dword_47A19C)
-					dword_47A19C = 490;
-				briefing = asc_464C60;
-			}
-			line_type = 0;
-			if (*briefing == '%')
-			{
-				v2 = 1;
-				++briefing;
-				line_type = 1;
-			}
-			if (*briefing == '~')
-			{
-				v2 = 1;
-				++briefing;
-				line_type = 2;
-			}
-			if (v2 && v3 && line_type != 1 && line_type == 2)
-			{
-				v6 = dword_47A1A0 + 30;
-				dword_47A1A0 += 30;
-			}
-			else
-			{
-				v6 = dword_47A1A0;
-			}
-			y = v6 - _47A1B0_custom_mission_briefing_ui;
-			render_string_405A20(_47C65C_render_string, v12, y);
-			_47C65C_render_string->num_lines = v12;
-			_47C65C_render_string->field_18 = 0;
-			render_string_405A60(_47C65C_render_string, asc_464C60, 0, y);
-			_47C65C_render_string->field_18 = 0;
-			render_string_405A60(_47C65C_render_string, briefing, 0, y);
-			render_string_405A60(_47C65C_render_string, asc_464C88, 0, y);
-			if (v2)
-			{
-				v8 = line_type - 1;
-				if (!v8)
-				{
-					v9 = dword_47A1A0 + 30;
-					goto LABEL_23;
-				}
-				if (v8 != 1)
-					goto LABEL_24;
-			}
-			v9 = dword_47A1A0 + 20;
-		LABEL_23:
-			dword_47A1A0 = v9;
-		}
-	LABEL_24:
-		v1 = v12 + 1;
-		v11 = __OFSUB__(v12 + 1, 17);
-		v10 = v12++ - 16 < 0;
-	} while (v10 ^ v11);
-}
-// 47A19C: using guessed type int dword_47A19C;
-// 47A1A0: using guessed type int dword_47A1A0;
-// 47A1A4: using guessed type int _47A1A4_custom_mission_briefing_line;
-// 47A1A8: using guessed type int _47A1A8_custom_mission_idx;
-// 47A1AC: using guessed type int _47A1AC_is_custom_surv_mission;
-// 47A1B0: using guessed type int _47A1B0_custom_mission_briefing_ui;
-
-//----- (00423DD0) --------------------------------------------------------
-void cplc_init_sripts_with_reinit()
-{
-	int v0; // esi@1
-
-	v0 = 0;
-	do
-	{
-		if (v0 != 84)                             //  46EE08  Script4  MOBD_20
-			cplc_init_script_do_reinit(v0);
-		++v0;
-	} while (v0 < 196);
-}
-
-//----- (00423DF0) --------------------------------------------------------
-void cplc_init_scripts()
-{
-	int v0; // esi@1
-
-	v0 = 0;
-	do
-	{
-		if (v0 != 84)                             // 46EE08  Script4  MOBD_20
-		{
-			if (v0 == 6                              // 46E6B8  Script4  MOBD_6_some_letters_and_symbols
-				|| v0 == 75                             // 46ED30  Script4  MOBD_20                     task_431E60_mobd_20_input
-				|| v0 == 77                             // 46ED60  Script4  MOBD_INGAME_MENU_CONTROLS   task_433060_ingame_menu
-				|| v0 == 78                             // 46ED78  Script4  MOBD_SIDEBAR_BUTTONS        task_446ED0_sidebar_buttons
-				|| v0 == 9                              // 46E700  Script4  MOBD_MISSION_OUTCOME_MODAL
-				|| v0 == 79                             // 46ED90  Script4  MOBD_MISSION_OUTCOME_MODAL  task_424CE0_mission_outcome_modal
-				|| v0 == 80                             // 46EDA8  Script4  MOBD_CURSORS                task_428940_cursors_handler
-				|| v0 == 85                             // 46EE20  Script2  MOBD_46                     task_442BB0_mobd_46
-				|| v0 == 122                            // 46F3E0  Script1  MOBD_20                     task_4269B0_mobd_20_handler
-				|| v0 == 81                             // 46EDC0  Script4  MOBD_FONT_27                task_42D030_mobd_font_27_handler
-				|| v0 == 73)                           // 46ED00  Script4  MOBD_FONT_ITALIC
-			{
-				if (v0 != 84)
-					cplc_init_script_do_reinit(v0);
-			}
-			else
-			{
-				cplc_init_script_dont_reinit(v0);
-			}
-		}
-		++v0;
-	} while (v0 < 196);
-}
-
-//----- (00423E50) --------------------------------------------------------
-void set_player_side_by_level()
-{
-	int surv_main_campaign; // ecx@3
-	int surv_xtreme_campaign; // eax@7
-	int v2; // ecx@13
-	int v3; // eax@17
-
-	surv_main_campaign = current_level_idx >= LEVEL_SURV_01_THE_NEXT_GENERATION && current_level_idx <= LEVEL_SURV_15;
-	surv_xtreme_campaign = current_level_idx >= LEVEL_SURV_16 && current_level_idx <= LEVEL_SURV_25;
-	if (surv_main_campaign | surv_xtreme_campaign)
-	{
-		player_side = SURVIVORS;
-		current_surv_level = current_level_idx;
-	}
-	else
-	{
-		v2 = current_level_idx >= LEVEL_MUTE_01 && current_level_idx <= LEVEL_MUTE_15;
-		v3 = current_level_idx >= LEVEL_MUTE_16 && current_level_idx <= LEVEL_MUTE_25;
-		if (v2 | v3)
-		{
-			player_side = EVOLVED;
-			current_mute_level = current_level_idx - 15;
-		}
-	}
-}
-// 47A2DC: using guessed type __int16 current_mute_level;
-// 47A2E0: using guessed type __int16 current_surv_level;
-
-//----- (00423ED0) --------------------------------------------------------
-char GAME_ParseCommandLine()
-{
-	char *v0; // eax@1
-	char *v1; // edi@1
-	char *v2; // edx@1
-	char i; // cl@1
-	char v4; // cl@7
-	char j; // cl@12
-	char *v6; // edx@13
-	char v7; // cl@19
-	char v8; // cl@28
-	char **v9; // esi@36
-	char *v10; // ecx@36
-	bool v11; // cf@37
-	int v12; // ecx@41
-	char **v13; // esi@45
-	char *v14; // ecx@45
-	bool v15; // cf@46
-	int v16; // ecx@50
-
-	dword_47A2BC = 0;
-	v0 = GetCommandLineA();
-	v1 = v0;
-	v2 = global_console_argv;
-	global_cmd_line = v0;
-	for (i = *v0; *v1; i = *v1)
-	{
-		if (i == ' ')
-			break;
-		if (i == '\r')
-			break;
-		if (i == '\n')
-			break;
-		if (i == '\t')
-			break;
-		*v2++ = i;
-		global_cmd_line = ++v1;
-	}
-	while (1)
-	{
-		v4 = *v1;
-		if (*v1 != ' ' && v4 != '\r' && v4 != '\n' && v4 != '\t')
-			break;
-		global_cmd_line = ++v1;
-	}
-	*v2 = 0;
-	for (j = *v1; *v1; j = *v1)
-	{
-		v6 = global_console_argv;
-		if (j)
-		{
-			do
-			{
-				if (j == ' ')
-					break;
-				if (j == '\r')
-					break;
-				if (j == '\n')
-					break;
-				if (j == '\t')
-					break;
-				*v6++ = j;
-				global_cmd_line = ++v1;
-				j = *v1;
-			} while (*v1);
-		}
-		while (1)
-		{
-			v7 = *v1;
-			if (*v1 != ' ' && v7 != '\r' && v7 != '\n' && v7 != '\t')
-				break;
-			global_cmd_line = ++v1;
-		}
-		*v6 = 0;
-		if (!strcmp(global_console_argv, (const char *)console_switch_stats))
-		{
-			if (*v1)
-			{
-				printf((const char *)errmsg_no_stats_file_specified);
-				exit(1);
-			}
-			while (1)
-			{
-				v8 = *v1;
-				if (*v1 != ' ' && v8 != '\r' && v8 != '\n' && v8 != '\t')
-					break;
-				global_cmd_line = ++v1;
-			}
-			global_console_argv[0] = 0;
-			v0 = (char *)_424560_parse_unit_stats_table(global_console_argv);
-			if (!v0)
-				exit(1);
-			v1 = global_cmd_line;
-			units_stats_parsed_from_argv = 1;
-		}
-		else
-		{
-			v9 = (char **)console_switch_noblack;
-			v10 = global_console_argv;
-			while (1)
-			{
-				LOBYTE_HEXRAYS(v0) = *v10;
-				v11 = (unsigned __int8)*v10 < *(_BYTE *)v9;
-				if (*v10 != *(_BYTE *)v9)
-					break;
-				if (!*v10)
-					goto LABEL_41;
-				LOBYTE_HEXRAYS(v0) = v10[1];
-				v11 = (unsigned __int8)v0 < *((_BYTE *)v9 + 1);
-				if ((_BYTE)v0 != *((_BYTE *)v9 + 1))
-					break;
-				v10 += 2;
-				v9 = (char **)((char *)v9 + 2);
-				if (!(_BYTE)v0)
-				{
-				LABEL_41:
-					v12 = 0;
-					goto LABEL_43;
-				}
-			}
-			v12 = -v11 - (v11 - 1);
-		LABEL_43:
-			if (v12)
-			{
-				v13 = (char **)console_switch_nocd;
-				v14 = global_console_argv;
-				while (1)
-				{
-					LOBYTE_HEXRAYS(v0) = *v14;
-					v15 = (unsigned __int8)*v14 < *(_BYTE *)v13;
-					if (*v14 != *(_BYTE *)v13)
-						break;
-					if (!*v14)
-						goto LABEL_50;
-					LOBYTE_HEXRAYS(v0) = v14[1];
-					v15 = (unsigned __int8)v0 < *((_BYTE *)v13 + 1);
-					if ((_BYTE)v0 != *((_BYTE *)v13 + 1))
-						break;
-					v14 += 2;
-					v13 = (char **)((char *)v13 + 2);
-					if (!(_BYTE)v0)
-					{
-					LABEL_50:
-						v16 = 0;
-						goto LABEL_52;
-					}
-				}
-				v16 = -v15 - (v15 - 1);
-			LABEL_52:
-				if (!v16)
-					nocd = 1;
-			}
-			else
-			{
-				_47A2EC_noblack = 1;
-			}
-		}
-	}
-	return (unsigned int)v0;
-}
-
-//----- (004240E0) --------------------------------------------------------
-void _4240E0_kknd_sve_read(const char *filename)
-{
-	FILE *v1; // edi@1
-	int v2; // ecx@2
-	int *v3; // esi@3
-	int v4; // ecx@11
-	int *v5; // esi@12
-	int v6; // [sp+8h] [bp-10Ch]@2
-	int v7; // [sp+Ch] [bp-108h]@4
-	char FileName[260]; // [sp+10h] [bp-104h]@1
-
-	wsprintfA(FileName, (LPCSTR)aSS, game_data_installation_dir, filename);
-	SetFileAttributesA(FileName, 0x80u);
-	v1 = fopen(FileName, aR);
-	if (v1)
-	{
-		fscanf(v1, "%03d", &v6);
-		v2 = 47 - v6;
-		v6 = 47 - v6;
-		if (v6)
-		{
-			v3 = kknd_sve_array_463070;
-			while (1)
-			{
-				fscanf(v1, "%03d", &v7);
-				v2 = v6;
-				v7 ^= *v3;
-				if (v7 != v6)
-					break;
-				++v3;
-				if ((int)v3 >= (int)kknd_sve_array_4630AC)
-					goto LABEL_8;
-			}
-			v2 = 0;
-			v6 = 0;
-		}
-	LABEL_8:
-		if (v2)
-			current_surv_level = 47 - v2;
-		else
-			current_surv_level = 0;
-		fscanf(v1, "%03d", &v6);
-		v4 = 69 - v6;
-		v6 = 69 - v6;
-		if (v6)
-		{
-			v5 = kknd_sve_array_4630AC;
-			while (1)
-			{
-				fscanf(v1, "%03d", &v7);
-				v4 = v6;
-				v7 ^= *v5;
-				if (v7 != v6)
-					break;
-				++v5;
-				if ((int)v5 >= (int)&dword_4630E8)
-					goto LABEL_17;
-			}
-			v4 = 0;
-			v6 = 0;
-		}
-	LABEL_17:
-		if (v4)
-		{
-			current_mute_level = 69 - v4;
-			fclose(v1);
-		}
-		else
-		{
-			current_mute_level = 0;
-			fclose(v1);
-		}
-	}
-	else
-	{
-		current_surv_level = 0;
-		current_mute_level = 0;
-	}
-}
-
-//----- (00424270) --------------------------------------------------------
-void _424270_kknd_sve_read(const char *a1, _WORD *a2, _WORD *a3)
-{
-	_WORD *v3; // ebx@1
-	FILE *v4; // edi@1
-	int v5; // ecx@2
-	int *v6; // esi@3
-	int v7; // ecx@11
-	int *v8; // esi@12
-	int v9; // [sp+8h] [bp-8h]@2
-	int v10; // [sp+Ch] [bp-4h]@4
-
-	v3 = a2;
-	v4 = fopen(a1, aR);
-	if (v4)
-	{
-		fscanf(v4, "%03d", &v9);
-		v5 = 47 - v9;
-		v9 = 47 - v9;
-		if (v9)
-		{
-			v6 = kknd_sve_array_463070;
-			while (1)
-			{
-				fscanf(v4, "%03d", &v10);
-				v5 = v9;
-				v10 ^= *v6;
-				if (v10 != v9)
-					break;
-				++v6;
-				if ((int)v6 >= (int)kknd_sve_array_4630AC)
-					goto LABEL_8;
-			}
-			v5 = 0;
-			v9 = 0;
-		}
-	LABEL_8:
-		if (v5)
-			*v3 = 47 - v5;
-		else
-			*v3 = 0;
-		fscanf(v4, "%03d", &v9);
-		v7 = 69 - v9;
-		v9 = 69 - v9;
-		if (v9)
-		{
-			v8 = kknd_sve_array_4630AC;
-			while (1)
-			{
-				fscanf(v4, "%03d", &v10);
-				v7 = v9;
-				v10 ^= *v8;
-				if (v10 != v9)
-					break;
-				++v8;
-				if ((int)v8 >= (int)&dword_4630E8)
-					goto LABEL_17;
-			}
-			v7 = 0;
-			v9 = 0;
-		}
-	LABEL_17:
-		if (v7)
-		{
-			*a3 = 69 - v7;
-			fclose(v4);
-		}
-		else
-		{
-			*a3 = 0;
-			fclose(v4);
-		}
-	}
-	else
-	{
-		*v3 = 0;
-		*a3 = 0;
-	}
-}
-// 4630E8: using guessed type int dword_4630E8;
-
-//----- (004243C0) --------------------------------------------------------
-void _4243C0_kknd_sve_update_last_level(const char *a1)
-{
-	FILE *v1; // edi@1
-	int v2; // ebx@3
-	int *v3; // esi@5
-	int v4; // ebx@8
-	int *v5; // esi@10
-	int v6; // [sp+8h] [bp-108h]@1
-	int a2; // [sp+Ch] [bp-104h]@1
-	char filename[256]; // [sp+10h] [bp-100h]@1
-
-	a2 = 0;
-	v6 = 0;
-	wsprintfA(filename, (LPCSTR)aSS, game_data_installation_dir, a1);
-	SetFileAttributesA(filename, 0x80u);
-
-    short _a2, _v6;
-	_424270_kknd_sve_read(filename, &_a2, &_v6);
-    a2 = _a2;
-    v6 = _v6;
-
-	v1 = fopen(filename, (const char *)aW);
-	if (v1)
-	{
-		if ((unsigned __int16)current_surv_level <= (int)(unsigned __int16)a2)
-		{
-			v2 = 47 - (unsigned __int16)a2;
-			fprintf(v1, "%03d", (unsigned __int16)a2);
-			current_surv_level = a2;
-		}
-		else
-		{
-			v2 = 47 - (unsigned __int16)current_surv_level;
-			fprintf(v1, "%03d", (unsigned __int16)current_surv_level);
-		}
-		v3 = kknd_sve_array_463070;
-		do
-		{
-			fprintf(v1, "%03d", *v3 ^ v2);
-			++v3;
-		} while ((int)v3 < (int)kknd_sve_array_4630AC);
-		if ((unsigned __int16)current_mute_level <= (int)(unsigned __int16)v6)
-		{
-			v4 = 69 - (unsigned __int16)v6;
-			fprintf(v1, "%03d", (unsigned __int16)v6);
-			current_mute_level = v6;
-		}
-		else
-		{
-			v4 = 69 - (unsigned __int16)current_mute_level;
-			fprintf(v1, "%03d", (unsigned __int16)current_mute_level);
-		}
-		v5 = kknd_sve_array_4630AC;
-		do
-		{
-			fprintf(v1, "%03d", *v5 ^ v4);
-			++v5;
-		} while ((int)v5 < (int)&dword_4630E8);
-		fclose(v1);
-	}
-}
-
-//----- (00424560) --------------------------------------------------------
-bool _424560_parse_unit_stats_table(const char *filename)
-{
-	const char *v1; // esi@1
-	FILE *v2; // eax@1
-	FILE *v3; // ebx@1
-	char *v4; // esi@3
-	UnitNameId *v5; // ebp@3
-	const char *v6; // eax@6
-	UnitStat *unit_stat; // edi@10
-	char *v8; // eax@10
-	int v9; // eax@12
-	char *v10; // eax@16
-	int v11; // esi@18
-	unsigned int v12; // edx@20
-	char *v13; // eax@22
-	int v14; // eax@24
-	char *v15; // eax@28
-	int v16; // eax@30
-	char *v17; // eax@37
-	int v18; // eax@39
-	UnitAttachmentPoint *v19; // ecx@42
-	char *v20; // eax@45
-	int v21; // eax@47
-	UnitAttachmentPoint *v22; // ecx@50
-	char *v23; // eax@54
-	int v24; // eax@56
-	UnitAttachmentPoint *v25; // ecx@59
-	char *v26; // eax@62
-	int v27; // eax@64
-	char *v28; // eax@68
-	int v29; // eax@70
-	char *v30; // eax@74
-	int v31; // eax@76
-	char *v32; // eax@80
-	int v33; // eax@82
-	UnitAttachmentPoint *v34; // ecx@85
-	UnitDamageSource *v35; // ecx@86
-	char *v36; // eax@89
-	int v37; // eax@91
-	UnitAttachmentPoint *v38; // ecx@94
-	UnitDamageSource *v39; // ecx@95
-	char *v40; // eax@98
-	int v41; // eax@100
-	UnitAttachmentPoint *v42; // ecx@103
-	UnitDamageSource *v43; // ecx@104
-	BOOL result; // eax@110
-	char line[1024]; // [sp+8h] [bp-400h]@2
-
-	v1 = filename;
-	v2 = fopen(filename, "rb");
-	v3 = v2;
-	if (v2)
-	{
-		if (fgets(line, 1024, v2))
-		{
-			do
-			{
-				v4 = strtok(line, asc_space);
-				v5 = unit_name_id_lut;
-				if (line[0] != '\n' && line[0] != '\r' && line[0] != ';')
-				{
-					v6 = unit_name_id_lut[0].unit_name;
-					if (unit_name_id_lut[0].unit_name)
-					{
-						while (strcmp(v6, v4))
-						{
-							v6 = v5[1].unit_name;
-							++v5;
-							if (!v6)
-								goto LABEL_107;
-						}
-						unit_stat = &unit_stats[v5->id];
-						v8 = strtok(0, _4681EC_whitespace);
-						v4 = v8;
-						if (v8)
-						{
-							if (*v8 != '-')
-							{
-								v9 = atoi(v8);
-								if (v9 >= 1 && v9 <= 60000)
-									unit_stat->cost = v9;
-								else
-									printf(errmsg_unit_out_of_range, v5->unit_name, cost, 1, 60000);
-							}
-							v10 = strtok(0, _4681EC_whitespace);
-							v4 = v10;
-							if (v10)
-							{
-								if (*v10 != '-')
-								{
-									v11 = atoi(v10);
-									if (v11 >= 1 && v11 <= (unit_stat->cost << 8) / 60)
-									{
-										unit_stat->production_time = v11;
-									}
-									else
-									{
-										v12 = (int)((unit_stat->cost << 8)
-											+ ((unsigned __int64)(0xFFFFFFFF88888889i64 * (unit_stat->cost << 8)) >> 32)) >> 5;
-										printf(errmsg_unit_out_of_range, v5->unit_name, aProductionTime, 1, (v12 >> 31) + v12);
-									}
-								}
-								v13 = strtok(0, _4681EC_whitespace);
-								v4 = v13;
-								if (v13)
-								{
-									if (*v13 != '-')
-									{
-										v14 = atoi(v13);
-										if (v14 >= 1 && v14 <= 0x7FFFFFFF)
-											unit_stat->hitpoints = v14;
-										else
-											printf(errmsg_unit_out_of_range, v5->unit_name, aHitpoints, 1, 0x7FFFFFFF);
-									}
-									v15 = strtok(0, _4681EC_whitespace);
-									v4 = v15;
-									if (v15)
-									{
-										if (*v15 != '-')
-										{
-											v16 = atoi(v15);
-											if (!v16 || unit_stat->speed)
-											{
-												if (v16 >= 1 && v16 <= 500)
-													unit_stat->speed = v16;
-												else
-													printf(errmsg_unit_out_of_range, v5->unit_name, aSpeed, 1, 500);
-											}
-											else
-											{
-												printf(aWarningUnitSIs, v5->unit_name);
-											}
-										}
-										v17 = strtok(0, _4681EC_whitespace);
-										v4 = v17;
-										if (v17)
-										{
-											if (*v17 != '-')
-											{
-												v18 = atoi(v17);
-												if (v18 >= 0 && v18 <= 10000)
-												{
-													v19 = unit_stat->attach;
-													if (v19 && v19->dmg_source)
-														v19->reload_time = v18;
-												}
-												else
-												{
-													printf(errmsg_unit_out_of_range, v5->unit_name, aReloadTime, 0, 10000);
-												}
-											}
-											v20 = strtok(0, _4681EC_whitespace);
-											v4 = v20;
-											if (v20)
-											{
-												if (*v20 != 45)
-												{
-													v21 = atoi(v20);
-													if (v21 >= 5 && v21 <= 10000)
-													{
-														v22 = unit_stat->attach;
-														if (v22 && v22->dmg_source)
-															v22->reload2_time = v21;
-														else
-															unit_stat->reload_time = v21;
-													}
-													else
-													{
-														printf(errmsg_unit_out_of_range, v5->unit_name, aReload2Time, 5, 10000);
-													}
-												}
-												v23 = strtok(0, _4681EC_whitespace);
-												v4 = v23;
-												if (v23)
-												{
-													if (*v23 != 45)
-													{
-														v24 = atoi(v23);
-														if (v24 >= 1 && v24 <= 10000)
-														{
-															v25 = unit_stat->attach;
-															if (v25 && v25->dmg_source)
-																v25->volley_size = v24;
-														}
-														else
-														{
-															printf(errmsg_unit_out_of_range, v5->unit_name, aVolleySize, 1, 10000);
-														}
-													}
-													v26 = strtok(0, _4681EC_whitespace);
-													v4 = v26;
-													if (v26)
-													{
-														if (*v26 != 45)
-														{
-															v27 = atoi(v26);
-															if (v27 >= 1 && v27 <= 64)
-																unit_stat->turning_speed = v27;
-															else
-																printf(errmsg_unit_out_of_range, v5->unit_name, aTurningSpeed, 1, 64);
-														}
-														v28 = strtok(0, _4681EC_whitespace);
-														v4 = v28;
-														if (v28)
-														{
-															if (*v28 != '-')
-															{
-																v29 = atoi(v28);
-																if (v29 >= 32 && v29 <= 320)
-																	unit_stat->firing_range = v29;
-																else
-																	printf(errmsg_unit_out_of_range, v5->unit_name, aFiringVisualRa, 32, 320);
-															}
-															v30 = strtok(0, _4681EC_whitespace);
-															v4 = v30;
-															if (v30)
-															{
-																if (*v30 != '-')
-																{
-																	v31 = atoi(v30);
-																	if (v31 >= 50 && v31 <= 100)
-																		unit_stat->accuracy = v31;
-																	else
-																		printf(errmsg_unit_out_of_range, v5->unit_name, aAccuracy, 50, 100);
-																}
-																v32 = strtok(0, _4681EC_whitespace);
-																v4 = v32;
-																if (v32)
-																{
-																	if (*v32 != 45)
-																	{
-																		v33 = atoi(v32);
-																		if (v33 >= 1 && v33 <= 60000)
-																		{
-																			v34 = unit_stat->attach;
-																			if (v34 && (v35 = v34->dmg_source) != 0 || (v35 = unit_stat->dmg_source) != 0)
-																				v35->damage_infantry = v33;
-																		}
-																		else
-																		{
-																			printf(errmsg_unit_out_of_range, v5->unit_name, aDamageToInfant, 1, 60000);
-																		}
-																	}
-																	v36 = strtok(0, _4681EC_whitespace);
-																	v4 = v36;
-																	if (v36)
-																	{
-																		if (*v36 != '-')
-																		{
-																			v37 = atoi(v36);
-																			if (v37 >= 1 && v37 <= 60000)
-																			{
-																				v38 = unit_stat->attach;
-																				if (v38 && (v39 = v38->dmg_source) != 0 || (v39 = unit_stat->dmg_source) != 0)
-																					v39->damage_vehicle = v37;
-																			}
-																			else
-																			{
-																				printf(errmsg_unit_out_of_range, v5->unit_name, aDamageToVehicl, 1, 60000);
-																			}
-																		}
-																		v40 = strtok(0, _4681EC_whitespace);
-																		v4 = v40;
-																		if (v40 && *v40 != '-')
-																		{
-																			v41 = atoi(v40);
-																			if (v41 >= 1 && v41 <= 60000)
-																			{
-																				v42 = unit_stat->attach;
-																				if (v42 && (v43 = v42->dmg_source) != 0 || (v43 = unit_stat->dmg_source) != 0)
-																					v43->damage_building = v41;
-																			}
-																			else
-																			{
-																				printf(errmsg_unit_out_of_range, v5->unit_name, aDamageToBuildi, 1, 60000);
-																			}
-																		}
-																	}
-																}
-															}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				LABEL_107:
-					if (!v5->unit_name)
-						printf((const char *)errmsg_unrecognized_name, v4);
-				}
-			} while (fgets(line, 1024, v3));
-		}
-		fclose(v3);
-		result = 1;
-	}
-	else
-	{
-		printf((const char *)errmsg_could_not_open_file, v1);
-		result = 0;
-	}
-	return result;
-}
 
 //----- (004267F0) --------------------------------------------------------
 bool handler_4267F0(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE side)
 {
-	enum UNIT_ID v4; // esi@1
 	int v5; // edi@1
 	Sprite *result; // eax@1
 	int v7; // ecx@2
 
-	v4 = unit_id;
-	v5 = x;
 	result = sprite_create_scripted(
 		unit_stats[unit_id].mobd_idx,
 		0,
@@ -16809,18 +7437,18 @@ bool handler_4267F0(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE side)
 		SCRIPT_FUNCTION,
 		0
     );
+
 	if (result)
 	{
-		v7 = v4 | (side << 16);
-		result->x = v5;
-		BYTE1(v7) |= 0x80u;
+		v7 = unit_id | ((int)side << 16) | 0x8000;
+		result->x = x;
+        result->y = y;
 		result->field_88_unused = 1;
-		result->y = y;
 		result->cplc_ptr1 = 0;
 		result->param = (void *)v7;
-		result = (Sprite *)1;
+        return true;
 	}
-	return (BOOL)result;
+    return false;
 }
 
 //----- (00426860) --------------------------------------------------------
@@ -16850,8 +7478,6 @@ void _426860_4269B0_task_attachment_handler(_4269B0_task_attachment *a1)
 		_4268B0_4269B0_task_attachment_handler(a1);
 	}
 }
-// 47A2F8: using guessed type int _4269B0_task_attachment__num_units_created_manually;
-// 47A370: using guessed type int _4269B0_task_attachment__num_units_spawned;
 
 //----- (004268B0) --------------------------------------------------------
 void _4268B0_4269B0_task_attachment_handler(_4269B0_task_attachment *a1)
@@ -17072,44 +7698,35 @@ void drawjob_update_handler_426C40_mobd(Sprite *a1, DrawJob *a2)
 }
 
 //----- (00426CB0) --------------------------------------------------------
-bool sprite_list_alloc()
+bool sprite_list_alloc(const int num_sprites)
 {
-	Sprite *result; // eax@2
-	int v1; // edx@4
-
 	currently_running_lvl_mobd = (DataMobd *)LVL_FindSection((const char *)MOBD);
 	if (currently_running_lvl_mobd)
 	{
 		currently_running_lvl_mobd_valid = 1;
-		result = (Sprite *)malloc(0x48440u);
-		sprite_list = result;
-		if (result)
+		if (sprite_list = new Sprite[num_sprites])
 		{
-			sprite_list_free_pool = result;
-			result->prev = (Sprite *)&sprite_list_free_pool;
-			v1 = 1999;
-			do
+			sprite_list_free_pool = sprite_list;
+            sprite_list_free_pool->prev = (Sprite *)&sprite_list_free_pool;
+			for (int i = 0; i < num_sprites - 1; ++i)
 			{
-				--v1;
-				result->next = result + 1;
-				++result;
-			} while (v1);
-			result->next = (Sprite *)&sprite_list_free_pool;
+                sprite_list[i].next = &sprite_list[i + 1];
+			}
+            sprite_list[num_sprites - 1].next = (Sprite *)&sprite_list_free_pool;
 			sprite_list_47A4A4 = (Sprite *)&sprite_list_47A4A0;
 			sprite_list_47A4A0 = (Sprite *)&sprite_list_47A4A0;
 			sprite_init_47A400();
 			j_drawjob_update_handler_426C40_default_sprite_handler = drawjob_update_handler_426C40_mobd;
-			result = (Sprite *)1;
+			return true;
 		}
+        return false;
 	}
 	else
 	{
 		currently_running_lvl_mobd_valid = 0;
-		result = (Sprite *)1;
+		return true;
 	}
-	return (BOOL)result;
 }
-// 47A498: using guessed type int currently_running_lvl_mobd_valid;
 
 //----- (00426D40) --------------------------------------------------------
 void sprite_init_47A400()
@@ -17333,7 +7950,7 @@ void sprite_list_update_positions()
 		bodx_404D50_sprite_list((Sprite *)&sprite_list_47A4A0);
 		for (i = sprite_list_47A4A0; (Sprite **)i != &sprite_list_47A4A0; i = i->next)
 		{
-			if (is_coroutine_list_initialization_failed && (v1 = i->script) != 0)
+			if (is_async_execution_supported && (v1 = i->script) != 0)
 				v2 = v1->field_1C & 1;
 			else
 				v2 = 1;
@@ -17730,7 +8347,7 @@ void sprite_list_init_mobd_items()
 	{
 		for (i = sprite_list_47A4A0; (Sprite **)i != &sprite_list_47A4A0; i = i->next)
 		{
-			if (is_coroutine_list_initialization_failed && (v1 = i->script) != 0)
+			if (is_async_execution_supported && (v1 = i->script) != 0)
 				v2 = v1->field_1C & 1;
 			else
 				v2 = 1;
@@ -17740,7 +8357,7 @@ void sprite_list_init_mobd_items()
 	}
 }
 // 47A498: using guessed type int currently_running_lvl_mobd_valid;
-// 47C764: using guessed type __int16 is_coroutine_list_initialization_failed;
+// 47C764: using guessed type __int16 is_async_execution_supported;
 
 //----- (004275D0) --------------------------------------------------------
 void sprite_list_free()
@@ -17778,115 +8395,54 @@ void UNIT_Handler_MobileOutpost(Script *a1)
 			v1->_134_param__unitstats_after_mobile_outpost_plant = v2 - 1;
 	}
 }
-// 47C6DC: using guessed type int _47C6DC_dont_execute_unit_handlers;
 
 //----- (00427650) --------------------------------------------------------
 void entity_mobile_outpost_init(Entity *a1)
 {
-	Entity *v1; // esi@1
-	UnitStat *v2; // eax@2
-	int v3; // eax@3
-	UnitStat *v4; // eax@5
-	int v5; // eax@6
-	UnitStat *v6; // eax@8
-	int v7; // edi@9
-	UnitStat *v8; // eax@11
-	int v9; // eax@12
-	int v10; // eax@14
-	Sprite *v11; // ecx@15
-	int v12; // edx@15
-	Script *v13; // edx@15
-	UnitStat *v14; // eax@18
-	int v15; // eax@19
-	int v16; // ecx@21
-	UnitStat *v17; // eax@21
-	int v18; // eax@22
-	int v19; // ecx@24
-	int v20; // eax@24
-	Script *v21; // edx@24
-
-	v1 = a1;
 	if (a1->sprite->cplc_ptr1)
 	{
-		v2 = a1->stats;
-		if (v2->is_infantry)
-			v3 = entity_40F0A0_get_dx(a1, a1->_A4_idx_in_tile);
-		else
-			v3 = v2->field_4C != 128 ? 7424 : 4096;
-		v1->sprite->x = v3 + (v1->sprite->x & 0xFFFFE000);
-		v4 = v1->stats;
-		if (v4->is_infantry)
-			v5 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
-		else
-			v5 = v4->field_4C != 128 ? 7424 : 4096;
-		v1->sprite->y = v5 + (v1->sprite->y & 0xFFFFE000);
-		v6 = v1->stats;
-		v1->_A4_idx_in_tile = 0;
-		if (v6->is_infantry)
-			v7 = entity_40F100_get_dy(v1, 0);
-		else
-			v7 = v6->field_4C != 128 ? 7424 : 4096;
-		v8 = v1->stats;
-		if (v8->is_infantry)
-			v9 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
-		else
-			v9 = v8->field_4C != 128 ? 7424 : 4096;
-		v10 = map_place_entity(v1, v9 + (v1->sprite->x & 0xFFFFE000), v7 + (v1->sprite->y & 0xFFFFE000), 0);
-		if (v10 != 5)
-		{
-			v11 = v1->sprite;
-			v1->sprite_x = v11->x;
-			v1->sprite_y = v11->y;
-			v1->sprite_x_2 = v1->sprite_x;
-			v12 = v1->sprite_y;
-			v1->_DC_order = ENTITY_ORDER_MOVE;
-			v1->sprite_y_2 = v12;
-			v1->_A4_idx_in_tile = v10;
-			v13 = v1->script;
-			v1->sprite_map_x = v11->x >> 13;
-			v1->sprite_map_y = v11->y >> 13;
-			v13->event_handler = MessageHandler_MobileOutpost;
-			entity_mode_adjust_unit_placement_inside_tile(v1);
-			return;
+		a1->sprite->x = map_adjust_entity_in_tile_x(a1, a1->sprite->x);
+		a1->sprite->y = map_adjust_entity_in_tile_y(a1, a1->sprite->y);
+
+		a1->_A4_idx_in_tile = 0;
+        a1->_A4_idx_in_tile = map_place_entity(
+            a1,
+            map_adjust_entity_in_tile_x(a1, a1->sprite->x),
+            map_adjust_entity_in_tile_y(a1, a1->sprite->y),
+            0
+        );
+
+		if (a1->_A4_idx_in_tile == ENTITY_TILE_POSITION_INVALID) {
+            entity_mode_419760_infantry_destroyed(a1);
+        } else {
+            a1->sprite_x_2 = a1->sprite_x = a1->sprite->x;
+            a1->sprite_y_2 = a1->sprite_y = a1->sprite->y;
+			a1->SetOrder(ENTITY_ORDER_MOVE);
+			a1->sprite_map_x = global2map(a1->sprite->x);
+			a1->sprite_map_y = global2map(a1->sprite->y);
+            a1->SetScriptEventHandler(MessageHandler_MobileOutpost);
+			entity_mode_adjust_unit_placement_inside_tile(a1);
 		}
-		goto LABEL_17;
-	}
-	if (!entity_413860_boxd(a1))
-	{
-	LABEL_17:
-		entity_mode_419760_infantry_destroyed(v1);
-		return;
-	}
-	v14 = v1->stats;
-	if (v14->is_infantry)
-		v15 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
-	else
-		v15 = v14->field_4C != 128 ? 7424 : 4096;
-	v16 = v15 + (v1->sprite_map_x << 13);
-	v17 = v1->stats;
-	v1->sprite_x = v16;
-	if (v17->is_infantry)
-		v18 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
-	else
-		v18 = v17->field_4C != 128 ? 7424 : 4096;
-	v19 = v1->sprite_x;
-	v20 = (v1->sprite_map_y << 13) + v18;
-	v21 = v1->script;
-	v1->sprite_y = v20;
-	v1->_DC_order = ENTITY_ORDER_MOVE;
-	v1->sprite_x_2 = v19;
-	v1->sprite_y_2 = v20;
-	v1->_134_param__unitstats_after_mobile_outpost_plant = 0;
-	v1->_98_465610_accuracy_dmg_bonus_idx = 0;
-	v21->event_handler = EventHandler_General_Scout;
-	v1->mode_return = entity_mode_4278C0_mobile_outpost;
-	entity_4172D0(v1);
+    } else {
+        if (!entity_413860_boxd(a1)) {
+            entity_mode_419760_infantry_destroyed(a1);
+        } else {
+            a1->sprite_x_2 = a1->sprite_x = map_adjust_entity_in_tile_x(a1, map2global(a1->sprite_map_x));
+            a1->sprite_y_2 = a1->sprite_y = map_adjust_entity_in_tile_y(a1, map2global(a1->sprite_map_y));
+            a1->SetOrder(ENTITY_ORDER_MOVE);
+            a1->_134_param__unitstats_after_mobile_outpost_plant = 0;
+            a1->veterancy_level = 0;
+            a1->SetScriptEventHandler(EventHandler_General_Scout);
+            a1->SetReturnMode(entity_mode_4278C0_mobile_outpost);
+            entity_4172D0(a1);
+        }
+    }
 }
 
 //----- (004278C0) --------------------------------------------------------
 void entity_mode_4278C0_mobile_outpost(Entity *a1)
 {
-	a1->script->event_handler = MessageHandler_MobileOutpost;
+	a1->SetScriptEventHandler(MessageHandler_MobileOutpost);
 	entity_mode_adjust_unit_placement_inside_tile(a1);
 }
 
@@ -17900,16 +8456,16 @@ void MessageHandler_MobileOutpost(Script *receiver, Script *sender, enum SCRIPT_
 	{
 		switch (event)
 		{
-		case EVT_MSG_1511_sidebar_click_category:
-			entity_410CB0_event1511(v4);
+		case EVT_MSG_SELECTED:
+			entity_selected_default(v4);
 			break;
-		case EVT_SHOW_UI_CONTROL:
-			entity_410CD0_eventTextString(v4);
+		case EVT_MSG_DESELECTED:
+			entity_deselected_default(v4);
 			break;
 		case EVT_MSG_SHOW_UNIT_HINT:
 			entity_show_hint(v4);
 			break;
-		case EVT_ENTITY_MOVE:
+		case EVT_CMD_ENTITY_MOVE:
 			entity_move(v4, (_47CAF0_task_attachment1_move_task *)param);
 			break;
 
@@ -17919,12 +8475,12 @@ void MessageHandler_MobileOutpost(Script *receiver, Script *sender, enum SCRIPT_
 		case EVT_MSG_1509_stru11:
 			entity_41A980_evt1509_unset_stru11(v4, param);
 			break;
-		case EVT_MSG_DAMAGE:
-			entity_41A610_evt1503(v4, param);
+		case CMD_APPLY_DAMAGE:
+			entity_do_damage(v4, (Sprite *)param);
 			entity_410710_status_bar(v4);
 			break;
-		case EVT_MSG_1497:
-			entity_41A6D0_evt1497(v4, (Entity *)param);
+		case MSG_ATTACKED:
+			entity_on_attacked_default(v4, (Entity *)param);
 			break;
 		case EVT_MSG_1522_plan_building_construction:
 			entity_4279E0_mobile_outpost_clanhall_wagon_plant(v4);
@@ -17938,198 +8494,143 @@ void MessageHandler_MobileOutpost(Script *receiver, Script *sender, enum SCRIPT_
 //----- (004279E0) --------------------------------------------------------
 void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 {
-	Entity *v1; // esi@1
-	Sprite *v2; // eax@1
-	int v3; // ebx@1
-	int v4; // ebp@1
-	int v5; // eax@1
-	int v6; // edx@1
-	int v7; // edi@1
-	Sprite *v8; // eax@2
-	bool v9; // zf@6
-	Sprite *v10; // eax@6
-	int v11; // ecx@6
-	int v12; // ebx@6
-	int v13; // edi@6
-	Sprite *v14; // eax@7
-	unsigned int v15; // edx@7
-	Script *v16; // ST00_4@9
+	int initial_x_speed = a1->sprite->x_speed;
+	int initial_y_speed = a1->sprite->y_speed;
 
-	v1 = a1;
-	v2 = a1->sprite;
-	v3 = v2->x_speed;
-	v4 = v2->y_speed;
-	v2->x_speed = 0;
+    a1->sprite->x_speed = 0;
 	a1->sprite->y_speed = 0;
 	entity_40DEC0_boxd(a1, a1->sprite_map_x, a1->sprite_map_y, a1->_A4_idx_in_tile);
-	v5 = v1->unit_id;
-	v6 = (int)&v1->stru60.ptr_C->field_0;
-	v1->_134_param__unitstats_after_mobile_outpost_plant = v5;
-	v7 = (v5 != UNIT_STATS_SURV_MOBILE_OUTPOST) + UNIT_STATS_SURV_OUTPOST;
-	v1->unit_id = (UNIT_ID)v7;
-	*(_DWORD *)(v6 + 4) = -11776;
-	v1->stru60.ptr_C->y_offset = -1280;
-	sprite_408800_play_sound(v1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_unit_sounds_volume, 0);
-	if (entity_40DD00_boxd(v1))
+    
+    a1->_134_param__unitstats_after_mobile_outpost_plant = a1->unit_id;
+    a1->unit_id = a1->unit_id == UNIT_STATS_SURV_MOBILE_OUTPOST ? UNIT_STATS_SURV_OUTPOST : UNIT_STATS_MUTE_CLANHALL;
+    a1->stru60.ptr_C->x_offset = -11776;
+    a1->stru60.ptr_C->y_offset = -1280;
+	sprite_408800_play_sound(a1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_unit_sounds_volume, 0);
+
+	if (entity_40DD00_boxd(a1))
 	{
-		script_trigger_event(v1->script, EVT_SHOW_UI_CONTROL, 0, task_mobd17_cursor);
-		entity_410CD0_eventTextString(v1);
-		v1->script->event_handler = (void(*)(Script *, Script *, enum SCRIPT_EVENT, void *))nullsub_2;
-		if (v1->unit_id == UNIT_STATS_SURV_OUTPOST)
+        // plant successful - make outpost
+
+		script_trigger_event(a1->script, EVT_MSG_DESELECTED, 0, game_cursor_script);
+		entity_deselected_default(a1);
+        a1->SetScriptEventHandler(MessageHandler_MobileOutpostEmpty);
+
+		if (a1->unit_id == UNIT_STATS_SURV_OUTPOST)
 		{
-			v1->sprite->mobd_id = MOBD_SURV_OUTPOST;
-			sprite_4272E0_load_mobd_item(v1->sprite, 1232, 0);
+            a1->sprite->mobd_id = MOBD_SURV_OUTPOST;
+			sprite_4272E0_load_mobd_item(a1->sprite, 1232, 0);
 		}
 		else
 		{
-			v1->sprite->mobd_id = MOBD_MUTE_CLANHALL;
+            a1->sprite->mobd_id = MOBD_MUTE_CLANHALL;
 		}
-		sprite_load_mobd(v1->sprite, 0);
-		v9 = v7 == UNIT_STATS_SURV_OUTPOST;
-		v1->sprite->field_88_unused = 1;
-		v1->sprite->field_88_unused = 1;
-		v10 = v1->sprite;
-		v11 = v1->stru60.ptr_C->x_offset;
-		v12 = v10->x;
-		v13 = v1->stru60.ptr_C->x_offset;
-		if (v9)
+		sprite_load_mobd(a1->sprite, 0);
+
+		if (a1->unit_id == UNIT_STATS_SURV_OUTPOST)
 		{
-			v10->x = ((v12 + v13) & 0xFFFFE000) - v11 + 2048;
-			v1->sprite->field_88_unused = 1;
-			v14 = v1->sprite;
-			v15 = ((v14->y + v1->stru60.ptr_C->y_offset) & 0xFFFFE000) - v1->stru60.ptr_C->y_offset + 4096;
+            a1->sprite->x = map_point_to_tile_global(a1->sprite->x + a1->stru60.ptr_C->x_offset) - a1->stru60.ptr_C->x_offset + 2048;
+            a1->sprite->y = map_point_to_tile_global(a1->sprite->y + a1->stru60.ptr_C->y_offset) - a1->stru60.ptr_C->y_offset + 4096;
 		}
 		else
 		{
-			v10->x = ((v12 + v13) & 0xFFFFE000) - v11 + 7936;
-			v1->sprite->field_88_unused = 1;
-			v14 = v1->sprite;
-			v15 = ((v14->y + v1->stru60.ptr_C->y_offset) & 0xFFFFE000) - v1->stru60.ptr_C->y_offset + 3328;
+            a1->sprite->x = map_point_to_tile_global(a1->sprite->x + a1->stru60.ptr_C->x_offset) - a1->stru60.ptr_C->x_offset + 7936;
+            a1->sprite->y = map_point_to_tile_global(a1->sprite->y + a1->stru60.ptr_C->y_offset) - a1->stru60.ptr_C->y_offset + 3328;
 		}
-		v14->y = v15;
-		v16 = v1->script;
-		v1->SetMode(entity_427C30_after_mobile_outpost_clanhall_wagon_plant);
-		script_yield(v16, SCRIPT_FLAGS_20_10000000, 0);
+
+        a1->SetMode(entity_427C30_after_mobile_outpost_clanhall_wagon_plant);
+		script_yield(a1->script, SCRIPT_FLAGS_20_10000000, 0);
 	}
 	else
 	{
-		v8 = v1->sprite;
-		v1->unit_id = (UNIT_ID)v1->_134_param__unitstats_after_mobile_outpost_plant;
-		map_place_entity(v1, v8->x, v8->y, 0);
-		v1->sprite->x_speed = v3;
-		v1->sprite->y_speed = v4;
+        // plant unsuccessful - restore entity
+		a1->unit_id = (UNIT_ID)a1->_134_param__unitstats_after_mobile_outpost_plant;
+		map_place_entity(a1, a1->sprite->x, a1->sprite->y, 0);
+		a1->sprite->x_speed = initial_x_speed;
+		a1->sprite->y_speed = initial_y_speed;
 	}
 }
 
 //----- (00427BB0) --------------------------------------------------------
 void entity_427BB0_mobile_outpost_clanhall_planting(Entity *a1)
 {
-	Entity *v1; // esi@1
-	int v2; // edx@1
-	Script *v3; // eax@3
+    if (a1->unit_id == UNIT_STATS_SURV_OUTPOST) {
+        sprite_4272E0_load_mobd_item(a1->sprite, 1232, 1);
+    } else {
+        sprite_4272E0_load_mobd_item(a1->sprite, 968, 1);
+    }
 
-	v1 = a1;
-	v2 = 1232;
-	if (a1->unit_id != UNIT_STATS_SURV_OUTPOST)
-		v2 = 968;
-	sprite_4272E0_load_mobd_item(a1->sprite, v2, 1);
-	v3 = v1->script;
-	v1->SetMode(entity_mode_427BF0_mobile_outpost_clanhall_planting);
-    script_sleep(v3, 30);
+	a1->SetMode(entity_mode_427BF0_mobile_outpost_clanhall_planting);
+    script_sleep(a1->script, 30);
 }
 
 //----- (00427BF0) --------------------------------------------------------
 void entity_mode_427BF0_mobile_outpost_clanhall_planting(Entity *a1)
 {
-	Entity *v1; // esi@1
-	int v2; // edx@1
-	Script *v3; // eax@3
+    if (a1->unit_id == UNIT_STATS_SURV_OUTPOST) {
+        sprite_4272E0_load_mobd_item(a1->sprite, 1232, 2);
+    } else {
+        sprite_4272E0_load_mobd_item(a1->sprite, 968, 2);
+    }
 
-	v1 = a1;
-	v2 = 1232;
-	if (a1->unit_id != UNIT_STATS_SURV_OUTPOST)
-		v2 = 968;
-	sprite_4272E0_load_mobd_item(a1->sprite, v2, 2);
-	v3 = v1->script;
-	v1->SetMode(entity_427C30_after_mobile_outpost_clanhall_wagon_plant);
-    script_sleep(v3, 30);
+	a1->SetMode(entity_427C30_after_mobile_outpost_clanhall_wagon_plant);
+    script_sleep(a1->script, 30);
 }
 
 //----- (00427C30) --------------------------------------------------------
 void entity_427C30_after_mobile_outpost_clanhall_wagon_plant(Entity *a1)
 {
-	Entity *v1; // esi@1
-	enum UNIT_ID v2; // edi@1
-	enum PLAYER_SIDE v3; // ecx@1
 	Sprite *v4; // eax@1
-	Script *v5; // ST00_4@6
 
-	v1 = a1;
 	entity_40DDD0_boxd(a1);
-	v2 = v1->unit_id;
-	v3 = v1->player_side;
-	v1->unit_id = (UNIT_ID)v1->_134_param__unitstats_after_mobile_outpost_plant;
-	v4 = spawn_unit(v2, v1->sprite->x, v1->sprite->y, v3);
+	auto initial_unit_id = a1->unit_id;
+
+	a1->unit_id = (UNIT_ID)a1->_134_param__unitstats_after_mobile_outpost_plant;
+	v4 = spawn_unit(initial_unit_id, a1->sprite->x, a1->sprite->y, a1->player_side);
 	if (v4)
 	{
-		if (v2 == UNIT_STATS_SURV_OUTPOST)
+		if (initial_unit_id == UNIT_STATS_SURV_OUTPOST)
 			v4->cplc_ptr1_pstru20 = &_468910_DataCplcItem_ptr1_stru20_outpost;
 		else
 			v4->cplc_ptr1_pstru20 = &_4688E0_DataCplcItem_ptr1_stru20_clanhall;
-		v4->_80_entity__stru29__sprite__initial_hitpoints = (void *)v1->hitpoints;
+		v4->_80_entity__stru29__sprite__initial_hitpoints = (void *)a1->hitpoints;
 	}
-	v5 = v1->script;
-	v1->SetMode(entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant);
-    script_sleep(v5, 10);
+
+	a1->SetMode(entity_remove_unit_after_mobile_derrick_outpost_clanhall_plant);
+    script_sleep(a1->script, 10);
 }
 
 //----- (00427CA0) --------------------------------------------------------
-bool stru37_stru38_list_alloc()
+bool stru37_stru38_list_alloc(const int num_stru37s, const int num_stru38s)
 {
-	stru37 *v0; // eax@1
-	int v1; // ecx@2
-	stru38 *v2; // eax@4
-	int v3; // ecx@5
-	BOOL result; // eax@7
+    if (stru37_list = new stru37[num_stru37s]) {
+        for (int i = 0; i < num_stru37s - 1; ++i)
+        {
+            stru37_list[i].next = &stru37_list[i + 1];
+        }
 
-	v0 = (stru37 *)malloc(0x1130u);
-	stru37_list = v0;
-	if (!v0)
-		goto LABEL_11;
-	stru37_list_free_pool = v0;
-	v1 = 0;
-	do
-	{
-		v0[v1].next = &v0[v1 + 1];
-		v0 = stru37_list;
-		++v1;
-	} while (v1 < 99);
-	stru37_list[99].next = 0;
-	stru37_list_47A500 = (stru37 *)&stru37_list_47A500;
-	stru37_list_47A504 = (stru37 *)&stru37_list_47A500;
-	v2 = (stru38 *)malloc(0x1A90u);
-	stru38_list = v2;
-	if (v2)
-	{
-		stru38_list_free_pool = v2;
-		v3 = 0;
-		do
-		{
-			v2[v3].next = &v2[v3 + 1];
-			v2 = stru38_list;
-			++v3;
-		} while (v3 < 99);
-		stru38_list[99].next = 0;
+        stru37_list[num_stru37s - 1].next = nullptr;
+        stru37_list_free_pool = stru37_list;
+        stru37_list_47A500 = (stru37 *)&stru37_list_47A500;
+        stru37_list_47A504 = (stru37 *)&stru37_list_47A500;
+    } else {
+        return false;
+    }
+
+
+	if (stru38_list = new stru38[num_stru38s]) {
+		for (int i = 0; i < num_stru38s - 1; ++i) {
+            stru38_list[i].next = &stru38_list[i + 1];
+		}
+
+		stru38_list[num_stru38s - 1].next = nullptr;
+        stru38_list_free_pool = stru38_list;
 		stru38_list_47A4B0 = (stru38 *)&stru38_list_47A4B0;
 		stru38_list_47A4B4 = (stru38 *)&stru38_list_47A4B0;
-		result = script_create_function(SCRIPT_TYPE_INVALID, script_4280A0_stru38_list__production_loop) != 0;
+
+		return script_create_function(SCRIPT_TYPE_INVALID, script_4280A0_stru38_list__production_loop) != 0;
 	}
-	else
-	{
-	LABEL_11:
-		result = 0;
-	}
-	return result;
+
+    return false;
 }
 
 //----- (00427D60) --------------------------------------------------------
@@ -18359,7 +8860,6 @@ void stru37_stru38_list_free()
 //----- (004280A0) --------------------------------------------------------
 void script_4280A0_stru38_list__production_loop(Script *task)
 {
-	BOOL v1; // eax@1
 	stru38 *v2; // edi@1
 	stru37 *v3; // esi@2
 	int v4; // ebp@2
@@ -18379,11 +8879,9 @@ void script_4280A0_stru38_list__production_loop(Script *task)
 	stru37 **v18; // ecx@33
 	int v19; // eax@33
 	stru38 *v20; // eax@34
-	BOOL i; // [sp+0h] [bp-4h]@1
 
-	v1 = _44CDC0_sidebar_is_units_limit();
 	v2 = stru38_list_47A4B0;
-	for (i = v1; (stru38 **)v2 != &stru38_list_47A4B0; v2 = v2->next)
+	for (bool i = _44CDC0_sidebar_is_units_limit(); (stru38 **)v2 != &stru38_list_47A4B0; v2 = v2->next)
 	{
 		v3 = v2->pstru37;
 		v4 = 0;
@@ -18530,7 +9028,6 @@ bool stru13construct_list_alloc()
 {
 	stru13construct *v0; // eax@1
 	int v1; // ecx@2
-	BOOL result; // eax@4
 
 	memset(&_47A608_stru13_associated_array, 0, sizeof(_47A608_stru13_associated_array));
 	v0 = (stru13construct *)malloc(0x400u);
@@ -18548,13 +9045,9 @@ bool stru13construct_list_alloc()
 		stru13construct_list[31].next = 0;
 		stru13construct_list_47A638 = (stru13construct *)&stru13construct_list_47A638;
 		stru13construct_list_47A63C = (stru13construct *)&stru13construct_list_47A638;
-		result = 1;
+        return true;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+    return false;
 }
 
 //----- (004287A0) --------------------------------------------------------
@@ -18608,7 +9101,6 @@ bool stru13construct_list_saveload_unpack(int save_data, int save_data_size)
 	stru13construct *v4; // eax@3
 	stru13construct *v5; // edx@7
 	int v6; // ecx@7
-	BOOL result; // eax@10
 
 	v2 = save_data_size;
 	if (save_data_size)
@@ -18647,15 +9139,11 @@ bool stru13construct_list_saveload_unpack(int save_data, int save_data_size)
 			v3 += 24;
 			v2 -= 24;
 			if (!v2)
-				return 1;
+				return true;
 		}
-		result = 0;
+		return false;
 	}
-	else
-	{
-		result = 1;
-	}
-	return result;
+    return true;
 }
 
 //----- (004288D0) --------------------------------------------------------
@@ -18706,7 +9194,7 @@ bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, i
 	int v18; // edi@19
 	Sprite **v19; // esi@20
 	int v21; // [sp+10h] [bp-14h]@1
-	BOOL v22; // [sp+14h] [bp-10h]@1
+	bool v22; // [sp+14h] [bp-10h]@1
 	int v23; // [sp+18h] [bp-Ch]@1
 	Sprite **v24; // [sp+20h] [bp-4h]@1
 	int a3a; // [sp+28h] [bp+4h]@1
@@ -18716,7 +9204,7 @@ bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, i
 	v24 = sprite_list;
 	v7 = y >> 13;
 	v9 = (y >> 13) - 4;
-	v22 = 1;
+	v22 = true;
 	v21 = 0;
 	v10 = x >> 13;
 	v23 = v10;
@@ -18774,7 +9262,7 @@ bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, i
 				{
 					if (a7)
 					{
-						v22 = 0;
+						v22 = false;
 						(*v19)->drawjob->flags |= 0x40000000u;
 					}
 					else
@@ -18787,7 +9275,7 @@ bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, i
 						else
 						{
 							sprite_load_mobd(*v19, 548);
-							v22 = 0;
+							v22 = false;
 						}
 						(*v19)->field_88_unused = 1;
 						(*v19)->x = v18 << 13;
@@ -18855,7 +9343,7 @@ void script_42D030_sidebar_tooltips(Script *a1)
             script_wait_event(a1);
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
-				if (i->event == EVT_MSG_1511_sidebar_click_category)
+				if (i->event == EVT_MSG_SELECTED)
 				{
 					v3 = i->param;
 					v2 = 1;
@@ -18920,7 +9408,7 @@ void script_42D030_sidebar_tooltips(Script *a1)
                 script_wait_event(a1);
 				for (j = script_get_next_event(a1); j; j = script_get_next_event(a1))
 				{
-					if (j->event == EVT_SHOW_UI_CONTROL)
+					if (j->event == EVT_MSG_DESELECTED)
 						v12 = 1;
 					script_discard_event(j);
 				}
@@ -19178,13 +9666,13 @@ __int16 _42D63B_mobd_do_lookup(int x, int y)
 }
 
 //----- (0042D64D) --------------------------------------------------------
-unsigned int math_42D64D_prolly_vec_length(int a1, int a2)
+int math_42D64D_vec_length_2d(int x, int y)
 {
-	return math_42D669_prolly_vec_length(a2 * a2 + a1 * a1);
+    return math_42D669_sqrt(x * x + y * y);
 }
 
 //----- (0042D669) --------------------------------------------------------
-unsigned int math_42D669_prolly_vec_length(unsigned int a1)
+unsigned int math_42D669_sqrt(unsigned int a1)
 {
 	unsigned int v1; // ecx@0
 	unsigned int result; // eax@1
@@ -19196,7 +9684,7 @@ unsigned int math_42D669_prolly_vec_length(unsigned int a1)
 	result = a1;
 	if (a1 >= 2)
 	{
-		_BitScanReverse((DWORD *)&v1, a1);
+		_BitScanReverse((unsigned long *)&v1, a1);
 		v3 = v1 >> 1;
 		result = 1 << v3;
 		v4 = 1 << v3;
@@ -19360,7 +9848,7 @@ void stru24_42E030(stru24 *a1, Entity *a2)
 		v6 = v2->script;
 		v9 = v4;
 		v8 = v5;
-		script_trigger_event(0, EVT_ENTITY_ATTACK, &v8, v6);
+		script_trigger_event(0, EVT_CMD_ENTITY_ATTACK, &v8, v6);
 	}
 }
 
@@ -19413,14 +9901,14 @@ void stru24_42E070(stru24 *a1)
 	for (i = v1->list_40_30; (stru24_stru40 **)i != &v1->list_40_30; i = i->next)
 	{
 		v9 = i->_C__entity;
-		if (!v9->entity_8 && !v9->_E0_current_attack_target || v9->IsMode(entity_mode_default_idle))
+		if (!v9->entity_8 && !v9->retaliation_target || v9->IsMode(entity_mode_default_idle))
 		{
 			v10 = stru24_42DF40(v1, i->_C__entity, &a3);
 			if (v10)
 			{
 				v14.player_side = v1->_2A0_player_side;
                 v14.target = v10;
-				script_trigger_event(0, EVT_ENTITY_ATTACK, &v14, v9->script);
+				script_trigger_event(0, EVT_CMD_ENTITY_ATTACK, &v14, v9->script);
 			}
 		}
 	}
@@ -19652,7 +10140,7 @@ void EventHandler_Outpost(Script *receiver, Script *sender, enum SCRIPT_EVENT ev
 				}
 			}
 			break;
-		case EVT_MSG_DAMAGE:
+		case CMD_APPLY_DAMAGE:
 			entity_402E90_on_damage(v4, param, entity_mode_outpost_on_death);
 			entity_410520_update_healthbar_color(v4);
 			break;
@@ -19962,275 +10450,7 @@ void entity_mode_outpost_on_death(Entity *a1)
 
 	v1 = a1;
 	entity_mode_outpost_on_death_update_production(a1);
-	entity_mode_building_default_on_death(v1);
-}
-
-//----- (00431920) --------------------------------------------------------
-void render_sw_initialize()
-{
-	if (global_wnd_bpp == 8)
-		render_sw_hdc = GetDC(global_hwnd);
-}
-
-//----- (00431940) --------------------------------------------------------
-void render_sw_free_palette()
-{
-	HPALETTE v0; // eax@3
-
-	if (global_wnd_bpp == 8)
-	{
-		if (render_sw_default_palette)
-		{
-			v0 = SelectPalette(render_sw_hdc, render_sw_default_palette, 0);
-			DeleteObject(v0);
-		}
-		render_sw_palette = 0;
-	}
-}
-
-//----- (00431980) --------------------------------------------------------
-void _431980_update_primary_palette(PALETTEENTRY *palette_entries)
-{
-	PALETTEENTRY *v1; // edx@1
-	int v2; // eax@4
-	char *v3; // ecx@9
-	BYTE *v4; // eax@9
-	int v5; // eax@11
-	_BYTE *v6; // ecx@14
-	int v7; // eax@14
-	HPALETTE v8; // esi@16
-	int v9; // [sp-Ch] [bp-410h]@4
-	_BYTE v10[1024]; // [sp+0h] [bp-404h]@14
-	int v11; // [sp+400h] [bp-4h]@14
-
-	v1 = palette_entries;
-	if (global_wnd_bpp == 8)
-	{
-		dword_47C018 = 0;
-		dword_468FD4 = 1;
-		dword_468FD8 = 2;
-		dword_468FDC = 4;
-		if (palette_entries)
-			memcpy(_47B408_palette_entries, palette_entries, sizeof(_47B408_palette_entries));
-		else
-			v1 = _47B408_palette_entries;
-		if (global_fullscreen == 1)
-		{
-			v3 = (char *)&RenderDD_primary_palette_values[0].peGreen;
-			v4 = &v1->peBlue;
-			do
-			{
-				v4[&RenderDD_primary_palette_values[0].peGreen - (BYTE *)v1] = 0;
-				*(v3 - 1) = *(v4 - 2);
-				*v3 = *(v4 - 1);
-				v4[(char *)RenderDD_primary_palette_values - (char *)v1] = *v4;
-				v3 += 4;
-				v4 += 4;
-			} while ((int)v3 < (int)&render_sw_hdc + 1);
-			v5 = render_dd_is_primary_surface_lost();
-			if (!v5)
-			{
-				v5 = (int)pddpal_primary;
-				if (pddpal_primary)
-					v5 = pddpal_primary->SetEntries(0, 0, 256, RenderDD_primary_palette_values);
-			}
-		}
-		else
-		{
-			v6 = v10;
-			v7 = (int)&v1->peGreen;
-			v11 = 256;
-			do
-			{
-				*(_BYTE *)(&v10[2] - (_BYTE *)v1 + v7) = 0;
-				*v6 = *(_BYTE *)(v7 + 1);
-				*(_BYTE *)(v10 - (_BYTE *)v1 + v7) = *(_BYTE *)v7;
-				*(_BYTE *)(&v10[1] - (_BYTE *)v1 + v7) = *(_BYTE *)(v7 - 1);
-				v6 += 4;
-				v7 += 4;
-				--v11;
-			} while (v11);
-			v8 = render_sw_palette;
-			if (render_sw_palette)
-			{
-				render_sw_palette = _431B60_create_palette((PALETTEENTRY *)v10, 256);
-				SelectPalette(render_sw_hdc, render_sw_palette, 0);
-				DeleteObject(v8);
-			}
-			else
-			{
-				render_sw_palette = _431B60_create_palette((PALETTEENTRY *)v10, 256);
-				render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
-			}
-			v5 = RealizePalette(render_sw_hdc);
-		}
-	}
-}
-
-//----- (00431B60) --------------------------------------------------------
-HPALETTE _431B60_create_palette(PALETTEENTRY *a1, int num_entries)
-{
-	PALETTEENTRY *v2; // ebx@1
-	int v3; // ecx@1
-	char *v4; // esi@1
-	char *v5; // edi@1
-	int v6; // eax@1
-	char *v7; // ebp@1
-	int v8; // edx@1
-	int v9; // eax@4
-	int v10; // edx@4
-	int v11; // eax@6
-	int v12; // edx@6
-	int v14; // [sp+14h] [bp-408h]@1
-    struct
-    {
-        LOGPALETTE plpal; // [sp+18h] [bp-404h]@1
-        char pixels[0x400];
-    } v15;
-
-	v2 = a1;
-    v15.plpal.palVersion = 768;
-    v15.plpal.palNumEntries = 256;
-	memset(v15.plpal.palPalEntry, 0, 0x400u);
-	v14 = num_entries - 10;
-	v3 = &v15.plpal.palPalEntry[0].peBlue - (BYTE *)a1;
-	v4 = (char *)((char *)&v15.plpal.palNumEntries + 1 - (char *)v2);
-	v5 = (char *)((char *)v15.plpal.palPalEntry - (char *)v2);
-	v6 = (int)&v2->peGreen;
-	v7 = (char *)(&v15.plpal.palPalEntry[0].peGreen - (BYTE *)v2);
-	v8 = 10;
-	do
-	{
-		*(_BYTE *)(v3 + v6) = 0;
-		*(_BYTE *)(v6 + 1) = v4[v6];
-		*(_BYTE *)v6 = v5[v6];
-		*(_BYTE *)(v6 - 1) = v7[v6];
-		v6 += 4;
-		--v8;
-	} while (v8);
-	if (v14 > 10)
-	{
-		v9 = (int)&v2[10].peGreen;
-		v10 = v14 - 10;
-		do
-		{
-			v4[v9] = *(_BYTE *)(v9 + 1);
-			v5[v9] = *(_BYTE *)v9;
-			v7[v9] = *(_BYTE *)(v9 - 1);
-			*(_BYTE *)(v9 + v3) = 5;
-			v9 += 4;
-			--v10;
-		} while (v10);
-	}
-	v11 = (int)&v2[246].peGreen;
-	v12 = 10;
-	do
-	{
-		*(_BYTE *)(v11 + v3) = 0;
-		*(_BYTE *)(v11 + 1) = v4[v11];
-		*(_BYTE *)v11 = v5[v11];
-		*(_BYTE *)(v11 - 1) = v7[v11];
-		v11 += 4;
-		--v12;
-	} while (v12);
-	return CreatePalette(&v15.plpal);
-}
-
-//----- (00431C40) --------------------------------------------------------
-void *_431C40_on_WM_ACTIVATEAPP_software_render(void *result)
-{
-	int v1; // edx@2
-	int i; // ecx@2
-	int v3; // eax@9
-	PALETTEENTRY *v4; // edx@10
-	char *v5; // ecx@14
-	BYTE *v6; // eax@14
-	IDirectDrawPalette *v7; // eax@16
-	PALETTEENTRY *v8; // ecx@19
-	int v9; // eax@19
-	HPALETTE v10; // esi@21
-	int v11; // [sp-Ch] [bp-410h]@9
-	PALETTEENTRY v12[256]; // [sp+0h] [bp-404h]@19
-	int v13; // [sp+400h] [bp-4h]@19
-
-	if (global_wnd_bpp == 8)
-	{
-		v1 = dword_468FDC << 8;
-		for (i = 0; i < v1; ++i)
-		{
-			if (((*(&_47B408_palette_entries[0].peRed + i) << 8) & 0xFFFFFF00) >= 0xFF00)
-				result = (void *)255;
-			else
-				result = (void *)*(&_47B408_palette_entries[0].peRed + i);
-			*(&palette_47BC10[0].peRed + i) = (unsigned __int8)result;
-		}
-
-		v4 = palette_47BC10;
-		dword_47C018 = 0;
-		dword_468FD4 = 1;
-		dword_468FD8 = 2;
-		dword_468FDC = 4;
-		if (palette_47BC10)
-			memcpy(_47B408_palette_entries, palette_47BC10, sizeof(_47B408_palette_entries));
-		else
-			v4 = _47B408_palette_entries;
-		if (global_fullscreen == 1)
-		{
-			v5 = (char *)&RenderDD_primary_palette_values[0].peGreen;
-			v6 = &v4->peBlue;
-			do
-			{
-				v6[&RenderDD_primary_palette_values[0].peGreen - (BYTE *)v4] = 0;
-				*(v5 - 1) = *(v6 - 2);
-				*v5 = *(v6 - 1);
-				v6[(char *)RenderDD_primary_palette_values - (char *)v4] = *v6;
-				v5 += 4;
-				v6 += 4;
-			} while ((int)v5 < (int)&render_sw_hdc + 1);
-			v7 = (IDirectDrawPalette *)render_dd_is_primary_surface_lost();
-			if (!v7)
-			{
-				v7 = pddpal_primary;
-				if (pddpal_primary)
-					v7 = (IDirectDrawPalette *)pddpal_primary->SetEntries(
-						0,
-						0,
-						256,
-						RenderDD_primary_palette_values);
-			}
-		}
-		else
-		{
-			v8 = v12;
-			v9 = (int)&v4->peGreen;
-			v13 = 256;
-			do
-			{
-				*(_BYTE *)(&v12[0].peBlue - (BYTE *)v4 + v9) = 0;
-				v8->peRed = *(_BYTE *)(v9 + 1);
-				*(_BYTE *)((char *)v12 - (char *)v4 + v9) = *(_BYTE *)v9;
-				*(_BYTE *)(&v12[0].peGreen - (BYTE *)v4 + v9) = *(_BYTE *)(v9 - 1);
-				++v8;
-				v9 += 4;
-				--v13;
-			} while (v13);
-			v10 = render_sw_palette;
-			if (render_sw_palette)
-			{
-				render_sw_palette = _431B60_create_palette(v12, 256);
-				SelectPalette(render_sw_hdc, render_sw_palette, 0);
-				DeleteObject(v10);
-			}
-			else
-			{
-				render_sw_palette = _431B60_create_palette(v12, 256);
-				render_sw_default_palette = SelectPalette(render_sw_hdc, render_sw_palette, 0);
-			}
-			v7 = (IDirectDrawPalette *)RealizePalette(render_sw_hdc);
-		}
-        result = v7;
-	}
-	return result;
+	entity_mode_building_on_death_default(v1);
 }
 
 //----- (00431E60) --------------------------------------------------------
@@ -20325,9 +10545,9 @@ void script_431F10_ingame_menu(Script *a1)
 			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 			{
 				v8 = i->event;
-				if (v8 > (int)EVT_MSG_1511_sidebar_click_category)
+				if (v8 > (int)EVT_MSG_SELECTED)
 				{
-					v9 = v8 - EVT_SHOW_UI_CONTROL;
+					v9 = v8 - EVT_MSG_DESELECTED;
 					if (v9)
 					{
 						if (v9 == 16)
@@ -20338,7 +10558,7 @@ void script_431F10_ingame_menu(Script *a1)
 						v17 = 0;
 					}
 				}
-				else if (v8 == EVT_MSG_1511_sidebar_click_category)
+				else if (v8 == EVT_MSG_SELECTED)
 				{
 					v17 = 1;
 				}
@@ -20347,8 +10567,8 @@ void script_431F10_ingame_menu(Script *a1)
 		}
 		if (v17)
 		{
-			task_mobd17_cursor->sprite->field_88_unused = 1;
-			v10 = task_mobd17_cursor->sprite->x;
+			game_cursor_script->sprite->field_88_unused = 1;
+			v10 = game_cursor_script->sprite->x;
 			v3->x = v10;
 			v11 = v1->x;
 			if (v10 < v11 || (v11 += 0x8000, v10 > v11))
@@ -20682,7 +10902,7 @@ void script_432730_ingame_menu(Script *a1)
 					v6 = v5->event;
 					if (v6 != EVT_MOUSE_HOVER)
 					{
-						if (v6 == EVT_MSG_1511_sidebar_click_category)
+						if (v6 == EVT_MSG_SELECTED)
 							goto LABEL_8;
 						if (v6 == EVT_MSG_1528)
 							break;
@@ -20703,7 +10923,7 @@ void script_432730_ingame_menu(Script *a1)
 		} while (!v4);
 		if (v3)
 			break;
-		script_trigger_event(v1, EVT_MSG_1511_sidebar_click_category, &a1, receiver);
+		script_trigger_event(v1, EVT_MSG_SELECTED, &a1, receiver);
 	}
 	_47C668_ingame_menu_sprites[(int)a1] = 0;
 	sprite_list_remove(v2);
@@ -20756,7 +10976,7 @@ void script_432800_ingame_menu(Script *a1)
 		} while (!v4);
 		if (v3)
 			break;
-		script_trigger_event(v1, EVT_MSG_1511_sidebar_click_category, &a1, receiver);
+		script_trigger_event(v1, EVT_MSG_SELECTED, &a1, receiver);
 	}
 	_47C668_ingame_menu_sprites[(int)a1] = 0;
 	sprite_list_remove(v7);
@@ -20934,7 +11154,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 				{
 					switch (i->event)
 					{
-					case EVT_MSG_1511_sidebar_click_category:
+					case EVT_MSG_SELECTED:
 						v17 = *(_DWORD *)i->param;
 						if (v17 < 5)
 						{
@@ -20966,7 +11186,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 							--v23;
 						}
 						break;
-					case EVT_SHOW_UI_CONTROL:
+					case EVT_MSG_DESELECTED:
 						if (v23 >= 4)
 						{
 							if (v24 < 15)
@@ -20980,7 +11200,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 					case EVT_MSG_1549:
 						v15 = 1;
 						break;
-					case EVT_ENTITY_MOVE:
+					case EVT_CMD_ENTITY_MOVE:
 						v14 = 1;
 						break;
 					case EVT_MSG_1528:
@@ -21175,8 +11395,8 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 		if (single_player_game)
 		{
 			a1a = 0;
-			is_coroutine_list_initialization_failed = 0;
-			script_trigger_event(v1, EVT_MSG_1533, 0, task_mobd17_cursor);
+			is_async_execution_supported = 0;
+			script_trigger_event(v1, EVT_MSG_1533, 0, game_cursor_script);
 			sub_408460();
 			sprite_load_mobd(v3, 60);
 		}
@@ -21185,7 +11405,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 			if (dword_47C030)
 			{
 				dword_47C030 = 0;
-				script_trigger_event(v1, EVT_MSG_1533, 0, task_mobd17_cursor);
+				script_trigger_event(v1, EVT_MSG_1533, 0, game_cursor_script);
 				sprite_load_mobd(v3, 60);
 			}
 			a1a = 0;
@@ -21206,17 +11426,17 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 				}
 				script_discard_event(i);
 			}
-			if (is_coroutine_list_initialization_failed)
+			if (is_async_execution_supported)
 				a1a = 1;
 			if (v14)
 				a1a = 0;
 		} while (!a1a);
 		if (single_player_game)
 			break;
-		if (!is_coroutine_list_initialization_failed)
+		if (!is_async_execution_supported)
 		{
-			script_trigger_event(v1, EVT_MSG_1532, 0, task_mobd17_cursor);
-			while (!is_coroutine_list_initialization_failed)
+			script_trigger_event(v1, EVT_MSG_1532, 0, game_cursor_script);
+			while (!is_async_execution_supported)
                 script_sleep(v1, 1);
 			if (dword_47050C == 1)
 			{
@@ -21228,7 +11448,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 		}
 		dword_47C030 = 0;
 	LABEL_27:
-		_408410_palettes();
+		_408410_dim_palette();
 		v7 = 1;
 		do
 		{
@@ -21304,7 +11524,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 						v14 = 1;
 						a1a = 0;
 						break;
-					case EVT_ENTITY_MOVE:
+					case EVT_CMD_ENTITY_MOVE:
 						v7 = 2;
 						script_4321A0_ingame_menu(v1);
 						break;
@@ -21341,7 +11561,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 						if (v11)
 							v11->script->field_1C = 1;
 						break;
-					case EVT_ENTITY_ATTACK:
+					case EVT_CMD_ENTITY_ATTACK:
 						v7 = 3;
 						script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
 						_47C65C_render_string = render_string_create(
@@ -21381,14 +11601,14 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 				}
 				v2 = 1;
 			}
-			if (!is_coroutine_list_initialization_failed)
+			if (!is_async_execution_supported)
 				a1a = 0;
 		} while (a1a);
 		script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
 		v3 = v15;
 	}
-	is_coroutine_list_initialization_failed = v2;
-	script_trigger_event(v1, EVT_MSG_1532, 0, task_mobd17_cursor);
+	is_async_execution_supported = v2;
+	script_trigger_event(v1, EVT_MSG_1532, 0, game_cursor_script);
 	goto LABEL_26;
 }
 
@@ -21471,7 +11691,7 @@ void script_433780_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000002, -92, v1, 1);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_MISSION_ARROW_SW, 0, 0))
 	{
-		script_trigger_event(a1, EVT_ENTITY_MOVE, 0, task_47C028);
+		script_trigger_event(a1, EVT_CMD_ENTITY_MOVE, 0, task_47C028);
         script_sleep(a1, 1);
 	}
 	v2 = a1->sprite;
@@ -21581,7 +11801,7 @@ void script_433A60_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000002, -92, v1, 7);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_828, 0, 0))
 	{
-		script_trigger_event(a1, EVT_ENTITY_ATTACK, 0, task_47C028);
+		script_trigger_event(a1, EVT_CMD_ENTITY_ATTACK, 0, task_47C028);
         script_sleep(a1, 1);
 	}
 	v2 = a1->sprite;
@@ -21604,7 +11824,7 @@ void script_433AF0_ingame_menu(Script *a1)
 			if (netz_468B50_available_units_denom <= 2)
 				*(_DWORD *)&netz_47A740[2].str_0[0] = 1;
 			netz_449FF0();
-			is_coroutine_list_initialization_failed = 0;
+			is_async_execution_supported = 0;
 			dword_47C030 = -1;
 			dword_47050C = -1;
 			dword_47A738 = 0;
@@ -21730,65 +11950,60 @@ void script_433DB0_ingame_menu(Script *a1)
 //----- (00433E60) --------------------------------------------------------
 void script_433E60_ingame_menu(Script *a1)
 {
-	BOOL v1; // esi@2
-	Sprite *v2; // esi@4
-
 	_438630_read_save_lst();
 	script_433640(a1, SCRIPT_TYPE_DA000001, -80, 153, 3);
-	do
+	while (true)
 	{
-		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_5_RUNNING, 1, 0);
-		if (!v1)
-			break;
-		script_trigger_event(a1, EVT_ENTITY_MOVE, 0, receiver);
-	} while (v1);
-	v2 = a1->sprite;
+        if (!script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_5_RUNNING, 1, 0)) {
+            break;
+        }
+		script_trigger_event(a1, EVT_CMD_ENTITY_MOVE, 0, receiver);
+	}
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v2);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (00433ED0) --------------------------------------------------------
 void script_433ED0_ingame_menu(Script *a1)
 {
-	BOOL v1; // edi@2
-	Sprite *v2; // edi@3
-
 	script_433640(a1, SCRIPT_TYPE_DA000001, -180, 153, 3);
-	do
+	while (true)
 	{
-		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_744, 2, 0);
-		script_trigger_event(a1, EVT_MSG_SHOW_UNIT_HINT, 0, receiver);
-	} while (v1);
-	v2 = a1->sprite;
+        bool res = script_434500(a1, CURSOR_MOBD_OFFSET_744, 2, 0);
+        script_trigger_event(a1, EVT_MSG_SHOW_UNIT_HINT, 0, receiver);
+        if (!res) {
+            break;
+        }
+	}
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v2);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (00433F40) --------------------------------------------------------
 void script_433F40_ingame_menu(Script *a1)
 {
-	BOOL v1; // edi@2
-	Sprite *v2; // edi@3
-
 	script_433640(a1, SCRIPT_TYPE_DA000001, -130, 153, 3);
-	do
+	while (true)
 	{
-		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_3_STILL, 2, 0);
-		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
-	} while (v1);
-	v2 = a1->sprite;
+        bool res = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_3_STILL, 2, 0);
+        script_trigger_event(a1, EVT_MSG_DESELECTED, 0, receiver);
+        if (!res) {
+            break;
+        }
+	}
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v2);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (00433FB0) --------------------------------------------------------
 void script_433FB0_ingame_menu(Script *a1)
 {
-	Sprite *v1; // edi@4
-
 	script_433640(a1, SCRIPT_TYPE_DA000001, 0, 153, 3);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_816, 1, 0))
 	{
@@ -21797,74 +12012,69 @@ void script_433FB0_ingame_menu(Script *a1)
 		if (a1 != task_47C028)
 			script_trigger_event(a1, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
 	}
-	v1 = a1->sprite;
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v1);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (00434040) --------------------------------------------------------
 void script_434040_ingame_menu_load_game_related(Script *a1)
 {
-	BOOL v1; // esi@2
-	Sprite *v2; // esi@4
-
 	_438630_read_save_lst();
 	script_433640(a1, SCRIPT_TYPE_DA000001, -80, 153, 3);
-	do
+	while (true)
 	{
-		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_5_FLASHING, 1, 0);
-		if (!v1)
-			break;
+        if (!script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_5_FLASHING, 1, 0)) {
+            break;
+        }
 		script_trigger_event(a1, EVT_MSG_1549, 0, receiver);
-	} while (v1);
-	v2 = a1->sprite;
+	}
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v2);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (004340B0) --------------------------------------------------------
 void script_4340B0_ingame_menu(Script *a1)
 {
-	BOOL v1; // edi@2
-	Sprite *v2; // edi@3
-
 	script_433640(a1, SCRIPT_TYPE_DA000001, -180, 153, 3);
-	do
+	while (true)
 	{
-		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_744, 2, 0);
+		bool res = script_434500(a1, CURSOR_MOBD_OFFSET_744, 2, 0);
 		script_trigger_event(a1, EVT_MSG_SHOW_UNIT_HINT, 0, receiver);
-	} while (v1);
-	v2 = a1->sprite;
+        if (!res) {
+            break;
+        }
+	}
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v2);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (00434120) --------------------------------------------------------
 void script_434120_ingame_menu(Script *a1)
 {
-	BOOL v1; // edi@2
-	Sprite *v2; // edi@3
-
 	script_433640(a1, SCRIPT_TYPE_DA000001, -130, 153, 3);
-	do
+	while (true)
 	{
-		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_3_STILL, 2, 0);
-		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
-	} while (v1);
-	v2 = a1->sprite;
+		bool res = script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_3_STILL, 2, 0);
+		script_trigger_event(a1, EVT_MSG_DESELECTED, 0, receiver);
+        if (!res) {
+            break;
+        }
+	}
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v2);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (00434190) --------------------------------------------------------
 void script_434190_ingame_menu(Script *a1)
 {
-	Sprite *v1; // edi@4
-
 	script_433640(a1, SCRIPT_TYPE_DA000001, 0, 153, 3);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_816, 1, 0))
 	{
@@ -21873,77 +12083,74 @@ void script_434190_ingame_menu(Script *a1)
 		if (a1 != task_47C028)
 			script_trigger_event(a1, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
 	}
-	v1 = a1->sprite;
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v1);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (00434220) --------------------------------------------------------
 void script_434220_ingame_menu(Script *a1)
 {
-	BOOL v1; // esi@2
-	Sprite *v2; // esi@4
-
 	_438630_read_save_lst();
 	script_4336E0(a1, SCRIPT_TYPE_DA000007, 100, 105, 3);
 	stru29_list_4439F0(a1->sprite, 0, 0, 1, 0);
-	do
+	while (true)
 	{
-		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_1764, 1, 1);
-		if (!v1)
-			break;
+        if (!script_434500(a1, CURSOR_MOBD_OFFSET_1764, 1, 1)) {
+            break;
+        }
 		script_trigger_event(a1, EVT_MSG_1549, 0, receiver);
-	} while (v1);
-	v2 = a1->sprite;
+	}
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v2);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (004342A0) --------------------------------------------------------
 void script_4342A0_ingame_menu(Script *a1)
 {
-	BOOL v1; // edi@2
-	Sprite *v2; // edi@3
-
 	script_4336E0(a1, SCRIPT_TYPE_DA000006, 10, 105, 3);
 	stru29_list_4439F0(a1->sprite, 0, 0, 1, 0);
-	do
+	while (true)
 	{
-		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_1740, 2, 1);
+		bool res = script_434500(a1, CURSOR_MOBD_OFFSET_1740, 2, 1);
 		script_trigger_event(a1, EVT_MSG_SHOW_UNIT_HINT, 0, receiver);
-	} while (v1);
-	v2 = a1->sprite;
+
+        if (!res) {
+            break;
+        }
+	}
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v2);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (00434310) --------------------------------------------------------
 void script_434310_ingame_menu(Script *a1)
 {
-	BOOL v1; // edi@2
-	Sprite *v2; // edi@3
-
 	script_4336E0(a1, SCRIPT_TYPE_DA000006, 10, 139, 3);
 	stru29_list_4439F0(a1->sprite, 0, 0, 1, 0);
-	do
+	while (true)
 	{
-		v1 = script_434500(a1, CURSOR_MOBD_OFFSET_1728, 2, 1);
-		script_trigger_event(a1, EVT_SHOW_UI_CONTROL, 0, receiver);
-	} while (v1);
-	v2 = a1->sprite;
+		bool res = script_434500(a1, CURSOR_MOBD_OFFSET_1728, 2, 1);
+		script_trigger_event(a1, EVT_MSG_DESELECTED, 0, receiver);
+        
+        if (!res) {
+            break;
+        }
+	};
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v2);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 
 //----- (00434390) --------------------------------------------------------
 void script_434390_ingame_menu(Script *a1)
 {
-	Sprite *v1; // edi@3
-
 	script_4336E0(a1, SCRIPT_TYPE_DA000007, 100, 139, 3);
 	stru29_list_4439F0(a1->sprite, 0, 1, 1, 0);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_1752, 1, 1))
@@ -21956,9 +12163,9 @@ void script_434390_ingame_menu(Script *a1)
 		script_trigger_event_group(a1, EVT_MSG_1546_repair_at_station, 0, SCRIPT_TYPE_1);
 		script_trigger_event_group(a1, EVT_MSG_1546_repair_at_station, 0, SCRIPT_TYPE_19);
 	}
-	v1 = a1->sprite;
+
 	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v1);
+	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
 // 47C6F8: using guessed type int dword_47C6F8;
@@ -22031,9 +12238,9 @@ bool script_434500(Script *a1, int mobd_offset, int a3, int a4)
 		for (i = script_get_next_event(v4); i; i = script_get_next_event(v4))
 		{
 			v8 = i->event;
-			if (v8 > (int)EVT_MSG_1511_sidebar_click_category)
+			if (v8 > (int)EVT_MSG_SELECTED)
 			{
-				v9 = v8 - EVT_SHOW_UI_CONTROL;
+				v9 = v8 - EVT_MSG_DESELECTED;
 				if (v9)
 				{
 					if (v9 == 16)
@@ -22044,7 +12251,7 @@ bool script_434500(Script *a1, int mobd_offset, int a3, int a4)
 					v6 |= 8u;
 				}
 			}
-			else if (v8 == EVT_MSG_1511_sidebar_click_category)
+			else if (v8 == EVT_MSG_SELECTED)
 			{
 				v6 |= 4u;
 			}
@@ -22124,7 +12331,7 @@ void EventHandler_PowerStation(Script *receiver, Script *sender, enum SCRIPT_EVE
 	v4 = receiver;
 	v5 = sender;
 	v6 = (Entity *)receiver->param;
-	if (event == EVT_MSG_DAMAGE)
+	if (event == CMD_APPLY_DAMAGE)
 	{
 		entity_402E90_on_damage(v6, param, entity_mode_powerstation_on_death);
 		entity_410520_update_healthbar_color(v6);
@@ -22277,7 +12484,7 @@ void entity_mode_powerstation_on_death(Entity *a1)
 
 	v1 = a1;
 	script_trigger_event_group(a1->script, EVT_MSG_1539, 0, SCRIPT_TANKER_CONVOY_HANDLER);
-	entity_mode_building_default_on_death(v1);
+	entity_mode_building_on_death_default(v1);
 }
 
 //----- (00437DA0) --------------------------------------------------------
@@ -22360,85 +12567,6 @@ int HUNK_FixPointers(void *data, RllcHunk *rllc)
 	return 1;
 }
 
-//----- (00438740) --------------------------------------------------------
-bool _438740_save_lst()
-{
-	int v0; // esi@1
-	FILE *v1; // eax@3
-	FILE *v2; // ebx@3
-	int v3; // edi@4
-	stru175 *v4; // esi@4
-	BOOL result; // eax@8
-
-	v0 = _47C050_array_idx;
-	if (_47C050_array[_47C050_array_idx].str_0[0]
-		&& (sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_array_idx),
-			_41CAE0_prepare_to_load_level(byte_47C230, _47C050_array[v0].level_id))
-		&& (game_state = GAME_STATE::Mission,
-			sprintf(byte_47C230, aSSave_lst, game_data_installation_dir),
-			SetFileAttributesA(byte_47C230, 0x80u),
-			v1 = fopen(byte_47C230, "w"),
-			(v2 = v1) != 0))
-	{
-		fprintf(v1, aActiveslotD, _47C050_array_idx);
-		v3 = 0;
-		v4 = _47C050_array;
-		do
-		{
-			if (v4->str_0[0])
-				fprintf(v2, aSlotDSD, v3, v4, v4->level_id);
-			++v4;
-			++v3;
-		} while ((int)v4 < (int)byte_47C230);
-		fclose(v2);
-		result = 1;
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
-//----- (00438840) --------------------------------------------------------
-bool _438840_save_lst()
-{
-	int v0; // esi@1
-	FILE *v1; // eax@3
-	FILE *v2; // ebx@3
-	int v3; // edi@4
-	stru175 *v4; // esi@4
-	BOOL result; // eax@8
-
-	v0 = _47C050_array_idx;
-	if (_47C050_array[_47C050_array_idx].str_0[0]
-		&& (sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_array_idx),
-			_41CB30_prepare_to_save_level(byte_47C230, _47C050_array[v0].level_id))
-		&& (sprintf(byte_47C230, aSSave_lst, game_data_installation_dir),
-			SetFileAttributesA(byte_47C230, 0x80u),
-			v1 = fopen(byte_47C230, (const char *)aW),
-			(v2 = v1) != 0))
-	{
-		fprintf(v1, aActiveslotD, _47C050_array_idx);
-		v3 = 0;
-		v4 = _47C050_array;
-		do
-		{
-			if (v4->str_0[0])
-				fprintf(v2, aSlotDSD, v3, v4, v4->level_id);
-			++v4;
-			++v3;
-		} while ((int)v4 < (int)byte_47C230);
-		fclose(v2);
-		result = 1;
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
 //----- (004391D0) --------------------------------------------------------
 void _4391D0_mapd_handler(Mapd_stru0 *a1, void *a2)
 {
@@ -22461,7 +12589,6 @@ void drawjob_update_handler_mapd_menu(Bitmap *a1, DrawJob *a2)
 bool LVL_InitMapd()
 {
 	DataMapd *v0; // eax@1
-	BOOL result; // eax@2
 	int v2; // ecx@3
 	Bitmap *v3; // eax@5
 	int v4; // edx@7
@@ -22503,19 +12630,15 @@ bool LVL_InitMapd()
 			_47C380_mapd.mapd_cplc_render_x = 0;
 			mapd_j_4391D0_handler = _4391D0_mapd_handler;
 			j_drawjob_update_handler_mapd_menu = drawjob_update_handler_mapd_menu;
-			result = 1;
+            return true;
 		}
-		else
-		{
-			result = 0;
-		}
+        return false;
 	}
 	else
 	{
 		currently_running_lvl_mapd_valid = 0;
-		result = 1;
+        return true;
 	}
-	return result;
 }
 
 //----- (00439300) --------------------------------------------------------
@@ -22613,1149 +12736,6 @@ void bitmap_list_free()
 	{
 		if (bitmap_list)
 			free(bitmap_list);
-	}
-}
-
-//----- (00439440) --------------------------------------------------------
-bool sound_initialize()
-{
-	int v0; // eax@1
-	int *v1; // esi@1
-	int v2; // eax@3
-	int *v3; // esi@3
-	int v4; // esi@5
-	int *v5; // edi@5
-	Sound *v6; // ecx@9
-	BOOL result; // eax@10
-	int v8; // eax@11
-	int v9; // [sp+Ch] [bp-4h]@5
-
-	v0 = 0;
-	v1 = sound_volumes;
-    for (int i = 0; i < 16; ++i)
-    {
-        //*v1 = (signed __int64)(__FYL2X__((double)(v0 + 1) * 0.05882352941176471, 0.69314718055994528623) * 1000.0);
-        *v1 = 1000.0 * 0.69314718055994528623 * log2((double)(v0 + 1) * 0.05882352941176471);
-        ++v1;
-        ++v0;
-    }
-	v2 = 0;
-	v3 = sound_pans;
-    for (int i = 0; i < 16; ++i)
-	{
-		//*v3 = (signed __int64)(__FYL2X__((double)(v2 + 1) * 0.05882352941176471, 0.69314718055994528623) * 1000.0);
-        *v3 = 1000.0 * 0.69314718055994528623 * log2((double)(v2 + 1) * 0.05882352941176471);
-		++v3;
-		++v2;
-	}
-	v4 = 17;
-	v5 = Sound_47C578;
-	v9 = 17;
-	do
-	{
-		//*v5 = (signed __int64)(__FYL2X__((double)v9 * 0.05882352941176471, 0.69314718055994528623) * -1000.0);
-        *v5 = -1000.0 * 0.69314718055994528623 * log2((double)v9 * 0.05882352941176471);
-		--v4;
-		++v5;
-		v9 = v4;
-	} while (v4 >= 1);
-	sound_initialized = 0;
-	sound_list_last_id = 0;
-	sound_list_end = 0;
-	sound_list_free_pool = (Sound *)&sound_list_end;
-	sound_list_47C3D4 = (Sound *)&sound_list_end;
-	sound_list_head = 0;
-	if (DirectSoundCreate(0, &pds, 0))
-		return 1;
-	if (pds->SetCooperativeLevel(global_hwnd, 1))
-	{
-		pds->Release();
-		pds = 0;
-		return 1;
-	}
-	sound_list = (Sound *)malloc(0xA40u);
-	memset(sound_list, 0, 0xA40u);
-	v6 = sound_list;
-	if (sound_list)
-	{
-		v8 = 0;
-		while (1)
-		{
-			v6[v8].next = &v6[v8 + 1];
-			++v8;
-			if (v8 >= 7)
-				break;
-			v6 = sound_list;
-		}
-		sound_list[7].next = 0;
-		sound_list_end = 0;
-		sound_list_free_pool = (Sound *)&sound_list_end;
-		sound_list_47C3D4 = (Sound *)&sound_list_end;
-		sound_list_head = sound_list;
-		sound_initialized = 1;
-		result = 1;
-	}
-	else
-	{
-		pds->Release();
-		pds = 0;
-		result = 1;
-	}
-	return result;
-}
-
-//----- (00439610) --------------------------------------------------------
-bool LVL_LoadSlv(const char *slv_filename)
-{
-	DataHunk *v1; // eax@2
-	DataSectionOffset *v2; // eax@4
-	sound_stru_2 **v3; // edx@4
-	char *v4; // esi@4
-	int v5; // ecx@7
-	int v6; // ecx@9
-	sound_stru_2 **v7; // eax@10
-	sound_stru_2 *v8; // edx@11
-
-	_47C5C0_can_sound = 0;
-	if (sound_initialized)
-	{
-		v1 = LVL_LoadLevel(slv_filename);
-		faction_slv = v1;
-		if (v1 || (v1 = LVL_LoadLevel(shared_slv_filename), (faction_slv = v1) != 0))
-		{
-			v2 = v1->section_table;
-			v3 = 0;
-			_47C4E0_sounds = 0;
-			v4 = (char *)&v2->ptr;
-			if (v2->ptr)
-			{
-				do
-				{
-					if (!strncmp(aSoun, v2->name, 4u))
-						_47C4E0_sounds = *(sound_stru_2 ***)v4;
-					v5 = *((_DWORD *)v4 + 2);
-					v4 += 8;
-					v2 = (DataSectionOffset *)(v4 - 4);
-				} while (v5);
-				v3 = _47C4E0_sounds;
-			}
-			v6 = 0;
-			if (*v3)
-			{
-				v7 = v3;
-				do
-				{
-					v8 = v7[1];
-					++v7;
-					++v6;
-				} while (v8);
-			}
-			_47C4E8_num_sounds = v6;
-			_47C5C0_can_sound = 1;
-		}
-	}
-	return 1;
-}
-
-//----- (004396C0) --------------------------------------------------------
-int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset, Script *script)
-{
-return 0;
-	void *v5; // eax@0
-	int v6; // eax@3
-	Sound *v7; // eax@4
-	int result; // eax@7
-	sound_stru_2 *v9; // esi@10
-	Sound *v10; // ebx@12
-	IDirectSoundBuffer **v11; // edi@20
-	IDirectSoundBuffer *v12; // eax@21
-	bool v13; // zf@21
-	unsigned int v14; // ecx@25
-	void *v15; // eax@27
-	Sound *v16; // eax@33
-	Sound *v17; // eax@35
-	Sound *v18; // eax@37
-	Sound *v19; // eax@46
-	Sound *v20; // eax@48
-	Sound *v21; // eax@50
-	int v22; // [sp+0h] [bp-3Ch]@3
-	DSBUFFERDESC v23; // [sp+Ch] [bp-30h]@4
-	int v24; // [sp+20h] [bp-1Ch]@1
-	IDirectSoundBuffer *v25; // [sp+24h] [bp-18h]@21
-	void *v26; // [sp+28h] [bp-14h]@24
-	char *v27; // [sp+2Ch] [bp-10h]@24
-	unsigned int v28; // [sp+30h] [bp-Ch]@24
-	const void *v29; // [sp+34h] [bp-8h]@21
-	int a3a; // [sp+38h] [bp-4h]@4
-
-	v24 = a2;
-
-	v7 = 0;
-	v23.dwFlags = 0;
-	v23.dwSize = 0;
-	v23.dwBufferBytes = 0;
-	a3a = 0;
-	v23.dwReserved = 0;
-	v23.lpwfxFormat = 0;
-	if (volume_offset)
-	{
-		if (_47C5C0_can_sound && sound_id < _47C4E8_num_sounds)
-		{
-			v9 = _47C4E0_sounds[sound_id];
-			if (v9 != faction_slv && v9)
-			{
-				v10 = sound_list_head;
-				if (sound_list_head)
-				{
-					sound_list_head = sound_list_head->next;
-					memset(v10, 0, sizeof(Sound));
-					if (!++sound_list_last_id)
-						sound_list_last_id = 1;
-					v10->id = sound_list_last_id;
-					v7 = sound_list_free_pool;
-					v10->next = sound_list_free_pool;
-					v10->prev = (Sound *)&sound_list_end;
-					sound_list_free_pool->prev = v10;
-					sound_list_free_pool = v10;
-				}
-				if (v10)
-				{
-					v10->task = script;
-					v10->sound_volume_offset = volume_offset;
-					v10->sound_pan_offset = pan_offset;
-					v10->field_14 = -2;
-					sound_stru_2_43A710(v9, &v23.lpwfxFormat, &a3a, (unsigned int *)&v23.dwBufferBytes);
-					v11 = &v10->pdsb;
-					v23.dwSize = 20;
-					v23.dwFlags = 232;
-					if (pds->CreateSoundBuffer(&v23, &v10->pdsb, 0))
-					{
-						v16 = v10->next;
-						if (v16)
-							v16->prev = v10->prev;
-						v17 = v10->prev;
-						if (v17)
-							v17->next = v10->next;
-						v18 = sound_list_head;
-						v10->next = sound_list_head;
-						sound_list_head = v10;
-
-						result = 0;
-					}
-					else
-					{
-						v12 = *v11;
-						v13 = *v11 == 0;
-						v29 = (const void *)a3a;
-						v25 = v12;
-						if (v13
-							|| !a3a
-							|| !v23.dwBufferBytes
-							|| v12->Lock(0, v23.dwBufferBytes, &v26, (LPDWORD)&script, (LPVOID *)&v27, (LPDWORD)&v28, 0))
-						{
-							(*v11)->Release();
-							v19 = v10->next;
-							*v11 = 0;
-							if (v19)
-								v19->prev = v10->prev;
-							v20 = v10->prev;
-							if (v20)
-								v20->next = v10->next;
-							v21 = sound_list_head;
-							v10->next = sound_list_head;
-							sound_list_head = v10;
-
-							result = 0;
-						}
-						else
-						{
-							memcpy(v26, v29, (unsigned int)script);
-							v14 = v28;
-							if (v28)
-							{
-								memcpy(v27, (char *)script + (_DWORD)v29, v28);
-								v14 = v28;
-							}
-							v25->Unlock(v26, (DWORD)script, v27, v14);
-							v10->pdsb->SetPan(sound_pans[pan_offset]);
-							v10->pdsb->SetVolume(sound_volumes[volume_offset]);
-							v15 = (void *)dword_47C5D0;
-							if (dword_47C5D0)
-								++v10->field_18;
-							else
-								v15 = (void *)v10->pdsb->Play(0, 0, v24);
-
-							result = v10->id;
-						}
-					}
-				}
-				else
-				{
-
-					result = 0;
-				}
-			}
-			else
-			{
-				result = 0;
-			}
-		}
-		else
-		{
-			result = 0;
-		}
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
-//----- (00439AA0) --------------------------------------------------------
-int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int sound_pan_offset, Script *task)
-{
-	int result; // eax@2
-	Sound *v6; // ebx@3
-	Sound *v7; // eax@6
-	int v8; // eax@10
-	int v9; // esi@11
-	int v10; // eax@11
-	const char *v11; // edi@13
-	int v12; // eax@13
-	int v13; // ecx@13
-	void *v14; // eax@13
-	int v15; // [sp+0h] [bp-10h]@10
-	const char *v16; // [sp+Ch] [bp-4h]@1
-
-
-	char cwd[1024];
-	char name[1024];
-	sprintf(
-		name,
-		(const char *)aSLevelsS,
-		_getcwd(cwd, sizeof(cwd)),
-		name_
-	);
-
-	v16 = name;
-	if (sound_initialized)
-	{
-		v6 = sound_list_head;
-		if (!sound_list_head)
-			goto LABEL_18;
-		sound_list_head = sound_list_head->next;
-		memset(v6, 0, sizeof(Sound));
-		if (!++sound_list_last_id)
-			sound_list_last_id = 1;
-		v6->id = sound_list_last_id;
-		v7 = sound_list_free_pool;
-		v6->next = sound_list_free_pool;
-		v6->prev = (Sound *)&sound_list_end;
-		sound_list_free_pool->prev = v6;
-		sound_list_free_pool = v6;
-		if (v6)
-		{
-			v9 = v6->flags | 8;
-			v6->task = task;
-			v6->field_14 = -3;
-			v6->sound_volume_offset = sound_volume_offset;
-			v6->flags = v9;
-			v10 = v9;
-			if (a2 == 1)
-			{
-				LOBYTE_HEXRAYS(v10) = v9 | 0x10;
-				v6->flags = v10;
-			}
-			v11 = v16;
-			v6->sound_pan_offset = sound_pan_offset;
-			strcpy(v6->filename, v11);
-			v12 = _beginthread((_beginthread_proc_type)_439C10_sound_thread, 0x1000u, v6);
-			v13 = v6->id;
-			v6->hthread = v12;
-			_47C5D4_sound_threaded_snd_id = v13;
-			v14 = (void *)v6->flags;
-			LOBYTE_HEXRAYS(v14) = (unsigned __int8)v14 | 8;
-			v6->flags = (int)v14;
-
-			result = v6->id;
-		}
-		else
-		{
-		LABEL_18:
-			result = 0;
-		}
-	}
-	else
-	{
-		result = 0;
-	}
-	return result;
-}
-
-//----- (00439C10) --------------------------------------------------------
-void _439C10_sound_thread(Sound *a1)
-{
-	Sound *v1; // esi@1
-	char *v2; // ebp@1
-	const char *v3; // ecx@1
-	File *v4; // ecx@5
-	IDirectSoundBuffer **v5; // ebx@7
-	int v6; // eax@8
-	DWORD v7; // edi@9
-	int v8; // eax@9
-	Sound *v9; // ecx@12
-	unsigned int v10; // edi@13
-	unsigned int v11; // eax@15
-	unsigned int v12; // edi@15
-	int v13; // eax@18
-	int v14; // eax@20
-	unsigned int v15; // edx@22
-	int v16; // eax@25
-	int v17; // eax@31
-	int v18; // edi@32
-	int v19; // eax@35
-	DWORD v20; // eax@38
-	DWORD v21; // edi@40
-	int v22; // eax@40
-	Sound *v23; // ecx@43
-	unsigned int v24; // edi@44
-	int v25; // eax@46
-	unsigned int v26; // edx@46
-	unsigned int v27; // edi@46
-	int v28; // eax@46
-	int v29; // eax@55
-	unsigned int v30; // edx@57
-	int v31; // eax@57
-	int v32; // eax@67
-	int v33; // eax@69
-	File *v34; // ecx@71
-	int v35; // ebx@75
-	int v36; // eax@76
-	DWORD v37; // eax@78
-	char *v38; // edi@84
-	char v39; // dl@85
-	unsigned int v40; // ecx@85
-	int v41; // eax@90
-	Sound *v42; // eax@91
-	Sound *v43; // eax@93
-	Sound *v44; // eax@96
-	Sound *v45; // eax@98
-	int num_bytes; // [sp+108h] [bp-70h]@9
-	void *v47; // [sp+10Ch] [bp-6Ch]@9
-	void *v48; // [sp+110h] [bp-68h]@9
-	unsigned int v49; // [sp+114h] [bp-64h]@8
-	unsigned int v50; // [sp+118h] [bp-60h]@1
-	int v51; // [sp+11Ch] [bp-5Ch]@1
-	unsigned int v52; // [sp+120h] [bp-58h]@1
-	unsigned int a3; // [sp+124h] [bp-54h]@6
-	WAVEFORMATEX out_data; // [sp+128h] [bp-50h]@6
-	WAVEFORMATEX v55; // [sp+13Ch] [bp-3Ch]@71
-	DSBCAPS v56; // [sp+150h] [bp-28h]@8
-	DSBUFFERDESC v57; // [sp+164h] [bp-14h]@1
-
-	v1 = a1;
-	v57.dwFlags = 0;
-	v57.dwBufferBytes = 0;
-	v2 = 0;
-	v3 = a1->filename;
-	v57.dwReserved = 0;
-	v52 = 0;
-	v50 = 0;
-	v51 = 0;
-	v57.dwSize = 0;
-	v57.lpwfxFormat = 0;
-	if (a1 != (Sound *)0xFFFFFFBC && *v3)
-		v1->file = File::open(v3);
-	else
-		a1->file = 0;
-	v4 = v1->file;
-	if (!v4 || !file_read_wav(v4, &out_data, &a3))
-	{
-		v1->file->close();
-		v44 = v1->next;
-		v1->flags = v1->flags & 0xFFFFFFF7 | 0x40;
-		if (v44)
-			v44->prev = v1->prev;
-		v45 = v1->prev;
-		if (v45)
-			v45->next = v1->next;
-		v1->next = sound_list_head;
-		sound_list_head = v1;
-		_endthread();
-	}
-	v1->field_40 = a3;
-	v5 = &v1->pdsb;
-	v57.dwBufferBytes = 3 * out_data.nAvgBytesPerSec;
-	v57.lpwfxFormat = &out_data;
-	v57.dwSize = 20;
-	v57.dwFlags = 232;
-	if (pds->CreateSoundBuffer(&v57, &v1->pdsb, 0))
-	{
-		v1->file->close();
-		v42 = v1->next;
-		v1->flags = v1->flags & 0xFFFFFFF7 | 0x40;
-		if (v42)
-			v42->prev = v1->prev;
-		v43 = v1->prev;
-		if (v43)
-			v43->next = v1->next;
-		v1->next = sound_list_head;
-		sound_list_head = v1;
-		_endthread();
-	}
-	(*v5)->SetPan(sound_pans[v1->sound_pan_offset]);
-	(*v5)->SetVolume(sound_volumes[v1->sound_volume_offset]);
-	v6 = v1->flags;
-	LOBYTE_HEXRAYS(v6) = v6 | 8;
-	v56.dwSize = 20;
-	v1->flags = v6;
-	(*v5)->GetCaps(&v56);
-	(*v5)->GetCurrentPosition((LPDWORD)&v52, (LPDWORD)&v50);
-	v49 = v1->field_40;
-	if (!v52)
-	{
-		v7 = v56.dwBufferBytes - v50;
-		v8 = (*v5)->Lock(v50, v56.dwBufferBytes - v50, &v48, (LPDWORD)&a1, &v47, (LPDWORD)&num_bytes, 0);
-		if (v8 == DSERR_BUFFERLOST)
-		{
-			(*v5)->Restore();
-			v8 = (*v5)->Lock(v50, v7, &v48, (LPDWORD)&a1, &v47, (LPDWORD)&num_bytes, 0);
-		}
-		if (v8)
-		{
-			v17 = v1->flags;
-			LOBYTE_HEXRAYS(v17) = v17 | 0x20;
-			v1->flags = v17;
-		}
-		else
-		{
-			v9 = a1;
-			if (a1)
-			{
-				v10 = v49;
-				if (v49 < (unsigned int)a1)
-					v9 = (Sound *)v49;
-				v11 = v1->file->read(v48, (int)v9);
-				v9 = a1;
-				v12 = v10 - v11;
-				v49 = v12;
-				v2 = (char *)a1 + v50;
-				if ((unsigned int)a1 + v50 >= v56.dwBufferBytes)
-					v2 -= v56.dwBufferBytes;
-				if (v11 < (unsigned int)a1)
-				{
-					memset((char *)v48 + v11, 0, (unsigned int)a1 - v11);
-					v13 = v1->flags;
-					v9 = a1;
-					v12 = v49;
-					LOBYTE_HEXRAYS(v13) = v13 | 0x20;
-					v1->flags = v13;
-				}
-				if (v47)
-				{
-					v14 = num_bytes;
-					if (v12 < num_bytes)
-						v14 = v12;
-					v15 = v1->file->read(v47, v14);
-					v49 = v12 - v15;
-					v2 = (char *)(v50 + num_bytes);
-					if (v50 + num_bytes >= v56.dwBufferBytes)
-						v2 -= v56.dwBufferBytes;
-					if (v15 < num_bytes)
-					{
-						memset((char *)v47 + v15, 0, num_bytes - v15);
-						v16 = v1->flags;
-						LOBYTE_HEXRAYS(v16) = v16 | 0x20;
-						v1->flags = v16;
-					}
-					v9 = a1;
-				}
-			}
-			(*v5)->Unlock(v48, (DWORD)v9, v47, num_bytes);
-			if (dword_47C5D0)
-				++v1->field_18;
-			else
-				(*v5)->Play(0, 0, 1);
-			v1->flags &= 0xFFFFFFF7;
-			Sleep(0xAu);
-		}
-	}
-	v18 = v51;
-	do
-	{
-		if (v1->flags & 0x20)
-			goto LABEL_89;
-		while (!v18)
-		{
-			v19 = v1->flags;
-			if (v19 & 0x20)
-				break;
-			if (!(v19 & 4))
-			{
-				LOBYTE_HEXRAYS(v19) = v19 | 8;
-				v1->flags = v19;
-				v1->pdsb->GetCurrentPosition((LPDWORD)&v52, (LPDWORD)&v50);
-				if (v52 < (unsigned int)v2)
-					v20 = v56.dwBufferBytes + v52 - (_DWORD)v2;
-				else
-					v20 = v52 - (_DWORD)v2;
-				v21 = v20;
-				v22 = v1->pdsb->Lock((DWORD)v2, v20, &v48, (LPDWORD)&a1, &v47, (LPDWORD)&num_bytes, 0);
-				if (v22 == DSERR_BUFFERLOST)
-				{
-					v1->pdsb->Restore();
-					v22 = v1->pdsb->Lock((DWORD)v2, v21, &v48, (LPDWORD)&a1, &v47, (LPDWORD)&num_bytes, 0);
-				}
-				if (!v22)
-				{
-					v23 = a1;
-					if (a1)
-					{
-						v24 = v49;
-						if (v49 < (unsigned int)a1)
-							v23 = (Sound *)v49;
-						v25 = v1->file->read(v48, (int)v23);
-						v23 = a1;
-						v26 = v25;
-						v27 = v24 - v25;
-						v28 = v1->flags & 0x10;
-						v49 = v27;
-						if (v28)
-							v2 += v26;
-						else
-							v2 = &v2[(_DWORD)a1];
-						if ((unsigned int)v2 >= v56.dwBufferBytes)
-							v2 -= v56.dwBufferBytes;
-						if (v26 < (unsigned int)a1 && !v28)
-						{
-							memset((char *)v48 + v26, 0, (unsigned int)a1 - v26);
-							v23 = a1;
-							v27 = v49;
-						}
-						v51 = v26 == 0;
-						if (v47)
-						{
-							v29 = num_bytes;
-							if (v27 < num_bytes)
-								v29 = v27;
-							v30 = v1->file->read(v47, v29);
-							v31 = v1->flags & 0x10;
-							v49 = v27 - v30;
-							if (v31)
-								v2 += v30;
-							else
-								v2 += num_bytes;
-							if ((unsigned int)v2 >= v56.dwBufferBytes)
-								v2 -= v56.dwBufferBytes;
-							if (v30 < num_bytes && !v31)
-								memset((char *)v47 + v30, 0, num_bytes - v30);
-							v51 = v30 == 0;
-							v23 = a1;
-						}
-					}
-					v1->pdsb->Unlock(v48, (DWORD)v23, v47, num_bytes);
-				}
-				v32 = v1->flags;
-				v18 = v51;
-				LOBYTE_HEXRAYS(v32) = v32 & 0xF7;
-				v1->flags = v32;
-			}
-			Sleep(0x64u);
-		}
-		v33 = v1->flags;
-		if (!(v33 & 0x20))
-		{
-			if (v33 & 0x10)
-			{
-				v34 = v1->file;
-				v18 = 0;
-				v49 = v1->field_40;
-				v51 = 0;
-				v34->seek(0, 0);
-				file_read_wav(v1->file, &v55, &v50);
-			}
-			else
-			{
-				v18 = 1;
-				v51 = 1;
-			}
-		}
-	} while (!v18);
-	if (!(v1->flags & 0x20))
-	{
-		v35 = 0;
-		do
-		{
-			v36 = v1->flags;
-			if (v36 & 0x20)
-				break;
-			LOBYTE_HEXRAYS(v36) = v36 | 8;
-			v1->flags = v36;
-			v1->pdsb->GetCurrentPosition((LPDWORD)&v52, (LPDWORD)&v50);
-			if (v52 < (unsigned int)v2)
-				v37 = v56.dwBufferBytes + v52 - (_DWORD)v2;
-			else
-				v37 = v52 - (_DWORD)v2;
-			if (!v1->pdsb->Lock((DWORD)v2, v37, &v48, (LPDWORD)&a1, &v47, (LPDWORD)&num_bytes, 0))
-			{
-				if (a1)
-				{
-					memset(v48, 0, (unsigned int)a1);
-					v2 = &v2[(_DWORD)a1];
-					if ((unsigned int)v2 >= v56.dwBufferBytes)
-						v2 -= v56.dwBufferBytes;
-					v38 = (char *)v47;
-					if (v47)
-					{
-						v39 = num_bytes;
-						v40 = (unsigned int)num_bytes >> 2;
-						memset(v47, 0, 4 * ((unsigned int)num_bytes >> 2));
-						memset(&v38[4 * v40], 0, v39 & 3);
-						v2 += num_bytes;
-						if ((unsigned int)v2 >= v56.dwBufferBytes)
-							v2 -= v56.dwBufferBytes;
-					}
-				}
-				v1->pdsb->Unlock(v48, (DWORD)a1, v47, num_bytes);
-			}
-			v1->flags &= 0xFFFFFFF7;
-			Sleep(0x64u);
-			++v35;
-		} while (v35 < 50);
-	}
-LABEL_89:
-	v1->pdsb->Stop();
-	v1->file->close();
-	v41 = v1->flags;
-	v1->file = 0;
-	LOBYTE_HEXRAYS(v41) = v41 | 0x40;
-	v1->flags = v41;
-	_endthread();
-}
-
-//----- (0043A2B0) --------------------------------------------------------
-void sound_stop(int sound_id)
-{
-	Sound *v1; // esi@3
-	int v2; // eax@7
-	int v3; // eax@10
-
-	if (sound_id && sound_initialized)
-	{
-		v1 = sound_list_free_pool;
-		if (sound_list_free_pool->id == sound_id)
-		{
-		LABEL_6:
-			if (v1->field_14 == -3)
-			{
-				v2 = v1->flags;
-				LOBYTE_HEXRAYS(v2) = v2 | 0x20;
-				v1->flags = v2;
-			}
-			else
-			{
-				v1->pdsb->Stop();
-				v1->pdsb->SetCurrentPosition(0);
-			}
-			if (v1->field_18)
-			{
-				v3 = v1->flags;
-				v1->field_18 = 0;
-				LOBYTE_HEXRAYS(v3) = v3 & 0xFB;
-				v1->flags = v3;
-			}
-		}
-		else
-		{
-			while ((int *)v1 != &sound_list_end)
-			{
-				v1 = v1->next;
-				if (v1->id == sound_id)
-					goto LABEL_6;
-			}
-		}
-	}
-}
-
-//----- (0043A320) --------------------------------------------------------
-void sound_free_sounds()
-{
-	Sound *v0; // ecx@1
-	Sound *v1; // esi@3
-
-	v0 = sound_list_free_pool;
-	if (sound_list_free_pool)
-	{
-		do
-		{
-			if ((int *)v0 == &sound_list_end)
-				break;
-			v1 = v0->next;
-			sound_list_remove(v0);
-			v0 = v1;
-		} while (v1);
-	}
-	_47C5C0_can_sound = 0;
-	if (faction_slv)
-	{
-		free(faction_slv);
-		faction_slv = 0;
-	}
-}
-
-//----- (0043A370) --------------------------------------------------------
-void _43A370_process_sound()
-{
-	Sound *v0; // esi@1
-	IDirectSoundBuffer *v1; // eax@4
-	Sound *v2; // edi@7
-	IDirectSoundBuffer *v3; // eax@9
-	int *v4; // edi@9
-	int v5; // ebx@9
-	int v6; // ebp@9
-	int *v7; // ecx@9
-	int v8; // eax@10
-	IDirectSoundBuffer *v9; // ecx@15
-	int v10; // eax@15
-	IDirectSoundBuffer *v11; // eax@19
-	int *v12; // edi@19
-	int v13; // ebx@19
-	int v14; // ebp@19
-	int *v15; // ecx@19
-	int v16; // eax@20
-	IDirectSoundBuffer *v17; // ecx@25
-	int v18; // eax@25
-	int i; // [sp+1Ch] [bp-8h]@1
-	int v20; // [sp+20h] [bp-4h]@9
-
-	v0 = sound_list_free_pool;
-	for (i = 0; (int *)v0 != &sound_list_end; v0 = v0->next)
-	{
-		if (!v0)
-			break;
-		if (!(v0->flags & 8))
-		{
-			v1 = v0->pdsb;
-			if (v1)
-			{
-				v1->GetStatus((LPDWORD)&i);
-				if (i & 1 || v0->flags & 4)
-				{
-					if (v0->field_20)
-					{
-						v3 = v0->pdsb;
-						v4 = &v0->sound_volume_offset;
-						--v0->field_20;
-						v3->GetVolume((LPLONG)&v0->sound_volume_offset);
-						v5 = 100000;
-						v6 = 0;
-						v20 = 17;
-						v7 = sound_volumes;
-						while (1)
-						{
-							v8 = abs(*v7 - *v4);
-							if (!v8)
-								break;
-							if (v5 > v8)
-							{
-								v20 = v6;
-								v5 = v8;
-							}
-							++v7;
-							++v6;
-							if ((int)v7 >= (int)&sound_list_head)
-							{
-								v6 = v20;
-								break;
-							}
-						}
-						v9 = v0->pdsb;
-						v10 = v0->field_24 + v6;
-						*v4 = v10;
-						v9->SetVolume(sound_pans[v10]);
-						if (!v0->field_20 && v0->task)
-							script_trigger_event(0, EVT_MSG_sound_neg4, 0, v0->task);
-					}
-					if (v0->field_2C)
-					{
-						v11 = v0->pdsb;
-						v12 = &v0->sound_pan_offset;
-						--v0->field_2C;
-						v11->GetPan((LPLONG)&v0->sound_pan_offset);
-						v13 = 100000;
-						v14 = 0;
-						v20 = 16;
-						v15 = sound_pans;
-						while (1)
-						{
-							v16 = abs(*v15 - *v12);
-							if (!v16)
-								break;
-							if (v13 > v16)
-							{
-								v20 = v14;
-								v13 = v16;
-							}
-							++v15;
-							++v14;
-							if ((int)v15 >= (int)&sound_list)
-							{
-								v14 = v20;
-								break;
-							}
-						}
-						v17 = v0->pdsb;
-						v18 = v0->field_30 + v14;
-						*v12 = v18;
-						v17->SetPan(sound_pans[v18]);
-						if (!v0->field_2C)
-						{
-							if (v0->task)
-								script_trigger_event(0, EVT_MSG_sound_neg5, 0, v0->task);
-						}
-					}
-				}
-				else
-				{
-					v2 = v0->next;
-					sound_list_remove(v0);
-					v0 = v2;
-				}
-			}
-		}
-	}
-}
-
-//----- (0043A510) --------------------------------------------------------
-void sound_deinit()
-{
-	Sound *v0; // ecx@1
-	Sound *v1; // esi@3
-
-	v0 = sound_list_free_pool;                    // INLINED 43A320
-	if (sound_list_free_pool)
-	{
-		do
-		{
-			if ((int *)v0 == &sound_list_end)
-				break;
-			v1 = v0->next;
-			sound_list_remove(v0);
-			v0 = v1;
-		} while (v1);
-	}
-	_47C5C0_can_sound = 0;
-	if (faction_slv)
-	{
-		free(faction_slv);
-		faction_slv = 0;
-	}
-	if (sound_initialized == 1)
-	{
-		sound_initialized = 0;
-		pds->Release();
-		pds = 0;
-		free(sound_list);
-	}
-}
-
-//----- (0043A590) --------------------------------------------------------
-bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3)
-{
-	File *v3; // ebx@1
-	unsigned int v4; // ebp@1
-	__int16 *v5; // esi@8
-	char v7[4]; // [sp+10h] [bp-Ch]@2
-	unsigned int v8; // [sp+14h] [bp-8h]@3
-	void *out_dataa; // [sp+18h] [bp-4h]@1
-
-	v3 = file;
-	v4 = 0;
-	out_dataa = out_data;
-	if (file)
-	{
-		file->read(v7, 4);
-		if (!memcmp(RIFF, v7, 4u))
-		{
-			v3->read(&v8, 4);
-			v3->read(v7, 4);
-			if (!memcmp(WAVE, v7, 4u) && v3->read(v7, 4) == 4)
-			{
-				while (v4 < 0x20)
-				{
-					if (!memcmp(fmt, v7, 4u))
-					{
-						v3->read(&v8, 4);
-						if (v8 < 0xE)
-							return 0;
-						v5 = (__int16 *)out_dataa;
-						v3->read(out_dataa, 14);
-						if (*v5 == 1)
-						v3->read(v5 + 7, 2);
-						v4 = 0;
-						if (v3->read(v7, 4) == 4)
-						{
-							while (v4 < 0x20)
-							{
-								if (!memcmp(aData, v7, 4u))
-								{
-									v3->read(&v8, 4);
-									if (a3)
-										*a3 = v8;
-									return 1;
-								}
-								++v4;
-								if (v3->read(v7, 4) != 4)
-									break;
-							}
-						}
-					}
-					++v4;
-					if (v3->read(v7, 4) != 4)
-						return 0;
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-//----- (0043A710) --------------------------------------------------------
-bool sound_stru_2_43A710(sound_stru_2 *a1, WAVEFORMATEX **a2, int *a3, unsigned int *out_buffer_size)
-{
-	char *v4; // eax@7
-	unsigned int v5; // edi@9
-	int v6; // ecx@10
-	unsigned int v7; // esi@10
-	WAVEFORMATEX *v8; // eax@10
-
-	if (a2)
-		*a2 = 0;
-	if (a3)
-		*a3 = 0;
-	if (out_buffer_size)
-		*out_buffer_size = 0;
-	v4 = (char *)&a1->data;
-	if (a1->riff_fourcc == 0x46464952 && a1->data_fourcc == 0x45564157)// 'RIFF' 'WAVE'
-	{
-		v5 = (unsigned int)&v4[a1->riff_chunk_size - 4];
-		if ((unsigned int)v4 < v5)
-		{
-			while (1)
-			{
-				v6 = *(_DWORD *)v4;
-				v7 = *((_DWORD *)v4 + 1);
-				v8 = (WAVEFORMATEX *)(v4 + 8);
-				if (v6 == 0x20746D66)                 // 'fmt '
-				{
-					if (a2 && !*a2)
-					{
-						if (v7 < 0xE)
-							return 0;
-						*a2 = v8;
-						if ((!a3 || *a3) && (!out_buffer_size || *out_buffer_size))
-							return 1;
-					}
-				}
-				else if (v6 == 0x61746164 && (a3 && !*a3 || out_buffer_size && !*out_buffer_size))// 'data'
-				{
-					if (a3)
-						*a3 = (int)v8;
-					if (out_buffer_size)
-						*out_buffer_size = v7;
-					if (!a2 || *a2)
-						return 1;
-				}
-				v4 = (char *)v8 + ((v7 + 1) & 0xFFFFFFFE);
-				if ((unsigned int)v4 >= v5)
-					return 0;
-			}
-		}
-	}
-	return 0;
-}
-
-//----- (0043A800) --------------------------------------------------------
-void sound_list_43A800(int a1)
-{
-	Sound *v1; // eax@3
-	IDirectSoundBuffer *v2; // edx@6
-
-	if (_47C5D4_sound_threaded_snd_id && sound_initialized)
-	{
-		v1 = sound_list_free_pool;
-		if (sound_list_free_pool->id == _47C5D4_sound_threaded_snd_id)
-		{
-		LABEL_6:
-			v2 = v1->pdsb;
-			v1->sound_volume_offset = a1;
-			if (v2)
-				v2->SetVolume(sound_volumes[a1]);
-		}
-		else
-		{
-			while ((int *)v1 != &sound_list_end)
-			{
-				v1 = v1->next;
-				if (v1->id == _47C5D4_sound_threaded_snd_id)
-					goto LABEL_6;
-			}
-		}
-	}
-}
-// 47C398: using guessed type int sound_list_end;
-
-//----- (0043A850) --------------------------------------------------------
-void sound_list_remove(Sound *a1)
-{
-	Sound *v1; // esi@1
-	int v2; // edx@5
-	File *v3; // ecx@7
-	IDirectSoundBuffer *v4; // eax@9
-	Sound *v5; // eax@13
-	Sound *v6; // eax@15
-
-	v1 = a1;
-	if (a1)
-	{
-		if (_47C5D4_sound_threaded_snd_id == a1->id)
-			_47C5D4_sound_threaded_snd_id = 0;
-		if (a1->field_14 == -3)
-		{
-			v2 = a1->flags | 0x20;
-			a1->flags = v2;
-			if (!(v2 & 0x40))
-			{
-				do
-					Sleep(0x14u);
-				while (!(v1->flags & 0x40));
-			}
-			v3 = v1->file;
-			if (v3)
-			{
-				v3->close();
-				v1->file = 0;
-			}
-		}
-		v4 = v1->pdsb;
-		if (v4)
-		{
-			v4->Stop();
-			v1->pdsb->Release();
-			v1->pdsb = 0;
-		}
-		if (v1->task)
-			script_trigger_event(0, EVT_MSG_sound_neg3, 0, v1->task);
-		v5 = v1->next;
-		v1->task = 0;
-		if (v5)
-			v5->prev = v1->prev;
-		v6 = v1->prev;
-		if (v6)
-			v6->next = v1->next;
-		v1->next = sound_list_head;
-		sound_list_head = v1;
 	}
 }
 
@@ -23877,7 +12857,7 @@ LABEL_21:
 	v8 = v4 + a1->y;
 	v1->field_88_unused = 1;
 	v1->y = v8;
-	input_4283A0_set_cursor_pos(v7 >> 8, v8 >> 8);
+	input_set_mouse_pos(v7 >> 8, v8 >> 8);
 }
 
 //----- (0043C040) --------------------------------------------------------
@@ -23923,7 +12903,7 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 			case EVT_MOUSE_HOVER:
                 stru29_list_443AE0_find_by_sprite(a1->sprite);
 				break;
-			case EVT_MSG_1511_sidebar_click_category:
+			case EVT_MSG_SELECTED:
 				v3 = 1;
 				break;
 			case EVT_MSG_1528:
@@ -23973,7 +12953,7 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 			{
 			case EVT_MOUSE_HOVER:
                 stru29_list_443AE0_find_by_sprite(a1->sprite);
-			case EVT_MSG_1511_sidebar_click_category:
+			case EVT_MSG_SELECTED:
 				v3 = 1;
 				break;
 			case EVT_MSG_1528:
@@ -24020,7 +13000,7 @@ void script_43CF50_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5->items->palette);
+	_40E400_set_palette(v5->items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
@@ -24042,8 +13022,12 @@ void script_43D090_mobd45_directx_ipx(Script *a1)
 
 	if (dword_46E404)
 	{
-		pcbBuffer = 12;
-		GetUserNameA(netz_default_player_name, &pcbBuffer);
+        netz_default_player_name[0] = 0;
+
+        auto username = OsGetUserName();
+        strncat(netz_default_player_name, username.c_str(), 12);
+		//pcbBuffer = 12;
+		//GetUserNameA(netz_default_player_name, &pcbBuffer);
 	}
 	v1 = a1->sprite;
 	v2 = sprite_create(MOBD_45, 0, a1->sprite);
@@ -24072,7 +13056,7 @@ void script_43D090_mobd45_directx_ipx(Script *a1)
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
                 script_sleep(a1, 3);
 				v7 = LVL_FindMapd();
-				_40E400_set_palette(&v7[4].items->palette);
+				_40E400_set_palette(v7[4].items->GetPalette());
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
 				cplc_select(4);
 				cplc_406320();
@@ -24123,7 +13107,7 @@ void script_43D270_mobd45_directx_serial(Script *a1)
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
                 script_sleep(a1, 3);
 				v6 = LVL_FindMapd();
-				_40E400_set_palette(&v6[5].items->palette);
+				_40E400_set_palette(v6[5].items->GetPalette());
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)5, 0, -10);
 				cplc_select(5);
 				cplc_406320();
@@ -24176,7 +13160,7 @@ void script_43D430_mobd45_directx_modem(Script *a1)
 				bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
                 script_sleep(a1, 3);
 				v6 = LVL_FindMapd();
-				_40E400_set_palette(&v6[6].items->palette);
+				_40E400_set_palette(v6[6].items->GetPalette());
 				_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 				cplc_select(6);
 				cplc_406320();
@@ -24221,7 +13205,7 @@ void script_43D5F0_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5->items->palette);
+	_40E400_set_palette(v5->items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
@@ -24256,7 +13240,7 @@ void script_43D740_mobd45_evt17(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5[6].items->palette);
+	_40E400_set_palette(v5[6].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
@@ -24291,7 +13275,7 @@ void script_43D890_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5[6].items->palette);
+	_40E400_set_palette(v5[6].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
@@ -24395,7 +13379,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v6 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -24417,7 +13401,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 		v11 = v10->y >> 8;
 		v12 = v10->x >> 8;
 		v10->field_88_unused = 1;
-		input_4283A0_set_cursor_pos(v12, v11);
+		input_set_mouse_pos(v12, v11);
 		dword_47C6C4 = 0;
 		v13 = 0;
 		do
@@ -24542,7 +13526,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v4 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -24581,7 +13565,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 		v16 = v15->y >> 8;
 		v17 = v15->x >> 8;
 		v15->field_88_unused = 1;
-		input_4283A0_set_cursor_pos(v17, v16);
+		input_set_mouse_pos(v17, v16);
 		dword_47C6C4 = 0;
 		_47C664_ingame_menu_sprite->field_88_unused = 1;
 		_47C664_ingame_menu_sprite->x = 86016;
@@ -24781,7 +13765,7 @@ void script_43E230_mobd45_modems(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(v1, 3);
 	v10 = LVL_FindMapd();
-	_40E400_set_palette(&v10[6].items->palette);
+	_40E400_set_palette(v10[6].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
@@ -24851,7 +13835,7 @@ void script_43E470_mobd45_modems(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v9 = LVL_FindMapd();
-	_40E400_set_palette(&v9[6].items->palette);
+	_40E400_set_palette(v9[6].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)6, 0, -10);
 	cplc_select(6);
 	cplc_406320();
@@ -24885,7 +13869,7 @@ void script_43E670_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5->items->palette);
+	_40E400_set_palette(v5->items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
@@ -25006,11 +13990,11 @@ void script_43E890_mobd45_modems(Script *a1)
 				if (v3 > 0)
 					--v3;
 				break;
-			case EVT_SHOW_UI_CONTROL:
+			case EVT_MSG_DESELECTED:
 				if (v3 < netz_modem_list_used - 10)
 					++v3;
 				break;
-			case EVT_MSG_1511_sidebar_click_category:
+			case EVT_MSG_SELECTED:
 				if (*(_DWORD *)j->param < netz_modem_list_used)
 					v12 = *(_DWORD *)j->param;
 				break;
@@ -25066,7 +14050,7 @@ void script_43EA90_mobd45(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v3 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -25111,7 +14095,7 @@ void script_43EB80_mobd45(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(a1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v3 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -25121,7 +14105,7 @@ void script_43EB80_mobd45(Script *a1)
 				script_discard_event(i);
 			}
 		} while (!v3);
-		script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47C664_ingame_menu_sprite->script);
+		script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47C664_ingame_menu_sprite->script);
 	}
 }
 
@@ -25158,7 +14142,7 @@ void script_43EC70_mobd45(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v4 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -25168,7 +14152,7 @@ void script_43EC70_mobd45(Script *a1)
 				script_discard_event(i);
 			}
 		} while (!v4);
-		script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, &a1, _47C664_ingame_menu_sprite->script);
+		script_trigger_event(0, EVT_MSG_SELECTED, &a1, _47C664_ingame_menu_sprite->script);
 	}
 }
 
@@ -25289,7 +14273,7 @@ void script_43EE90_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(v1, 3);
 	v12 = LVL_FindMapd();
-	_40E400_set_palette(&v12[9].items->palette);
+	_40E400_set_palette(v12[9].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)9, 0, -10);
 	cplc_select(9);
 	cplc_406320();
@@ -25336,9 +14320,9 @@ void script_43F0E0_mobd45_modems(Script *a1)
 
 		v6 = (void *)netz_42F8E0(0);
 
-		ShowCursor(1);
+		OsShowCursor(true);
 		netz_42F9C0(0, 0);
-		ShowCursor(0);
+		OsShowCursor(false);
 	} while (v6);
 	v8 = netz_47C6C0_mapd_idx;
 	netz_47C6C0_mapd_idx = 8;
@@ -25348,7 +14332,7 @@ void script_43F0E0_mobd45_modems(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v11 = LVL_FindMapd();
-	_40E400_set_palette(&v11[8].items->palette);
+	_40E400_set_palette(v11[8].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
@@ -25391,9 +14375,9 @@ void script_43F330_mobd45(Script *a1)
 			v3 = v3->next;
 		}
 
-		ShowCursor(1);
+		OsShowCursor(true);
 		v6 = netz_42F8E0(1);
-		ShowCursor(0);
+		OsShowCursor(false);
 	} while (v6);
 	v7 = netz_47C6C0_mapd_idx;
 	netz_47C6C0_mapd_idx = 7;
@@ -25403,7 +14387,7 @@ void script_43F330_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v10 = LVL_FindMapd();
-	_40E400_set_palette(&v10[7].items->palette);
+	_40E400_set_palette(v10[7].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 	cplc_select(7);
 	cplc_406320();
@@ -25439,7 +14423,7 @@ void script_43F520_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v6 = LVL_FindMapd();
-	_40E400_set_palette(&v6[10].items->palette);
+	_40E400_set_palette(v6[10].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)10, 0, -10);
 	cplc_select(10);
 	cplc_406320();
@@ -25474,7 +14458,7 @@ void script_43F670_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5[1].items->palette);
+	_40E400_set_palette(v5[1].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 	cplc_select(1);
 	cplc_406320();
@@ -25482,7 +14466,6 @@ void script_43F670_mobd45(Script *a1)
 	script_4084A0_animation(a1);
 	script_terminate(a1);
 }
-// 47C6C8: using guessed type int stru29_list_initialized;
 
 //----- (0043F7C0) --------------------------------------------------------
 void script_43F7C0(Script *a1)
@@ -25610,7 +14593,7 @@ void script_43F9E0_mobd45(Script *a1)
 				script_discard_event(i);
 			}
 		} while (!v4);
-		script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, &a1, _47C664_ingame_menu_sprite->script);
+		script_trigger_event(0, EVT_MSG_SELECTED, &a1, _47C664_ingame_menu_sprite->script);
 	}
 }
 
@@ -25727,7 +14710,7 @@ void script_43FAD0_mobd45_evt5(Script *a1)
 					{
 						if (i->event != EVT_MSG_MISSION_FAILED)
 						{
-							if (i->event == EVT_MSG_1511_sidebar_click_category)
+							if (i->event == EVT_MSG_SELECTED)
 							{
 								if (*(_DWORD *)i->param < dword_47C660)
 									dword_47C608 = *(_DWORD *)i->param;
@@ -25777,7 +14760,7 @@ void script_43FDE0_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5[1].items->palette);
+	_40E400_set_palette(v5[1].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 	cplc_select(1);
 	cplc_406320();
@@ -25853,7 +14836,7 @@ __debugbreak();
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v14 = LVL_FindMapd();
-	_40E400_set_palette(&v14[8].items->palette);
+	_40E400_set_palette(v14[8].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
@@ -25908,7 +14891,7 @@ void script_4402A0_mobd45_evt5(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v11 = LVL_FindMapd();
-		_40E400_set_palette(&v11[7].items->palette);
+		_40E400_set_palette(v11[7].items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 		cplc_select(7);
 		cplc_406320();
@@ -25957,7 +14940,7 @@ void script_4404D0_mobd45_evt8(Script *a1)
 			v3->x = 10240;
 			v3->y = 62976;
 		}
-		v4 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441780_mobd45_evt8, SCRIPT_COROUTINE, 0);
+		v4 = sprite_create_scripted(MOBD_45, v2, script_441780_mobd45_evt8, SCRIPT_COROUTINE, 0);
 		if (v4)
 		{
 			v4->x = 45056;
@@ -25982,7 +14965,7 @@ void script_4404D0_mobd45_evt8(Script *a1)
 
 		netz_42F8E0(1);
 	}
-	v9 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_440810_mobd45, SCRIPT_COROUTINE, 0);
+	v9 = sprite_create_scripted(MOBD_45, v2, script_440810_mobd45, SCRIPT_COROUTINE, 0);
 	if (v9)
 	{
 		v10 = v9->script;
@@ -25993,13 +14976,13 @@ void script_4404D0_mobd45_evt8(Script *a1)
 	{
 		game_state = GAME_STATE::GAME_3;
 	}
-	v11 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441470_mobd45_evt8, SCRIPT_COROUTINE, 0);
+	v11 = sprite_create_scripted(MOBD_45, v2, script_441470_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v11)
 	{
 		v11->x = 75264;
 		v11->y = 17152;
 	}
-	v12 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_440CA0_mobd45_evt8, SCRIPT_COROUTINE, 0);
+	v12 = sprite_create_scripted(MOBD_45, v2, script_440CA0_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v12)
 	{
 		v12->x = 14080;
@@ -26008,7 +14991,7 @@ void script_4404D0_mobd45_evt8(Script *a1)
 		if (v13)
 			v13->script_type = v1->script_type;
 	}
-	v14 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441050_mobd45_evt8, SCRIPT_COROUTINE, 0);
+	v14 = sprite_create_scripted(MOBD_45, v2, script_441050_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v14)
 	{
 		v14->x = 70656;
@@ -26020,20 +15003,20 @@ void script_4404D0_mobd45_evt8(Script *a1)
 	}
 	else
 	{
-		v15 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441680_mobd45_evt8, SCRIPT_COROUTINE, 0);
+		v15 = sprite_create_scripted(MOBD_45, v2, script_441680_mobd45_evt8, SCRIPT_COROUTINE, 0);
 		if (v15)
 		{
 			v15->x = 97280;
 			v15->y = 38400;
 		}
 	}
-	v16 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_441260_mobd45_evt8, SCRIPT_COROUTINE, 0);
+	v16 = sprite_create_scripted(MOBD_45, v2, script_441260_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v16)
 	{
 		v16->x = 58368;
 		v16->y = 38400;
 	}
-	v17 = sprite_create_scripted(MOBD_45, v2, (void(*)(Script *))script_440ED0_mobd45_evt8, SCRIPT_COROUTINE, 0);
+	v17 = sprite_create_scripted(MOBD_45, v2, script_440ED0_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v17)
 	{
 		v17->x = 0x2000;
@@ -26178,7 +15161,7 @@ void script_440810_mobd45(Script *a1)
 				case EVT_MOUSE_HOVER:
                     stru29_list_443AE0_find_by_sprite(v1->sprite);
 					break;
-				case EVT_MSG_1511_sidebar_click_category:
+				case EVT_MSG_SELECTED:
 					v8 = 1;
 					break;
 				case EVT_MSG_1528:
@@ -26200,7 +15183,7 @@ void script_440810_mobd45(Script *a1)
 		v13 = v12->y >> 8;
 		v14 = v12->x >> 8;
 		v12->field_88_unused = 1;
-		input_4283A0_set_cursor_pos(v14, v13);
+		input_set_mouse_pos(v14, v13);
 		v15 = 0;
 		dword_47C6C4 = 0;
 		do
@@ -26509,8 +15492,7 @@ void script_441150_mobd45_evt8(Script *a1)
 //----- (00441240) --------------------------------------------------------
 bool _441240_techbunker_should_create()
 {
-	BOOL result; // eax@2
-
+    bool result = false;
 	if (_47C6D8_use__466098_cost_multipliers || (result = 1, !single_player_game))
 		result = SBYTE2(_46E420_starting_cash_idx);
 	return result;
@@ -26593,16 +15575,11 @@ void script_441340_mobd45_evt8(Script *a1)
 //----- (00441430) --------------------------------------------------------
 int get_current_level_starting_cash()
 {
-	int result; // eax@3
-
 	if (!single_player_game || _47C6D8_use__466098_cost_multipliers)
-		result = atoi(_46E420_starting_cash[(char)_46E420_starting_cash_idx]);
+		return atoi(_46E420_starting_cash[(char)_46E420_starting_cash_idx]);
 	else
-		result = levels[current_level_idx].starting_cash;
-	return result;
+		return levels[current_level_idx].survivor_starting_cash;
 }
-// 468B5C: using guessed type int single_player_game;
-// 47C5FC: using guessed type int _46E420_starting_cash_idx;
 
 //----- (00441470) --------------------------------------------------------
 void script_441470_mobd45_evt8(Script *a1)
@@ -26847,7 +15824,7 @@ void script_441940_mobd45_evt17(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v4 = LVL_FindMapd();
-		_40E400_set_palette(&v4->items->palette);
+		_40E400_set_palette(v4->items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 		cplc_select(0);
 		cplc_406320();
@@ -26874,7 +15851,7 @@ void script_441940_mobd45_evt17(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v14 = LVL_FindMapd();
-		_40E400_set_palette(&v14[1].items->palette);
+		_40E400_set_palette(v14[1].items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 		v10 = 1;
 	}
@@ -26887,7 +15864,7 @@ void script_441940_mobd45_evt17(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v9 = LVL_FindMapd();
-		_40E400_set_palette(&v9[4].items->palette);
+		_40E400_set_palette(v9[4].items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
 		v10 = 4;
 	}
@@ -27199,7 +16176,7 @@ void script_4421F0_mobd45_evt8(Script *a1)
 		v9 = v8->y >> 8;
 		v10 = v8->x >> 8;
 		v8->field_88_unused = 1;
-		input_4283A0_set_cursor_pos(v10, v9);
+		input_set_mouse_pos(v10, v9);
 		dword_47C6C4 = 0;
 		sprite_release_mobd_item(_47C664_ingame_menu_sprite);
 	}
@@ -27212,7 +16189,7 @@ void script_4421F0_mobd45_evt8(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v16 = LVL_FindMapd();
-		_40E400_set_palette(&v16[1].items->palette);
+		_40E400_set_palette(v16[1].items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_FOG_OF_WAR, 0, -10);
 		v13 = 1;
 	}
@@ -27227,7 +16204,7 @@ void script_4421F0_mobd45_evt8(Script *a1)
 		bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
         script_sleep(a1, 3);
 		v12 = LVL_FindMapd();
-		_40E400_set_palette(&v12[4].items->palette);
+		_40E400_set_palette(v12[4].items->GetPalette());
 		_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)4, 0, -10);
 		v13 = 4;
 	}
@@ -27264,7 +16241,7 @@ void script_442580_mobd45_evt17(Script *task)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(task, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5->items->palette);
+	_40E400_set_palette(v5->items[0].GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
@@ -27287,7 +16264,7 @@ void script_4426D0_mobd45_evt6(Script *a1)
 	int v8; // ecx@10
 	DataMapd *v11; // eax@14
 	int v12; // [sp+0h] [bp-Ch]@5
-__debugbreak();
+__debugbreak(); // what isn this script?
 	v1 = a1->sprite;
 	v2 = sprite_create(MOBD_45, 0, a1->sprite);
 	v1->mobd_id = MOBD_45;
@@ -27302,10 +16279,10 @@ __debugbreak();
 		do
 			v3 = (void *)script_443780(a1, 1840, dword_47C6EC, 0);
 		while (!v3);
-		_40E560_flip_gdi_update_syscolors();
-		ShowCursor(1);
+		//_40E560_flip_gdi_update_syscolors();
+		OsShowCursor(true);
 		v5 = netz_42F8E0(1);
-		ShowCursor(0);
+		OsShowCursor(false);
 		_40E6B0_set_sys_colors();
 		if (!v5)
 			break;
@@ -27321,7 +16298,7 @@ __debugbreak();
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v11 = LVL_FindMapd();
-	_40E400_set_palette(&v11[7].items->palette);
+	_40E400_set_palette(v11[7].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)7, 0, -10);
 	cplc_select(7);
 	cplc_406320();
@@ -27345,6 +16322,7 @@ void script_4428C0_mobd45_evt6(Script *a1)
 	int v11; // esi@25
 	DataMapd *v14; // eax@30
 	int v15; // [sp+0h] [bp-Ch]@5
+__debugbreak(); // what isn this script?
 
 	v1 = a1->sprite;
 	v2 = sprite_create(MOBD_45, 0, a1->sprite);
@@ -27364,11 +16342,11 @@ void script_4428C0_mobd45_evt6(Script *a1)
 		v5 = (void *)netz_42F8E0(0);
 		netz_47A934 = 1;
 
-		_40E560_flip_gdi_update_syscolors();
-		ShowCursor(1);
+		//_40E560_flip_gdi_update_syscolors();
+		OsShowCursor(true);
 		netz_42F9C0(0, 0);
 		v7 = netz_42F9E0(0);
-		ShowCursor(0);
+		OsShowCursor(false);
 		_40E6B0_set_sys_colors();
 
 		if (!v7)
@@ -27396,7 +16374,7 @@ void script_4428C0_mobd45_evt6(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v14 = LVL_FindMapd();
-	_40E400_set_palette(&v14[8].items->palette);
+	_40E400_set_palette(v14[8].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw((enum MAPD_ID)8, 0, -10);
 	cplc_select(8);
 	cplc_406320();
@@ -27499,7 +16477,7 @@ void script_442BB0_mobd46(Script *a1)
 							case EVT_MOUSE_HOVER:
                                 stru29_list_443AE0_find_by_sprite(a1->sprite);
                                 break;
-							case EVT_MSG_1511_sidebar_click_category:
+							case EVT_MSG_SELECTED:
 								v13 = 1;
 								break;
 							case EVT_MSG_1528:
@@ -27609,7 +16587,7 @@ void script_442BB0_mobd46(Script *a1)
 					case EVT_MOUSE_HOVER:
                         stru29_list_443AE0_find_by_sprite(v1->sprite);
 						break;
-					case EVT_MSG_1511_sidebar_click_category:
+					case EVT_MSG_SELECTED:
 						v26 = 1;
 						break;
 					case EVT_MSG_1528:
@@ -27656,7 +16634,7 @@ void script_443000_mobd45(Script *a1)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(a1, 3);
 	v5 = LVL_FindMapd();
-	_40E400_set_palette(&v5->items->palette);
+	_40E400_set_palette(v5->items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
 	cplc_select(0);
 	cplc_406320();
@@ -27801,7 +16779,7 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 			stru29 *v8 = (stru29 *)v3->sprite->_80_entity__stru29__sprite__initial_hitpoints; // stru29 for main menu sprites
 			if (v8 && v8->field_C & 2)
 			{
-				if (!dword_47C6EC || units_stats_parsed_from_argv)
+				if (!dword_47C6EC || debug_unit_stats_supplied)
 					v4 |= 0x20;
 				else
 					v4 &= ~0x20;
@@ -27822,9 +16800,9 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
 		{
 			v10 = i->event;
-			if (v10 > (int)EVT_MSG_1511_sidebar_click_category)
+			if (v10 > (int)EVT_MSG_SELECTED)
 			{
-				v12 = v10 - EVT_SHOW_UI_CONTROL;
+				v12 = v10 - EVT_MSG_DESELECTED;
 				if (v12)
 				{
 					v13 = v12 - 14;
@@ -27843,7 +16821,7 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 					v4 |= 4u;
 				}
 			}
-			else if (v10 == EVT_MSG_1511_sidebar_click_category)
+			else if (v10 == EVT_MSG_SELECTED)
 			{
 				if (!a3)
 					v4 |= 2u;
@@ -27878,7 +16856,6 @@ int script_443380(Script *a1, int lookup_table_offset, bool a3)
 	v6->pstru7 = _4640E0_stru7_array;
 	return 1;
 }
-// 47A2F0: using guessed type int units_stats_parsed_from_argv;
 
 //----- (00443570) --------------------------------------------------------
 int script_443570(Script *a1, int a2, int a3, int a4)
@@ -27923,9 +16900,9 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 		for (i = script_get_next_event(v4); i; i = script_get_next_event(v4))
 		{
 			v11 = i->event;
-			if ((int)v11 > (int)EVT_MSG_1511_sidebar_click_category)
+			if ((int)v11 > (int)EVT_MSG_SELECTED)
 			{
-				v13 = v11 - EVT_SHOW_UI_CONTROL;
+				v13 = v11 - EVT_MSG_DESELECTED;
 				if (v13)
 				{
 					v14 = v13 - 14;
@@ -27944,7 +16921,7 @@ int script_443570(Script *a1, int a2, int a3, int a4)
 					v9 |= 4u;
 				}
 			}
-			else if (v11 == EVT_MSG_1511_sidebar_click_category)
+			else if (v11 == EVT_MSG_SELECTED)
 			{
 				v9 |= 2u;
 			}
@@ -28031,9 +17008,9 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 		for (i = script_get_next_event(v4); i; i = script_get_next_event(v4))
 		{
 			v11 = i->event;
-			if (v11 > (int)EVT_MSG_1511_sidebar_click_category)
+			if (v11 > (int)EVT_MSG_SELECTED)
 			{
-				v13 = v11 - EVT_SHOW_UI_CONTROL;
+				v13 = v11 - EVT_MSG_DESELECTED;
 				if (v13)
 				{
 					if (v13 == 14)
@@ -28044,7 +17021,7 @@ int script_443780(Script *a1, int a2, int a3, int a4)
 					v9 |= 4u;
 				}
 			}
-			else if (v11 == EVT_MSG_1511_sidebar_click_category)
+			else if (v11 == EVT_MSG_SELECTED)
 			{
 				v9 |= 2u;
 			}
@@ -28105,7 +17082,7 @@ void script_443C40(Script *a1, int cplc_item)
 	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
     script_sleep(v3, 3);
 	v6 = LVL_FindMapd();
-	_40E400_set_palette(&v6[v2].items->palette);
+	_40E400_set_palette(v6[v2].items->GetPalette());
 	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(v2, 0, -10);
 	cplc_select(v2);
 	cplc_406320();
@@ -28353,52 +17330,43 @@ void coroutine_main()
 }
 
 //----- (00445690) --------------------------------------------------------
-bool render_string_list_alloc()
+bool render_string_list_alloc(const int num_stru8s, const int num_render_strings)
 {
-	BOOL result; // eax@2
-	int v1; // eax@5
-	int v2; // eax@7
-
-	stru8_list = (stru8 *)malloc(0x1800u);
-	if (stru8_list)
+	if (stru8_list = new stru8[num_stru8s])
 	{
-		render_string_list = (RenderString *)malloc(0x200u);
-		if (render_string_list)
+		if (render_string_list = new RenderString[num_render_strings])
 		{
 			stru8_list_allocated = 1;
-			stru8_list_size = 768;
-			v1 = 0;
-			do
+			stru8_list_size = num_stru8s;
+			for (int i = 0; i < num_stru8s - 1; ++i)
 			{
-				stru8_list[v1].next = &stru8_list[v1 + 1];
-				++v1;
-			} while (v1 < 767);
-			stru8_list[767].next = 0;
+				stru8_list[i].next = &stru8_list[i + 1];
+			}
+			stru8_list[num_stru8s - 1].next = 0;
 			stru8_list_head = stru8_list;
-			v2 = 0;
-			do
+
+
+			for (int i = 0; i < num_render_strings - 1; ++i)
 			{
-				render_string_list[v2].next = &render_string_list[v2 + 1];
-				++v2;
-			} while (v2 < 15);
-			render_string_list[15].next = 0;
+				render_string_list[i].next = &render_string_list[i + 1];
+			}
+			render_string_list[num_render_strings - 1].next = 0;
 			render_string_list_47C784 = 0;
 			render_string_list_free_pool = render_string_list;
-			result = 1;
+			return true;
 		}
 		else
 		{
 			free(stru8_list);
 			stru8_list_allocated = 0;
-			result = 0;
+			return false;
 		}
 	}
 	else
 	{
 		stru8_list_allocated = 0;
-		result = 0;
+		return false;
 	}
-	return result;
 }
 
 //----- (00445770) --------------------------------------------------------
@@ -28876,8 +17844,8 @@ void sidebar_close_all() {
     {
         if (_47C990_production.sidebar_open_mask[v2])
         {
-            script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47CA18_sidebar_production_buttons[v2]->task);
-            script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA18_sidebar_production_buttons[v2]->task);
+            script_trigger_event(0, EVT_MSG_SELECTED, 0, _47CA18_sidebar_production_buttons[v2]->task);
+            script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47CA18_sidebar_production_buttons[v2]->task);
         }
         //++v2;
     }
@@ -28946,7 +17914,7 @@ void sidebar_button_handler_order_unit_click(SidebarButton *a1)
 		(int *)&game_globals_per_player + player_side,
 			&v1->_14_pcost,
 			(v1->cost << 8) / v1->production_time_x60,
-			task_mobd17_cursor,
+			game_cursor_script,
 			v1,
 			v1->field_2C);
 }
@@ -29093,12 +18061,12 @@ void sidebar_button_handler_446190_open(SidebarButton *a1)
 {
 	SidebarButton **v1; // esi@1
 
-	script_trigger_event(0, EVT_MSG_1519, 0, task_mobd17_cursor);
+	script_trigger_event(0, EVT_MSG_1519, 0, game_cursor_script);
 	v1 = _47CA08_sidebar_buttons;
 	do
 	{
 		if (v1 != &_47CA08_sidebar_buttons[1])
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, (*v1)->task);
+			script_trigger_event(0, EVT_MSG_DESELECTED, 0, (*v1)->task);
 		++v1;
 	} while (v1 <= &_47CA08_sidebar_buttons[1]);
 }
@@ -29106,7 +18074,7 @@ void sidebar_button_handler_446190_open(SidebarButton *a1)
 //----- (004461E0) --------------------------------------------------------
 void sidebar_button_handler_4461E0_close(SidebarButton *a1)
 {
-	script_trigger_event(0, EVT_MSG_1520, 0, task_mobd17_cursor);
+	script_trigger_event(0, EVT_MSG_1520, 0, game_cursor_script);
 }
 
 //----- (00446200) --------------------------------------------------------
@@ -29163,7 +18131,7 @@ void sidebar_button_handler_order_building_click(SidebarButton *a1)
 			_47C788_building_planner.field_4 = v4;
 			_47C788_building_planner.field_8 = v5;
 			_47C788_building_planner.cost = unit_stats[v6].cost;
-			script_trigger_event(0, EVT_MSG_1522_plan_building_construction, &_47C788_building_planner, task_mobd17_cursor);
+			script_trigger_event(0, EVT_MSG_1522_plan_building_construction, &_47C788_building_planner, game_cursor_script);
 		}
 	}
 	else
@@ -29852,16 +18820,16 @@ void sidebar_button_handler_help_open(SidebarButton *a1)
 	do
 	{
 		if (v1 != _47CA08_sidebar_buttons)
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, (*v1)->task);
+			script_trigger_event(0, EVT_MSG_DESELECTED, 0, (*v1)->task);
 		++v1;
 	} while ((int)v1 < (int) & _47CA10_sidebar_button_minimap);
-	script_trigger_event(0, EVT_MSG_SHOW_UNIT_HINT, 0, task_mobd17_cursor);
+	script_trigger_event(0, EVT_MSG_SHOW_UNIT_HINT, 0, game_cursor_script);
 }
 
 //----- (00446E50) --------------------------------------------------------
 void sidebar_button_handler_help_close(SidebarButton *a1)
 {
-	script_trigger_event(0, EVT_MSG_1516, 0, task_mobd17_cursor);
+	script_trigger_event(0, EVT_MSG_1516, 0, game_cursor_script);
 }
 
 //----- (00446E90) --------------------------------------------------------
@@ -29916,22 +18884,6 @@ bool is_player_faction_evolved()
 		return true;                                   // mute
 	}
 	return false;                                     // surv
-}
-
-//----- (00447000) --------------------------------------------------------
-void sub_447000()
-{
-	if (is_game_loading() || !_447310_minimap())
-	{
-		script_trigger_event(0, EVT_MSG_1514, 0, _47CA10_sidebar_button_minimap->task);
-	}
-}
-
-//----- (00447050) --------------------------------------------------------
-void disable_minimap()
-{
-	hide_minimap_sprite();
-	script_trigger_event(0, EVT_MSG_1548_sidebar, 0, _47CA10_sidebar_button_minimap->task);
 }
 
 //----- (00447070) --------------------------------------------------------
@@ -30017,7 +18969,7 @@ LABEL_10:
 	if (_47CA2C_should_airstrike_mess_with_sidebar)
 	{
 		script_trigger_event(0, EVT_MSG_1514, 0, _47CA08_sidebar_buttons[1]->task);
-		script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, _47C970_sidebar_task);
+		script_trigger_event(0, EVT_MSG_SELECTED, 0, _47C970_sidebar_task);
 	}
 	++UNIT_num_player_units;
 }
@@ -30035,11 +18987,11 @@ void _4471E0_send_sidebar_buttons_message()
 	do
 	{
 		if (v0 != -1)
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA08_sidebar_buttons[v0]->task);
+			script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47CA08_sidebar_buttons[v0]->task);
 		++v0;
 	} while (v0 < 2);
-	script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47C970_sidebar_task);
-	script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, _47CA08_sidebar_buttons[1]->task);
+	script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47C970_sidebar_task);
+	script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47CA08_sidebar_buttons[1]->task);
 	if (UNIT_num_player_units > 0)
 		--UNIT_num_player_units;
 }
@@ -30088,45 +19040,16 @@ Sprite *_447310_minimap()
 }
 
 //----- (00447340) --------------------------------------------------------
-void _447340_send_sidebar_buttons_message(int exception_id)
+void _447340_send_sidebar_buttons_message(int excluding_button_id)
 {
-	int v1; // ebx@1
-	int v2; // edi@1
-	SidebarButton **v3; // esi@1
-
-	v1 = exception_id;
-	v2 = 0;
-	v3 = _47CA08_sidebar_buttons;
-	do
+	for (int i = 0; i < 2; ++i)
 	{
-		if (v2 != v1)
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, (*v3)->task);
-		++v3;
-		++v2;
-	} while ((int)v3 < (int) & _47CA10_sidebar_button_minimap);
-}
-
-//----- (00448360) --------------------------------------------------------
-void drawjob_update_handler_level_background(void *a1, DrawJob *a2)
-{
-	if (_47A010_mapd_item_being_drawn[0])
-	{
-		a2->job_details.x = _47A010_mapd_item_being_drawn[0]->draw_job->job_details.x;
-		a2->job_details.y = _47A010_mapd_item_being_drawn[0]->draw_job->job_details.y;
+        auto v3 = _47CA08_sidebar_buttons[i];
+		if (i != excluding_button_id)
+			script_trigger_event(0, EVT_MSG_DESELECTED, 0, v3->task);
 	}
-	a2->job_details.z_index = 0xFFFFF;
 }
 
-//----- (00448390) --------------------------------------------------------
-void drawjob_update_handler_448390_fog_of_war(void *unused, DrawJob *a2)
-{
-	if (_47A010_mapd_item_being_drawn[0])
-	{
-		a2->job_details.x = _47A010_mapd_item_being_drawn[0]->draw_job->job_details.x - 2 * map_fog_of_war_scrl->tile_x_size;
-		a2->job_details.y = _47A010_mapd_item_being_drawn[0]->draw_job->job_details.y - 2 * map_fog_of_war_scrl->tile_y_size;
-	}
-	a2->job_details.z_index = 0x10000000;
-}
 
 //----- (004483E0) --------------------------------------------------------
 void drawjob_update_handler_4483E0_sidebar(Sprite *a1, DrawJob *a2)
@@ -30405,7 +19328,7 @@ int entity_4488F0_is_in_firing_range(Entity *a1, Entity *a2, int entity_id)
 		v9 = v8 - v5->y;
 	v10 = v5->x;
 	v11 = v10 - v7 <= 0 ? v7 - v10 : v10 - v7;
-	if ((int)math_42D64D_prolly_vec_length(v11 >> 8, v9 >> 8) <= v4->stats->firing_range && entity_41B510(v4, v3))
+	if ((int)math_42D64D_vec_length_2d(v11 >> 8, v9 >> 8) <= v4->stats->firing_range && entity_41B510(v4, v3))
 		result = 1;
 	else
 		LABEL_15:
@@ -30421,7 +19344,7 @@ void tower_attachment_handler_448980(EntityTurret *a1)
 	v1 = a1;
 	sprite_4272E0_load_mobd_item(
 		a1->turret_sprite,
-		a1->stats_attachment_point->mobd_lookup_table_offset,
+		a1->stats_attachment_point->mobd_lookup_offset_idle,
 		_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
 	v1->handler = tower_attachment_handler_4489B0;
 }
@@ -30444,13 +19367,13 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 
 	v1 = a1;
 	v2 = a1->entity;
-	if ((v2->_DC_order == ENTITY_ORDER_ATTACK || v2->_DC_order == ENTITY_ORDER_8)
-		&& entity_4488F0_is_in_firing_range(v2, v2->_E0_current_attack_target, v2->_E0_current_attack_target_entity_id)
-		&& sub_44CE40(v1->entity->player_side, v1->entity->_E0_current_attack_target))
+	if ((v2->GetOrder() == ENTITY_ORDER_ATTACK || v2->GetOrder() == ENTITY_ORDER_8)
+		&& entity_4488F0_is_in_firing_range(v2, v2->retaliation_target, v2->retaliation_target_id)
+		&& sub_44CE40(v1->entity->player_side, v1->entity->retaliation_target))
 	{
 		v4 = v1->entity;
-		v1->_C_entity = v4->_E0_current_attack_target;
-		v5 = v4->_E0_current_attack_target_entity_id;
+		v1->_C_entity = v4->retaliation_target;
+		v5 = v4->retaliation_target_id;
 		goto LABEL_9;
 	}
 	if (entity_4488F0_is_in_firing_range(v1->entity, v1->entity->_E4_prev_attack_target, v1->entity->_E4_prev_attack_target_entity_id)
@@ -30463,12 +19386,12 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 		v7 = v1->_C_entity;
 		v8 = v1->turret_sprite;
 		v1->_C_entity_idx = v5;
-		v1->handler = tower_attachment_handler_448B40;
+		v1->SetHandler(tower_attachment_handler_448B40);
 		v9 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v7->sprite->x - v8->x, v7->sprite->y - v8->y);
-		entity_advance_mobd_rotation(&v1->mobd_lookup_id, v9, v1->stats_attachment_point->mobd_frame_step);
+        mobd_advance_anim(&v1->mobd_lookup_id, v9, v1->stats_attachment_point->mobd_frame_step);
 		sprite_4272E0_load_mobd_item(
 			v1->turret_sprite,
-			v1->stats_attachment_point->mobd_lookup_table_offset,
+			v1->stats_attachment_point->mobd_lookup_offset_idle,
 			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 		if (v1->mobd_lookup_id == v9)
 		{
@@ -30477,15 +19400,15 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 				v1->_C_entity->sprite->y - v1->turret_sprite->y);
 			sprite_4272E0_load_mobd_item(
 				v1->turret_sprite,
-				v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+				v1->stats_attachment_point->mobd_lookup_offset_attack,
 				_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
-			v1->handler = tower_attachment_handler_448C40;
+			v1->SetHandler(tower_attachment_handler_448C40);
 		}
 		return;
 	}
 	v10 = v1->stats_attachment_point;
 	src = v1->mobd_lookup_id;
-	entity_advance_mobd_rotation(&src, v1->entity->current_mobd_lookup_idx, v10->mobd_frame_step);
+	mobd_advance_anim(&src, v1->entity->GetCurrentAnimFrame(), v10->mobd_frame_step);
 	v11 = src;
 	if (src != v1->mobd_lookup_id)
 	{
@@ -30493,7 +19416,7 @@ void tower_attachment_handler_4489B0(EntityTurret *a1)
 		v1->mobd_lookup_id = src;
 		sprite_4273B0_load_mobd_item_sound(
 			v1->turret_sprite,
-			v12->mobd_lookup_table_offset,
+			v12->mobd_lookup_offset_idle,
 			_47D3C4_entity_mobd_lookup_ids[v11 + 1]);
 	}
 }
@@ -30509,12 +19432,12 @@ void tower_attachment_handler_448B40(EntityTurret *a1)
 	v1 = a1;
 	v2 = a1->_C_entity;
 	v3 = v1->turret_sprite;
-	v1->handler = tower_attachment_handler_448B40;
+	v1->SetHandler(tower_attachment_handler_448B40);
 	v4 = (signed __int16)_42D560_get_mobd_lookup_id_rotation(v2->sprite->x - v3->x, v2->sprite->y - v3->y);
-	entity_advance_mobd_rotation(&v1->mobd_lookup_id, v4, v1->stats_attachment_point->mobd_frame_step);
+	mobd_advance_anim(&v1->mobd_lookup_id, v4, v1->stats_attachment_point->mobd_frame_step);
 	sprite_4272E0_load_mobd_item(
 		v1->turret_sprite,
-		v1->stats_attachment_point->mobd_lookup_table_offset,
+		v1->stats_attachment_point->mobd_lookup_offset_idle,
 		_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 	if (v1->mobd_lookup_id == v4)
 	{
@@ -30523,9 +19446,9 @@ void tower_attachment_handler_448B40(EntityTurret *a1)
 			v1->_C_entity->sprite->y - v1->turret_sprite->y);
 		sprite_4272E0_load_mobd_item(
 			v1->turret_sprite,
-			v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+			v1->stats_attachment_point->mobd_lookup_offset_attack,
 			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
-		v1->handler = tower_attachment_handler_448C40;
+		v1->SetHandler(tower_attachment_handler_448C40);
 	}
 }
 
@@ -30540,7 +19463,7 @@ void tower_attachment_handler_448BF0(EntityTurret *a1)
 		a1->_C_entity->sprite->y - a1->turret_sprite->y);
 	sprite_4272E0_load_mobd_item(
 		v1->turret_sprite,
-		v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+		v1->stats_attachment_point->mobd_lookup_offset_attack,
 		_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 	v1->handler = tower_attachment_handler_448C40;
 }
@@ -30576,14 +19499,14 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 			v1->mobd_lookup_id = v2;
 			sprite_4273B0_load_mobd_item_sound(
 				v3,
-				v1->stats_attachment_point->_1C_mobd_lookup_table_offset_for_rotary_cannon,
+				v1->stats_attachment_point->mobd_lookup_offset_attack,
 				_47D3C4_entity_mobd_lookup_ids[v2 + 1]);
 			v4 = v1->stats_attachment_point->dmg_source;
-			if (v4 && _47C048_unit_bomberdmg < 200 && !v1->field_18)
+			if (v4 && _47C048_num_attack_projectile_sprites < 200 && !v1->field_18)
 			{
-				++_47C048_unit_bomberdmg;
+				++_47C048_num_attack_projectile_sprites;
 				v5 = sprite_create_scripted(v4->mobd_id, v1->turret_sprite, v4->dmg_handler, SCRIPT_COROUTINE, v1->ptr_24);
-				v6 = v4->mobd_offset;
+				v6 = v4->mobd_lookup_offset_flying;
 				v7 = v5;
 				if (v6 != -1)
 					sprite_4272E0_load_mobd_item(v5, v6, _47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
@@ -30595,16 +19518,15 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 				v7->_80_entity__stru29__sprite__initial_hitpoints = v1->entity;
 				v7->field_84 = v1->entity->entity_id;
 				v7->field_8C_infantry_damage = LOWORD_HEXRAYS(v4->damage_infantry)
-					+ (v4->damage_infantry
-						* _465610_damage_multipliers[v1->entity->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+					+ (v4->damage_infantry * veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
 				v7->field_8E_vehicle_damage = LOWORD_HEXRAYS(v4->damage_vehicle)
 					+ (v4->damage_vehicle
-						* _465610_damage_multipliers[v1->entity->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+						* veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
 				v7->field_90_building_damage = LOWORD_HEXRAYS(v4->damage_building)
 					+ (v4->damage_building
-						* _465610_damage_multipliers[v1->entity->_98_465610_accuracy_dmg_bonus_idx] >> 8);
+						* veterancy_damage_bonus[v1->entity->veterancy_level] >> 8);
 				v7->parent = v1->turret_sprite->parent;
-				script_trigger_event(v1->entity->script, EVT_MSG_1497, v1->entity, v1->_C_entity->script);
+				script_trigger_event(v1->entity->script, MSG_ATTACKED, v1->entity, v1->_C_entity->script);
 				v10 = v1->stats_attachment_point;
 				v1->field_18 = v10->reload_time;
 				v11 = v1->field_1C - 1;
@@ -30619,14 +19541,14 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 			v13 = v12->_DC_order;
 			if (v13 == 2 || v13 == 8)
 			{
-				v14 = v12->_E0_current_attack_target;
+				v14 = v12->retaliation_target;
 				if (v1->_C_entity != v14)
 				{
-					if (entity_4488F0_is_in_firing_range(v12, v14, v12->_E0_current_attack_target_entity_id))
+					if (entity_4488F0_is_in_firing_range(v12, v14, v12->retaliation_target_id))
 					{
 						v15 = v1->entity;
-						v1->_C_entity = v15->_E0_current_attack_target;
-						v1->_C_entity_idx = v15->_E0_current_attack_target_entity_id;
+						v1->_C_entity = v15->retaliation_target;
+						v1->_C_entity_idx = v15->retaliation_target_id;
 						v1->handler = tower_attachment_handler_448B40;
 					}
 				}
@@ -30636,7 +19558,7 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 		{
 			sprite_4272E0_load_mobd_item(
 				v1->turret_sprite,
-				v1->stats_attachment_point->mobd_lookup_table_offset,
+				v1->stats_attachment_point->mobd_lookup_offset_idle,
 				_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 			v1->handler = tower_attachment_handler_4489B0;
 		}
@@ -30645,12 +19567,12 @@ void tower_attachment_handler_448C40(EntityTurret *a1)
 	{
 		sprite_4272E0_load_mobd_item(
 			v1->turret_sprite,
-			v1->stats_attachment_point->mobd_lookup_table_offset,
+			v1->stats_attachment_point->mobd_lookup_offset_idle,
 			_47D3C4_entity_mobd_lookup_ids[v1->mobd_lookup_id + 1]);
 		v1->handler = tower_attachment_handler_4489B0;
 	}
 }
-// 47C048: using guessed type int _47C048_unit_bomberdmg;
+// 47C048: using guessed type int _47C048_num_attack_projectile_sprites;
 
 //----- (00448E90) --------------------------------------------------------
 void tower_attachment_handler_448E90(EntityTurret *a1)
@@ -30684,7 +19606,7 @@ void MessageHandler_task4_evt39030(Script *receiver, Script *sender, enum SCRIPT
 	_47CAF0_task_attachment1 *v5; // eax@2
 
 	v4 = (_47CAF0_task_attachment1 *)receiver->param;
-	if (event == EVT_SHOW_UI_CONTROL)
+	if (event == EVT_MSG_DESELECTED)
 	{
 		v5 = v4->next;
 		if (v4->next != v4)
@@ -30901,7 +19823,7 @@ void script_evt39030_handler(Script *a1)
             do
             {
                 if (v18->_8_script->event_handler)
-                    script_trigger_event(v1->owning_task, EVT_ENTITY_MOVE, &v1->move_task, v18->_8_script);
+                    script_trigger_event(v1->owning_task, EVT_CMD_ENTITY_MOVE, &v1->move_task, v18->_8_script);
                 v18 = v18->next;
             } while (v18 != v1);
         }
@@ -30919,7 +19841,7 @@ void script_evt39030_handler(Script *a1)
                 do
                 {
                     if (v20->_8_script->event_handler)
-                        script_trigger_event(v1->owning_task, EVT_ENTITY_ATTACK, &v1->attack_task, v20->_8_script);
+                        script_trigger_event(v1->owning_task, EVT_CMD_ENTITY_ATTACK, &v1->attack_task, v20->_8_script);
                     v20 = v20->next;
                 } while (v20 != v1);
             }
@@ -30963,7 +19885,7 @@ void script_evt39030_handler(Script *a1)
 		v23 = entityRepo->FindById(*(int *)((char *)v2 + 1));
         if (v23)
         {
-            script_trigger_event(a1, EVT_MSG_1529_ai, *(void **)((char *)v2 + 5), v23->script);
+            script_trigger_event(a1, EVT_MSG_NEXT_CONSTRUCTION_STATE, *(void **)((char *)v2 + 5), v23->script);
         }
         v2->type = stru209_TYPE_0;
 		break;
@@ -30989,7 +19911,7 @@ void script_evt39030_handler(Script *a1)
                 v25->hitpoints = v28;
             if (*(_WORD *)((char *)v2 + 5))
             {
-                v29 = v25->_E0_current_attack_target->turret;
+                v29 = v25->retaliation_target->turret;
                 if (v29)
                 {
                     v29->turret_sprite->_60_mobd_anim_speed = 0x8000000;
@@ -30997,7 +19919,7 @@ void script_evt39030_handler(Script *a1)
             }
             else
             {
-                v30 = v25->_E0_current_attack_target->turret;
+                v30 = v25->retaliation_target->turret;
                 if (v30)
                 {
                     v30->turret_sprite->_60_mobd_anim_speed = 0;
@@ -31139,7 +20061,6 @@ bool UNIT_InitTasks()
 	_47CAF0_task_attachment1 *v5; // esi@6
 	_47CAF0_task_attachment2 *v6; // eax@7
 	int v7; // eax@9
-	BOOL result; // eax@14
 	int *v9; // [sp+10h] [bp-8h]@1
 	int v10; // [sp+14h] [bp-4h]@1
 
@@ -31201,15 +20122,13 @@ bool UNIT_InitTasks()
 	if (v1)
 	{
 		dword_47A830 = 1;
-		result = 1;
 	}
 	else
 	{
         auto cr = script_create_coroutine(SCRIPT_TYPE_INVALID, script_449820_netz, 0);
 		cr->field_1C = 1;
-		result = 1;
 	}
-	return result;
+    return true;
 }
 
 //----- (00449800) --------------------------------------------------------
@@ -31226,1391 +20145,6 @@ void __47CAF0_tasks_evt39030_array_free()
 	} while ((int)v0 < (int)&dword_47CB0C);
 }
 // 47CB0C: using guessed type int dword_47CB0C;
-
-//----- (0044A500) --------------------------------------------------------
-void script_44A500_fog_of_war(Script *a1)
-{
-	Script *v1; // esi@1
-	ScriptEvent *i; // ebp@1
-	DrawJobDetails *v3; // ebx@3
-	int v4; // esi@3
-	int v5; // edi@3
-	MouseInput v6; // [sp+10h] [bp-20h]@3
-
-	while (1)
-	{
-		v1 = a1;
-        script_yield_any_trigger(a1, 1);
-		for (i = script_get_next_event(a1); i; i = script_get_next_event(v1))
-		{
-			if (i->event == 1511)
-			{
-				v3 = &_47A010_mapd_item_being_drawn[0]->draw_job->job_details;
-				input_get_mouse_state(&v6);
-				_47CB58_minimap_sprite->field_88_unused = 1;
-				v4 = 16 * (v6.cursor_x_x256 - _47CB58_minimap_sprite->x) - (render_width << 7);
-				v5 = 16 * (v6.cursor_y_x256 - _47CB58_minimap_sprite->y) - (render_height << 7);
-				if (v4 >= 0)
-				{
-					if (v4 > (32 - render_width + render_call_draw_handler_mode1(v3)) << 8)
-						v4 = (32 - render_width + render_call_draw_handler_mode1(v3)) << 8;
-				}
-				else
-				{
-					v4 = 0;
-				}
-				if (v5 >= 0)
-				{
-					if (v5 > (render_call_draw_handler_mode2(v3) - render_height) << 8)
-						v5 = (render_call_draw_handler_mode2(v3) - render_height) << 8;
-				}
-				else
-				{
-					v5 = 0;
-				}
-				_47C380_mapd.mapd_cplc_render_x = v4;
-				v1 = a1;
-				_47C380_mapd.mapd_cplc_render_y = v5;
-			}
-			script_discard_event(i);
-		}
-		dword_47CB68 = _47C380_mapd.mapd_cplc_render_x >> 12;
-		dword_47CB6C = _47C380_mapd.mapd_cplc_render_y >> 12;
-	}
-}
-
-//----- (0044A650) --------------------------------------------------------
-void show_minimap_sprite()
-{
-	_47CB58_minimap_sprite->drawjob->flags &= 0xBFFFFFFF;
-	_4705B0_minimap.ptr_10 = (Sprite_stru58 *)&_4705A8_minimap_smthn;
-	_47CB58_minimap_sprite->pstru58 = (Sprite_stru58 *) & _4705A8_minimap_smthn;
-}
-
-//----- (0044A680) --------------------------------------------------------
-void hide_minimap_sprite()
-{
-	_47CB58_minimap_sprite->drawjob->flags |= 0x40000000u;
-	_4705B0_minimap.ptr_10 = 0;
-	_47CB58_minimap_sprite->pstru58 = 0;
-}
-// 4705B0: using guessed type DataMobdItem_stru0 _4705B0_minimap;
-
-//----- (0044A6B0) --------------------------------------------------------
-void _44A6B0_minimap(int x, int y)
-{
-	_47CB58_minimap_sprite->field_88_unused = 1;
-	_47CB58_minimap_sprite->x = (x - __4793F8_map_width_x2 - 4) << 8;
-	_47CB58_minimap_sprite->field_88_unused = 1;
-	_47CB58_minimap_sprite->y = y << 8;
-}
-// 47CB7C: using guessed type int __4793F8_map_width_x2;
-
-//----- (0044A700) --------------------------------------------------------
-void script_44A700_minimap(Script *a1)
-{
-	Script *v1; // edi@1
-	Sprite *v2; // esi@1
-
-	v1 = a1;
-	v2 = _447310_minimap();
-	if (v2)
-	{
-		if (_47CB58_minimap_sprite)
-		{
-			script_trigger_event(0, EVT_MSG_1511_sidebar_click_category, 0, v2->script);
-			script_trigger_event(0, EVT_MOUSE_HOVER, 0, v2->script);
-            script_sleep(v1, 1);
-			script_trigger_event(0, EVT_SHOW_UI_CONTROL, 0, v2->script);
-			script_trigger_event(0, EVT_MOUSE_HOVER, 0, v2->script);
-		}
-	}
-}
-
-//----- (0044A780) --------------------------------------------------------
-_BYTE *_44A780_gof_of_war()
-{
-	int v0; // edx@1
-	_BYTE *result; // eax@1
-	_BYTE *v2; // ecx@1
-	int v3; // ebx@1
-	MapdScrlImageTile **v4; // ebp@1
-	int v5; // esi@2
-	int v6; // edi@3
-	char v7; // dl@5
-	_BYTE *v8; // eax@5
-
-	v0 = _4793F8_map_width;
-	result = (char *)_47CB88_fow_map_x2;
-	v2 = (char *)_47CB74_fow_map_x2;
-	v3 = 0;
-	v4 = &map_fog_of_war_scrl_tiles[2 * _4793F8_map_width + 10];
-	if (_478AAC_map_height > 0)
-	{
-		v5 = __4793F8_map_width_x2;
-		do
-		{
-			v6 = 0;
-			if (v0 > 0)
-			{
-				do
-				{
-					if (*v4 == (MapdScrlImageTile *)dword_47CFC0)
-					{
-						result[v5] = v2[v5];
-						v8 = result + 1;
-						v8[__4793F8_map_width_x2] = v2[__4793F8_map_width_x2 + 1];
-						*(v8 - 1) = *v2;
-						v7 = *v2;
-					}
-					else
-					{
-						result[v5] = dword_47CB4C;
-						result[__4793F8_map_width_x2 + 1] = dword_47CB4C;
-						*result = dword_47CB4C;
-						v7 = dword_47CB4C;
-						v8 = result + 1;
-					}
-					*v8 = v7;
-					v0 = _4793F8_map_width;
-					v5 = __4793F8_map_width_x2;
-					result = v8 + 1;
-					++v6;
-					++v4;
-					v2 += 2;
-				} while (v6 < _4793F8_map_width);
-			}
-			++v3;
-			v4 += 4;
-			v2 += v5;
-			result += v5;
-		} while (v3 < _478AAC_map_height);
-	}
-	return result;
-}
-
-//----- (0044A840) --------------------------------------------------------
-bool mapd_init_fog_of_war()
-{
-	int v2; // eax@4
-	unsigned int v3; // ebp@6
-    MapdScrlImageTile **v4; // ebx@6
-	int v5; // esi@6
-	char *v7; // edi@9
-	int v10; // ecx@10
-	int v11; // ebx@11
-	int v12; // esi@12
-	unsigned char *v13; // edx@12
-	int v16; // eax@15
-	char v17; // dl@17
-	char v18; // cl@17
-	int v22; // edx@31
-	int v23; // esi@31
-	char *v24; // ebp@32
-	char *v25; // eax@34
-	int v26; // ecx@35
-	char *v27; // ebp@37
-	char *v28; // eax@39
-	int v29; // ecx@40
-	int v30; // eax@42
-	char *v31; // ebx@42
-	char *v32; // eax@44
-	int v33; // ecx@45
-	int v34; // ebp@47
-	char *v35; // eax@49
-	int v36; // ecx@50
-	int v37; // ecx@52
-	int *v38; // eax@52
-	char v39; // dl@53
-	Sprite *v40; // eax@54
-	char *v41; // [sp+10h] [bp-24h]@9
-    MapdScrlImageTile **v42; // [sp+14h] [bp-20h]@10
-	char v44; // [sp+1Ch] [bp-18h]@17
-	int v49; // [sp+30h] [bp-4h]@6
-	int v50; // [sp+30h] [bp-4h]@42
-
-    DataMapd *v1 = LVL_FindMapd();
-    if (v1)
-    {
-        fog_of_war_bitmap = MAPD_Draw(MAPD_FOG_OF_WAR, 0, 0x10000000);
-        if (fog_of_war_bitmap)
-        {
-            fog_of_war_bitmap->draw_job->on_update_handler = drawjob_update_handler_448390_fog_of_war;
-            fog_of_war_scrl_source = (MapdScrlImage *)fog_of_war_bitmap->draw_job->job_details.image;
-            __4793F8_map_width_plus4 = _4793F8_map_width + 4;
-            __478AAC_map_height_plus4 = _478AAC_map_height + 4;
-            map_fog_of_war_scrl = (MapdScrlImage *)malloc(4 * (_4793F8_map_width + 4) * (_478AAC_map_height + 4) + 20);
-            if (map_fog_of_war_scrl)
-            {
-                map_fog_of_war_scrl->on_draw_handler = fog_of_war_scrl_source->on_draw_handler;
-                map_fog_of_war_scrl->tile_x_size = fog_of_war_scrl_source->tile_x_size;
-                map_fog_of_war_scrl->tile_y_size = fog_of_war_scrl_source->tile_y_size;
-                map_fog_of_war_scrl->num_x_tiles = __4793F8_map_width_plus4;
-                map_fog_of_war_scrl->num_y_tiles = __478AAC_map_height_plus4;
-                map_fog_of_war_scrl_tiles = map_fog_of_war_scrl->tiles;
-                dword_47CFC0 = 0;
-                fog_of_war_tile_1 = fog_of_war_scrl_source->tiles[1];
-                fog_of_war_tile_2 = fog_of_war_scrl_source->tiles[2];
-                fog_of_war_tile_3 = fog_of_war_scrl_source->tiles[3];
-                fog_of_war_tile_4 = fog_of_war_scrl_source->tiles[4];
-                fog_of_war_tile_5 = fog_of_war_scrl_source->tiles[5];
-                fog_of_war_tile_6 = fog_of_war_scrl_source->tiles[6];
-                fog_of_war_tile_7 = fog_of_war_scrl_source->tiles[7];
-                fog_of_war_tile_8 = fog_of_war_scrl_source->tiles[8];
-                fog_of_war_tile_9 = fog_of_war_scrl_source->tiles[9];
-                fog_of_war_tile_10 = fog_of_war_scrl_source->tiles[10];
-                fog_of_war_tile_11 = fog_of_war_scrl_source->tiles[11];
-                fog_of_war_tile_12 = fog_of_war_scrl_source->tiles[12];
-                fog_of_war_tile_13 = fog_of_war_scrl_source->tiles[13];
-                fog_of_war_tile_14 = fog_of_war_scrl_source->tiles[14];
-                v2 = 0;
-                for (fog_of_war_tile_15 = fog_of_war_scrl_source->tiles[15];
-                    v2 < __4793F8_map_width_plus4 * __478AAC_map_height_plus4;
-                    ++v2)
-                {
-                    map_fog_of_war_scrl_tiles[v2] = fog_of_war_tile_1;
-                }
-
-                fog_of_war_bitmap->draw_job->job_details.image = map_fog_of_war_scrl;
-                LOBYTE_HEXRAYS(dword_47CB4C) = fog_of_war_tile_1->pixels[0];
-                __4793F8_map_width_x2 = 2 * _4793F8_map_width;
-                v3 = 2 * _4793F8_map_width * 2 * _478AAC_map_height;
-                __478AAC_map_height_x2 = 2 * _478AAC_map_height;
-                v49 = 2 * _4793F8_map_width * 2 * _478AAC_map_height;
-                v4 = v1->items[0].images[0]->tiles;
-                v5 = 4 * (2 * _4793F8_map_width + 2 * _478AAC_map_height) + 16;
-                _47CB74_fow_map_x2 = malloc(v3);
-                if (_47CB74_fow_map_x2)
-                {
-                    _47CB88_fow_map_x2 = malloc(v3);
-                    if (_47CB88_fow_map_x2)
-                    {
-                        _47CB8C_fow = (DrawHandlerData_Units *)malloc(v5 + v3 + 12);
-                        if (_47CB8C_fow)
-                        {
-                            _47CB8C_fow->type = 0;
-                            v7 = (char *)_47CB74_fow_map_x2;
-                            v41 = (char *)_47CB8C_fow->sprite_data;
-                            dword_47CBAC = (int)(&_47CB8C_fow[1].type + 2 * __4793F8_map_width_x2);
-
-                            for (int v8 = 0; v8 < __478AAC_map_height_x2; ++v8)
-                            {
-                                v42 = v4;
-                                v10 = 16 * (v8 & 1);
-                                v11 = (v8 & 1) << 9;
-                                for (int v9 = 0; v9 < __4793F8_map_width_x2; ++v9)
-                                {
-                                    v12 = 16 * (v9 & 1);
-                                    v13 = &(*v42)->pixels[v11 + v12];
-                                    if (*v42)
-                                    {
-                                        memset(_47CBC0_fow, 0, sizeof(_47CBC0_fow));
-                                        for (int v14 = 16; v14 > 0; --v14)
-                                        {
-                                            for (int v15 = 16; v15 > 0; --v15)
-                                            {
-                                                v16 = *v13++;
-                                                ++_47CBC0_fow[v16];
-                                            }
-                                            v13 += 16;
-                                        }
-                                        v17 = 0;
-                                        v18 = 1;
-                                        v44 = 0;
-                                        for (int v19 = 1; v19 < sizeof(_47CBC0_fow); ++v19)
-                                        {
-                                            if (_47CBC0_fow[v19] > _47CBC0_fow[(unsigned __int8)v44])
-                                            {
-                                                v17 = v18;
-                                                v44 = v18;
-                                            }
-                                            ++v19;
-                                            ++v18;
-                                        }
-                                        *v7 = v17;
-                                    }
-                                    else
-                                    {
-                                        *v7 = 1;
-                                    }
-                                    if (v12 == 16)
-                                        ++v42;
-                                    ++v7;
-                                }
-
-                                if (v10 == 16)
-                                {
-                                    v4 += _4793F8_map_width;
-                                }
-                            }
-                            v3 = v49;
-
-                            memset(_47CB88_fow_map_x2, dword_47CB4C, v3);
-                            //memset32(_47CB88_fow_map_x2, v21, v3 >> 2);
-                            //memset(&v20[4 * (v3 >> 2)], v4, v3 & 3);
-                            v22 = __4793F8_map_width_x2 + 4;
-                            v23 = __478AAC_map_height_x2 + 4;
-                            if (__4793F8_map_width_x2 + 4 <= 2)
-                            {
-                                v24 = v41;
-                            }
-                            else
-                            {
-                                v24 = v41;
-                                memset(v41, 0xA6u, __4793F8_map_width_x2 + 2);
-                            }
-                            v25 = v24;
-                            if (v23 > 2)
-                            {
-                                v26 = v23 - 2;
-                                do
-                                {
-                                    *v25 = -90;
-                                    v25 += v22;
-                                    --v26;
-                                } while (v26);
-                            }
-                            v27 = &v24[v22 + 1];
-                            if (v22 > 3)
-                                memset(v27, 0xA0u, v22 - 3);
-                            v28 = v27;
-                            if (v23 > 3)
-                            {
-                                v29 = v23 - 3;
-                                do
-                                {
-                                    *v28 = -96;
-                                    v28 += v22;
-                                    --v29;
-                                } while (v29);
-                            }
-                            v30 = v22 * (v23 - 1);
-                            v31 = &v41[v30];
-                            v50 = (int)&v41[v30];
-                            if (v22 > 2)
-                                memset(&v41[v30 + 1], 0xA0u, v22 - 2);
-                            v32 = &v41[2 * v22 - 1];
-                            if (v23 > 2)
-                            {
-                                v33 = v23 - 2;
-                                do
-                                {
-                                    *v32 = -96;
-                                    v32 += v22;
-                                    --v33;
-                                } while (v33);
-                            }
-                            v34 = (int)&v41[v22 * (v23 - 2)];
-                            if (v22 > 3)
-                            {
-                                memset((void *)(v34 + 2), 0xA6u, v22 - 3);
-                                v31 = (char *)v50;
-                            }
-                            v35 = &v41[2 * v22 - 2] + v22;
-                            if (v23 > 3)
-                            {
-                                v36 = v23 - 3;
-                                do
-                                {
-                                    *v35 = -90;
-                                    v35 += v22;
-                                    --v36;
-                                } while (v36);
-                            }
-                            v37 = 1;
-                            v41[v22 - 1] = -93;
-                            v41[2 * v22 - 2] = -93;
-                            *(_BYTE *)(v34 + 1) = -93;
-                            *v31 = -93;
-                            v38 = &player_sprite_color_by_player_side[1];
-                            do
-                            {
-                                v39 = *(_BYTE *)v38;
-                                ++v38;
-                                byte_47CB50[v37++] = 16 * v39 + 12;
-                            } while ((int)v38 < (int)&UNIT_num_player_units);
-                            _47CB8C_fow->width = __4793F8_map_width_x2 + 4;
-                            _47CB8C_fow->height = __478AAC_map_height_x2 + 4;
-                            _47CBA0_MobdSprtImage_fog_of_war.data = _47CB8C_fow;
-                            dword_470598 = (__4793F8_map_width_x2 + 4) << 8;
-                            _47CBA0_MobdSprtImage_fog_of_war.flags = 0;
-                            _47CBA0_MobdSprtImage_fog_of_war.handler = render_sprt_draw_handler;
-                            dword_47059C = (__478AAC_map_height_x2 + 4) << 8;
-                            v40 = sprite_create_scripted(MOBD_MUTE_ALCHEMY_HALL, 0, script_44A500_fog_of_war, SCRIPT_COROUTINE, 0);
-                            _47CB58_minimap_sprite = v40;
-                            v40->_54_inside_mobd_ptr4 = &_4705B0_minimap;
-                            _47CB58_minimap_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-                            _47CB58_minimap_sprite->script->script_type = SCRIPT_TYPE_47802_fog_of_war;
-                            _47CB58_minimap_sprite->drawjob->flags |= 0x40000000u;
-                            _47CB98_fow_map_x2 = _47CB88_fow_map_x2;
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return false;
-}
-
-//----- (0044AE30) --------------------------------------------------------
-void mapd_44AE30_fog_of_war()
-{
-	int v0; // edx@2
-	_BYTE *v1; // esi@2
-	int v2; // edi@2
-	_BYTE *v3; // eax@2
-	int i; // ebp@2
-	int v5; // ecx@3
-	int v6; // eax@7
-	Sprite *v8; // eax@12
-	int v9; // ecx@12
-	int v10; // eax@12
-	int v11; // eax@16
-	int v12; // edi@18
-	int v13; // ecx@19
-	Sprite *v15; // eax@26
-	int v16; // ecx@26
-	int v17; // eax@26
-	int v18; // eax@30
-	int v19; // edi@32
-	int v20; // esi@33
-	int v21; // esi@39
-	int v22; // edi@40
-	_BYTE *v23; // edx@41
-	unsigned int v24; // ecx@42
-	_BYTE *v25; // edi@42
-	int v26; // eax@44
-	int v27; // eax@47
-	int v28; // eax@50
-	int v29; // [sp+10h] [bp-8h]@2
-	unsigned int v30; // [sp+14h] [bp-4h]@2
-
-	if (_47CB58_minimap_sprite->pstru58)
-	{
-		v0 = __4793F8_map_width_x2;
-		v1 = (char *)_47CB98_fow_map_x2;
-		v2 = 0;
-		v29 = (unsigned int)(render_width - 32) >> 4;
-		v30 = (unsigned int)render_height >> 4;
-		v3 = (_BYTE *)dword_47CBAC;
-		for (i = __4793F8_map_width_x2 + 4; v2 < __478AAC_map_height_x2; v3 += 4)
-		{
-			v5 = 0;
-			if (v0 > 0)
-			{
-				do
-				{
-					*v3 = *v1;
-					v0 = __4793F8_map_width_x2;
-					++v3;
-					++v1;
-					++v5;
-				} while (v5 < __4793F8_map_width_x2);
-			}
-			++v2;
-		}
-		if (is_player_faction_evolved())
-			v6 = get_max_clanhall_level();
-		else
-			v6 = get_max_outpost_level();
-		switch (v6)
-		{
-		case 1:
-		case 2:
-			for (auto j: entityRepo->FindAll())
-			{
-				if (j->player_side == player_side)
-				{
-					j->sprite->field_88_unused = 1;
-					v8 = j->sprite;
-					v9 = 2 * (v8->x >> 13);
-					v10 = 2 * (v8->y >> 13);
-					if (v9 >= 0 && v9 < __4793F8_map_width_x2 && v10 >= 0 && v10 < __478AAC_map_height_x2)
-					{
-						v11 = dword_47CBAC + v9 + i * v10;
-						if (*(_BYTE *)v11 != (_BYTE)dword_47CB4C || *(_BYTE *)(v11 + 1) != (_BYTE)dword_47CB4C)
-						{
-							v12 = 2;
-							do
-							{
-								v13 = 2;
-								do
-								{
-									++v11;
-									--v13;
-									*(_BYTE *)(v11 - 1) = byte_47CB50[j->player_side];
-								} while (v13);
-								--v12;
-								v11 = v11 + i - 2;
-							} while (v12);
-						}
-					}
-				}
-			}
-			break;
-		case 3:
-		case 4:
-		case 5:
-			for (auto k : entityRepo->FindAll())
-			{
-				if (k->player_side)
-				{
-					k->sprite->field_88_unused = 1;
-					v15 = k->sprite;
-					v16 = 2 * (v15->x >> 13);
-					v17 = 2 * (v15->y >> 13);
-					if (v16 >= 0 && v16 < __4793F8_map_width_x2 && v17 >= 0 && v17 < __478AAC_map_height_x2)
-					{
-						v18 = dword_47CBAC + v16 + i * v17;
-						if (*(_BYTE *)v18 != (_BYTE)dword_47CB4C || *(_BYTE *)(v18 + 1) != (_BYTE)dword_47CB4C)
-						{
-							v19 = 2;
-							do
-							{
-								v20 = 2;
-								do
-								{
-									++v18;
-									--v20;
-									*(_BYTE *)(v18 - 1) = byte_47CB50[k->player_side];
-								} while (v20);
-								--v19;
-								v18 = v18 + i - 2;
-							} while (v19);
-						}
-					}
-				}
-			}
-			break;
-		default:
-			break;
-		}
-		if (dword_47CB68 >= 0 && dword_47CB6C >= 0)
-		{
-			v21 = v29;
-			if (dword_47CB68 <= __4793F8_map_width_x2 - v29)
-			{
-				v22 = v30;
-				if (dword_47CB6C <= (int)(__478AAC_map_height_x2 - v30))
-				{
-					v23 = (_BYTE *)(dword_47CBAC + dword_47CB68 + dword_47CB6C * i);
-					if (v29 > 1)
-					{
-						v24 = (unsigned int)(v29 - 1) >> 2;
-						memset(v23, 0xA6u, 4 * v24);
-						v25 = &v23[4 * v24];
-						v23 += v29 - 1;
-						v21 = v29;
-						memset(v25, -90, ((_BYTE)v29 - 1) & 3);
-						v22 = v30;
-					}
-					if (v22 > 1)
-					{
-						v26 = v22 - 1;
-						do
-						{
-							*v23 = -90;
-							v23 += i;
-							--v26;
-						} while (v26);
-					}
-					if (v21 > 1)
-					{
-						v27 = v21 - 1;
-						do
-						{
-							*v23-- = -90;
-							--v27;
-						} while (v27);
-					}
-					if (v22 > 1)
-					{
-						v28 = v22 - 1;
-						do
-						{
-							*v23 = -90;
-							v23 -= i;
-							--v28;
-						} while (v28);
-					}
-				}
-			}
-		}
-	}
-}
-
-//----- (0044B0D0) --------------------------------------------------------
-bool is_map_revealed_at(int x, int y)
-{
-	return *(&map_fog_of_war_scrl_tiles[(x >> 13) + 2] + __4793F8_map_width_plus4 * ((y >> 13) + 2)) != fog_of_war_tile_1;
-}
-
-//----- (0044B100) --------------------------------------------------------
-void map_reveal_fog_around_entity(Entity *a1)
-{
-	Sprite *v1; // edx@2
-	int v2; // ecx@2
-	int v3; // eax@2
-	int v4; // edi@2
-	int v5; // ecx@3
-	int v6; // ecx@5
-	int v7; // ebp@6
-	int v8; // esi@9
-	int v9; // eax@11
-	int v10; // ebx@13
-	int v11; // ecx@13
-	int v12; // edi@15
-	int v13; // ecx@15
-	char *v14; // edx@15
-	char *v15; // ecx@15
-	int v16; // esi@18
-	int v17; // eax@21
-	int v18; // esi@21
-	int v19; // edx@21
-	int v20; // ebx@21
-	int v21; // ecx@27
-	bool v22; // zf@27
-	bool v23; // sf@27
-	unsigned __int8 v24; // of@27
-	int v25; // ecx@27
-	MapdScrlImageTile **v26; // esi@32
-	MapdScrlImageTile *v27; // eax@32
-	MapdScrlImageTile *v28; // eax@44
-	MapdScrlImageTile *v29; // eax@48
-	MapdScrlImageTile *v30; // eax@50
-	MapdScrlImageTile *v31; // eax@56
-	MapdScrlImageTile *v32; // eax@67
-	int v33; // esi@79
-	int v34; // ecx@79
-	int v35; // edx@80
-	MapdScrlImageTile *v36; // eax@81
-	MapdScrlImageTile *v37; // eax@93
-	MapdScrlImageTile *v38; // eax@98
-	MapdScrlImageTile *v39; // edi@110
-	int v40; // eax@110
-	MapdScrlImageTile *v41; // edi@116
-	MapdScrlImageTile *v42; // edi@122
-	MapdScrlImageTile *v43; // edi@133
-	MapdScrlImageTile *v44; // edi@137
-	MapdScrlImageTile *v45; // edx@141
-	MapdScrlImageTile **v46; // eax@145
-	int v47; // edi@146
-	MapdScrlImageTile *v48; // esi@147
-	MapdScrlImageTile *v49; // esi@159
-	int v50; // eax@163
-	int v51; // esi@164
-	MapdScrlImageTile *v52; // esi@166
-	MapdScrlImageTile *v53; // esi@178
-	MapdScrlImageTile *v54; // esi@183
-	MapdScrlImageTile *v55; // esi@195
-	MapdScrlImageTile *v56; // ecx@200
-	MapdScrlImageTile *v57; // esi@201
-	MapdScrlImageTile *v58; // esi@207
-	MapdScrlImageTile *v59; // esi@218
-	int v60; // eax@230
-	int v61; // ecx@231
-	MapdScrlImageTile *v62; // esi@232
-	MapdScrlImageTile *v63; // edx@244
-	MapdScrlImageTile *v64; // esi@249
-	MapdScrlImageTile *v65; // ecx@253
-	MapdScrlImageTile *v66; // esi@261
-	MapdScrlImageTile *v67; // edx@265
-	MapdScrlImageTile *v68; // esi@267
-	MapdScrlImageTile *v69; // esi@273
-	MapdScrlImageTile *v70; // esi@283
-	int v71; // [sp+0h] [bp-18h]@5
-	int v72; // [sp+0h] [bp-18h]@79
-	int v73; // [sp+4h] [bp-14h]@29
-	int v74; // [sp+8h] [bp-10h]@2
-	int v75; // [sp+8h] [bp-10h]@25
-	int v76; // [sp+Ch] [bp-Ch]@2
-	int v77; // [sp+Ch] [bp-Ch]@22
-	int v78; // [sp+10h] [bp-8h]@16
-	int v79; // [sp+10h] [bp-8h]@30
-	int v80; // [sp+14h] [bp-4h]@32
-
-	if (a1->player_side == player_side)
-	{
-		a1->sprite->field_88_unused = 1;
-		v1 = a1->sprite;
-		v2 = a1->stats->field_20;
-		v3 = 2 * (v1->x >> 13);
-		v4 = 2 * (v1->y >> 13);
-		v76 = 2 * (v1->x >> 13);
-		v74 = 2 * (v1->y >> 13);
-		if (v2 <= 128)
-			v5 = 4;
-		else
-			v5 = v2 >> 5;
-		v6 = 2 * v5;
-		v71 = v6;
-		if (v3 >= v6)
-			v7 = v3 - v6;
-		else
-			v7 = 0;
-		if (v4 >= v6)
-			v8 = v4 - v6;
-		else
-			v8 = 0;
-		v9 = v6 + v3;
-		if (v9 > __4793F8_map_width_x2)
-			v9 = __4793F8_map_width_x2;
-		v10 = __478AAC_map_height_x2;
-		v11 = v4 + v6;
-		if (v11 <= __478AAC_map_height_x2)
-			v10 = v11;
-		v12 = __4793F8_map_width_x2 + v7 - v9;
-		v13 = v7 + __4793F8_map_width_x2 * v8;
-		v14 = (char *)_47CB88_fow_map_x2 + v13;
-		v15 = (char *)_47CB74_fow_map_x2 + v13;
-		if (v8 < v10)
-		{
-			v78 = v10 - v8;
-			do
-			{
-				if (v7 < v9)
-				{
-					v16 = v9 - v7;
-					do
-					{
-						*v14++ = *v15++;
-						--v16;
-					} while (v16);
-				}
-				v14 += v12;
-				v15 += v12;
-				--v78;
-			} while (v78);
-		}
-		v17 = v71 / 2;
-		v18 = v76 / 2;
-		v19 = v71 / 2 - 1;
-		v20 = v74 / 2;
-		if (v76 / 2 >= v19)
-			v77 = v18 - v17 + 2;
-		else
-			v77 = 1;
-		if (v20 >= v19)
-			v75 = v20 - v17 + 2;
-		else
-			v75 = 1;
-		v21 = v17 + v18 + 4;
-		v24 = __OFSUB__(v21, __4793F8_map_width_plus4);
-		v22 = v21 == __4793F8_map_width_plus4;
-		v23 = v21 - __4793F8_map_width_plus4 < 0;
-		v25 = __4793F8_map_width_plus4 - 2;
-		if ((unsigned __int8)(v23 ^ v24) | v22)
-			v25 = v17 + v18 + 2;
-		v73 = v25;
-		if (v17 + v20 + 4 <= __478AAC_map_height_plus4)
-			v79 = v17 + v20 + 2;
-		else
-			v79 = __478AAC_map_height_plus4 - 2;
-		v26 = &map_fog_of_war_scrl_tiles[v77 + __4793F8_map_width_plus4 * v75];
-		v80 = v77 - v25 + __4793F8_map_width_plus4 - 1;
-		v27 = *(&map_fog_of_war_scrl_tiles[v77] + __4793F8_map_width_plus4 * v75 - __4793F8_map_width_plus4);
-		if (v27 == fog_of_war_tile_1 || v27 == fog_of_war_tile_4 || v27 == fog_of_war_tile_9 || v27 == fog_of_war_tile_8)
-		{
-			v32 = *(v26 - 1);
-			if (v32 == fog_of_war_tile_1 || v32 == fog_of_war_tile_3 || v32 == fog_of_war_tile_8 || v32 == fog_of_war_tile_7)
-			{
-				v29 = fog_of_war_tile_6;
-			LABEL_78:
-				*v26 = v29;
-				goto LABEL_79;
-			}
-			if (v32 == fog_of_war_tile_6
-				|| v32 == fog_of_war_tile_2
-				|| v32 == fog_of_war_tile_11
-				|| v32 == fog_of_war_tile_14)
-			{
-				*v26 = fog_of_war_tile_2;
-			}
-			else
-			{
-				*v26 = (MapdScrlImageTile *)dword_47CFC0;
-			}
-		}
-		else
-		{
-			if (v27 == fog_of_war_tile_6
-				|| v27 == fog_of_war_tile_5
-				|| v27 == fog_of_war_tile_13
-				|| v27 == fog_of_war_tile_14)
-			{
-				v31 = *(v26 - 1);
-				if (v31 == fog_of_war_tile_1
-					|| v31 == fog_of_war_tile_3
-					|| v31 == fog_of_war_tile_8
-					|| v31 == fog_of_war_tile_7)
-				{
-					*v26 = fog_of_war_tile_5;
-					goto LABEL_79;
-				}
-				if (v31 == fog_of_war_tile_6
-					|| v31 == fog_of_war_tile_2
-					|| v31 == fog_of_war_tile_11
-					|| v31 == fog_of_war_tile_14)
-				{
-					*v26 = fog_of_war_tile_10;
-					goto LABEL_79;
-				}
-				v29 = (MapdScrlImageTile *)dword_47CFC0;
-				goto LABEL_78;
-			}
-			if (v27 != fog_of_war_tile_7
-				&& v27 != fog_of_war_tile_3
-				&& v27 != fog_of_war_tile_12
-				&& v27 != fog_of_war_tile_15)
-			{
-				v28 = *(v26 - 1);
-				if (v28 == fog_of_war_tile_9
-					|| v28 == fog_of_war_tile_4
-					|| v28 == fog_of_war_tile_12
-					|| v28 == fog_of_war_tile_15)
-				{
-					*v26 = fog_of_war_tile_13;
-					goto LABEL_79;
-				}
-				v29 = (MapdScrlImageTile *)dword_47CFC0;
-				goto LABEL_78;
-			}
-			v30 = *(v26 - 1);
-			if (v30 == fog_of_war_tile_9
-				|| v30 == fog_of_war_tile_4
-				|| v30 == fog_of_war_tile_12
-				|| v30 == fog_of_war_tile_15)
-			{
-				*v26 = fog_of_war_tile_14;
-			}
-			else
-			{
-				*v26 = fog_of_war_tile_11;
-			}
-		}
-	LABEL_79:
-		v33 = (int)(v26 + 1);
-		v34 = v77 + 1;
-		v72 = v77 + 1;
-		if (v77 + 1 < v73)
-		{
-			v35 = v73 - v34;
-			do
-			{
-				v36 = *(MapdScrlImageTile **)(v33 - 4 * __4793F8_map_width_plus4);
-				if (v36 == fog_of_war_tile_1
-					|| v36 == fog_of_war_tile_4
-					|| v36 == fog_of_war_tile_9
-					|| v36 == fog_of_war_tile_8)
-				{
-					v37 = fog_of_war_tile_2;
-				}
-				else if (v36 == fog_of_war_tile_6
-					|| v36 == fog_of_war_tile_5
-					|| v36 == fog_of_war_tile_13
-					|| v36 == fog_of_war_tile_14)
-				{
-					v37 = fog_of_war_tile_10;
-				}
-				else if (v36 == fog_of_war_tile_7
-					|| v36 == fog_of_war_tile_3
-					|| v36 == fog_of_war_tile_12
-					|| v36 == fog_of_war_tile_15)
-				{
-					v37 = fog_of_war_tile_11;
-				}
-				else
-				{
-					v37 = (MapdScrlImageTile *)dword_47CFC0;
-				}
-				*(_DWORD *)v33 = (int)v37;
-				v33 += 4;
-				--v35;
-			} while (v35);
-		}
-		v38 = *(MapdScrlImageTile **)(v33 - 4 * __4793F8_map_width_plus4);
-		if (v38 == fog_of_war_tile_1 || v38 == fog_of_war_tile_4 || v38 == fog_of_war_tile_9 || v38 == fog_of_war_tile_8)
-		{
-			v43 = *(MapdScrlImageTile **)(v33 + 4);
-			v40 = v33 + 4;
-			if (v43 == fog_of_war_tile_1 || v43 == fog_of_war_tile_5 || v43 == fog_of_war_tile_9 || v43 == fog_of_war_tile_6)
-			{
-				v45 = fog_of_war_tile_7;
-			}
-			else
-			{
-				v44 = *(MapdScrlImageTile **)(v33 - 4);
-				if (v44 == fog_of_war_tile_6
-					|| v44 == fog_of_war_tile_2
-					|| v44 == fog_of_war_tile_11
-					|| v44 == fog_of_war_tile_14)
-				{
-					*(_DWORD *)v33 = (int)fog_of_war_tile_2;
-					goto LABEL_145;
-				}
-				v45 = (MapdScrlImageTile *)dword_47CFC0;
-			}
-			*(_DWORD *)v33 = (int)v45;
-		}
-		else if (v38 == fog_of_war_tile_7
-			|| v38 == fog_of_war_tile_3
-			|| v38 == fog_of_war_tile_12
-			|| v38 == fog_of_war_tile_15)
-		{
-			v42 = *(MapdScrlImageTile **)(v33 + 4);
-			v40 = v33 + 4;
-			if (v42 == fog_of_war_tile_1 || v42 == fog_of_war_tile_5 || v42 == fog_of_war_tile_9 || v42 == fog_of_war_tile_6)
-			{
-				v34 = v77 + 1;
-				*(_DWORD *)v33 = (int)fog_of_war_tile_3;
-			}
-			else if (v42 == fog_of_war_tile_7
-				|| v42 == fog_of_war_tile_2
-				|| v42 == fog_of_war_tile_10
-				|| v42 == fog_of_war_tile_15)
-			{
-				v34 = v77 + 1;
-				*(_DWORD *)v33 = (int)fog_of_war_tile_11;
-			}
-			else
-			{
-				*(_DWORD *)v33 = dword_47CFC0;
-				v34 = v77 + 1;
-			}
-		}
-		else if (v38 == fog_of_war_tile_6
-			|| v38 == fog_of_war_tile_5
-			|| v38 == fog_of_war_tile_13
-			|| v38 == fog_of_war_tile_14)
-		{
-			v41 = *(MapdScrlImageTile **)(v33 + 4);
-			v40 = v33 + 4;
-			if (v41 == fog_of_war_tile_8
-				|| v41 == fog_of_war_tile_4
-				|| v41 == fog_of_war_tile_13
-				|| v41 == fog_of_war_tile_14)
-			{
-				v34 = v77 + 1;
-				*(_DWORD *)v33 = (int)fog_of_war_tile_15;
-			}
-			else
-			{
-				*(_DWORD *)v33 = (int)fog_of_war_tile_10;
-				v34 = v77 + 1;
-			}
-		}
-		else
-		{
-			v39 = *(MapdScrlImageTile **)(v33 + 4);
-			v40 = v33 + 4;
-			if (v39 == fog_of_war_tile_8
-				|| v39 == fog_of_war_tile_4
-				|| v39 == fog_of_war_tile_13
-				|| v39 == fog_of_war_tile_14)
-			{
-				v34 = v77 + 1;
-				*(_DWORD *)v33 = (int)fog_of_war_tile_12;
-			}
-			else
-			{
-				*(_DWORD *)v33 = dword_47CFC0;
-				v34 = v77 + 1;
-			}
-		}
-	LABEL_145:
-		v46 = (MapdScrlImageTile **)(4 * v80 + v40);
-		if (v75 + 1 < v79)
-		{
-			v47 = v79 - (v75 + 1);
-			do
-			{
-				v48 = *(v46 - 1);
-				if (v48 == fog_of_war_tile_1
-					|| v48 == fog_of_war_tile_3
-					|| v48 == fog_of_war_tile_8
-					|| v48 == fog_of_war_tile_7)
-				{
-					v49 = fog_of_war_tile_5;
-				}
-				else if (v48 == fog_of_war_tile_6
-					|| v48 == fog_of_war_tile_2
-					|| v48 == fog_of_war_tile_11
-					|| v48 == fog_of_war_tile_14)
-				{
-					v49 = fog_of_war_tile_10;
-				}
-				else if (v48 == fog_of_war_tile_9
-					|| v48 == fog_of_war_tile_4
-					|| v48 == fog_of_war_tile_12
-					|| v48 == fog_of_war_tile_15)
-				{
-					v49 = fog_of_war_tile_13;
-				}
-				else
-				{
-					v49 = (MapdScrlImageTile *)dword_47CFC0;
-				}
-				*v46 = v49;
-				v50 = (int)(v46 + 1);
-				if (v34 < v73)
-				{
-					v51 = v73 - v34;
-					do
-					{
-						*(_DWORD *)v50 = dword_47CFC0;
-						v50 += 4;
-						--v51;
-					} while (v51);
-				}
-				v52 = *(MapdScrlImageTile **)(v50 + 4);
-				if (v52 == fog_of_war_tile_1
-					|| v52 == fog_of_war_tile_5
-					|| v52 == fog_of_war_tile_9
-					|| v52 == fog_of_war_tile_6)
-				{
-					v53 = fog_of_war_tile_3;
-				}
-				else if (v52 == fog_of_war_tile_7
-					|| v52 == fog_of_war_tile_2
-					|| v52 == fog_of_war_tile_10
-					|| v52 == fog_of_war_tile_15)
-				{
-					v53 = fog_of_war_tile_11;
-				}
-				else if (v52 == fog_of_war_tile_8
-					|| v52 == fog_of_war_tile_4
-					|| v52 == fog_of_war_tile_13
-					|| v52 == fog_of_war_tile_14)
-				{
-					v53 = fog_of_war_tile_12;
-				}
-				else
-				{
-					v53 = (MapdScrlImageTile *)dword_47CFC0;
-				}
-				*(_DWORD *)v50 = (int)v53;
-				v46 = (MapdScrlImageTile **)(4 * v80 + v50 + 4);
-				--v47;
-			} while (v47);
-		}
-		v54 = v46[__4793F8_map_width_plus4];
-		if (v54 == fog_of_war_tile_1 || v54 == fog_of_war_tile_2 || v54 == fog_of_war_tile_6 || v54 == fog_of_war_tile_7)
-		{
-			v59 = *(v46 - 1);
-			if (v59 != fog_of_war_tile_1 && v59 != fog_of_war_tile_3 && v59 != fog_of_war_tile_8 && v59 != fog_of_war_tile_7)
-			{
-				if (v59 == fog_of_war_tile_9
-					|| v59 == fog_of_war_tile_4
-					|| v59 == fog_of_war_tile_12
-					|| v59 == fog_of_war_tile_15)
-				{
-					*v46 = fog_of_war_tile_4;
-				}
-				else
-				{
-					*v46 = (MapdScrlImageTile *)dword_47CFC0;
-				}
-			LABEL_230:
-				v60 = (int)(v46 + 1);
-				if (v72 < v73)
-				{
-					v61 = v73 - v72;
-					do
-					{
-						v62 = *(MapdScrlImageTile **)(v60 + 4 * __4793F8_map_width_plus4);
-						if (v62 == fog_of_war_tile_1
-							|| v62 == fog_of_war_tile_2
-							|| v62 == fog_of_war_tile_6
-							|| v62 == fog_of_war_tile_7)
-						{
-							v63 = fog_of_war_tile_4;
-						}
-						else if (v62 == fog_of_war_tile_9
-							|| v62 == fog_of_war_tile_5
-							|| v62 == fog_of_war_tile_10
-							|| v62 == fog_of_war_tile_15)
-						{
-							v63 = fog_of_war_tile_13;
-						}
-						else if (v62 == fog_of_war_tile_8
-							|| v62 == fog_of_war_tile_3
-							|| v62 == fog_of_war_tile_11
-							|| v62 == fog_of_war_tile_14)
-						{
-							v63 = fog_of_war_tile_12;
-						}
-						else
-						{
-							v63 = (MapdScrlImageTile *)dword_47CFC0;
-						}
-						*(_DWORD *)v60 = (int)v63;
-						v60 += 4;
-						--v61;
-					} while (v61);
-				}
-				v64 = *(MapdScrlImageTile **)(v60 + 4 * __4793F8_map_width_plus4);
-				if (v64 == fog_of_war_tile_1
-					|| v64 == fog_of_war_tile_2
-					|| v64 == fog_of_war_tile_6
-					|| v64 == fog_of_war_tile_7)
-				{
-					v70 = *(MapdScrlImageTile **)(v60 + 4);
-					if (v70 == fog_of_war_tile_1
-						|| v70 == fog_of_war_tile_5
-						|| v70 == fog_of_war_tile_9
-						|| v70 == fog_of_war_tile_6)
-					{
-						v67 = fog_of_war_tile_8;
-						goto LABEL_295;
-					}
-					if (v70 == fog_of_war_tile_8
-						|| v70 == fog_of_war_tile_4
-						|| v70 == fog_of_war_tile_13
-						|| v70 == fog_of_war_tile_14)
-					{
-						*(_DWORD *)v60 = (int)fog_of_war_tile_4;
-						goto LABEL_296;
-					}
-					v65 = (MapdScrlImageTile *)dword_47CFC0;
-				}
-				else
-				{
-					v65 = fog_of_war_tile_3;
-					if (v64 != fog_of_war_tile_8
-						&& v64 != fog_of_war_tile_3
-						&& v64 != fog_of_war_tile_11
-						&& v64 != fog_of_war_tile_14)
-					{
-						if (v64 == fog_of_war_tile_9
-							|| v64 == fog_of_war_tile_5
-							|| v64 == fog_of_war_tile_10
-							|| v64 == fog_of_war_tile_15)
-						{
-							v68 = *(MapdScrlImageTile **)(v60 + 4);
-							if (v68 != fog_of_war_tile_7
-								&& v68 != fog_of_war_tile_2
-								&& v68 != fog_of_war_tile_10
-								&& v68 != fog_of_war_tile_15)
-							{
-								v67 = fog_of_war_tile_13;
-								goto LABEL_295;
-							}
-							*(_DWORD *)v60 = (int)fog_of_war_tile_14;
-						}
-						else
-						{
-							v66 = *(MapdScrlImageTile **)(v60 + 4);
-							if (v66 != fog_of_war_tile_7
-								&& v66 != fog_of_war_tile_2
-								&& v66 != fog_of_war_tile_10
-								&& v66 != fog_of_war_tile_15)
-							{
-								v67 = (MapdScrlImageTile *)dword_47CFC0;
-							LABEL_295:
-								*(_DWORD *)v60 = (int)v67;
-								goto LABEL_296;
-							}
-							*(_DWORD *)v60 = (int)fog_of_war_tile_11;
-						}
-					LABEL_296:
-						sub_44BC80(v77, v73, v75, v79);
-						return;
-					}
-					v69 = *(MapdScrlImageTile **)(v60 + 4);
-					if (v69 != fog_of_war_tile_1
-						&& v69 != fog_of_war_tile_5
-						&& v69 != fog_of_war_tile_9
-						&& v69 != fog_of_war_tile_6)
-					{
-						if (v69 == fog_of_war_tile_8
-							|| v69 == fog_of_war_tile_4
-							|| v69 == fog_of_war_tile_13
-							|| v69 == fog_of_war_tile_14)
-						{
-							v67 = fog_of_war_tile_12;
-							goto LABEL_295;
-						}
-						*(_DWORD *)v60 = dword_47CFC0;
-						goto LABEL_296;
-					}
-				}
-				*(_DWORD *)v60 = (int)v65;
-				goto LABEL_296;
-			}
-			v56 = fog_of_war_tile_9;
-		}
-		else if (v54 == fog_of_war_tile_9
-			|| v54 == fog_of_war_tile_5
-			|| v54 == fog_of_war_tile_10
-			|| v54 == fog_of_war_tile_15)
-		{
-			v58 = *(v46 - 1);
-			if (v58 == fog_of_war_tile_1 || v58 == fog_of_war_tile_3 || v58 == fog_of_war_tile_8 || v58 == fog_of_war_tile_7)
-			{
-				*v46 = fog_of_war_tile_5;
-				goto LABEL_230;
-			}
-			if (v58 != fog_of_war_tile_9
-				&& v58 != fog_of_war_tile_4
-				&& v58 != fog_of_war_tile_12
-				&& v58 != fog_of_war_tile_15)
-			{
-				*v46 = (MapdScrlImageTile *)dword_47CFC0;
-				goto LABEL_230;
-			}
-			v56 = fog_of_war_tile_13;
-		}
-		else if (v54 == fog_of_war_tile_8
-			|| v54 == fog_of_war_tile_3
-			|| v54 == fog_of_war_tile_11
-			|| v54 == fog_of_war_tile_14)
-		{
-			v57 = *(v46 - 1);
-			if (v57 != fog_of_war_tile_6
-				&& v57 != fog_of_war_tile_2
-				&& v57 != fog_of_war_tile_11
-				&& v57 != fog_of_war_tile_14)
-			{
-				*v46 = fog_of_war_tile_12;
-				goto LABEL_230;
-			}
-			v56 = fog_of_war_tile_15;
-		}
-		else
-		{
-			v55 = *(v46 - 1);
-			if (v55 != fog_of_war_tile_6
-				&& v55 != fog_of_war_tile_2
-				&& v55 != fog_of_war_tile_11
-				&& v55 != fog_of_war_tile_14)
-			{
-				*v46 = (MapdScrlImageTile *)dword_47CFC0;
-				goto LABEL_230;
-			}
-			v56 = fog_of_war_tile_10;
-		}
-		*v46 = v56;
-		goto LABEL_230;
-	}
-}
-
-//----- (0044BC00) --------------------------------------------------------
-void minimap_free()
-{
-	fog_of_war_bitmap->draw_job->job_details.image = 0;
-	bitmap_list_remove(fog_of_war_bitmap);
-	_47CB58_minimap_sprite->drawjob->job_details.image = 0;
-	sprite_list_remove(_47CB58_minimap_sprite);
-	free(_47CB8C_fow);
-	free(_47CB88_fow_map_x2);
-	free(_47CB74_fow_map_x2);
-	free(map_fog_of_war_scrl);
-}
-
-//----- (0044BC80) --------------------------------------------------------
-int sub_44BC80(int a1, int a2, int a3, int a4)
-{
-	int v4; // edi@1
-	int v5; // ecx@1
-	MapdScrlImage *v6; // edx@1
-	int v7; // edi@1
-	MapdScrlImage *v8; // ebx@1
-	int result; // eax@1
-	bool v10; // sf@1
-	int i; // ebp@9
-	MapdScrlImageTile **v12; // esi@10
-	MapdScrlImageTile **v13; // edi@10
-	int v14; // ebx@11
-	MapdScrlImage *v15; // [sp+10h] [bp-4h]@1
-	int v16; // [sp+18h] [bp+4h]@1
-	int v17; // [sp+1Ch] [bp+8h]@1
-
-	v4 = a2;
-	v5 = a1 - 2;
-	v6 = (MapdScrlImage *)_47A010_mapd_item_being_drawn[0]->draw_job->job_details.image;
-	v7 = v4 + 2;
-	v8 = (MapdScrlImage *)_47A010_mapd_item_being_drawn[1]->draw_job->job_details.image;
-	result = a3 - 2;
-	v15 = (MapdScrlImage *)_47A010_mapd_item_being_drawn[1]->draw_job->job_details.image;
-	v10 = a3 - 2 < 0;
-	v17 = a4 + 2;
-	v16 = v7;
-	if (v10)
-		result = 0;
-	if (v5 < 0)
-		v5 = 0;
-	if (v7 >= v6->num_x_tiles)
-		v16 = v6->num_x_tiles;
-	if (v17 >= v6->num_y_tiles)
-		v17 = v6->num_y_tiles;
-	for (i = result; i < v17; ++i)
-	{
-		v12 = &v6->tiles[v5 + v6->num_x_tiles * i];
-		v13 = &v8->tiles[v5 + v8->num_x_tiles * i];
-		if (v5 < v16)
-		{
-			v14 = v16 - v5;
-			do
-			{
-				if (*v12)
-					(*v12)->flags &= 0xFFFFFFFD;
-				if (*v13)
-					(*v13)->flags &= 0xFFFFFFFD;
-				++v12;
-				++v13;
-				--v14;
-			} while (v14);
-			v8 = v15;
-		}
-		result = v17;
-	}
-	return result;
-}
-
-//----- (0044BD50) --------------------------------------------------------
-int MAPD_44BD50_alter_tile_flags()
-{
-	int v0; // ebx@1
-	MapdScrlImage *v1; // ecx@1
-	MapdScrlImage *v2; // ebp@1
-	int result; // eax@1
-	int v4; // eax@2
-	MapdScrlImageTile **v5; // esi@2
-	MapdScrlImageTile **v6; // edi@2
-	int v7; // edx@2
-
-	v0 = 0;
-	v1 = (MapdScrlImage *)_47A010_mapd_item_being_drawn[0]->draw_job->job_details.image;
-	v2 = (MapdScrlImage *)_47A010_mapd_item_being_drawn[1]->draw_job->job_details.image;
-	result = v1->num_y_tiles;
-	if (result > 0)
-	{
-		do
-		{
-			v4 = v1->num_x_tiles;
-			v5 = &v1->tiles[v4 * v0];
-			v6 = &v2->tiles[v2->num_x_tiles * v0];
-			v7 = 0;
-			if (v4 > 0)
-			{
-				do
-				{
-					if (*v5)
-						(*v5)->flags |= 2u;
-					if (*v6)
-						(*v6)->flags |= 2u;
-					++v5;
-					++v6;
-					++v7;
-				} while (v7 < v1->num_x_tiles);
-			}
-			result = v1->num_y_tiles;
-			++v0;
-		} while (v0 < result);
-	}
-	return result;
-}
 
 //----- (0044BDC0) --------------------------------------------------------
 void drawjob_update_handler_44BDC0_entity_turret(Sprite *a1, DrawJob *a2)
@@ -32697,15 +20231,15 @@ void EntityTurret_44BF00_handler(EntityTurret *a1)
 	v2 = &a1->mobd_lookup_id;
 	sprite_4272E0_load_mobd_item(
 		a1->turret_sprite,
-		a1->stats_attachment_point->mobd_lookup_table_offset,
+		a1->stats_attachment_point->mobd_lookup_offset_idle,
 		_47D3C4_entity_mobd_lookup_ids[a1->mobd_lookup_id + 1]);
 	v3 = v1->stats_attachment_point;
 	v4 = v1->entity;
-	v1->handler = EntityTurret_44BF70;
-	entity_advance_mobd_rotation(v2, v4->current_mobd_lookup_idx, v3->mobd_frame_step);
+	v1->SetHandler(EntityTurret_44BF70);
+	mobd_advance_anim(v2, v4->GetCurrentAnimFrame(), v3->mobd_frame_step);
 	sprite_4273B0_load_mobd_item_sound(
 		v1->turret_sprite,
-		v1->stats_attachment_point->mobd_lookup_table_offset,
+		v1->stats_attachment_point->mobd_lookup_offset_idle,
 		_47D3C4_entity_mobd_lookup_ids[*v2 + 1]
     );
     script_yield_any_trigger(v1->sprite_task, 2);
@@ -32719,14 +20253,14 @@ void EntityTurret_44BF70(EntityTurret *a1)
 
 	v1 = a1;
 	v2 = (char *)&a1->mobd_lookup_id;
-	entity_advance_mobd_rotation(
+	mobd_advance_anim(
 		&a1->mobd_lookup_id,
-		a1->entity->current_mobd_lookup_idx,
+		a1->entity->GetCurrentAnimFrame(),
 		a1->stats_attachment_point->mobd_frame_step
     );
 	sprite_4273B0_load_mobd_item_sound(
 		v1->turret_sprite,
-		v1->stats_attachment_point->mobd_lookup_table_offset,
+		v1->stats_attachment_point->mobd_lookup_offset_idle,
 		_47D3C4_entity_mobd_lookup_ids[*(_DWORD *)v2 + 1]
     );
     script_yield_any_trigger(v1->sprite_task, 2);
@@ -32869,14 +20403,12 @@ bool _44C010_init_mission_globals()
 //----- (0044C1D0) --------------------------------------------------------
 void per_player_sprite_palettes_47DC88_free()
 {
-	void **v0; // esi@1
-
-	v0 = (void **)per_player_sprite_palettes;
-	do
-	{
-		free(*v0);
-		++v0;
-	} while ((int)v0 < (int) &entity_drag_selection_list);
+    for (int i = 0; i < 7; ++i) {
+        if (per_player_sprite_palettes[i]) {
+            free(per_player_sprite_palettes[i]);
+            per_player_sprite_palettes[i] = nullptr;
+        }
+    }
 }
 
 //----- (0044C1F0) --------------------------------------------------------
@@ -32895,7 +20427,7 @@ int UNIT_Init()
 	int result; // eax@20
 
 	_47DCC4_entity_id_counter = 0;
-	_47C048_unit_bomberdmg = 0;
+	_47C048_num_attack_projectile_sprites = 0;
 	_4269B0_task_attachment__4_some_task_flags = 0;
 	UNIT_num_player_units = 0;
 	UNIT_num_nonplayer_units = 0;
@@ -32949,7 +20481,7 @@ int UNIT_Init()
 		}
 		if (!v7)
 			goto LABEL_18;
-		v10 = v6 * (v4[-1].reload_time - 40) * v4[-2]._1C_mobd_lookup_table_offset_for_rotary_cannon / v7 >> 8;
+		v10 = v6 * (v4[-1].reload_time - 40) * v4[-2].mobd_lookup_offset_attack / v7 >> 8;
 		v4->reload2_time = v10;
 		if (v10 < 1)
 			v4->reload2_time = 1;
@@ -32958,7 +20490,7 @@ int UNIT_Init()
 		v4->reload2_time = 0;
 		v4 = (UnitAttachmentPoint *)((char *)v4 + 100);
 	} while ((int)v4 <= (int)&unit_stats[78].attach);
-	task_mobd17_cursor = 0;
+	game_cursor_script = 0;
 	_438B40_reset_explosions();
 	entity_scout = 0;
 	dword_47A3DC = 0;
@@ -33033,7 +20565,7 @@ void _44C4B0_mess_with_turrets()
 
 	if (dword_47DCE8)
 	{
-		if (!is_coroutine_list_initialization_failed)
+		if (!is_async_execution_supported)
 			++_4269B0_task_attachment__4_some_task_flags;
 
         for (auto i: entityRepo->FindAll())
@@ -33230,7 +20762,7 @@ bool show_message_ex(Entity *a1, const char *text)
 {
     return script_trigger_event(
         a1 ? a1->script : nullptr,
-        EVT_SHOW_UI_CONTROL,
+        EVT_MSG_DESELECTED,
         (void *)text,
         pscript_show_message_ex
     );
@@ -33239,11 +20771,11 @@ bool show_message_ex(Entity *a1, const char *text)
 //----- (0044CB40) --------------------------------------------------------
 bool show_message(const char *text)
 {
-	return script_trigger_event(0, EVT_SHOW_UI_CONTROL, (void *)text, pscript_show_message);
+	return script_trigger_event(0, EVT_MSG_DESELECTED, (void *)text, pscript_show_message);
 }
 
 //----- (0044CB60) --------------------------------------------------------
-int entity_advance_mobd_rotation(int *src_lookup_id, int dst, int step)
+int mobd_advance_anim(int *src_lookup_id, int dst, int step)
 {
 	int v3; // esi@1
 	int result; // eax@2
@@ -33341,7 +20873,7 @@ void script_show_message_ex(Script *a1)
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
 		{
 			v5 = i->event;
-			if (v5 != EVT_MSG_1511_sidebar_click_category && v5 == EVT_SHOW_UI_CONTROL)
+			if (v5 != EVT_MSG_SELECTED && v5 == EVT_MSG_DESELECTED)
 			{
 				sender = i->sender;
 				text = (const char *)i->param;
@@ -33429,7 +20961,6 @@ bool is_enemy(PLAYER_SIDE player_side, Entity *entity)
 bool sub_44CE40(enum PLAYER_SIDE player_side, Entity *a2)
 {
 	enum UNIT_ID v2; // eax@1
-	BOOL result; // eax@3
 	enum PLAYER_SIDE v4; // eax@4
 
 	v2 = a2->unit_id;
@@ -33440,12 +20971,11 @@ bool sub_44CE40(enum PLAYER_SIDE player_side, Entity *a2)
 	v4 = a2->player_side;
 	if (v4 == player_side)
 		return 1;
-	if (v4 == 0 || game_globals_cpu[0].cash[v4 + 7 * player_side])
-		LABEL_12:
-	result = 0;
-	else
-		result = 1;
-	return result;
+    if (v4 == 0 || game_globals_cpu[0].cash[v4 + 7 * player_side]) {
+    LABEL_12:
+        return false;
+    }
+    return true;
 }
 
 //----- (0044CE90) --------------------------------------------------------
@@ -33481,7 +21011,7 @@ void script_show_message(Script *a1)
 		v1 = 0;
 		for (i = script_get_next_event(v3); i; i = script_get_next_event(v3))
 		{
-			if (i->event == EVT_SHOW_UI_CONTROL)
+			if (i->event == EVT_MSG_DESELECTED)
 			{
 				v5 = i->sender;
 				v2 = (const char *)i->param;
@@ -33574,18 +21104,18 @@ int entity_44D000_boxd(Entity *a1)
 	v5 = 0;
 	v27 = v4;
 	v25 = 0;
-	v6 = Map_get_tile(v4, v3);
+	v6 = boxd_get_tile(v4, v3);
 	while (1)
 	{
 		v7 = v4 + _465708_x_offsets[v5];
 		v8 = v3 + _465728_y_offsets[v5];
-		if (v7 < 0 || v7 >= _4793F8_map_width || v8 < 0 || v8 >= _478AAC_map_height)
+		if (v7 < 0 || v7 >= map_get_width() || v8 < 0 || v8 >= map_get_height())
 		{
 			v29[v5] = 0;
 		}
 		else
 		{
-			v9 = Map_40EA50_classify_tile_objects(v1, v7, v8, &v6[_478BE8_map_info__see40E6E0[v5]]) == 2;
+			v9 = boxd_40EA50_classify_tile_objects(v1, v7, v8, &v6[_478BE8_map_info__see40E6E0[v5]]) == 2;
 			v29[v5] = v9;
 			if (!v9)
 				v25 = 1;
@@ -33606,7 +21136,7 @@ int entity_44D000_boxd(Entity *a1)
 	{
 		v14 = v27 + _465708_x_offsets[v13];
 		v15 = v3 + _465728_y_offsets[v13];
-		if (v14 < 0 || v14 >= _4793F8_map_width || v15 < 0 || v15 >= _478AAC_map_height)
+		if (v14 < 0 || v14 >= map_get_width() || v15 < 0 || v15 >= map_get_height())
 			goto LABEL_27;
 		if (!v29[v13])
 		{
@@ -33637,14 +21167,14 @@ LABEL_30:
 		v1->field_C4 = v18;
 		v19 = v1->stats;
 		if (v19->is_infantry)
-			v20 = entity_40F0A0_get_dx(v1, v1->_A4_idx_in_tile);
+			v20 = map_get_entity_placement_inside_tile_x(v1, v1->_A4_idx_in_tile);
 		else
 			v20 = v19->field_4C != 128 ? 7424 : 4096;
 		v21 = v20 + (v1->field_C4 << 13);
 		v22 = v1->stats;
 		v1->sprite_x = v21;
 		if (v22->is_infantry)
-			v23 = entity_40F100_get_dy(v1, v1->_A4_idx_in_tile);
+			v23 = map_get_entity_placement_inside_tile_y(v1, v1->_A4_idx_in_tile);
 		else
 			v23 = v22->field_4C != 128 ? 7424 : 4096;
 		v24 = v23 + (v1->field_C8 << 13);
@@ -33660,8 +21190,8 @@ LABEL_30:
 	}
 	return result;
 }
-// 478AAC: using guessed type int _478AAC_map_height;
-// 4793F8: using guessed type int _4793F8_map_width;
+// 478AAC: using guessed type int map_get_height();
+// 4793F8: using guessed type int map_get_width();
 // 44D000: using guessed type int var_20[8];
 
 //----- (0044D250) --------------------------------------------------------
@@ -33683,18 +21213,18 @@ _DWORD *boxd_44D250(_DWORD *a1, _DWORD *a2, int a3, Entity *a4, int *a5)
 	v6 = a3 != 1 ? -1 : 1;
 	v14 = a1;
 	v7 = ((unsigned __int8)*a5 - 2 * (_BYTE)v6) & 7;
-	v8 = Map_get_tile(*a1, *a2);
+	v8 = boxd_get_tile(*a1, *a2);
 	v15 = 0;
 	while (1)
 	{
 		v9 = *a1 + _465708_x_offsets[v7];
 		v10 = *v5 + _465728_y_offsets[v7];
 		if (v9 >= 0
-			&& v9 < _4793F8_map_width
+			&& v9 < map_get_width()
 			&& v10 >= 0
-			&& v10 < _478AAC_map_height
+			&& v10 < map_get_height()
 			&& !(v7 & 1)
-			&& Map_40EA50_classify_tile_objects(a4, v9, v10, &v8[_478BE8_map_info__see40E6E0[v7]]) == 2)
+			&& boxd_40EA50_classify_tile_objects(a4, v9, v10, &v8[_478BE8_map_info__see40E6E0[v7]]) == 2)
 		{
 			break;
 		}
@@ -33761,14 +21291,14 @@ bool boxd_44D340(int *out_x, int *out_y, int a3, Entity *a1, int *out_idx)
 	v7 = ((unsigned __int8)*out_idx - 2 * v20) & 7;
 	v8 = 0;
 	v21 = 0;
-	v9 = Map_get_tile(*out_x, *out_y);
+	v9 = boxd_get_tile(*out_x, *out_y);
 	while (1)
 	{
 		v10 = *out_x + _465708_x_offsets[v7];
 		v11 = *v23 + _465728_y_offsets[v7];
-		if (v10 < 0 || v10 >= _4793F8_map_width || v11 < 0 || v11 >= _478AAC_map_height || v7 & 1)
+		if (v10 < 0 || v10 >= map_get_width() || v11 < 0 || v11 >= map_get_height() || v7 & 1)
 			goto LABEL_23;
-		v12 = Map_40EA50_classify_tile_objects(v5, v10, v11, &v9[_478BE8_map_info__see40E6E0[v7]]) - 1;
+		v12 = boxd_40EA50_classify_tile_objects(v5, v10, v11, &v9[_478BE8_map_info__see40E6E0[v7]]) - 1;
 		if (v12)
 		{
 			v13 = v12 - 1;
@@ -33802,7 +21332,7 @@ bool boxd_44D340(int *out_x, int *out_y, int a3, Entity *a1, int *out_idx)
 		return 0;
 LABEL_25:
 	v16 = *v22 + _465708_x_offsets[v7];
-	if (v16 == _4793F8_map_width - 1)
+	if (v16 == map_get_width() - 1)
 	{
 		v17 = a3;
 		if (v7 || a3)
@@ -33819,7 +21349,7 @@ LABEL_25:
 		if (v16 || (v7 || v17 != 1) && (v7 != 4 || v17))
 		{
 			v19 = _465728_y_offsets[v7] + *v23;
-			if ((v19 != _478AAC_map_height - 1 || (v7 != 2 || v17) && (v7 != 6 || v17 != 1))
+			if ((v19 != map_get_height() - 1 || (v7 != 2 || v17) && (v7 != 6 || v17 != 1))
 				&& (v19 || (v7 != 2 || v17 != 1) && (v7 != 6 || v17)))
 			{
 				*out_idx = v7;
@@ -33832,47 +21362,14 @@ LABEL_25:
 	return 0;
 }
 
-//----- (0044D560) --------------------------------------------------------
-void message_pump()
-{
-	MSG msg;
-
-	while (PeekMessageA(&msg, 0, 0, 0, PM_REMOVE))
-	{
-		if (msg.message == WM_QUIT)
-			_47DCF4_wm_quit_received = true;
-		TranslateMessage(&msg);
-		DispatchMessageA(&msg);
-	}
-}
-
-void log_init()
-{
-    AllocConsole();
-    freopen("CONOUT$", "w", stdout);
-}
-
-void log(const char *fmt, ...)
-{
-    va_list args;
-
-    va_start(args, fmt);
-    vprintf(fmt, args);
-    va_end(args);
-
-    printf("\n");
-}
 
 
 //----- (0044D5D0) --------------------------------------------------------
-int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+//int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+int main(int argc, char* argv[])
 {
-    timeBeginPeriod(1u);
-
-    log_init();
-
-	global_win32_nCmdShow = nShowCmd;
-	global_hinstance = hInstance;
+    OsInitConsole();
+    OsInitTimer();
 
     GameFactory gameFactory;
     auto game = gameFactory.Create();
@@ -33885,253 +21382,6 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 int nullsub_4()
 {
 	return 0;
-}
-
-//----- (00459E80) --------------------------------------------------------
-VideoFile *VIDEO_ReadFile(const char *video_name)
-{
-	VideoFile *result; // eax@1
-	VideoFile *v2; // ebx@1
-	VideoFile *v3; // esi@2
-	__int32 v4; // eax@4
-	char v5; // dl@4
-	SIZE_T v6; // edi@4
-	HLOCAL v7; // eax@4
-	void *v8; // ecx@4
-	__int16 v9; // bp@6
-	int v10; // edi@8
-	int v11; // eax@9
-	int v12; // ebx@10
-	int v13; // edx@10
-
-	result = (VideoFile *)j_fopen_weirdmode_3(video_name);
-	v2 = result;
-	if (result)
-	{
-		v3 = (VideoFile *)LocalAlloc(0, 0x20748u);
-		if (v3)
-		{
-			memset(v3, 0, 0x748u);
-			video_47F434_frame = &v3->_744_frame;
-			fread(&v3->_744_frame, 0x3Cu, 1u, (FILE *)v2);
-			v3->header._0__first_4_bits_eq_bpp = video_47F434_frame->_14__first_4_bits_eq_bpp;
-			v3->header.width = video_47F434_frame->width;
-			v3->header.height = video_47F434_frame->height;
-			v3->header.num_frames = video_47F434_frame->num_frames;
-			v3->header.field_6 = video_47F434_frame->field_1A;
-			v3->header.field_8 = video_47F434_frame->field_1C;
-			v3->header._14_looks_like_fps = video_47F434_frame->_22_looks_like_fps;
-			v3->header.field_18 = video_47F434_frame->field_20;
-			v3->header.num_sound_bytes = 0;
-			v3->header.current_frame = -1;
-			v3->file = (FILE *)v2;
-			v4 = ftell((FILE *)v2);
-			v5 = v3->header._0__first_4_bits_eq_bpp;
-			v3->data_offset = v4;
-			v6 = v3->header.height * v3->header.width * (v5 & 0xF);
-			v3->field_332 = 1;
-			v3->frame_front_buffer = LocalAlloc(0, v6);
-			v7 = LocalAlloc(0, v6);
-			v8 = v3->frame_front_buffer;
-			v3->frame_back_buffer = v7;
-			v9 = !v8 || !v7;
-			v10 = -8;
-			do
-			{
-				v11 = -8;
-				do
-				{
-					v12 = (v3->header._0__first_4_bits_eq_bpp & 0xF) * (v11 + v3->header.width * v10);
-					v13 = 16 * (v10 & 0xF) | v11++ & 0xF;
-					v3->_344_prolly_palette[v13] = v12;
-				} while (v11 < 8);
-				++v10;
-			} while (v10 < 8);
-			if (v9)
-			{
-				VIDEO_Clean(v3);
-				result = 0;
-			}
-			else
-			{
-				result = v3;
-			}
-		}
-		else
-		{
-			LocalFree(0);
-			fclose((FILE *)v2);
-			result = 0;
-		}
-	}
-	return result;
-}
-
-//----- (0045A030) --------------------------------------------------------
-void VIDEO_Clean(VideoFile *video)
-{
-	FILE *v1; // eax@2
-
-	if (video)
-	{
-		v1 = video->file;
-		if (v1)
-			fclose(v1);
-		LocalFree(video->frame_back_buffer);
-		LocalFree(video->frame_front_buffer);
-		LocalFree(video);
-	}
-}
-
-//----- (0045A070) --------------------------------------------------------
-int VIDEO_ReadNextFrame(VideoFile *a1)
-{
-	VideoFileFrame *v1; // edi@3
-	int v2; // edx@6
-	int result; // eax@8
-
-	if (++a1->header.current_frame == a1->header.num_frames)
-	{
-		fseek(a1->file, a1->data_offset, 0);
-		a1->header.current_frame = 0;
-	}
-	v1 = &a1->_744_frame;
-	if (a1->header.current_frame)
-		v1->frame_size = *(int *)((char *)&a1->_744_frame.frame_size + v1->frame_size);
-	else
-		fread(&a1->_744_frame, 4u, 1u, a1->file);
-	v2 = v1->frame_size;
-	if (a1->header.current_frame == a1->header.num_frames - 1)
-		v2 -= 4;
-	fread(&a1->_744_frame.field_4, v2, 1u, a1->file);
-	video_45A110(a1, &a1->_744_frame);
-	LOWORD_HEXRAYS(result) = 0;
-	return result;
-}
-
-//----- (0045A110) --------------------------------------------------------
-__int16 video_45A110(VideoFile *a1, VideoFileFrame *frame)
-{
-	VideoFileFrame *v2; // edi@1
-	int v3; // edx@1
-	int v4; // eax@1
-	char *v5; // ebx@1
-	__int16 v6; // cx@5
-	char v7; // al@7
-	int v8; // ecx@8
-	__int16 *v9; // eax@9
-	__int16 v10; // si@10
-	__int16 v11; // ax@16
-	int v12; // edx@16
-	__int16 v13; // ax@19
-	__int16 v14; // cx@24
-
-	v2 = frame;
-	v3 = 0;
-	LOWORD_HEXRAYS(v4) = frame->field_4;
-	a1->header.num_sound_bytes = 0;
-	a1->field_330 = v4;
-	a1->header.field_24 = 0;
-	LOWORD_HEXRAYS(v4) = frame->field_4;
-	v5 = (char *)&frame->field_6;
-	if (v4 & 1)
-	{
-		v3 = *(_WORD *)v5 + frame->field_8 * a1->header.width;
-		v5 = (char *)&frame->field_A;
-	}
-	if (v4 & 4)
-	{
-		a1->header.ptr_20 = (__int16 *)(v5 + 4);
-		a1->header.num_sound_bytes = *(_DWORD *)v5 - 4;
-		v4 = *(_DWORD *)v5;
-		v5 += *(_DWORD *)v5;
-	}
-	v6 = frame->field_4;
-	if (v6 & 8)
-	{
-		if ((a1->header._0__first_4_bits_eq_bpp & 0xF) == 2)
-		{
-			v7 = 0;
-			if (v6 & 0x10)
-			{
-				memcpy(word_476DE0, &v5[*(_DWORD *)v5 + 4], 0x200u);
-				v8 = dword_476FE0;
-				if (dword_476FE0)
-				{
-					v9 = word_476DE0;
-					do
-					{
-						v10 = *v9;
-						++v9;
-						*(v9 - 1) = *(_WORD *)(v8 + 2 * (v10 & 0x7FFF));
-					} while ((int)v9 < (int)&dword_476FE0);
-				}
-				v2 = frame;
-				v7 = 1;
-			}
-			else if (dword_476FE0)
-			{
-				v7 = 2;
-			}
-            __debugbreak(); // video codec
-			/*sub_45D3B8(
-				a1->header.width / 4,
-				a1->header.height / 4,
-				v5 + 4,
-				*((_DWORD *)&a1->frame_front_buffer + a1->field_332),
-				*((_DWORD *)&a1->frame_front_buffer + (a1->field_332 ^ 1)),
-				v3,
-				a1->header.width,
-				(int)a1->_344_prolly_palette,
-				v7);*/
-		}
-		else
-		{
-            __debugbreak(); // video codec
-			/*sub_45A48E(
-				a1->header.width / 4,
-				a1->header.height / 4,
-				v5 + 4,
-				*((_DWORD *)&a1->frame_front_buffer + a1->field_332),
-				*((_DWORD *)&a1->frame_front_buffer + (a1->field_332 ^ 1)),
-				v3,
-				a1->header.width,
-				(int)a1->_344_prolly_palette);*/
-		}
-		v11 = a1->field_332;
-		v12 = *((_DWORD *)&a1->frame_front_buffer + v11);
-		a1->field_332 = v11 ^ 1;
-		a1->header.field_10 = v12;
-		v4 = *(_DWORD *)v5;
-		v5 += *(_DWORD *)v5;
-	}
-	if (v2->field_4 & 0x10)
-	{
-		if (a1->header._0__first_4_bits_eq_bpp == 1)
-		{
-			*(_WORD *)&a1->gap2C[2] = (unsigned __int8)v5[4];
-			v13 = (unsigned __int8)v5[5];
-			*(_WORD *)&a1->gap2C[0] = v13;
-			if (!v13)
-				*(_WORD *)&a1->gap2C[0] = 256;
-			v4 = 3 * *(_WORD *)&a1->gap2C[0];
-			memcpy((char *)&a1->header.field_10 + 2 * (*(_WORD *)&a1->gap2C[2] + 16) + *(_WORD *)&a1->gap2C[2], v5 + 6, v4);
-			v2 = frame;
-		}
-		v5 += *(_DWORD *)v5;
-	}
-	if (v2->field_4 & 0x20)
-	{
-		v14 = *(_WORD *)v5;
-		v5 += 2;
-		a1->header.field_E = v14;
-	}
-	if (v2->field_4 & 0x40)
-	{
-		a1->header.field_24 = *(_DWORD *)v5 - 4;
-		a1->header.field_28 = (int)(v5 + 4);
-	}
-	return v4;
 }
 
 //----- (0045A320) --------------------------------------------------------

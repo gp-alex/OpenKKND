@@ -1,12 +1,13 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include "_unsorted_data.h"
-#include "kknd.h"
-#include "Random.h"
-#include "Script.h"
-#include "ScriptEvent.h"
+#include "src/_unsorted_data.h"
+#include "src/kknd.h"
+#include "src/Random.h"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
+#include "src/Sound.h"
+#include "src/Map.h"
 
-#include "Engine/Entity.h"
-#include "Engine/EntityFactory.h"
+#include "src/Engine/Entity.h"
+#include "src/Engine/EntityFactory.h"
 
 using Engine::EntityFactory;
 
@@ -224,7 +225,7 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
             }
             break;
         case EVT_MSG_PRODUCTION_READY:
-            script_trigger_event(receiver, EVT_MSG_UPGRADE_COMPLETE, *((void **)param + 76), task_mobd17_cursor);
+            script_trigger_event(receiver, EVT_MSG_UPGRADE_COMPLETE, *((void **)param + 76), game_cursor_script);
             if (v5->player_side == player_side)
             {
                 show_message_ex(0, aUpgradeComplete);
@@ -251,7 +252,7 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
         case EVT_MSG_DESTROY:
             entity_402E40_destroy(v5, entity_mode_researchlab_on_death);
             break;
-        case EVT_MSG_DAMAGE:
+        case CMD_APPLY_DAMAGE:
             entity_402E90_on_damage(v5, param, entity_mode_researchlab_on_death);
             entity_410520_update_healthbar_color(v5);
             break;
@@ -344,7 +345,7 @@ void entity_mode_researchlab_on_death(Entity *a1)
         stru38_list_427FD0(v2, 0);
         *v2 = 0;
     }
-    entity_mode_building_default_on_death(v1);
+    entity_mode_building_on_death_default(v1);
 }
 
 //----- (00438630) --------------------------------------------------------
