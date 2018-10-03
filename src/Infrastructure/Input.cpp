@@ -373,133 +373,133 @@ bool input_initialize()
     input_mouse_prev_buttons_mask = 0;
     input_47A58C = 0;
 
-    num_mouse_buttons = 3; // GetSystemMetrics(SM_CMOUSEBUTTONS);
+       num_mouse_buttons = 3; // GetSystemMetrics(SM_CMOUSEBUTTONS);
     if (num_mouse_buttons)
     {
         input_mouse_window_losing_focus_reset_to_defaults = 1;
-		num_mouse_buttons = 2;
-	}
-	else
-	{
-		input_mouse_window_losing_focus_reset_to_defaults = 0;
-	}
-	input_mouse_prev_buttons_mask = 0;
-	input_mouse.cursor_x_x256 = 0;
-	input_mouse.cursor_y_x256 = 0;
-	return input_mouse_window_losing_focus_reset_to_defaults != 0;
+        num_mouse_buttons = 2;
+    }
+    else
+    {
+        input_mouse_window_losing_focus_reset_to_defaults = 0;
+    }
+    input_mouse_prev_buttons_mask = 0;
+    input_mouse.cursor_x_x256 = 0;
+    input_mouse.cursor_y_x256 = 0;
+    return input_mouse_window_losing_focus_reset_to_defaults != 0;
 }
 
 //----- (004283A0) --------------------------------------------------------
 bool input_set_mouse_pos(int x, int y)
 {
-	if (input_mouse_window_losing_focus_reset_to_defaults)
-	{
-		log("input_set_mouse_pos(x = %d, y = %d)", x, y);
-		gWindow->SetMousePos(x, y);
+    if (input_mouse_window_losing_focus_reset_to_defaults)
+    {
+        log("input_set_mouse_pos(x = %d, y = %d)", x, y);
+        gWindow->SetMousePos(x, y);
 
-		input_mouse.cursor_x_x256 = x * 256;
-		input_mouse.cursor_y_x256 = y * 256;
-		return 1;
-	}
+        input_mouse.cursor_x_x256 = x * 256;
+        input_mouse.cursor_y_x256 = y * 256;
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
 
 //----- (00428470) --------------------------------------------------------
 bool input_428470(__int16 a1)
 {
-	word_47A590 = a1;
-	return 1;
+    word_47A590 = a1;
+    return 1;
 }
 // 47A590: using guessed type __int16 word_47A590;
 
 //----- (00428480) --------------------------------------------------------
 bool input_get_mouse_state(MouseInput *a1)
 {
-	memcpy(a1, &input_mouse, sizeof(MouseInput));
-	return input_mouse_window_losing_focus_reset_to_defaults != 0;
+    memcpy(a1, &input_mouse, sizeof(MouseInput));
+    return input_mouse_window_losing_focus_reset_to_defaults != 0;
 }
 
 bool input_get_cursor_state(MouseInput *a1)
 {
-	memcpy(a1, &_47A5E0_mouse_input, sizeof(MouseInput));
-	return input_mouse_window_losing_focus_reset_to_defaults != 0;
+    memcpy(a1, &_47A5E0_mouse_input, sizeof(MouseInput));
+    return input_mouse_window_losing_focus_reset_to_defaults != 0;
 }
 
 //----- (004284A0) --------------------------------------------------------
 void input_update_mouse()
 {
-	if (gWindow->GetIsActive()) {
-		input_mouse_window_losing_focus_reset_to_defaults = 1;
-		input_mouse._C_unused = 0;
-		input_mouse.pressed_buttons_mask = 0;
-		if (gWindow->GetMousePressed(1)) {
-			input_mouse.pressed_buttons_mask |= INPUT_MOUSE_LBUTTON_MASK;
-		}
-		if (gWindow->GetMousePressed(2)) {
-			input_mouse.pressed_buttons_mask |= INPUT_MOUSE_MBUTTON_MASK;
-		}
-		if (gWindow->GetMousePressed(3)) {
-			input_mouse.pressed_buttons_mask |= INPUT_MOUSE_RBUTTON_MASK;
-		}
+    if (gWindow->GetIsActive()) {
+        input_mouse_window_losing_focus_reset_to_defaults = 1;
+        input_mouse._C_unused = 0;
+        input_mouse.pressed_buttons_mask = 0;
+        if (gWindow->GetMousePressed(1)) {
+            input_mouse.pressed_buttons_mask |= INPUT_MOUSE_LBUTTON_MASK;
+        }
+        if (gWindow->GetMousePressed(2)) {
+            input_mouse.pressed_buttons_mask |= INPUT_MOUSE_MBUTTON_MASK;
+        }
+        if (gWindow->GetMousePressed(3)) {
+            input_mouse.pressed_buttons_mask |= INPUT_MOUSE_RBUTTON_MASK;
+        }
 
-		input_mouse.just_pressed_buttons_mask = input_mouse.pressed_buttons_mask & ~input_mouse_prev_buttons_mask;
-		input_mouse.just_released_buttons_mask = ~input_mouse.pressed_buttons_mask & input_mouse_prev_buttons_mask;
-		input_mouse_prev_buttons_mask = input_mouse.pressed_buttons_mask;
+        input_mouse.just_pressed_buttons_mask = input_mouse.pressed_buttons_mask & ~input_mouse_prev_buttons_mask;
+        input_mouse.just_released_buttons_mask = ~input_mouse.pressed_buttons_mask & input_mouse_prev_buttons_mask;
+        input_mouse_prev_buttons_mask = input_mouse.pressed_buttons_mask;
 
-		int mouse_x = 256 * gWindow->GetMouseX();
-		int mouse_y = 256 * gWindow->GetMouseY();
-		input_mouse.cursor_dx_x256 = mouse_x - input_mouse.cursor_x_x256;
-		input_mouse.cursor_x_x256 = mouse_x;
-		input_mouse.cursor_dy_x256 = mouse_y - input_mouse.cursor_y_x256;
-		input_mouse.cursor_y_x256 = mouse_y;
-		if (input_mouse.cursor_dy_x256) {
-			input_mouse.pressed_buttons_mask |= input_mouse.cursor_dy_x256 >= 0 ? INPUT_MOUSE_MOVE_DOWN : INPUT_MOUSE_MOVE_UP;
-			input_mouse._C_unused |= input_mouse.cursor_dy_x256 >= 0 ? 4 : 8;
-		}
-		if (input_mouse.cursor_dx_x256) {
-			input_mouse.pressed_buttons_mask |= input_mouse.cursor_dx_x256 >= 0 ? INPUT_MOUSE_MOVE_RIGHT : INPUT_MOUSE_MOVE_LEFT;
-			input_mouse._C_unused |= (input_mouse.cursor_dx_x256 < 0) + 1;
-		}
+        int mouse_x = 256 * gWindow->GetMouseX();
+        int mouse_y = 256 * gWindow->GetMouseY();
+        input_mouse.cursor_dx_x256 = mouse_x - input_mouse.cursor_x_x256;
+        input_mouse.cursor_x_x256 = mouse_x;
+        input_mouse.cursor_dy_x256 = mouse_y - input_mouse.cursor_y_x256;
+        input_mouse.cursor_y_x256 = mouse_y;
+        if (input_mouse.cursor_dy_x256) {
+            input_mouse.pressed_buttons_mask |= input_mouse.cursor_dy_x256 >= 0 ? INPUT_MOUSE_MOVE_DOWN : INPUT_MOUSE_MOVE_UP;
+            input_mouse._C_unused |= input_mouse.cursor_dy_x256 >= 0 ? 4 : 8;
+        }
+        if (input_mouse.cursor_dx_x256) {
+            input_mouse.pressed_buttons_mask |= input_mouse.cursor_dx_x256 >= 0 ? INPUT_MOUSE_MOVE_RIGHT : INPUT_MOUSE_MOVE_LEFT;
+            input_mouse._C_unused |= (input_mouse.cursor_dx_x256 < 0) + 1;
+        }
 
-		input_mouse._C_unused = dword_468940[input_mouse._C_unused];
-		input_mouse._C_unused = input_465FE8[input_mouse.pressed_buttons_mask & 0xF];
-		input_mouse.just_pressed_buttons_mask = ~input_47A58C & input_mouse.pressed_buttons_mask;
-		input_mouse.just_released_buttons_mask = ~input_mouse.pressed_buttons_mask & input_47A58C;
-		input_47A58C = input_mouse.pressed_buttons_mask;
-	} else if (input_mouse_window_losing_focus_reset_to_defaults) {
-		input_mouse_window_losing_focus_reset_to_defaults = 0;
-		input_mouse.just_released_buttons_mask = input_mouse.just_pressed_buttons_mask | input_mouse.pressed_buttons_mask;
-		input_mouse.just_pressed_buttons_mask = 0;
-		input_mouse.pressed_buttons_mask = 0;
+        input_mouse._C_unused = dword_468940[input_mouse._C_unused];
+        input_mouse._C_unused = input_465FE8[input_mouse.pressed_buttons_mask & 0xF];
+        input_mouse.just_pressed_buttons_mask = ~input_47A58C & input_mouse.pressed_buttons_mask;
+        input_mouse.just_released_buttons_mask = ~input_mouse.pressed_buttons_mask & input_47A58C;
+        input_47A58C = input_mouse.pressed_buttons_mask;
+    } else if (input_mouse_window_losing_focus_reset_to_defaults) {
+        input_mouse_window_losing_focus_reset_to_defaults = 0;
+        input_mouse.just_released_buttons_mask = input_mouse.just_pressed_buttons_mask | input_mouse.pressed_buttons_mask;
+        input_mouse.just_pressed_buttons_mask = 0;
+        input_mouse.pressed_buttons_mask = 0;
 
-		log("loosing_focus(x = %d, y = %d)", (input_mouse.cursor_x_x256 / 256), (input_mouse.cursor_y_x256 / 256));
-		int out_of_focus_x = input_mouse.cursor_x_x256 / 256;
-		int out_of_focus_y = input_mouse.cursor_y_x256 / 256;
-		int out_of_focus_allowed_diff = 50;
-		bool out_of_focus_cursor_moved = false;
-		if (out_of_focus_x < out_of_focus_allowed_diff) { // cursor to left edge of screen
-			input_mouse.cursor_x_x256 = 0;
-			out_of_focus_cursor_moved = true;
-		}
-		if (640 - out_of_focus_x < out_of_focus_allowed_diff) { // cursor to right edge of screen
-			input_mouse.cursor_x_x256 = 640 * 256;
-			out_of_focus_cursor_moved = true;
-		}
-		if (out_of_focus_y < out_of_focus_allowed_diff) { // cursor to top edge of screen
-			input_mouse.cursor_y_x256 = 0;
-			out_of_focus_cursor_moved = true;
-		}
-		if (480 - out_of_focus_y < out_of_focus_allowed_diff) { // cursor to bottom edge of screen
-			input_mouse.cursor_y_x256 = 480 * 256;
-			out_of_focus_cursor_moved = true;
-		}
-		if(!out_of_focus_cursor_moved) // cursor to center of screen
-		{
-			input_mouse.cursor_x_x256 = (640 / 2) * 256;
-			input_mouse.cursor_y_x256 = (480 / 2) * 256;
-		}
-		
+        log("loosing_focus(x = %d, y = %d)", (input_mouse.cursor_x_x256 / 256), (input_mouse.cursor_y_x256 / 256));
+        int out_of_focus_x = input_mouse.cursor_x_x256 / 256;
+        int out_of_focus_y = input_mouse.cursor_y_x256 / 256;
+        int out_of_focus_allowed_diff = 50;
+        bool out_of_focus_cursor_moved = false;
+        if (out_of_focus_x < out_of_focus_allowed_diff) { // cursor to left edge of screen
+            input_mouse.cursor_x_x256 = 0;
+            out_of_focus_cursor_moved = true;
+        }
+        if (640 - out_of_focus_x < out_of_focus_allowed_diff) { // cursor to right edge of screen
+            input_mouse.cursor_x_x256 = 640 * 256;
+            out_of_focus_cursor_moved = true;
+        }
+        if (out_of_focus_y < out_of_focus_allowed_diff) { // cursor to top edge of screen
+            input_mouse.cursor_y_x256 = 0;
+            out_of_focus_cursor_moved = true;
+        }
+        if (480 - out_of_focus_y < out_of_focus_allowed_diff) { // cursor to bottom edge of screen
+            input_mouse.cursor_y_x256 = 480 * 256;
+            out_of_focus_cursor_moved = true;
+        }
+        if (!out_of_focus_cursor_moved) // cursor to center of screen
+        {
+            input_mouse.cursor_x_x256 = (640 / 2) * 256;
+            input_mouse.cursor_y_x256 = (480 / 2) * 256;
+        }
+
         input_mouse.cursor_dx_x256 = 0;
         input_mouse.cursor_dy_x256 = 0;
         input_mouse._C_unused = 0;
