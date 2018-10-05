@@ -373,7 +373,7 @@ bool input_initialize()
     input_mouse_prev_buttons_mask = 0;
     input_47A58C = 0;
 
-       num_mouse_buttons = 3; // GetSystemMetrics(SM_CMOUSEBUTTONS);
+    num_mouse_buttons = 3; // GetSystemMetrics(SM_CMOUSEBUTTONS);
     if (num_mouse_buttons)
     {
         input_mouse_window_losing_focus_reset_to_defaults = 1;

@@ -211,7 +211,7 @@ extern BasicProductionOption surv_basic_infantry[3]; // weak
 extern int dword_468FD4; // weak
 extern int dword_468FD8; // weak
 extern int dword_468FDC; // weak
-extern char *off_469030[30]; // weak
+extern char *mission_briefings[30]; // weak
 extern int _4690A8_unit_sounds_volume;
 extern int _4690AC_level_wav_sound_offset; // idb
 extern int dword_4690B0; // weak

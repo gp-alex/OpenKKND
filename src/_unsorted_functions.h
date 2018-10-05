@@ -478,7 +478,7 @@ void entity_mode_outpost_on_death(Entity *a1);
 void script_431E60_mobd_20_input(Script *a1);
 void script_431F10_ingame_menu(Script *a1); // idb
 void script_4321A0_ingame_menu(Script *a1);
-void script_4322D0_ingame_menu(Script *a1);
+void script_ingame_menu_mission_briefing(Script *script);
 void script_432400_ingame_menu_create_sprites(Script *a1);
 void script_432510_ingame_menu_create_sprites(Script *a1);
 void script_4325B0_ingame_menu_trigger_events(Script *a1);
