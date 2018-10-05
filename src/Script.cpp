@@ -1019,7 +1019,7 @@ const char *get_handler_name(void *function) {
     }
 
     // please add the script to   other_unsorted_handlers
-    __debugbreak();
+    //__debugbreak();
     return nullptr;
 }
 

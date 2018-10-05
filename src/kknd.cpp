@@ -10686,76 +10686,82 @@ void script_4321A0_ingame_menu(Script *a1)
 }
 
 //----- (004322D0) --------------------------------------------------------
-void script_4322D0_ingame_menu(Script *a1)
+void script_ingame_menu_mission_briefing(Script *script)
 {
-	Script *v1; // esi@1
-	RenderString *v2; // eax@1
-	int v3; // edi@2
-	int v4; // ebp@2
-	char *v5; // esi@4
-	int v6; // ecx@8
-	char v7; // al@9
-	int v8; // ecx@12
-	Sprite *v9; // eax@21
-	int v10; // [sp+10h] [bp-6Ch]@6
-	Script *v11; // [sp+14h] [bp-68h]@1
-	char v12[39]; // [sp+18h] [bp-64h]@11
-	char v13; // [sp+3Fh] [bp-3Dh]@15
+    Script *temp_script_1; // esi@1
+    RenderString *render_string; // eax@1
+    int num_lines; // edi@2
+    int v4; // ebp@2
+    char *current_mission_briefing; // esi@4
+    int counter; // ecx@8
+    char current_letter; // al@9
+    Sprite *sprite; // eax@21
+    int loop_counter; // [sp+10h] [bp-6Ch]@6
+    Script *temp_script_2; // [sp+14h] [bp-68h]@1
+    char text_line[512]; // [sp+18h] [bp-64h]@11
 
-	v1 = a1;
-	v11 = a1;
-	script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
-	v2 = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 120, 70, 42, 15, 0x200003E9, 14, 5);
-	_47C65C_render_string = v2;
-	if (v2)
-	{
-		v3 = 0;
-		v4 = 5;
-		if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
-			v5 = off_469030[current_level_idx];
-		else
-			v5 = *(char **)&aNoFreeLinks[4 * current_level_idx + 12];
-		render_string_445AE0(v2);
-		v10 = 0;
-		do
-		{
-			if (!*v5)
-				break;
-			v6 = 0;
-			while (1)
-			{
-				v7 = *v5;
-				if (*v5 == '\n' || !v7)
-					break;
-				v12[v6++] = v7;
-				++v5;
-			}
-			v12[v6] = 0;
-			v8 = v6 + 1;
-			if (*v5 == '\n')
-				++v5;
-			if (v8 > 40)
-				v13 = 0;
-			_47C65C_render_string->field_18 = v4;
-			_47C65C_render_string->num_lines = v3;
-			render_string_443D80(_47C65C_render_string, v12, 0);
-			if (v10)
-			{
-				++v3;
-			}
-			else
-			{
-				v3 += 2;
-				v4 = 0;
-			}
-			++v10;
-		} while (v10 < 11);
-		v1 = v11;
-	}
-	v9 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_433D20_ingame_menu, SCRIPT_COROUTINE, 0);
-	if (v9)
-		v9->script->field_1C = 1;
-	sprite_load_mobd(task_47C028->sprite, 12);
+    temp_script_1 = script;
+    temp_script_2 = script;
+    script_trigger_event_group(script, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
+    render_string = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 120, 70, 42, 15, 0x200003E9, 14, 5);
+    _47C65C_render_string = render_string;
+    if (render_string)
+    {
+        num_lines = 0;
+        v4 = 5;
+        // get current level mission briefing
+        if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
+            current_mission_briefing = mission_briefings[current_level_idx];
+        else
+            current_mission_briefing = *(char **)&aNoFreeLinks[4 * current_level_idx + 12];
+
+        render_string_445AE0(render_string);
+        loop_counter = 0;
+        do
+        {
+            // if no mission briefing
+            if (!*current_mission_briefing)
+                break;
+
+            // extract line of text into array
+            counter = 0;
+            while (1)
+            {
+                current_letter = *current_mission_briefing;
+                if (*current_mission_briefing == '\n' || !current_letter)
+                    break;
+                text_line[counter++] = current_letter;
+                ++current_mission_briefing;
+            }
+            text_line[counter] = 0;
+
+            // skip new line character
+            if (*current_mission_briefing == '\n')
+                ++current_mission_briefing;
+
+            // render text line
+            _47C65C_render_string->field_18 = v4;
+            _47C65C_render_string->num_lines = num_lines;
+            render_string_443D80(_47C65C_render_string, text_line, 0);
+
+            // calculate line number
+            if (loop_counter)
+            {
+                ++num_lines;
+            }
+            else
+            {
+                num_lines += 2;
+                v4 = 0;
+            }
+            ++loop_counter;
+        } while (loop_counter < 11);
+        temp_script_1 = temp_script_2;
+    }
+    sprite = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, temp_script_1->sprite, script_433D20_ingame_menu, SCRIPT_COROUTINE, 0);
+    if (sprite)
+        sprite->script->field_1C = 1;
+    sprite_load_mobd(task_47C028->sprite, 12);
 }
 
 //----- (00432400) --------------------------------------------------------
@@ -11530,7 +11536,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 						break;
 					case EVT_MSG_1526_infiltrate:
 						v7 = 5;
-						script_4322D0_ingame_menu(v1);
+						script_ingame_menu_mission_briefing(v1);
 						break;
 					case EVT_MSG_1528:
 					LABEL_51:

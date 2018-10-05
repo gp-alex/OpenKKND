@@ -2695,7 +2695,7 @@ BasicProductionOption surv_basic_infantry[3] =
 int dword_468FD4 = 1; // weak
 int dword_468FD8 = 2; // weak
 int dword_468FDC = 3; // weak
-char *off_469030[30] =
+char *mission_briefings[30] =
 {
 	"THE NEXT GENERATION\nThe surface is currently owned by the\nmutants.   To start reclaiming the land,\nwe must destroy all mutants in the\nsurrounding area.",
 	"    BUILD AN OUTPOST\nProtect the Outpost and build a Power\nStation.  Don't let any buildings fall.\nEstablish a drill site with the Oil\nDerrick, and use the Power Station's\ntanker to collect at least 5000\nResource Units.",
