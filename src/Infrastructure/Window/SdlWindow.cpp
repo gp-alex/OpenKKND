@@ -41,6 +41,9 @@ bool SdlWindow::Initialize() {
         SDL_FreeSurface(surface);
     }
 
+    // prevent cursor from leaving window (needed for window mode)
+    SDL_SetWindowGrab(window, SDL_TRUE);
+    
     return true;
 }
 
