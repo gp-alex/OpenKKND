@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <list>
+#include <map>
 
 #include <SDL2/SDL.h>
 
@@ -10,6 +11,7 @@
 #include "src/Infrastructure/Window/Window.h"
 #include "src/Infrastructure/Window/WindowConfig.h"
 #include "src/Infrastructure/Window/WindowObserver.h"
+#include "src/Infrastructure/KeyboardInputEnum.h"
 
 
 
@@ -44,7 +46,7 @@ namespace Infrastructure {
         virtual int GetMouseY() const override;
         virtual void SetMousePos(int x, int y) override;
         virtual bool GetMousePressed(int button) const override;
-        virtual bool GetKeyPressedWindowsTmpHack(int vk) const override;
+        virtual bool GetIsKKNDKeyPressed(int kknd_key_mask) const override;
 
         // messaging
         virtual void PeekMessageSingle() override;

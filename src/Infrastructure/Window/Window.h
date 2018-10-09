@@ -40,7 +40,7 @@ namespace Infrastructure {
         virtual int GetMouseY() const = 0;
         virtual void SetMousePos(int x, int y) = 0;
         virtual bool GetMousePressed(int button) const = 0;
-        virtual bool GetKeyPressedWindowsTmpHack(int vk) const = 0;
+        virtual bool GetIsKKNDKeyPressed(int kknd_key_mask) const = 0;
 
         // misc
         virtual void *GetApiHandle() const = 0;
