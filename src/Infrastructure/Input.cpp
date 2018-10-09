@@ -472,34 +472,8 @@ void input_update_mouse()
         input_mouse.just_released_buttons_mask = input_mouse.just_pressed_buttons_mask | input_mouse.pressed_buttons_mask;
         input_mouse.just_pressed_buttons_mask = 0;
         input_mouse.pressed_buttons_mask = 0;
-
-        log("loosing_focus(x = %d, y = %d)", (input_mouse.cursor_x_x256 / 256), (input_mouse.cursor_y_x256 / 256));
-        int out_of_focus_x = input_mouse.cursor_x_x256 / 256;
-        int out_of_focus_y = input_mouse.cursor_y_x256 / 256;
-        int out_of_focus_allowed_diff = 50;
-        bool out_of_focus_cursor_moved = false;
-        if (out_of_focus_x < out_of_focus_allowed_diff) { // cursor to left edge of screen
-            input_mouse.cursor_x_x256 = 0;
-            out_of_focus_cursor_moved = true;
-        }
-        if (640 - out_of_focus_x < out_of_focus_allowed_diff) { // cursor to right edge of screen
-            input_mouse.cursor_x_x256 = 640 * 256;
-            out_of_focus_cursor_moved = true;
-        }
-        if (out_of_focus_y < out_of_focus_allowed_diff) { // cursor to top edge of screen
-            input_mouse.cursor_y_x256 = 0;
-            out_of_focus_cursor_moved = true;
-        }
-        if (480 - out_of_focus_y < out_of_focus_allowed_diff) { // cursor to bottom edge of screen
-            input_mouse.cursor_y_x256 = 480 * 256;
-            out_of_focus_cursor_moved = true;
-        }
-        if (!out_of_focus_cursor_moved) // cursor to center of screen
-        {
-            input_mouse.cursor_x_x256 = (640 / 2) * 256;
-            input_mouse.cursor_y_x256 = (480 / 2) * 256;
-        }
-
+        input_mouse.cursor_x_x256 = (640 / 2) * 256;
+        input_mouse.cursor_y_x256 = (480 / 2) * 256;
         input_mouse.cursor_dx_x256 = 0;
         input_mouse.cursor_dy_x256 = 0;
         input_mouse._C_unused = 0;
