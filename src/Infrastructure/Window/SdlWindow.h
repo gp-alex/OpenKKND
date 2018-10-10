@@ -47,6 +47,7 @@ namespace Infrastructure {
         virtual void SetMousePos(int x, int y) override;
         virtual bool GetMousePressed(int button) const override;
         virtual bool GetIsKKNDKeyPressed(int kknd_key_mask) const override;
+        virtual bool GetIsCharKeyPressed(char character) const override;
 
         // messaging
         virtual void PeekMessageSingle() override;

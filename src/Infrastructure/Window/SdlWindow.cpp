@@ -21,12 +21,12 @@ std::map<int, int> kknd_key_mask_scancode_map =
     { INPUT_KEYBOARD_LEFT_MASK, SDL_SCANCODE_LEFT },            // VK_LEFT - left arrow
     { INPUT_KEYBOARD_RIGHT_MASK, SDL_SCANCODE_RIGHT },          // VK_RIGHT - right arrow
     { INPUT_KEYBOARD_CONTROL_MASK, SDL_SCANCODE_LCTRL },        // VK_CONTROL - ctrl key (special case also RCTRL)
-    { INPUT_KEYBOARD_MENU_MASK, SDL_SCANCODE_LALT },            // VK_MENU - alt key (special case also RALT)
+    { INPUT_KEYBOARD_MENU_MASK, SDL_SCANCODE_LALT },            // VK_MENU - alt key (RALT not used in game)
     { INPUT_KEYBOARD_HOME_MASK, SDL_SCANCODE_HOME },            // VK_HOME - home key 
     { INPUT_KEYBOARD_END_MASK ,SDL_SCANCODE_END },              // VK_END - end key
     { INPUT_KEYBOARD_PAGEUP_MASK, SDL_SCANCODE_PAGEUP },        // VK_PRIOR - page up key
     { INPUT_KEYBOARD_PAGEDOWN_MASK, SDL_SCANCODE_PAGEDOWN },    // VK_NEXT - page down key
-    { INPUT_KEYBOARD_SHIFT_MASK, SDL_SCANCODE_LSHIFT },         // VK_SHIFT - shift key (special case also RSHIFT)
+    { INPUT_KEYBOARD_SHIFT_MASK, SDL_SCANCODE_LSHIFT },         // VK_SHIFT - shift key (RSHIFT not used in game)
     { INPUT_KEYBOARD_RETURN_MASK, SDL_SCANCODE_RETURN },        // VK_RETURN  - enter key
     { INPUT_KEYBOARD_TAB_MASK, SDL_SCANCODE_TAB },              // VK_TAB - tab key
     { INPUT_KEYBOARD_ESCAPE_MASK, SDL_SCANCODE_ESCAPE },        // VK_ESCAPE - escape key
@@ -35,7 +35,7 @@ std::map<int, int> kknd_key_mask_scancode_map =
     { INPUT_KEYBOARD_F_MASK, SDL_SCANCODE_F },                  // 'F' key
     { INPUT_KEYBOARD_I_MASK, SDL_SCANCODE_I },                  // 'I' key
     { INPUT_KEYBOARD_H_MASK, SDL_SCANCODE_H },                  // 'H' key
-    { INPUT_KEYBOARD_MINUS_MASK, SDL_SCANCODE_KP_MINUS },       // VK_OEM_MINUS - '-' minus key (special case also SDL_SCANCODE_MINUS ??)
+    { INPUT_KEYBOARD_MINUS_MASK, SDL_SCANCODE_KP_MINUS },       // VK_OEM_MINUS - '-' minus key
     { INPUT_KEYBOARD_PLUS_MASK, SDL_SCANCODE_KP_PLUS },         // VK_OEM_PLUS - '+' plus key
     { INPUT_KEYBOARD_F1_MASK, SDL_SCANCODE_F1 },                // VK_F1 - F1 key
     { INPUT_KEYBOARD_F2_MASK, SDL_SCANCODE_F2 },                // VK_F2 - F2 key
@@ -43,6 +43,20 @@ std::map<int, int> kknd_key_mask_scancode_map =
     { 0, 0 }
 };
 
+/* character to SDL scancode mapping */
+std::map<char, int> char_scancode_map =
+{
+    { '0', SDL_SCANCODE_0 },
+    { '1', SDL_SCANCODE_1 },
+    { '2', SDL_SCANCODE_2 },
+    { '3', SDL_SCANCODE_3 },
+    { '4', SDL_SCANCODE_4 },
+    { '5', SDL_SCANCODE_5 },
+    { '6', SDL_SCANCODE_6 },
+    { '7', SDL_SCANCODE_7 },
+    { '8', SDL_SCANCODE_8 },
+    { '9', SDL_SCANCODE_9 }
+};
 
 bool SdlWindow::Initialize() {
     window = SDL_CreateWindow(
@@ -240,5 +254,14 @@ bool SdlWindow::GetScancodePressed(int scancode) const {
 }
 
 bool SdlWindow::GetIsKKNDKeyPressed(int kknd_key_mask) const {
+    // special case CTRL
+    if (kknd_key_mask == INPUT_KEYBOARD_CONTROL_MASK) {
+        return GetScancodePressed(SDL_SCANCODE_LCTRL) || GetScancodePressed(SDL_SCANCODE_RCTRL);
+    }
+
     return GetScancodePressed(kknd_key_mask_scancode_map[kknd_key_mask]);
+}
+
+bool SdlWindow::GetIsCharKeyPressed(char character) const {
+    return GetScancodePressed(char_scancode_map[character]);
 }

@@ -246,7 +246,30 @@ void input_update_keyboard()
     {
         nExt_pressed_key = next_pressed_key;
     }
-    if (nExt_pressed_key && combo_pressed_vk)
+
+    // CTRL + num combo check
+	if (gWindow->GetIsKKNDKeyPressed(INPUT_KEYBOARD_CONTROL_MASK)) {
+        bool ctrl_num_combo_pressed = false;
+        for (int i = 0; i <= 9; i++) {
+            if (gWindow->GetIsCharKeyPressed('0' + i)) {
+                log("CTRL + %d pressed", i);
+                ctrl_num_combo_pressed = true;
+
+                //set VK of combo
+                input_combo_pressed_vk = (48 + i); // VK for numbers
+                input_now_pressed_keys.combo_key_param = combo_press_params_map[combo_pressed_vk];
+                break;
+            }
+        }
+
+        if (!ctrl_num_combo_pressed) {
+            input_now_pressed_keys.combo_key_param = 0;
+        }
+
+        combo_pressed_vk = 0;
+	}
+
+    /*if (nExt_pressed_key && combo_pressed_vk)
     {
         if (combo_pressed_vk == -1)
         {
@@ -258,7 +281,8 @@ void input_update_keyboard()
             input_now_pressed_keys.combo_key_param = combo_press_params_map[combo_pressed_vk];
         }
         combo_pressed_vk = 0;
-    }
+    }*/
+
     input_now_pressed_keys.field_C = input_465FE8[input_479B6C_just_pressed_keys_mask];
     memcpy(&input_previous_state, &input_now_pressed_keys, sizeof(input_previous_state));
     memcpy(&input_keyboard_state, &input_now_pressed_keys, sizeof(input_keyboard_state));
