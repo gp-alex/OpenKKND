@@ -83,7 +83,6 @@ extern int render_first_drawing_item; // weak
 extern char *Caption;
 extern unsigned __int8 palette_465848_sprt[256];
 extern int _465948_per_mobd_lookup_idx[16];
-extern int input_465A80_wndprockey_map[256];
 extern stru7 array_466028[7];
 extern int _466098_cost_multiplier[4];
 extern const char *slvs[2];
@@ -452,9 +451,8 @@ extern char palette_4798F8_sprt_aligned[512];
 extern stru1_draw_params *current_drawing_params;
 extern char byte_479B00[88]; // idb
 extern int input_479B6C_just_pressed_keys_mask; // weak
-extern int wnd_proc_pressed_key_id; // weak
 extern int next_pressed_key; // weak
-extern int input_wnd_proc_pressed_key_id; // weak
+extern int input_combo_pressed_vk; // weak
 extern int array_479B98[25][2];
 extern int array_479C60[25][2];
 extern int array_479B98_array_479C60_inited; // weak

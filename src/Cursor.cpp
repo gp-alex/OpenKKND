@@ -1371,15 +1371,15 @@ void cursor_group_orders(CursorHandler *a1)
     int v92; // [sp-Ch] [bp-24h]@127
     int v94; // [sp+14h] [bp-4h]@21
 
-    v1 = _47A700_input._10_wndproc_mapped_key;
+    v1 = _47A700_input.combo_key_param;
     v2 = a1;
-    if (_47A700_input._10_wndproc_mapped_key >= 2u
-        && _47A700_input._10_wndproc_mapped_key <= 0xBu
+    if (_47A700_input.combo_key_param >= 2
+        && _47A700_input.combo_key_param <= 11
         && dword_47A6FC == 29
-        && _47A700_input._10_wndproc_mapped_key - 2 != dword_468984)
+        && _47A700_input.combo_key_param - 2 != dword_468984)
     {
         v3 = a1->next;
-        v4 = _47A700_input._10_wndproc_mapped_key - 1;
+        v4 = _47A700_input.combo_key_param - 1;
         if (a1->next != a1)
         {
             v5 = player_side;
@@ -2228,14 +2228,14 @@ void script_game_cursor_handler(Script *a1)
         }
         if (!is_async_execution_supported)
         {
-            v8 = _47A700_input._10_wndproc_mapped_key;
+            v8 = _47A700_input.combo_key_param;
             if (dword_47A6FC != 29
-                || _47A700_input._10_wndproc_mapped_key != 16
-                && _47A700_input._10_wndproc_mapped_key != 17
-                && _47A700_input._10_wndproc_mapped_key != 20
-                && _47A700_input._10_wndproc_mapped_key != 50
-                || _47A700_input._10_wndproc_mapped_key == 50 && single_player_game
-                || _47A700_input._10_wndproc_mapped_key != 50
+                || _47A700_input.combo_key_param != 16
+                && _47A700_input.combo_key_param != 17
+                && _47A700_input.combo_key_param != 20
+                && _47A700_input.combo_key_param != 50
+                || _47A700_input.combo_key_param == 50 && single_player_game
+                || _47A700_input.combo_key_param != 50
                 || single_player_game)
             {
                 goto LABEL_30;
@@ -2243,12 +2243,12 @@ void script_game_cursor_handler(Script *a1)
             if (!_47A730_render_string)
             {
                 script_create_coroutine(SCRIPT_TYPE_INVALID, script_42D390_cursors, 0);
-                v8 = _47A700_input._10_wndproc_mapped_key;
+                v8 = _47A700_input.combo_key_param;
             }
             cursor_load_mobd(&v62, CURSOR_MOBD_OFFSET_DEFAULT);
         }
     LABEL_29:
-        v8 = _47A700_input._10_wndproc_mapped_key;
+        v8 = _47A700_input.combo_key_param;
     LABEL_30:
         if (v62._18_script)
         {
@@ -2352,7 +2352,7 @@ void script_game_cursor_handler(Script *a1)
                             else if (v8 - 2 != dword_468980 || _47A700_input.just_pressed_keys_mask & INPUT_KEYBOARD_MENU_MASK)
                             {
                                 sub_4297D0(&v62, v8 - 1);
-                                dword_468980 = _47A700_input._10_wndproc_mapped_key - 2;
+                                dword_468980 = _47A700_input.combo_key_param - 2;
                             }
                         }
                         else

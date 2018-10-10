@@ -6488,14 +6488,14 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 	v10 = a2;
 	v6 = (char *)a1;
 	v11 = 1;
-	input_wnd_proc_pressed_key_id = 0;
+	input_combo_pressed_vk = 0;
 	v12 = (char *)malloc(a2 + 1);
 	strcpy(v12, v6);
 	v7 = handler;
 	handler(v6, 0);
 	while (2)
 	{
-		input_wnd_proc_pressed_key_id = 0;
+		input_combo_pressed_vk = 0;
 		do
 		{
 			if (a5)
@@ -6510,8 +6510,8 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 				draw_list_update_and_draw();
 				TimedMessagePump();
 			}
-		} while (!input_wnd_proc_pressed_key_id);
-		switch (input_wnd_proc_pressed_key_id)
+		} while (!input_combo_pressed_vk);
+		switch (input_combo_pressed_vk)
 		{
 		case 37:
 			if ((_WORD)v5)
@@ -6565,11 +6565,11 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 			v5 += 0xFFFF;
 			goto LABEL_40;
 		default:
-			if (input_wnd_proc_pressed_key_id >= 65 && input_wnd_proc_pressed_key_id <= 90
-				|| input_wnd_proc_pressed_key_id >= 48 && input_wnd_proc_pressed_key_id <= 57
-				|| input_wnd_proc_pressed_key_id == 32)
+			if (input_combo_pressed_vk >= 65 && input_combo_pressed_vk <= 90
+				|| input_combo_pressed_vk >= 48 && input_combo_pressed_vk <= 57
+				|| input_combo_pressed_vk == 32)
 			{
-				v6[(unsigned __int16)v5] = input_wnd_proc_pressed_key_id;
+				v6[(unsigned __int16)v5] = input_combo_pressed_vk;
 				if ((unsigned __int16)v5 < (int)(v10 - 1))
 				{
 					if ((unsigned __int16)v5 >= strlen(v6) - 1)
@@ -6595,8 +6595,8 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 
             input_reset_keyboard();
 
-			v8 = input_wnd_proc_pressed_key_id == 27;
-			input_wnd_proc_pressed_key_id = 0;
+			v8 = input_combo_pressed_vk == 27;
+			input_combo_pressed_vk = 0;
 			return !v8;
 		}
 	}

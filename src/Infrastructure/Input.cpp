@@ -39,6 +39,142 @@ int kknd_key_masks[25] =
     0
 };
 
+
+// VirtualKey code of key pressed simultaneously with system key (alt/ctrl)
+int combo_pressed_vk;
+// Special param for special key combinations
+int combo_press_params_map[256] =
+{
+    /* 0 */ -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    /* 7 - ? */ 14,
+    /* 8 - VK_BACK */ 15,
+    -1,
+    /* 10 */ -1,
+    -1,
+    -1,
+    /* 13 - VK_RETURN */ 13,
+    -1,
+    -1,
+    /* 16 - VK_SHIFT */ 42,
+    29,
+    56,
+    -1,
+    /* 20 */ 58,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    1,
+    -1,
+    -1,
+    /* 30 */ -1,
+    -1,
+    57,
+    -1,
+    -1,
+    79,
+    71,
+    75,
+    72,
+    77,
+    /* 40 */ 80,
+    -1,
+    -1,
+    -1,
+    -1,
+    82,
+    83,
+    -1,
+    11,
+    /* 49 - VK_1 */ 2,
+    /* 50 - VK_2 */ 3,
+    /* 51 - VK_3 */ 4,
+    /* 52 - VK_4 */ 5,
+    /* 53 - VK_5 */ 6,
+    /* 54 - VK_6 */ 7,
+    /* 55 - VK_7 */ 8,
+    /* 56 - VK_8 */ 9,
+    /* 57 - VK_9 */ 10,
+    -1,
+    -1,
+    /* 60 */ -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    30,
+    48,
+    46,
+    32,
+    18,
+    /* 70 */ 33,
+    34,
+    35,
+    23,
+    36,
+    37,
+    38,
+    50,
+    49,
+    24,
+    /* 80 */ 25,
+    16,
+    19,
+    31,
+    20,
+    22,
+    47,
+    17,
+    45,
+    21,
+    /* 90 */ 44,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    /* 100 */ -1,
+    76,
+    -1,
+    -1,
+    -1,
+    -1,
+    55,
+    78,
+    13,
+    12,
+    /* 110 */ -1,
+    -1,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    /* 120 */ 67,
+    68,
+    87,
+    88,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
 KeyboardInput input_now_pressed_keys; // weak
 KeyboardInput input_previous_state; // weak
 KeyboardInput input_keyboard_state; // weak
@@ -61,7 +197,7 @@ void input_reset_keyboard()
     input_keyboard_state.just_pressed_keys_mask = 0;
     input_keyboard_state.unpressed_keys_mask = 0;
     input_keyboard_state.field_C = 0;
-    input_keyboard_state._10_wndproc_mapped_key = 0;
+    input_keyboard_state.combo_key_param = 0;
 }
 
 //----- (0041AAE0) --------------------------------------------------------
@@ -71,7 +207,6 @@ void input_update_keyboard()
     int v1; // eax@3
     int v2; // eax@6
     int vk; // eax@10
-    int v4; // edx@17
 
     input_479B6C_just_pressed_keys_mask = 0;
     input_now_pressed_keys.pressed_keys_mask = 0;
@@ -111,19 +246,18 @@ void input_update_keyboard()
     {
         nExt_pressed_key = next_pressed_key;
     }
-    if (nExt_pressed_key && wnd_proc_pressed_key_id)
+    if (nExt_pressed_key && combo_pressed_vk)
     {
-        if (wnd_proc_pressed_key_id == -1)
+        if (combo_pressed_vk == -1)
         {
-            input_now_pressed_keys._10_wndproc_mapped_key = 0;
+            input_now_pressed_keys.combo_key_param = 0;
         }
         else
         {
-            v4 = input_465A80_wndprockey_map[wnd_proc_pressed_key_id];
-            input_wnd_proc_pressed_key_id = wnd_proc_pressed_key_id;
-            input_now_pressed_keys._10_wndproc_mapped_key = v4;
+            input_combo_pressed_vk = combo_pressed_vk;
+            input_now_pressed_keys.combo_key_param = combo_press_params_map[combo_pressed_vk];
         }
-        wnd_proc_pressed_key_id = 0;
+        combo_pressed_vk = 0;
     }
     input_now_pressed_keys.field_C = input_465FE8[input_479B6C_just_pressed_keys_mask];
     memcpy(&input_previous_state, &input_now_pressed_keys, sizeof(input_previous_state));

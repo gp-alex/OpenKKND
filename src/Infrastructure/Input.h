@@ -11,7 +11,7 @@ struct KeyboardInput
     int just_pressed_keys_mask;
     int unpressed_keys_mask;
     int field_C;
-    int _10_wndproc_mapped_key;
+    int combo_key_param;
 };
 
 
