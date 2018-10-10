@@ -41,6 +41,7 @@ namespace Infrastructure {
         virtual void SetMousePos(int x, int y) = 0;
         virtual bool GetMousePressed(int button) const = 0;
         virtual bool GetIsKKNDKeyPressed(int kknd_key_mask) const = 0;
+        virtual bool GetIsCharKeyPressed(char character) const = 0;
 
         // misc
         virtual void *GetApiHandle() const = 0;
