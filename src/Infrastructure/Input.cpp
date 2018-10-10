@@ -250,13 +250,14 @@ void input_update_keyboard()
     // CTRL + num combo check
 	if (gWindow->GetIsKKNDKeyPressed(INPUT_KEYBOARD_CONTROL_MASK)) {
         bool ctrl_num_combo_pressed = false;
-        for (int i = 0; i <= 9; i++) {
+        for (int i = 1; i <= 9; i++) {
             if (gWindow->GetIsCharKeyPressed('0' + i)) {
                 log("CTRL + %d pressed", i);
                 ctrl_num_combo_pressed = true;
 
                 //set VK of combo
                 input_combo_pressed_vk = (48 + i); // VK for numbers
+                combo_pressed_vk = input_combo_pressed_vk;
                 input_now_pressed_keys.combo_key_param = combo_press_params_map[combo_pressed_vk];
                 break;
             }
