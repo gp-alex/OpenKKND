@@ -153,7 +153,6 @@ extern DataCplcItem_ptr1_stru20 _4688E0_DataCplcItem_ptr1_stru20_clanhall; // we
 extern DataCplcItem_ptr1_stru20 _468910_DataCplcItem_ptr1_stru20_outpost; // weak
 
 extern int dword_468980; // weak
-extern int dword_468984; // weak
 extern char aSD[]; // idb
 extern char aSS_1[]; // idb
 extern unsigned __int8 _468A6C_mobd_lookups[68];
@@ -537,13 +536,12 @@ extern stru37 *stru37_list_free_pool;
 extern int dword_47A5A0; // weak
 extern char byte_47A5A8[56];
 extern Script *game_cursor_script; // idb
-extern stru13_stru0 _47A608_stru13_associated_array; // weak
+extern int num_units_in_group[11]; // weak
 extern stru13construct *stru13construct_list_47A638;
 extern stru13construct *stru13construct_list_47A63C;
 extern stru13construct *stru13construct_list;
 extern stru13construct *stru13construct_list_free_pool;
 extern int dword_47A6F0; // weak
-extern int dword_47A6FC; // weak
 extern KeyboardInput _47A700_input; // idb
 extern int _47A660_array_num_items; // weak
 extern RenderString *_47A730_render_string; // idb

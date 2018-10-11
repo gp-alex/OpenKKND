@@ -25,8 +25,8 @@ enum stru209_TYPE : __int8
     stru209_TYPE_SELECT_UNIT_GROUP = 1,
     stru209_TYPE_SELECT_UNIT = 2,
     stru209_TYPE_DESELECT = 3,
-    stru209_TYPE_4 = 4,
-    stru209_TYPE_5 = 5,
+    stru209_TYPE_ASSIGN_UNIT_GROUP = 4,
+    stru209_TYPE_FORCE_ATTACK = 5,
     stru209_TYPE_MOVE = 6,
     stru209_TYPE_ATTACK = 7,
     stru209_TYPE_8_production_ready = 8,
@@ -48,6 +48,7 @@ enum stru209_TYPE : __int8
     stru209_TYPE_26_destroy = 26,
     stru209_TYPE_SWEAR_ALLEGIANCE = 27,
 };
+const char *stru209type_to_string(stru209_TYPE);
 
 
 

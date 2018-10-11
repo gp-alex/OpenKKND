@@ -1462,7 +1462,7 @@ MiscSaveStruct *GAME_Save_PackMiscInfo(size_t *a1)
     if (result)
     {
         result->size = stru13construct_list_get_saveload_packed_size();
-        memcpy(&v5->stru13stru0, &_47A608_stru13_associated_array, sizeof(v5->stru13stru0));
+        memcpy(v5->num_units_in_group, num_units_in_group, sizeof(num_units_in_group));
         v5->field_30 = _47B3E0_unit_int_outpost_clanhall;
         memcpy(&v5->outpost_levels, &_47B3E0_outpost_levels, sizeof(v5->outpost_levels));
         v5->max_outpost_level = max_outpost_level;
@@ -1562,7 +1562,7 @@ bool GAME_Load_UnpackMiscInfo(void *save_data)
     Script *v15; // eax@35
 
     v1 = save_data;
-    memcpy(&_47A608_stru13_associated_array, (char *)save_data + 4, sizeof(_47A608_stru13_associated_array));
+    memcpy(num_units_in_group, (char *)save_data + 4, sizeof(num_units_in_group));
     _47B3E0_unit_int_outpost_clanhall = *((_DWORD *)save_data + 12);
     memcpy(&_47B3E0_outpost_levels, (char *)save_data + 52, sizeof(_47B3E0_outpost_levels));
     max_outpost_level = *((_DWORD *)save_data + 22);

@@ -9029,7 +9029,7 @@ bool stru13construct_list_alloc()
 	stru13construct *v0; // eax@1
 	int v1; // ecx@2
 
-	memset(&_47A608_stru13_associated_array, 0, sizeof(_47A608_stru13_associated_array));
+	memset(num_units_in_group, 0, sizeof(num_units_in_group));
 	v0 = (stru13construct *)malloc(0x400u);
 	stru13construct_list = v0;
 	if (v0)
@@ -19750,7 +19750,7 @@ void script_evt39030_handler(Script *a1)
         v2->type = stru209_TYPE_0;
 		break;
 
-	case stru209_TYPE_4:
+	case stru209_TYPE_ASSIGN_UNIT_GROUP:
         i = *((_BYTE *)v2 + 1);
 		for (auto v8: entityRepo->FindAll())
 		{
@@ -19773,7 +19773,7 @@ void script_evt39030_handler(Script *a1)
         v2->type = stru209_TYPE_0;
 		break;
 
-	case stru209_TYPE_5:
+	case stru209_TYPE_FORCE_ATTACK:
 		v14 = *(int *)((char *)v2 + 1);
 		if (v1->next != v1)
 		{
@@ -20054,6 +20054,41 @@ void script_evt39030_handler(Script *a1)
         v2->type = stru209_TYPE_0;
 		break;
 	}
+}
+
+
+const char *stru209type_to_string(stru209_TYPE x)
+{
+    switch (x)
+    {
+        case stru209_TYPE_0: return "stru209_TYPE_0";
+        case stru209_TYPE_SELECT_UNIT_GROUP: return "stru209_TYPE_SELECT_UNIT_GROUP";
+        case stru209_TYPE_SELECT_UNIT: return "stru209_TYPE_SELE%CT_UNIT";
+        case stru209_TYPE_DESELECT: return "stru209_TYPE_DESELECT";
+        case stru209_TYPE_ASSIGN_UNIT_GROUP: return "stru209_TYPE_ASSIGN_UNIT_GROUP";
+        case stru209_TYPE_FORCE_ATTACK: return "stru209_TYPE_FORCE_ATTACK";
+        case stru209_TYPE_MOVE: return "stru209_TYPE_MOVE";
+        case stru209_TYPE_ATTACK: return "stru209_TYPE_ATTACK";
+        case stru209_TYPE_8_production_ready: return "stru209_TYPE_8_production_ready";
+        case stru209_TYPE_9_spawn_unit: return "stru209_TYPE_9_spawn_unit";
+        case stru209_TYPE_DEPLOY_MOBILE_OUTPOST: return "stru209_TYPE_DEPLOY_MOBILE_OUTPOST";
+        case stru209_TYPE_11: return "stru209_TYPE_11";
+        case stru209_TYPE_12_upgrade_complete: return "stru209_TYPE_12_upgrade_complete";
+        case stru209_TYPE_13: return "stru209_TYPE_13";
+        case stru209_TYPE_15_multiplayer: return "stru209_TYPE_15_multiplayer";
+        case stru209_TYPE_16_multiplayer: return "stru209_TYPE_16_multiplayer";
+        case stru209_TYPE_17_multiplayer: return "stru209_TYPE_17_multiplayer";
+        case stru209_TYPE_18: return "stru209_TYPE_18";
+        case stru209_TYPE_TANKER_SET_DRILLRIG: return "stru209_TYPE_TANKER_SET_DRILLRIG";
+        case stru209_TYPE_TANKER_SET_BASE: return "stru209_TYPE_TANKER_SET_BASE";
+        case stru209_TYPE_REPAIR_AT_STATION: return "stru209_TYPE_REPAIR_AT_STATION";
+        case stru209_TYPE_TECHNICIAN_REPAIR: return "stru209_TYPE_TECHNICIAN_REPAIR";
+        case stru209_TYPE_INFILTRATE: return "stru209_TYPE_INFILTRATE";
+        case stru209_TYPE_25_spawn_unit: return "stru209_TYPE_25_spawn_unit";
+        case stru209_TYPE_26_destroy: return "stru209_TYPE_26_destroy";
+        case stru209_TYPE_SWEAR_ALLEGIANCE: return "stru209_TYPE_SWEAR_ALLEGIANCE";
+    }
+    return "<invalid stru209_TYPE>";
 }
 
 //----- (00449670) --------------------------------------------------------

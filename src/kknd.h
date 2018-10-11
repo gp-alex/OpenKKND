@@ -745,18 +745,6 @@ struct stru13construct
 	int _1C_cost_per_time_step;
 };
 
-/* 318 */
-struct stru13_stru0
-{
-	int field_0[5];
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	int field_24;
-	int field_28;
-};
-
 /* 319 */
 struct stru15unit
 {
@@ -788,7 +776,7 @@ struct stru13constructSaveStruct
 struct MiscSaveStruct
 {
 	int size;
-	stru13_stru0 stru13stru0;
+    int num_units_in_group[11];
 	int field_30;
 	stru15unit outpost_levels;
 	int max_outpost_level;
