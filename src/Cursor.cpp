@@ -1356,11 +1356,8 @@ void script_evt39030_handler(Script *a1)
 	_47CAF0_task_attachment2 *v5; // edi@16
 	Entity *v6; // eax@20
 	Entity *v8; // eax@22
-	char i; // dl@22
 	int v10; // ecx@23
 	char v11; // bl@23
-	char *v12; // ecx@23
-	_47CAF0_task_attachment1 *v13; // eax@26
 	int v14; // edi@29
 	int v16; // edx@32
 	_47CAF0_task_attachment2 *v17; // eax@34
@@ -1466,27 +1463,28 @@ void script_evt39030_handler(Script *a1)
 		break;
 
 	case stru209_TYPE_ASSIGN_UNIT_GROUP:
-        i = *((_BYTE *)v2 + 1);
-		for (auto v8: entityRepo->FindAll())
-		{
-			v10 = v1->selected_unit_player_side;
-			v11 = v8->array_294[v10];
-			v12 = &v8->array_294[v10];
-			if (v11 == i)
-				*v12 = 0;
-		}
+    {
+        int group_id = v2->param;
 
-		v13 = v1->next;
-        if (v1->next != v1)
+        // unassign group that we are creating from all
+        for (auto v8 : entityRepo->FindAll())
         {
-            do
-            {
-                *((_BYTE *)v13->_8_script->param + v1->selected_unit_player_side + 660) = i;
-                v13 = v13->next;
-            } while (v13 != v1);
+            v10 = v1->selected_unit_player_side;
+            v11 = v8->array_294[v10];
+            if (v11 == group_id)
+                v8->array_294[v10] = 0;
         }
+
+        // assign group to the selected list
+        for (auto v13 = v1->next; v13 != v1; v13 = v13->next)
+        {
+            auto entity = (Entity *)v13->_8_script->param;
+            entity->array_294[v1->selected_unit_player_side] = group_id;
+        }
+
         v2->type = stru209_TYPE_0;
-		break;
+        break;
+    }
 
 	case stru209_TYPE_FORCE_ATTACK:
 		v14 = *(int *)((char *)v2 + 1);
