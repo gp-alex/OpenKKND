@@ -888,7 +888,7 @@ LABEL_82:
                 break;
 
             case EVT_MSG_1532:
-                _47A714._stru209.type = stru209_TYPE_15_multiplayer;
+                _47A714._stru209.type = stru209_TYPE_PAUSE_GAME;
                 _428940_list_do_stuff(&_47A714._stru209);
                 break;
 
@@ -899,7 +899,7 @@ LABEL_82:
                 break;
 
             case EVT_MSG_1533:
-                _47A714._stru209.type = stru209_TYPE_16_multiplayer;
+                _47A714._stru209.type = stru209_TYPE_RESUME_GAME;
                 _428940_list_do_stuff(&_47A714._stru209);
                 break;
 
@@ -1648,7 +1648,7 @@ void script_evt39030_handler(Script *a1)
         v2->type = stru209_TYPE_0;
 		break;
 
-	case stru209_TYPE_15_multiplayer:
+	case stru209_TYPE_PAUSE_GAME:
         if (!single_player_game)
         {
             dword_47050C = 1;
@@ -1666,7 +1666,7 @@ void script_evt39030_handler(Script *a1)
         v2->type = stru209_TYPE_0;
 		break;
 
-	case stru209_TYPE_16_multiplayer:
+	case stru209_TYPE_RESUME_GAME:
         if (!single_player_game)
         {
             dword_47A738 = 0;
@@ -1788,8 +1788,8 @@ const char *stru209type_to_string(stru209_TYPE x)
         case stru209_TYPE_11: return "stru209_TYPE_11";
         case stru209_TYPE_12_upgrade_complete: return "stru209_TYPE_12_upgrade_complete";
         case stru209_TYPE_13: return "stru209_TYPE_13";
-        case stru209_TYPE_15_multiplayer: return "stru209_TYPE_15_multiplayer";
-        case stru209_TYPE_16_multiplayer: return "stru209_TYPE_16_multiplayer";
+        case stru209_TYPE_PAUSE_GAME: return "stru209_TYPE_PAUSE_GAME";
+        case stru209_TYPE_RESUME_GAME: return "stru209_TYPE_RESUME_GAME";
         case stru209_TYPE_17_multiplayer: return "stru209_TYPE_17_multiplayer";
         case stru209_TYPE_18: return "stru209_TYPE_18";
         case stru209_TYPE_TANKER_SET_DRILLRIG: return "stru209_TYPE_TANKER_SET_DRILLRIG";

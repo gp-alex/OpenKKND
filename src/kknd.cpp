@@ -6474,26 +6474,25 @@ bool array_479B98_array_479C60_init()
 }
 
 //----- (0041AC50) --------------------------------------------------------
-__int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(const char *, int), int a4, Script *a5)
+__int16 input_get_string(
+    const char *a1, int max_len, void(*draw_handler)(const char *, int), int a4, Script *a5
+)
 {
 	int v5; // ebx@1
 	char *v6; // ebp@1
-	void(*v7)(const char *, int); // edi@1
+	//void(*v7)(const char *, int); // edi@1
 	bool v8; // zf@42
-	unsigned int v10; // [sp+10h] [bp-10h]@1
 	int v11; // [sp+14h] [bp-Ch]@1
 	char *v12; // [sp+18h] [bp-8h]@1
 
 	v5 = 0;
-	v10 = a2;
 	v6 = (char *)a1;
 	v11 = 1;
     input_char_clear();
-	v12 = (char *)malloc(a2 + 1);
+	v12 = (char *)malloc(max_len + 1);
 	strcpy(v12, v6);
-	v7 = handler;
-	handler(v6, 0);
-	while (2)
+    draw_handler(v6, 0);
+	while (v11)
 	{
         input_char_clear();
 		do
@@ -6518,11 +6517,11 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 			if (v5 > 0)
 			{
 				v5--;
-				v7(v6, v5);
+                draw_handler(v6, v5);
 			}
 			goto LABEL_41;
 		case 39: // vk_right
-			if (strlen(v6) != 0 && (unsigned __int16)v5 < (int)(v10 - 1) && (unsigned __int16)v5 < strlen(v6) - 1)
+			if (strlen(v6) != 0 && (unsigned __int16)v5 < (int)(max_len - 1) && (unsigned __int16)v5 < strlen(v6) - 1)
 			{
 				++v5;
 				goto LABEL_40;
@@ -6530,8 +6529,9 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 			goto LABEL_41;
 		case 36: // vk_home
 			v5 = 0;
-			v7(v6, 0);
+            draw_handler(v6, 0);
 			goto LABEL_41;
+
 		case 35: // vk_end
 			if (strlen(v6) != 0)
 			{
@@ -6547,7 +6547,7 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 			v11 = 0;
 			goto LABEL_41;
 		case 45: // vk_insert
-			if (strlen(v6) >= v10)
+			if (strlen(v6) >= max_len)
 				goto LABEL_41;
 			memcpy((void *)&v6[(unsigned __int16)v5 + 1], &v6[(unsigned __int16)v5], strlen(v6) - (unsigned __int16)v5);
 			v6[(unsigned __int16)v5] = 32;
@@ -6571,11 +6571,11 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 				|| input_char_is_whitespace())
 			{
 				v6[(unsigned __int16)v5] = c;
-				if ((unsigned __int16)v5 < (int)(v10 - 1))
+				if ((unsigned __int16)v5 < (int)(max_len - 1))
 				{
 					if ((unsigned __int16)v5 >= strlen(v6) - 1)
 					{
-						if ((unsigned __int16)v5 < (int)(v10 - 1) && (unsigned __int16)v5 == strlen(v6) - 1)
+						if ((unsigned __int16)v5 < (int)(max_len - 1) && (unsigned __int16)v5 == strlen(v6) - 1)
 							v6[(unsigned __int16)++v5] = 0;
 					}
 					else
@@ -6584,23 +6584,20 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 					}
 				}
 			LABEL_40:
-				handler(v6, v5);
+                draw_handler(v6, v5);
 			}
-		LABEL_41:
-			if (v11)
-			{
-				v7 = handler;
-				continue;
-			}
-			free(v12);
-
-            input_reset_keyboard();
-
-			v8 = input_char_is_escape();
-			input_char_clear();
-			return !v8;
+        LABEL_41:;
 		}
 	}
+
+
+    free(v12);
+
+    input_reset_keyboard();
+
+    v8 = input_char_is_escape();
+    input_char_clear();
+    return !v8;
 }
 
 //----- (0041B000) --------------------------------------------------------
@@ -10991,20 +10988,15 @@ void script_432800_ingame_menu(Script *a1)
 }
 
 //----- (004328F0) --------------------------------------------------------
-void _41AC50_read_keyboard_input___handler_4328F0(const char *a1, int a2)
+void _41AC50_string_draw_handler(const char *a1, int cursor_pos)
 {
-	const char *v2; // esi@1
-	unsigned __int16 v3; // ST08_2@1
-
-	v2 = a1;
-	v3 = a2;
 	_47C65C_render_string->field_18 = 0;
 	_47C65C_render_string->num_lines = 6;
 	render_string_443D80(_47C65C_render_string, asc_46BB14, 0);
 	_47C65C_render_string->field_18 = 0;
-	render_string_443D80(_47C65C_render_string, v2, 0);
+	render_string_443D80(_47C65C_render_string, a1, 0);
 	_47C664_ingame_menu_sprite->field_88_unused = 1;
-	_47C664_ingame_menu_sprite->x = render_string_443EE0(_47C65C_render_string, v3, 6) << 8;
+	_47C664_ingame_menu_sprite->x = render_string_443EE0(_47C65C_render_string, cursor_pos, 6) << 8;
 	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	_47C664_ingame_menu_sprite->y = 0xC200;
 }
@@ -11259,7 +11251,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 			if (input_get_string(
 				_47C050_array[_47C050_array_idx].str_0,
 				0xBu,
-				_41AC50_read_keyboard_input___handler_4328F0,
+				_41AC50_string_draw_handler,
 				1,
 				v12))
 			{

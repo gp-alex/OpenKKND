@@ -5,9 +5,11 @@
 #include "src/_unsorted_data.h"
 
 #include "src/Infrastructure/InputWindowObserver.h"
+using Infrastructure::InputWindowObserver;
+#include "src/Infrastructure/InputKeyboardObserver.h"
+using Infrastructure::InputKeyboardObserver;
 #include "src/Infrastructure/Log.h"
 
-using Infrastructure::InputWindowObserver;
 
 /* kknd input key masks */
 int kknd_key_masks[25] =
@@ -187,6 +189,7 @@ int input_47A58C; // weak
 __int16 word_47A590; // weak
 int input_mouse_window_losing_focus_reset_to_defaults; // weak
 std::shared_ptr<InputWindowObserver> inputObserver;
+std::shared_ptr<InputKeyboardObserver> keyboardObserver;
 int dword_468940[16] = { -1, 2, 6, -1, 4, 3, 5, -1, 0, 1, 7, -1, -1, -1, -1, -1 };
 int input_465FE8[16] = { -1, 0, 4, -1, 6, 7, 5, 6, 2, 1, 3, 2, -1, 0, 4, -1 };
 int input_combo_pressed_vk; // weak
@@ -219,6 +222,11 @@ void input_char_clear() {
 }
 char input_char_get() {
     return input_combo_pressed_vk;
+}
+char input_char_pop() {
+    auto c = input_combo_pressed_vk;
+    input_combo_pressed_vk = 0;
+    return c;
 }
 
 
@@ -280,38 +288,6 @@ void input_update_keyboard()
 
 
     int combo_pressed_vk_param = 0;
-
-    bool ctrl_pressed = gWindow->GetIsKKNDKeyPressed(INPUT_KEYBOARD_CONTROL_MASK);
-    for (int i = 0; i <= 9; ++i) {
-        if (gWindow->GetIsCharKeyPressed('0' + i)) {
-            combo_pressed_vk = (VK_0 + i);
-
-            if (ctrl_pressed) {
-                log("CTRL + %d pressed", i);
-                combo_pressed_vk_param = combo_press_params_map[combo_pressed_vk];
-            } else {
-                log("%d pressed", i);
-            }
-        }
-    }
-    for (int c = 0; c <= (VK_Z - VK_A); ++c) {
-        if (gWindow->GetIsCharKeyPressed('A' + c) || gWindow->GetIsCharKeyPressed('a' + c)) {
-            combo_pressed_vk = VK_A + c;
-
-            log("%c pressed", (char)('A' + c));
-        }
-    }
-
-    if (!ctrl_pressed) {
-        input_now_pressed_keys.combo_key_param = 0;
-    }
-    if (!gWindow->GetIsCharKeyPressed(input_combo_pressed_vk)) {
-        combo_pressed_vk = 0;
-        input_now_pressed_keys.combo_key_param = 0;
-    }
-
-    input_combo_pressed_vk = combo_pressed_vk;
-    input_now_pressed_keys.combo_key_param = combo_pressed_vk_param;
 /*
     // CTRL + num combo check
 	if (gWindow->GetIsKKNDKeyPressed(INPUT_KEYBOARD_CONTROL_MASK)) {
@@ -369,6 +345,10 @@ bool input_initialize()
     if (!inputObserver) {
         inputObserver = std::make_shared<InputWindowObserver>();
         gWindow->AddObserver(inputObserver);
+    }
+    if (!keyboardObserver) {
+        keyboardObserver = std::make_shared<InputKeyboardObserver>();
+        gWindow->AddObserver(keyboardObserver);
     }
 
     input_mouse.just_pressed_buttons_mask = 0;
