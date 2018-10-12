@@ -1,3 +1,5 @@
+#include <string>
+
 #include "src/Cursor.h"
 
 #include "src/kknd.h"
@@ -27,10 +29,10 @@ task_428940_attach__cursors *task_428940_attach__cursors_list;
 task_428940_attach__cursors *task_428940_attach__cursors_list_free_pool;
 
 task_428940_attach__cursors _47A714;
-
 stru209 _47A660_array[10];
-
 stru209 stru_47CAE0; // weak
+int dword_47A6FC; // weak
+int _468984_last_assigned_group = -1; // weak
 
 
 
@@ -85,6 +87,13 @@ int _47A660_list_reset()
 void _428940_list_do_stuff(stru209 *a1)
 {
     task_428940_attach__cursors *ptr = _47A714.next;
+
+std::string msg;
+int count = 1;
+auto i = &_47A714;
+while (i = i->next) ++count;
+log("count: %d", count);
+log("%s", stru209type_to_string(a1->type));
 
     if (auto i = _428940_list_get())
     {
@@ -383,7 +392,7 @@ void cursor_drag_selection(CursorHandler *a1, int x, int y)
     sprite_list_remove(drag_frame_z);
     sprite_list_remove(drag_frame_w);
 
-    dword_468984 = -1;
+    _468984_last_assigned_group = -1;
     cursor_load_mobd(a1, CURSOR_MOBD_OFFSET_DEFAULT);
 }
 
@@ -832,7 +841,7 @@ LABEL_82:
                     }
                     v63 = *((_BYTE *)v61 + player_side + 660);
                     if (v63)
-                        --_47A608_stru13_associated_array.field_0[v63];
+                        --num_units_in_group[v63];
                     v62->next->prev = v62->prev;
                     v62->prev->next = v62->next;
                     v62->next = (CursorHandler *)v2->ptr_10;
@@ -1336,15 +1345,28 @@ void cursor_on_unit_selection(CursorHandler *a1, Entity *a2)
     cursor_play_selection_response(a1, v3);
 }
 
+void cursor_assign_unit_group(CursorHandler *a1, int group_id) {
+    for (auto i = a1->next; i != a1; i = i->next) {
+        auto entity = (Entity *)i->_8_task->param;
+        auto v6 = entity->array_294[player_side];
+        if (v6 > 0 && v6 < 11)
+            --num_units_in_group[v6];
+
+        ++num_units_in_group[group_id];
+    }
+
+    _47A714._stru209.type = stru209_TYPE_ASSIGN_UNIT_GROUP;
+    _47A714._stru209.param = group_id;
+    _428940_list_do_stuff(&_47A714._stru209);
+
+    _468984_last_assigned_group = group_id - 1;
+}
+
 //----- (0042A0A0) --------------------------------------------------------
 void cursor_group_orders(CursorHandler *a1)
 {
     int v1; // ebx@1
     CursorHandler *v2; // esi@1
-    CursorHandler *v3; // eax@5
-    int v4; // edx@5
-    enum PLAYER_SIDE v5; // edi@6
-    char v6; // cl@7
     int v12; // ebx@19
     int v14; // edx@21
     int v16; // edi@23
@@ -1376,30 +1398,12 @@ void cursor_group_orders(CursorHandler *a1)
     if (_47A700_input.combo_key_param >= 2
         && _47A700_input.combo_key_param <= 11
         && dword_47A6FC == 29
-        && _47A700_input.combo_key_param - 2 != dword_468984)
+        && _47A700_input.combo_key_param - 2 != _468984_last_assigned_group)
     {
-        v3 = a1->next;
-        v4 = _47A700_input.combo_key_param - 1;
-        if (a1->next != a1)
-        {
-            v5 = player_side;
-            do
-            {
-                v6 = *((_BYTE *)v3->_8_task->param + v5 + 660);
-                if (v6 > 0 && v6 < 11)
-                    --_47A608_stru13_associated_array.field_0[v6];
-                ++_47A608_stru13_associated_array.field_0[v4];
-                v3 = v3->next;
-            } while (v3 != v2);
-        }
-
-        _47A714._stru209.type = stru209_TYPE_4;
-        _47A714._stru209.param = v1 - 1;
-        _428940_list_do_stuff(&_47A714._stru209);
-
-        dword_468984 = v1 - 2;
+        cursor_assign_unit_group(a1, _47A700_input.combo_key_param - 1);
         return;
     }
+
     if (a1->_18_script)
         return;
 
@@ -1691,9 +1695,9 @@ void sub_4297D0(CursorHandler *a1, int a2)
     int v26; // [sp-Ch] [bp-24h]@35
 
     v2 = a1;
-    if (_47A608_stru13_associated_array.field_0[a2] > 0)
+    if (num_units_in_group[a2] > 0)
     {
-        _47A714._stru209.type = stru209_TYPE_5;
+        _47A714._stru209.type = stru209_TYPE_FORCE_ATTACK;
         _47A714._stru209.param = a2;
         _428940_list_do_stuff(&_47A714._stru209);
 
@@ -2077,7 +2081,7 @@ public:
                     if (v61 == player_side)
                         cursor_on_unit_selection(&v62, pointedEntity);
                 }
-                dword_468984 = -1;
+                _468984_last_assigned_group = -1;
             }
         }
         else if (global_x < (render_width - 32) << 8)
@@ -2213,6 +2217,12 @@ void script_game_cursor_handler(Script *a1)
 
     while (1)
     {
+std::string msg;
+auto ii = &v62;
+int count = 1;
+while ((ii = ii->next) != &v62)count++;
+log("v62s: %d", count);
+
         v6 = v62._18_script;
         cursor_process_user_actions(&v62, 1);
         if (!v62._18_script
@@ -2312,7 +2322,7 @@ void script_game_cursor_handler(Script *a1)
                                                 if (v61 == player_side)
                                                     cursor_on_unit_selection(&v62, v54);
                                             }
-                                            dword_468984 = -1;
+                                            _468984_last_assigned_group = -1;
                                         }
                                     }
                                     else if (_47A5E0_mouse_input.cursor_x_x256 < (render_width - 32) << 8)

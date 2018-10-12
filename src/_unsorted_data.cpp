@@ -2297,7 +2297,6 @@ DataCplcItem_ptr1_stru20 _468910_DataCplcItem_ptr1_stru20_outpost =
 	0
 }; // weak
 int dword_468980 = -1; // weak
-int dword_468984 = -1; // weak
 char aSD[] = "%s $%d"; // idb
 char aSS_1[] = "%s: %s"; // idb
 unsigned __int8 _468A6C_mobd_lookups[68] =
@@ -5372,13 +5371,12 @@ stru37 *stru37_list_free_pool;
 int dword_47A5A0; // weak
 char byte_47A5A8[56];
 Script *game_cursor_script; // idb
-stru13_stru0 _47A608_stru13_associated_array; // weak
+int num_units_in_group[11]; // weak
 stru13construct *stru13construct_list_47A638;
 stru13construct *stru13construct_list_47A63C;
 stru13construct *stru13construct_list;
 stru13construct *stru13construct_list_free_pool;
 int dword_47A6F0; // weak
-int dword_47A6FC; // weak
 KeyboardInput _47A700_input; // idb
 int _47A660_array_num_items; // weak
 RenderString *_47A730_render_string; // idb
