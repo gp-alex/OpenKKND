@@ -263,5 +263,11 @@ bool SdlWindow::GetIsKKNDKeyPressed(int kknd_key_mask) const {
 }
 
 bool SdlWindow::GetIsCharKeyPressed(char character) const {
+    if (character >= 'a' && character <= 'z') {
+        return GetScancodePressed(character - 'a' + SDL_SCANCODE_A);
+    }
+    if (character >= 'A' && character <= 'Z') {
+        return GetScancodePressed(character - 'A' + SDL_SCANCODE_A);
+    }
     return GetScancodePressed(char_scancode_map[character]);
 }

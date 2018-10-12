@@ -189,6 +189,37 @@ int input_mouse_window_losing_focus_reset_to_defaults; // weak
 std::shared_ptr<InputWindowObserver> inputObserver;
 int dword_468940[16] = { -1, 2, 6, -1, 4, 3, 5, -1, 0, 1, 7, -1, -1, -1, -1, -1 };
 int input_465FE8[16] = { -1, 0, 4, -1, 6, 7, 5, 6, 2, 1, 3, 2, -1, 0, 4, -1 };
+int input_combo_pressed_vk; // weak
+
+#define VK_ESCAPE 27
+#define VK_SPACE 32
+#define VK_0 48
+#define VK_9 57
+#define VK_A 65
+#define VK_Z 90
+
+
+bool input_char_is_alpha() {
+    return input_combo_pressed_vk >= VK_A && input_combo_pressed_vk <= VK_Z;
+}
+bool input_char_is_numeric() {
+    return input_combo_pressed_vk >= VK_0 && input_combo_pressed_vk <= VK_9;
+}
+bool input_char_is_whitespace() {
+    return input_combo_pressed_vk == VK_SPACE;
+}
+bool input_char_is_escape() {
+    return input_combo_pressed_vk == VK_ESCAPE;
+}
+bool input_char_is_any() {
+    return input_combo_pressed_vk != 0;
+}
+void input_char_clear() {
+    input_combo_pressed_vk = 0;
+}
+char input_char_get() {
+    return input_combo_pressed_vk;
+}
 
 
 void input_reset_keyboard()
@@ -247,6 +278,41 @@ void input_update_keyboard()
         nExt_pressed_key = next_pressed_key;
     }
 
+
+    int combo_pressed_vk_param = 0;
+
+    bool ctrl_pressed = gWindow->GetIsKKNDKeyPressed(INPUT_KEYBOARD_CONTROL_MASK);
+    for (int i = 0; i <= 9; ++i) {
+        if (gWindow->GetIsCharKeyPressed('0' + i)) {
+            combo_pressed_vk = (VK_0 + i);
+
+            if (ctrl_pressed) {
+                log("CTRL + %d pressed", i);
+                combo_pressed_vk_param = combo_press_params_map[combo_pressed_vk];
+            } else {
+                log("%d pressed", i);
+            }
+        }
+    }
+    for (int c = 0; c <= (VK_Z - VK_A); ++c) {
+        if (gWindow->GetIsCharKeyPressed('A' + c) || gWindow->GetIsCharKeyPressed('a' + c)) {
+            combo_pressed_vk = VK_A + c;
+
+            log("%c pressed", (char)('A' + c));
+        }
+    }
+
+    if (!ctrl_pressed) {
+        input_now_pressed_keys.combo_key_param = 0;
+    }
+    if (!gWindow->GetIsCharKeyPressed(input_combo_pressed_vk)) {
+        combo_pressed_vk = 0;
+        input_now_pressed_keys.combo_key_param = 0;
+    }
+
+    input_combo_pressed_vk = combo_pressed_vk;
+    input_now_pressed_keys.combo_key_param = combo_pressed_vk_param;
+/*
     // CTRL + num combo check
 	if (gWindow->GetIsKKNDKeyPressed(INPUT_KEYBOARD_CONTROL_MASK)) {
         bool ctrl_num_combo_pressed = false;
@@ -256,7 +322,7 @@ void input_update_keyboard()
                 ctrl_num_combo_pressed = true;
 
                 //set VK of combo
-                input_combo_pressed_vk = (48 + i); // VK for numbers
+                input_combo_pressed_vk = (VK_0 + i); // VK for numbers
                 combo_pressed_vk = input_combo_pressed_vk;
                 input_now_pressed_keys.combo_key_param = combo_press_params_map[combo_pressed_vk];
                 break;
@@ -269,7 +335,7 @@ void input_update_keyboard()
 
         combo_pressed_vk = 0;
 	}
-
+*/
     /*if (nExt_pressed_key && combo_pressed_vk)
     {
         if (combo_pressed_vk == -1)

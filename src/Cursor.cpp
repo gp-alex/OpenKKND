@@ -2676,11 +2676,11 @@ void script_game_cursor_handler(Script *a1)
 
     while (1)
     {
-std::string msg;
-auto ii = &v62;
-int count = 1;
-while ((ii = ii->next) != &v62)count++;
-log("v62s: %d", count);
+//std::string msg;
+//auto ii = &v62;
+//int count = 1;
+//while ((ii = ii->next) != &v62)count++;
+//log("v62s: %d", count);
 
         v6 = v62._18_script;
         cursor_process_user_actions(&v62, 1);

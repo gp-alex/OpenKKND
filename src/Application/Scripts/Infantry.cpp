@@ -1844,7 +1844,7 @@ void entity_mode_adjust_unit_placement_inside_tile(Entity *a1)
     int v12; // ecx@9
 
     v1 = a1;
-    LOWORD_HEXRAYS(a1->field_29C) = 0;
+    a1->_29C_idle_timer = 0;
 
     a1->sprite_x = map_adjust_entity_in_tile_x(a1, a1->sprite->x);
     a1->sprite_y = map_adjust_entity_in_tile_y(a1, a1->sprite->y);
@@ -1891,10 +1891,10 @@ void entity_mode_default_idle(Entity *a1)
 
     v1 = a1;
     v2 = a1->stats;
-    ++LOWORD_HEXRAYS(v1->field_29C);
+    ++v1->_29C_idle_timer;
     if (a1->IsInfantry())
     {
-        if (SLOWORD_HEXRAYS(v1->field_29C) > 50)
+        if (v1->_29C_idle_timer > 50)
         {
             int rnd = kknd_rand_3();
             if (!(_BYTE)rnd)
@@ -3473,19 +3473,19 @@ void entity_mode_attack_move_4_order_3_7_417E60(Entity *a1)
     if (!entity_4135E0(a1))
     {
         v2 = v1->sprite;
-        v3 = v2->x >> 13;
-        v4 = v2->y >> 13;
-        if ((_WORD)v3 != HIWORD_HEXRAYS(v1->field_29C) || (_WORD)v4 != LOWORD_HEXRAYS(v1->field_2A0))
+        v3 = global2map(v2->x);
+        v4 = global2map(v2->y);
+        if ((_WORD)v3 != v1->_29C_map_x || (_WORD)v4 != v1->_29C_map_y)
         {
-            HIWORD_HEXRAYS(v1->field_2A0) = 0;
-            HIWORD_HEXRAYS(v1->field_29C) = v3;
-            LOWORD_HEXRAYS(v1->field_2A0) = v4;
+            v1->field_2A0_hi = 0;
+            v1->_29C_map_x = v3;
+            v1->_29C_map_y = v4;
         }
         else
         {
-            ++HIWORD_HEXRAYS(v1->field_2A0);
+            ++v1->field_2A0_hi;
         }
-        v5 = 16 * HIWORD_HEXRAYS(v1->field_2A0);
+        v5 = 16 * v1->field_2A0_hi;
         if (v5 >= 240)
             v5 = 240;
         v6 = (kknd_rand_3() & 7) + v5;

@@ -5285,7 +5285,6 @@ stru1_draw_params *current_drawing_params;
 char byte_479B00[88]; // idb
 int input_479B6C_just_pressed_keys_mask; // weak
 int next_pressed_key; // weak
-int input_combo_pressed_vk; // weak
 int array_479B98[25][2];
 int array_479C60[25][2];
 int array_479B98_array_479C60_inited; // weak

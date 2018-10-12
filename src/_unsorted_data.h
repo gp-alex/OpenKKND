@@ -451,7 +451,6 @@ extern stru1_draw_params *current_drawing_params;
 extern char byte_479B00[88]; // idb
 extern int input_479B6C_just_pressed_keys_mask; // weak
 extern int next_pressed_key; // weak
-extern int input_combo_pressed_vk; // weak
 extern int array_479B98[25][2];
 extern int array_479C60[25][2];
 extern int array_479B98_array_479C60_inited; // weak

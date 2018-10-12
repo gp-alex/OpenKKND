@@ -6488,14 +6488,14 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 	v10 = a2;
 	v6 = (char *)a1;
 	v11 = 1;
-	input_combo_pressed_vk = 0;
+    input_char_clear();
 	v12 = (char *)malloc(a2 + 1);
 	strcpy(v12, v6);
 	v7 = handler;
 	handler(v6, 0);
 	while (2)
 	{
-		input_combo_pressed_vk = 0;
+        input_char_clear();
 		do
 		{
 			if (a5)
@@ -6510,66 +6510,67 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 				draw_list_update_and_draw();
 				TimedMessagePump();
 			}
-		} while (!input_combo_pressed_vk);
-		switch (input_combo_pressed_vk)
+		} while (!input_char_is_any());
+
+		switch (char c = input_char_get())
 		{
-		case 37:
-			if ((_WORD)v5)
+		case 37: // vk_left
+			if (v5 > 0)
 			{
-				v5 += 0xFFFF;
+				v5--;
 				v7(v6, v5);
 			}
 			goto LABEL_41;
-		case 39:
+		case 39: // vk_right
 			if (strlen(v6) != 0 && (unsigned __int16)v5 < (int)(v10 - 1) && (unsigned __int16)v5 < strlen(v6) - 1)
 			{
 				++v5;
 				goto LABEL_40;
 			}
 			goto LABEL_41;
-		case 36:
+		case 36: // vk_home
 			v5 = 0;
 			v7(v6, 0);
 			goto LABEL_41;
-		case 35:
+		case 35: // vk_end
 			if (strlen(v6) != 0)
 			{
 				v5 = strlen(v6) - 1;
 				goto LABEL_40;
 			}
 			goto LABEL_41;
-		case 27:
+		case 27: // vk_escape
 			strcpy((char *)v6, v12);
 			goto LABEL_19;
-		case 13:
+		case 13: // vk_return
 		LABEL_19:
 			v11 = 0;
 			goto LABEL_41;
-		case 45:
+		case 45: // vk_insert
 			if (strlen(v6) >= v10)
 				goto LABEL_41;
 			memcpy((void *)&v6[(unsigned __int16)v5 + 1], &v6[(unsigned __int16)v5], strlen(v6) - (unsigned __int16)v5);
 			v6[(unsigned __int16)v5] = 32;
 			goto LABEL_40;
-		case 46:
+		case 46: // vk_delete
 			if (strlen(v6) == 0)
 				goto LABEL_41;
 			strcpy((char *)&v6[(unsigned __int16)v5], &v6[(unsigned __int16)v5 + 1]);
 			if ((unsigned __int16)v5 >= strlen(v6) && (_WORD)v5)
 				v5 += 0xFFFF;
 			goto LABEL_40;
-		case 8:
+		case 8: // vk_backspace
 			if (strlen(v6) == 0 || !(_WORD)v5)
 				goto LABEL_41;
 			strcpy((char *)&v6[(unsigned __int16)v5 - 1], &v6[(unsigned __int16)v5]);
 			v5 += 0xFFFF;
 			goto LABEL_40;
 		default:
-			if (input_combo_pressed_vk >= 65 && input_combo_pressed_vk <= 90
-				|| input_combo_pressed_vk >= 48 && input_combo_pressed_vk <= 57
-				|| input_combo_pressed_vk == 32)
+			if (input_char_is_alpha()
+				|| input_char_is_numeric()
+				|| input_char_is_whitespace())
 			{
-				v6[(unsigned __int16)v5] = input_combo_pressed_vk;
+				v6[(unsigned __int16)v5] = c;
 				if ((unsigned __int16)v5 < (int)(v10 - 1))
 				{
 					if ((unsigned __int16)v5 >= strlen(v6) - 1)
@@ -6595,8 +6596,8 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 
             input_reset_keyboard();
 
-			v8 = input_combo_pressed_vk == 27;
-			input_combo_pressed_vk = 0;
+			v8 = input_char_is_escape();
+			input_char_clear();
 			return !v8;
 		}
 	}
