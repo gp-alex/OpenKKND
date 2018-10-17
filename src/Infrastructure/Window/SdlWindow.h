@@ -7,11 +7,13 @@
 #include <SDL2/SDL.h>
 
 #include "src/Infrastructure/DependencyInjection.h"
+//#include "src/Infrastructure/KeyboardInputEnum.h"
+
 #include "src/Infrastructure/Window/InputObserver.h"
+#include "src/Infrastructure/Window/KeyboardObserver.h"
 #include "src/Infrastructure/Window/Window.h"
 #include "src/Infrastructure/Window/WindowConfig.h"
 #include "src/Infrastructure/Window/WindowObserver.h"
-#include "src/Infrastructure/KeyboardInputEnum.h"
 
 
 
@@ -27,6 +29,7 @@ namespace Infrastructure {
         virtual bool Initialize() override;
         virtual void AddObserver(std::shared_ptr<WindowObserver> observer) override;
         virtual void AddObserver(std::shared_ptr<InputObserver> observer) override;
+        virtual void AddObserver(std::shared_ptr<KeyboardObserver> observer) override;
 
         // dimensions
         virtual void SetWidth(int width) override;
@@ -72,6 +75,8 @@ namespace Infrastructure {
         WindowObservers windowObservers;
         typedef std::list<std::shared_ptr<InputObserver>> InputObservers;
         InputObservers inputObservers;
+        typedef std::list<std::shared_ptr<KeyboardObserver>> KeyboardObservers;
+        KeyboardObservers keyboardObservers;
 
         SDL_Window *window = nullptr;
     };

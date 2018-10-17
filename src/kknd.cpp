@@ -6474,28 +6474,27 @@ bool array_479B98_array_479C60_init()
 }
 
 //----- (0041AC50) --------------------------------------------------------
-__int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(const char *, int), int a4, Script *a5)
+__int16 input_get_string(
+    const char *a1, int max_len, void(*draw_handler)(const char *, int), int a4, Script *a5
+)
 {
 	int v5; // ebx@1
 	char *v6; // ebp@1
-	void(*v7)(const char *, int); // edi@1
+	//void(*v7)(const char *, int); // edi@1
 	bool v8; // zf@42
-	unsigned int v10; // [sp+10h] [bp-10h]@1
 	int v11; // [sp+14h] [bp-Ch]@1
 	char *v12; // [sp+18h] [bp-8h]@1
 
 	v5 = 0;
-	v10 = a2;
 	v6 = (char *)a1;
 	v11 = 1;
-	input_combo_pressed_vk = 0;
-	v12 = (char *)malloc(a2 + 1);
+    input_char_clear();
+	v12 = (char *)malloc(max_len + 1);
 	strcpy(v12, v6);
-	v7 = handler;
-	handler(v6, 0);
-	while (2)
+    draw_handler(v6, 0);
+	while (v11)
 	{
-		input_combo_pressed_vk = 0;
+        input_char_clear();
 		do
 		{
 			if (a5)
@@ -6510,71 +6509,73 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 				draw_list_update_and_draw();
 				TimedMessagePump();
 			}
-		} while (!input_combo_pressed_vk);
-		switch (input_combo_pressed_vk)
+		} while (!input_char_is_any());
+
+		switch (char c = input_char_get())
 		{
-		case 37:
-			if ((_WORD)v5)
+		case 37: // vk_left
+			if (v5 > 0)
 			{
-				v5 += 0xFFFF;
-				v7(v6, v5);
+				v5--;
+                draw_handler(v6, v5);
 			}
 			goto LABEL_41;
-		case 39:
-			if (strlen(v6) != 0 && (unsigned __int16)v5 < (int)(v10 - 1) && (unsigned __int16)v5 < strlen(v6) - 1)
+		case 39: // vk_right
+			if (strlen(v6) != 0 && (unsigned __int16)v5 < (int)(max_len - 1) && (unsigned __int16)v5 < strlen(v6) - 1)
 			{
 				++v5;
 				goto LABEL_40;
 			}
 			goto LABEL_41;
-		case 36:
+		case 36: // vk_home
 			v5 = 0;
-			v7(v6, 0);
+            draw_handler(v6, 0);
 			goto LABEL_41;
-		case 35:
+
+		case 35: // vk_end
 			if (strlen(v6) != 0)
 			{
 				v5 = strlen(v6) - 1;
 				goto LABEL_40;
 			}
 			goto LABEL_41;
-		case 27:
+		case 27: // vk_escape
 			strcpy((char *)v6, v12);
 			goto LABEL_19;
-		case 13:
+		case 13: // vk_return
 		LABEL_19:
 			v11 = 0;
 			goto LABEL_41;
-		case 45:
-			if (strlen(v6) >= v10)
+		case 45: // vk_insert
+			if (strlen(v6) >= max_len)
 				goto LABEL_41;
 			memcpy((void *)&v6[(unsigned __int16)v5 + 1], &v6[(unsigned __int16)v5], strlen(v6) - (unsigned __int16)v5);
 			v6[(unsigned __int16)v5] = 32;
 			goto LABEL_40;
-		case 46:
+		case 46: // vk_delete
 			if (strlen(v6) == 0)
 				goto LABEL_41;
 			strcpy((char *)&v6[(unsigned __int16)v5], &v6[(unsigned __int16)v5 + 1]);
 			if ((unsigned __int16)v5 >= strlen(v6) && (_WORD)v5)
 				v5 += 0xFFFF;
 			goto LABEL_40;
-		case 8:
+		case 8: // vk_backspace
 			if (strlen(v6) == 0 || !(_WORD)v5)
 				goto LABEL_41;
 			strcpy((char *)&v6[(unsigned __int16)v5 - 1], &v6[(unsigned __int16)v5]);
 			v5 += 0xFFFF;
 			goto LABEL_40;
 		default:
-			if (input_combo_pressed_vk >= 65 && input_combo_pressed_vk <= 90
-				|| input_combo_pressed_vk >= 48 && input_combo_pressed_vk <= 57
-				|| input_combo_pressed_vk == 32)
+			if (input_char_is_alpha()
+				|| input_char_is_numeric()
+				|| input_char_is_whitespace())
 			{
-				v6[(unsigned __int16)v5] = input_combo_pressed_vk;
-				if ((unsigned __int16)v5 < (int)(v10 - 1))
+				v6[(unsigned __int16)v5] = c;
+				if ((unsigned __int16)v5 < (int)(max_len - 1))
 				{
 					if ((unsigned __int16)v5 >= strlen(v6) - 1)
 					{
-						if ((unsigned __int16)v5 < (int)(v10 - 1) && (unsigned __int16)v5 == strlen(v6) - 1)
+						if ((unsigned __int16)v5 < (int)(max_len - 1) && (unsigned __int16)v5 == strlen(v6) - 1)
 							v6[(unsigned __int16)++v5] = 0;
 					}
 					else
@@ -6583,23 +6584,20 @@ __int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(con
 					}
 				}
 			LABEL_40:
-				handler(v6, v5);
+                draw_handler(v6, v5);
 			}
-		LABEL_41:
-			if (v11)
-			{
-				v7 = handler;
-				continue;
-			}
-			free(v12);
-
-            input_reset_keyboard();
-
-			v8 = input_combo_pressed_vk == 27;
-			input_combo_pressed_vk = 0;
-			return !v8;
+        LABEL_41:;
 		}
 	}
+
+
+    free(v12);
+
+    input_reset_keyboard();
+
+    v8 = input_char_is_escape();
+    input_char_clear();
+    return !v8;
 }
 
 //----- (0041B000) --------------------------------------------------------
@@ -10990,20 +10988,15 @@ void script_432800_ingame_menu(Script *a1)
 }
 
 //----- (004328F0) --------------------------------------------------------
-void _41AC50_read_keyboard_input___handler_4328F0(const char *a1, int a2)
+void _41AC50_string_draw_handler(const char *a1, int cursor_pos)
 {
-	const char *v2; // esi@1
-	unsigned __int16 v3; // ST08_2@1
-
-	v2 = a1;
-	v3 = a2;
 	_47C65C_render_string->field_18 = 0;
 	_47C65C_render_string->num_lines = 6;
 	render_string_443D80(_47C65C_render_string, asc_46BB14, 0);
 	_47C65C_render_string->field_18 = 0;
-	render_string_443D80(_47C65C_render_string, v2, 0);
+	render_string_443D80(_47C65C_render_string, a1, 0);
 	_47C664_ingame_menu_sprite->field_88_unused = 1;
-	_47C664_ingame_menu_sprite->x = render_string_443EE0(_47C65C_render_string, v3, 6) << 8;
+	_47C664_ingame_menu_sprite->x = render_string_443EE0(_47C65C_render_string, cursor_pos, 6) << 8;
 	_47C664_ingame_menu_sprite->field_88_unused = 1;
 	_47C664_ingame_menu_sprite->y = 0xC200;
 }
@@ -11258,7 +11251,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 			if (input_get_string(
 				_47C050_array[_47C050_array_idx].str_0,
 				0xBu,
-				_41AC50_read_keyboard_input___handler_4328F0,
+				_41AC50_string_draw_handler,
 				1,
 				v12))
 			{
@@ -19629,466 +19622,6 @@ void MessageHandler_task4_evt39030(Script *receiver, Script *sender, enum SCRIPT
 			v4->attach2_list_free_pool = (_47CAF0_task_attachment2 *)v5;
 		}
 	}
-}
-
-//----- (00448F30) --------------------------------------------------------
-void script_evt39030_handler(Script *a1)
-{
-	_47CAF0_task_attachment1 *v1; // esi@1
-	stru209 *v2; // ebp@2
-	Script *v3; // eax@5
-	_47CAF0_task_attachment2 *v4; // ecx@6
-	_47CAF0_task_attachment2 *v5; // edi@16
-	Entity *v6; // eax@20
-	Entity *v8; // eax@22
-	char i; // dl@22
-	int v10; // ecx@23
-	char v11; // bl@23
-	char *v12; // ecx@23
-	_47CAF0_task_attachment1 *v13; // eax@26
-	int v14; // edi@29
-	int v16; // edx@32
-	_47CAF0_task_attachment2 *v17; // eax@34
-	_47CAF0_task_attachment1 *v18; // edi@45
-	Entity *v19; // eax@50
-	_47CAF0_task_attachment1 *v20; // edi@51
-	Entity *v21; // eax@56
-	Entity *v22; // eax@58
-	Entity *v23; // eax@62
-	Entity *v24; // eax@64
-	Entity *v25; // eax@66
-	int v26; // edi@67
-	UnitStat *v27; // ecx@67
-	int v28; // ecx@67
-	EntityTurret *v29; // eax@70
-	EntityTurret *v30; // eax@72
-	int v31; // ecx@80
-	enum PLAYER_SIDE v32; // eax@81
-	int v33; // esi@81
-	Entity *v34; // esi@84
-	Entity *v35; // eax@84
-	Entity *v36; // esi@85
-	Entity *v37; // eax@85
-	Entity *v38; // esi@86
-	Entity *v39; // eax@86
-	Entity *v40; // esi@87
-	Entity *v41; // eax@87
-	Entity *v42; // esi@88
-	Entity *v43; // eax@88
-	int v44; // eax@89
-	Entity *v45; // eax@92
-	char text; // [sp+10h] [bp-78h]@83
-
-	v1 = (_47CAF0_task_attachment1 *)a1->param;
-	if (single_player_game)
-		v2 = &stru_47CAE0;
-	else
-		v2 = (stru209 *)&netz_47CA30[13 * v1->selected_unit_player_side + 67];
-	switch (v2->type)
-	{
-	    case stru209_TYPE_SELECT_UNIT_GROUP:
-		    entity_drag_selection_init(
-                HIWORD(v2->param) << 8,
-                LOWORD(v2->param) << 8,
-                LOWORD(v2->param2) << 8,
-                HIWORD(v2->param2) << 8
-            );
-		v1->_1C_does_selected_unit_belong_to_player = false;
-		v3 = entity_drag_selection_get_next_entity();
-        if (!v3)
-        {
-            v2->type = stru209_TYPE_0;
-            break;
-        }
-		do
-		{
-			v4 = v1->attach2_list_free_pool;
-			if (v4)
-				v1->attach2_list_free_pool = v4->next;
-			else
-				v4 = 0;
-			if (v4)
-			{
-				v4->_8_selected_unit_script = v3;
-				v4->next = (_47CAF0_task_attachment2 *)v1->next;
-				v4->_4_unit_task = v1;
-				v1->next->prev = (_47CAF0_task_attachment1 *)v4;
-				v1->next = (_47CAF0_task_attachment1 *)v4;
-                v1->_1C_does_selected_unit_belong_to_player = ((Entity *)v3->param)->player_side == v1->selected_unit_player_side;
-			}
-			v3 = entity_drag_selection_get_next_entity();
-		} while (v3);
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_SELECT_UNIT:
-		if (v1->next != v1)
-		{
-			v1->prev->next = (_47CAF0_task_attachment1 *)v1->attach2_list_free_pool;
-			v1->attach2_list_free_pool = (_47CAF0_task_attachment2 *)v1->next;
-			v1->next = v1;
-			v1->prev = v1;
-		}
-		v5 = v1->attach2_list_free_pool;
-		if (v5)
-			v1->attach2_list_free_pool = v5->next;
-		else
-			v5 = 0;
-        if (v5)
-        {
-            v6 = entityRepo->FindById(v2->param);
-            if (v6)
-            {
-                v5->_8_selected_unit_script = v6->script;
-                v5->next = (_47CAF0_task_attachment2 *)v1->next;
-                v5->_4_unit_task = v1;
-                v1->next->prev = (_47CAF0_task_attachment1 *)v5;
-                v1->next = (_47CAF0_task_attachment1 *)v5;
-                v1->_1C_does_selected_unit_belong_to_player = v6->player_side == v1->selected_unit_player_side;
-            }
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_ASSIGN_UNIT_GROUP:
-        i = *((_BYTE *)v2 + 1);
-		for (auto v8: entityRepo->FindAll())
-		{
-			v10 = v1->selected_unit_player_side;
-			v11 = v8->array_294[v10];
-			v12 = &v8->array_294[v10];
-			if (v11 == i)
-				*v12 = 0;
-		}
-
-		v13 = v1->next;
-        if (v1->next != v1)
-        {
-            do
-            {
-                *((_BYTE *)v13->_8_script->param + v1->selected_unit_player_side + 660) = i;
-                v13 = v13->next;
-            } while (v13 != v1);
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_FORCE_ATTACK:
-		v14 = *(int *)((char *)v2 + 1);
-		if (v1->next != v1)
-		{
-			v1->prev->next = (_47CAF0_task_attachment1 *)v1->attach2_list_free_pool;
-			v1->attach2_list_free_pool = (_47CAF0_task_attachment2 *)v1->next;
-			v1->next = v1;
-			v1->prev = v1;
-		}
-		v1->_1C_does_selected_unit_belong_to_player = false;
-        v16 = v1->selected_unit_player_side;
-        for (auto v15: entityRepo->FindAll())
-        {
-            if (v15->array_294[v16] == v14)
-            {
-                v17 = v1->attach2_list_free_pool;
-                if (v17)
-                    v1->attach2_list_free_pool = v17->next;
-                else
-                    v17 = 0;
-                if (v17)
-                {
-                    v17->_8_selected_unit_script = v15->script;
-                    v17->next = (_47CAF0_task_attachment2 *)v1->next;
-                    v17->_4_unit_task = v1;
-                    v1->next->prev = (_47CAF0_task_attachment1 *)v17;
-                    v16 = v1->selected_unit_player_side;
-                    v1->next = (_47CAF0_task_attachment1 *)v17;
-                    v1->_1C_does_selected_unit_belong_to_player = v15->player_side == v16;
-                }
-            }
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_DESELECT:
-		if (v1->next != v1)
-		{
-			v1->prev->next = (_47CAF0_task_attachment1 *)v1->attach2_list_free_pool;
-			v1->attach2_list_free_pool = (_47CAF0_task_attachment2 *)v1->next;
-			v1->next = v1;
-			v1->prev = v1;
-		}
-		v1->_1C_does_selected_unit_belong_to_player = false;
-		v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_MOVE:
-		v18 = v1->next;
-		v1->move_task.dst_x = v2->param;
-		v1->move_task.dst_y = v2->param2;
-        if (v18 != v1)
-        {
-            do
-            {
-                if (v18->_8_script->event_handler)
-                    script_trigger_event(v1->owning_task, EVT_CMD_ENTITY_MOVE, &v1->move_task, v18->_8_script);
-                v18 = v18->next;
-            } while (v18 != v1);
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_ATTACK:
-		v19 = entityRepo->FindById(v2->param);
-		v1->attack_task.target = v19;
-        if (v19)
-        {
-            v20 = v1->next;
-            if (v1->next != v1)
-            {
-                do
-                {
-                    if (v20->_8_script->event_handler)
-                        script_trigger_event(v1->owning_task, EVT_CMD_ENTITY_ATTACK, &v1->attack_task, v20->_8_script);
-                    v20 = v20->next;
-                } while (v20 != v1);
-            }
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_8_production_ready:
-		v21 = entityRepo->FindById(*(int *)((char *)v2 + 1));
-        if (v21)
-        {
-            script_trigger_event(a1, EVT_MSG_PRODUCTION_READY, *(void **)((char *)v2 + 5), v21->script);
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_DEPLOY_MOBILE_OUTPOST:
-		v22 = entityRepo->FindById(*(int *)((char *)v2 + 5));
-		script_trigger_event(a1, EVT_MSG_1522_plan_building_construction, 0, v22->script);
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_9_spawn_unit:
-		if (spawn_unit(
-			(enum UNIT_ID)*(_WORD *)((char *)v2 + 1),
-			*(int *)((char *)v2 + 3),
-			*(int *)((char *)v2 + 7),
-			v1->selected_unit_player_side)
-			|| v1->selected_unit_player_side != player_side)
-        {
-            ;
-		}
-        else
-        {
-            show_message_ex(0, aCouldnTCreat_0);
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_11:
-		v23 = entityRepo->FindById(*(int *)((char *)v2 + 1));
-        if (v23)
-        {
-            script_trigger_event(a1, EVT_MSG_NEXT_CONSTRUCTION_STATE, *(void **)((char *)v2 + 5), v23->script);
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_12_upgrade_complete:
-		v24 = entityRepo->FindById(*(int *)((char *)v2 + 1));
-        if (v24)
-        {
-            script_trigger_event(a1, EVT_MSG_UPGRADE_COMPLETE, 0, v24->script);
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_13:
-		v25 = entityRepo->FindById(*(int *)((char *)v2 + 1));
-        if (v25)
-        {
-            v26 = *(_WORD *)((char *)v2 + 5) + v25->hitpoints;
-            v27 = v25->stats;
-            v25->hitpoints = v26;
-            v28 = v27->hitpoints;
-            if (v26 >= v28)
-                v25->hitpoints = v28;
-            if (*(_WORD *)((char *)v2 + 5))
-            {
-                v29 = v25->retaliation_target->turret;
-                if (v29)
-                {
-                    v29->turret_sprite->_60_mobd_anim_speed = 0x8000000;
-                }
-            }
-            else
-            {
-                v30 = v25->retaliation_target->turret;
-                if (v30)
-                {
-                    v30->turret_sprite->_60_mobd_anim_speed = 0;
-                }
-            }
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_15_multiplayer:
-        if (!single_player_game)
-        {
-            dword_47050C = 1;
-            dword_47A738 = 1;
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_17_multiplayer:
-        if (!single_player_game)
-        {
-            dword_47050C = -1;
-            dword_47A738 = 1;
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_16_multiplayer:
-        if (!single_player_game)
-        {
-            dword_47A738 = 0;
-            dword_47050C = -1;
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_18:
-		v31 = *(int *)((char *)v2 + 1);
-		nullsub_1();
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_SWEAR_ALLEGIANCE:
-		v32 = player_side;
-		game_globals_cpu[0].cash[*(int *)((char *)v2 + 1) + 7 * v1->selected_unit_player_side] = 1;
-		v33 = v1->selected_unit_player_side;
-		if (v32 != v33 && v32 != *(int *)((char *)v2 + 1))
-        {
-            ;
-        }
-        else
-        {
-            sprintf(
-                &text,
-                aSSwearingAlleg,
-                netz_47A740[v33 + 1].player_name,
-                netz_47A740[*(int *)((char *)v2 + 1) + 1].player_name);
-            show_message_ex(0, &text);
-        }
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_TANKER_SET_DRILLRIG:
-		v34 = entityRepo->FindById(*(int *)((char *)v2 + 5));
-		v35 = entityRepo->FindById(*(int *)((char *)v2 + 1));
-		script_trigger_event(a1, EVT_MSG_1542_tanker_set_drillrig, v34, v35->script);
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_TANKER_SET_BASE:
-		v36 = entityRepo->FindById(*(int *)((char *)v2 + 5));
-		v37 = entityRepo->FindById(*(int *)((char *)v2 + 1));
-		script_trigger_event(a1, EVT_MSG_1541_tanker_set_base, v36, v37->script);
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_INFILTRATE:
-		v38 = entityRepo->FindById(*(int *)((char *)v2 + 5));
-		v39 = entityRepo->FindById(*(int *)((char *)v2 + 1));
-		script_trigger_event(a1, EVT_MSG_1526_infiltrate, v38, v39->script);
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_TECHNICIAN_REPAIR:
-		v40 = entityRepo->FindById(*(int *)((char *)v2 + 5));
-		v41 = entityRepo->FindById(*(int *)((char *)v2 + 1));
-		script_trigger_event(a1, EVT_MSG_1547_technician_repair, v40, v41->script);
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_REPAIR_AT_STATION:
-		v42 = entityRepo->FindById(*(int *)((char *)v2 + 5));
-		v43 = entityRepo->FindById(*(int *)((char *)v2 + 1));
-		script_trigger_event(a1, EVT_MSG_1546_repair_at_station, v42, v43->script);
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_25_spawn_unit:
-		v44 = *(int *)((char *)v2 + 1);
-		if (single_player_game)
-		{
-			spawn_unit(
-				(enum UNIT_ID)((v44 != 2) + 43),
-				*(int *)((char *)v2 + 5),
-				*(int *)((char *)v2 + 9),
-				*(enum PLAYER_SIDE *)((char *)v2 + 1));
-		}
-		else
-		{
-			spawn_unit(
-				(enum UNIT_ID)(44 - (netz_47A740[v44 + 1].field_A != 0)),
-				*(int *)((char *)v2 + 5),
-				*(int *)((char *)v2 + 9),
-				*(enum PLAYER_SIDE *)((char *)v2 + 1));
-		}
-        v2->type = stru209_TYPE_0;
-		break;
-
-	case stru209_TYPE_26_destroy:
-		v45 = entityRepo->FindById(v2->param);
-		if (v45)
-			script_trigger_event(a1, EVT_MSG_DESTROY, 0, v45->script);
-        v2->type = stru209_TYPE_0;
-
-	default:
-        v2->type = stru209_TYPE_0;
-		break;
-	}
-}
-
-
-const char *stru209type_to_string(stru209_TYPE x)
-{
-    switch (x)
-    {
-        case stru209_TYPE_0: return "stru209_TYPE_0";
-        case stru209_TYPE_SELECT_UNIT_GROUP: return "stru209_TYPE_SELECT_UNIT_GROUP";
-        case stru209_TYPE_SELECT_UNIT: return "stru209_TYPE_SELE%CT_UNIT";
-        case stru209_TYPE_DESELECT: return "stru209_TYPE_DESELECT";
-        case stru209_TYPE_ASSIGN_UNIT_GROUP: return "stru209_TYPE_ASSIGN_UNIT_GROUP";
-        case stru209_TYPE_FORCE_ATTACK: return "stru209_TYPE_FORCE_ATTACK";
-        case stru209_TYPE_MOVE: return "stru209_TYPE_MOVE";
-        case stru209_TYPE_ATTACK: return "stru209_TYPE_ATTACK";
-        case stru209_TYPE_8_production_ready: return "stru209_TYPE_8_production_ready";
-        case stru209_TYPE_9_spawn_unit: return "stru209_TYPE_9_spawn_unit";
-        case stru209_TYPE_DEPLOY_MOBILE_OUTPOST: return "stru209_TYPE_DEPLOY_MOBILE_OUTPOST";
-        case stru209_TYPE_11: return "stru209_TYPE_11";
-        case stru209_TYPE_12_upgrade_complete: return "stru209_TYPE_12_upgrade_complete";
-        case stru209_TYPE_13: return "stru209_TYPE_13";
-        case stru209_TYPE_15_multiplayer: return "stru209_TYPE_15_multiplayer";
-        case stru209_TYPE_16_multiplayer: return "stru209_TYPE_16_multiplayer";
-        case stru209_TYPE_17_multiplayer: return "stru209_TYPE_17_multiplayer";
-        case stru209_TYPE_18: return "stru209_TYPE_18";
-        case stru209_TYPE_TANKER_SET_DRILLRIG: return "stru209_TYPE_TANKER_SET_DRILLRIG";
-        case stru209_TYPE_TANKER_SET_BASE: return "stru209_TYPE_TANKER_SET_BASE";
-        case stru209_TYPE_REPAIR_AT_STATION: return "stru209_TYPE_REPAIR_AT_STATION";
-        case stru209_TYPE_TECHNICIAN_REPAIR: return "stru209_TYPE_TECHNICIAN_REPAIR";
-        case stru209_TYPE_INFILTRATE: return "stru209_TYPE_INFILTRATE";
-        case stru209_TYPE_25_spawn_unit: return "stru209_TYPE_25_spawn_unit";
-        case stru209_TYPE_26_destroy: return "stru209_TYPE_26_destroy";
-        case stru209_TYPE_SWEAR_ALLEGIANCE: return "stru209_TYPE_SWEAR_ALLEGIANCE";
-    }
-    return "<invalid stru209_TYPE>";
 }
 
 //----- (00449670) --------------------------------------------------------

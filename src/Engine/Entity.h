@@ -233,8 +233,10 @@ public:
     void *_28C_stru26_stru0__or__stru27_stru0__or__EntityBuildingAttachment_stru14__or__EntityOilTankerAttachment_stru70;
     DrawJob *drawjob;
     char array_294[8];
-    int field_29C;
-    int field_2A0;
+    short _29C_idle_timer;
+    short _29C_map_x;
+    short _29C_map_y;
+    short field_2A0_hi;
     int field_2A4;
     Entity *_2A8_entity;
     int _2A8_entity_id;

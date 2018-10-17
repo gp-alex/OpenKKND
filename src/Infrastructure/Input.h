@@ -66,6 +66,15 @@ bool input_get_cursor_state(MouseInput *a1); // same as mouse state but separate
 bool input_set_mouse_pos(int x, int y);
 bool input_428470(__int16 a1);
 
+bool input_char_is_alpha();
+bool input_char_is_numeric();
+bool input_char_is_whitespace();
+bool input_char_is_escape();
+bool input_char_is_any();
+void input_char_clear();
+char input_char_get();
+char input_char_pop();
+
 
 
 

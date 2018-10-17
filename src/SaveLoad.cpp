@@ -494,10 +494,10 @@ LABEL_156:
         *v81 = v3->array_294[v80++];
         ++v81;
     } while (v80 < 7);
-    LOWORD_HEXRAYS(v4->entity_array_294[7]) = v3->field_29C;
-    HIWORD_HEXRAYS(v4->entity_array_294[7]) = HIWORD_HEXRAYS(v3->field_29C);
-    v4->field_2E8 = v3->field_2A0;
-    v4->field_2EA = HIWORD_HEXRAYS(v3->field_2A0);
+    LOWORD_HEXRAYS(v4->entity_array_294[7]) = v3->_29C_idle_timer;
+    HIWORD_HEXRAYS(v4->entity_array_294[7]) = v3->_29C_map_x;
+    v4->field_2E8 = v3->_29C_map_y;
+    v4->field_2EA = v3->field_2A0_hi;
     v82 = v3->unit_id;
     switch (v82)
     {

@@ -9,8 +9,11 @@
 
 #include "src/Infrastructure/Window/SdlWindow.h"
 
+#include "src/Infrastructure/KeyboardInputEnum.h"
+
 using Infrastructure::SdlWindow;
 using Infrastructure::InputObserver;
+using Infrastructure::KeyboardObserver;
 using Infrastructure::WindowObserver;
 
 /* kknd key mask to SDL scancode mapping */
@@ -174,43 +177,75 @@ void SdlWindow::WaitMessage() {
 
 void SdlWindow::MessageProcessor(SDL_Event &e) {
     switch (e.type) {
-    case SDL_QUIT: {
-        for (auto observer : windowObservers) {
-            observer->OnClose();
-        }
-        break;
-    }
-
-    case SDL_MOUSEMOTION: {
-        for (auto observer : inputObservers) {
-            observer->OnMouseMove(
-                e.motion.x, e.motion.y,
-                e.motion.xrel, e.motion.yrel,
-                e.motion.state & SDL_BUTTON_LMASK,
-                e.motion.state & SDL_BUTTON_RMASK
-            );
-        }
-        break;
-    }
-
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP: {
-        int x = e.button.x;
-        int y = e.button.y;
-        int numClicks = e.button.clicks;
-        bool pressed = e.button.state == SDL_PRESSED;
-
-        if (e.button.button == SDL_BUTTON_LEFT) {
-            for (auto observer : inputObservers) {
-                observer->OnMouseLeftButton(x, y, pressed);
+        case SDL_QUIT: {
+            for (auto observer : windowObservers) {
+                observer->OnClose();
             }
-        } else if (e.button.button == SDL_BUTTON_RIGHT) {
-            for (auto observer : inputObservers) {
-                observer->OnMouseRightButton(x, y, pressed);
-            }
+            break;
         }
-        break;
-    }
+
+        case SDL_MOUSEMOTION: {
+            for (auto observer : inputObservers) {
+                observer->OnMouseMove(
+                    e.motion.x, e.motion.y,
+                    e.motion.xrel, e.motion.yrel,
+                    e.motion.state & SDL_BUTTON_LMASK,
+                    e.motion.state & SDL_BUTTON_RMASK
+                );
+            }
+            break;
+        }
+
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP: {
+            int x = e.button.x;
+            int y = e.button.y;
+            int numClicks = e.button.clicks;
+            bool pressed = e.button.state == SDL_PRESSED;
+
+            if (e.button.button == SDL_BUTTON_LEFT) {
+                for (auto observer : inputObservers) {
+                    observer->OnMouseLeftButton(x, y, pressed);
+                }
+            } else if (e.button.button == SDL_BUTTON_RIGHT) {
+                for (auto observer : inputObservers) {
+                    observer->OnMouseRightButton(x, y, pressed);
+                }
+            }
+            break;
+        }
+
+        case SDL_KEYUP: {
+            int key = -1;
+
+            auto scan = e.key.keysym.scancode;
+            if (scan >= SDL_SCANCODE_1 && scan <= SDL_SCANCODE_9) {
+                key = '1' + scan - SDL_SCANCODE_1;
+            } else if (scan == SDL_SCANCODE_0) {
+                key = '0';
+            } else if (scan >= SDL_SCANCODE_A && scan <= SDL_SCANCODE_Z) {
+                key = 'A' + scan - SDL_SCANCODE_A;
+            } else if (scan == SDL_SCANCODE_ESCAPE) {
+                //key = VK_ESCAPE  (convert into platform-independed KKND_INPUT_ESCAPE)
+            } else {
+                // even more required ...
+                // check 0041AC50 input_get_string (convert into platform-independed enum)
+            }
+            
+            if (key == -1) {
+                break;
+            }
+
+            for (auto observer : keyboardObservers) {
+                observer->OnKeyUp(
+                    key,
+                    GetScancodePressed(SDL_SCANCODE_LCTRL) || GetScancodePressed(SDL_SCANCODE_RCTRL),
+                    GetScancodePressed(SDL_SCANCODE_LALT) || GetScancodePressed(SDL_SCANCODE_RALT)
+                );
+            }
+
+            break;
+        }
     }
 }
 
@@ -221,6 +256,10 @@ void SdlWindow::AddObserver(std::shared_ptr<WindowObserver> observer) {
 
 void SdlWindow::AddObserver(std::shared_ptr<InputObserver> observer) {
     inputObservers.push_back(observer);
+}
+
+void SdlWindow::AddObserver(std::shared_ptr<KeyboardObserver> observer) {
+    keyboardObservers.push_back(observer);
 }
 
 int SdlWindow::GetMouseX() const {
@@ -263,5 +302,11 @@ bool SdlWindow::GetIsKKNDKeyPressed(int kknd_key_mask) const {
 }
 
 bool SdlWindow::GetIsCharKeyPressed(char character) const {
+    if (character >= 'a' && character <= 'z') {
+        return GetScancodePressed(character - 'a' + SDL_SCANCODE_A);
+    }
+    if (character >= 'A' && character <= 'Z') {
+        return GetScancodePressed(character - 'A' + SDL_SCANCODE_A);
+    }
     return GetScancodePressed(char_scancode_map[character]);
 }

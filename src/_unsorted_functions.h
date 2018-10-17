@@ -310,7 +310,7 @@ void entity_41A890_evt1528(Entity *a1);
 void entity_41A980_evt1509_unset_stru11(Entity *a1, void *param);
 void entity_41A9B0_unit(Entity *a1, void *param);
 bool array_479B98_array_479C60_init();
-__int16 input_get_string(const char *a1, unsigned __int16 a2, void(*handler)(const char *, int), int a4, Script *a5);
+__int16 input_get_string(const char *a1, int max_len, void(*handler)(const char *, int), int a4, Script *a5);
 bool _41B000_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5);
 bool _41B020_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5);
 bool _41B070_stru7_handler(Sprite *a1, Sprite *a2, int a3, void *a4, void *a5);
@@ -485,7 +485,7 @@ void script_4325B0_ingame_menu_trigger_events(Script *a1);
 void script_432620_ingame_menu(Script *a1);
 void script_432730_ingame_menu(Script *a1); // idb
 void script_432800_ingame_menu(Script *a1); // idb
-void _41AC50_read_keyboard_input___handler_4328F0(const char *a1, int a2);
+void _41AC50_string_draw_handler(const char *a1, int a2);
 void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3); // idb
 void script_432F00_ingame_menu(Script *a1); // idb
 void script_432F20_ingame_menu_read_keyboard_input(Script *);

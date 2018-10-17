@@ -23,6 +23,8 @@ target_sources(Infrastructure
         "${CMAKE_CURRENT_LIST_DIR}/Netz.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/InputWindowObserver.h"
         "${CMAKE_CURRENT_LIST_DIR}/InputWindowObserver.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/InputKeyboardObserver.h"
+        "${CMAKE_CURRENT_LIST_DIR}/InputKeyboardObserver.cpp"
 )
 
 target_link_libraries(

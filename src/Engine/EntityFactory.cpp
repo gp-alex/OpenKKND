@@ -360,10 +360,10 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 ++v41;
                 v3->array_294[v40++] = v42;
             } while (v40 < 7);
-            LOWORD_HEXRAYS(v3->field_29C) = v2->entity_array_294[7];
-            HIWORD_HEXRAYS(v3->field_29C) = HIWORD_HEXRAYS(v2->entity_array_294[7]);
-            LOWORD_HEXRAYS(v3->field_2A0) = v2->field_2E8;
-            HIWORD_HEXRAYS(v3->field_2A0) = v2->field_2EA;
+            v3->_29C_idle_timer = LOWORD(v2->entity_array_294[7]);
+            v3->_29C_map_x = HIWORD_HEXRAYS(v2->entity_array_294[7]);
+            v3->_29C_map_y = v2->field_2E8;
+            v3->field_2A0_hi = v2->field_2EA;
             switch (v3->unit_id)
             {
             case 0x17u:

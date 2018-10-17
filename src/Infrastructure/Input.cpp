@@ -5,9 +5,11 @@
 #include "src/_unsorted_data.h"
 
 #include "src/Infrastructure/InputWindowObserver.h"
+using Infrastructure::InputWindowObserver;
+#include "src/Infrastructure/InputKeyboardObserver.h"
+using Infrastructure::InputKeyboardObserver;
 #include "src/Infrastructure/Log.h"
 
-using Infrastructure::InputWindowObserver;
 
 /* kknd input key masks */
 int kknd_key_masks[25] =
@@ -187,8 +189,45 @@ int input_47A58C; // weak
 __int16 word_47A590; // weak
 int input_mouse_window_losing_focus_reset_to_defaults; // weak
 std::shared_ptr<InputWindowObserver> inputObserver;
+std::shared_ptr<InputKeyboardObserver> keyboardObserver;
 int dword_468940[16] = { -1, 2, 6, -1, 4, 3, 5, -1, 0, 1, 7, -1, -1, -1, -1, -1 };
 int input_465FE8[16] = { -1, 0, 4, -1, 6, 7, 5, 6, 2, 1, 3, 2, -1, 0, 4, -1 };
+int input_combo_pressed_vk; // weak
+
+#define VK_ESCAPE 27
+#define VK_SPACE 32
+#define VK_0 48
+#define VK_9 57
+#define VK_A 65
+#define VK_Z 90
+
+
+bool input_char_is_alpha() {
+    return input_combo_pressed_vk >= VK_A && input_combo_pressed_vk <= VK_Z;
+}
+bool input_char_is_numeric() {
+    return input_combo_pressed_vk >= VK_0 && input_combo_pressed_vk <= VK_9;
+}
+bool input_char_is_whitespace() {
+    return input_combo_pressed_vk == VK_SPACE;
+}
+bool input_char_is_escape() {
+    return input_combo_pressed_vk == VK_ESCAPE;
+}
+bool input_char_is_any() {
+    return input_combo_pressed_vk != 0;
+}
+void input_char_clear() {
+    input_combo_pressed_vk = 0;
+}
+char input_char_get() {
+    return input_combo_pressed_vk;
+}
+char input_char_pop() {
+    auto c = input_combo_pressed_vk;
+    input_combo_pressed_vk = 0;
+    return c;
+}
 
 
 void input_reset_keyboard()
@@ -247,6 +286,9 @@ void input_update_keyboard()
         nExt_pressed_key = next_pressed_key;
     }
 
+
+    int combo_pressed_vk_param = 0;
+/*
     // CTRL + num combo check
 	if (gWindow->GetIsKKNDKeyPressed(INPUT_KEYBOARD_CONTROL_MASK)) {
         bool ctrl_num_combo_pressed = false;
@@ -256,7 +298,7 @@ void input_update_keyboard()
                 ctrl_num_combo_pressed = true;
 
                 //set VK of combo
-                input_combo_pressed_vk = (48 + i); // VK for numbers
+                input_combo_pressed_vk = (VK_0 + i); // VK for numbers
                 combo_pressed_vk = input_combo_pressed_vk;
                 input_now_pressed_keys.combo_key_param = combo_press_params_map[combo_pressed_vk];
                 break;
@@ -269,7 +311,7 @@ void input_update_keyboard()
 
         combo_pressed_vk = 0;
 	}
-
+*/
     /*if (nExt_pressed_key && combo_pressed_vk)
     {
         if (combo_pressed_vk == -1)
@@ -303,6 +345,10 @@ bool input_initialize()
     if (!inputObserver) {
         inputObserver = std::make_shared<InputWindowObserver>();
         gWindow->AddObserver(inputObserver);
+    }
+    if (!keyboardObserver) {
+        keyboardObserver = std::make_shared<InputKeyboardObserver>();
+        gWindow->AddObserver(keyboardObserver);
     }
 
     input_mouse.just_pressed_buttons_mask = 0;
