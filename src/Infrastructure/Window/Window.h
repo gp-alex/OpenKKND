@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "src/Infrastructure/Window/InputObserver.h"
+#include "src/Infrastructure/Window/MouseObserver.h"
 #include "src/Infrastructure/Window/KeyboardObserver.h"
 #include "src/Infrastructure/Window/WindowConfig.h"
 #include "src/Infrastructure/Window/WindowObserver.h"
@@ -16,7 +16,7 @@ namespace Infrastructure {
         // 
         virtual bool Initialize() = 0;
         virtual void AddObserver(std::shared_ptr<WindowObserver> observer) = 0;
-        virtual void AddObserver(std::shared_ptr<InputObserver> observer) = 0;
+        virtual void AddObserver(std::shared_ptr<MouseObserver> observer) = 0;
         virtual void AddObserver(std::shared_ptr<KeyboardObserver> observer) = 0;
 
         // dimensions

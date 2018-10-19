@@ -2452,7 +2452,7 @@ void cursor_sidebar_handler(CursorHandler *a1)
 
 
 // test
-class GameCursor : public Infrastructure::InputObserver {
+class GameCursor : public Infrastructure::MouseObserver {
 public:
     CursorHandler v62;
     GameCursor(CursorHandler *v62) {
