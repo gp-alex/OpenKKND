@@ -2,10 +2,11 @@
 
 #include "src/_unsorted_data.h"
 #include "src/kknd.h"
-#include "src/ScriptEvent.h"
-#include "src/stru31.h"
 #include "src/Map.h"
 #include "src/Pathfind.h"
+#include "src/RenderDrawHandlers.h"
+#include "src/ScriptEvent.h"
+#include "src/stru31.h"
 
 #include "src/Engine/Infrastructure/EntityRepository.h"
 
@@ -239,10 +240,10 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 v10->turret_sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[v3->player_side]];
                 v10->turret_sprite->drawjob->flags |= 0x10000000u;
                 v14 = v3->unit_id;
-                if (v14 == 44 || v14 == 43)
-                    v10->turret_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448580_entity_aircraft_turret;
+                if (v14 == UNIT_STATS_SURV_BOMBER || v14 == UNIT_STATS_MUTE_WASP)
+                    v10->turret_sprite->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_448580_entity_aircraft_turret;
                 else
-                    v10->turret_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_44BDC0_entity_turret;
+                    v10->turret_sprite->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_44BDC0_entity_turret;
                 v10->turret_sprite->parent = v3->sprite;
                 v10->_C_entity = entityRepo->FindById(v2->turret_C_entity_id);
 
@@ -475,7 +476,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
                 goto LABEL_204;
             case 0x2Bu:
             case 0x2Cu:
-                v3->sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448510_aircraft;
+                v3->sprite->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_448510_aircraft;
                 entity_401070_stru31(v3);
                 v3->state = 0;
                 entity_410CF0_aircraft(v3);

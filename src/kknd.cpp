@@ -5,18 +5,19 @@
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
+#include "src/Cursor.h"
+#include "src/Coroutine.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 #include "src/Random.h"
 #include "src/Render.h"
+#include "src/RenderDrawHandlers.h"
 #include "src/stru29.h"
 #include "src/stru31.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
-#include "src/Cursor.h"
-#include "src/Coroutine.h"
 #include "src/Sound.h"
 #include "src/Video.h"
-#include "src/Map.h"
-#include "src/Pathfind.h"
 
 #include "src/Application/Game.h"
 #include "src/Application/GameFactory.h"
@@ -244,7 +245,7 @@ void script_401C30_sidebar(Script *a1)
 			v2->field_88_unused = 1;
 			v2->y = 0x13800;
 			v2->z_index = 3;
-			v4->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+			v4->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 			v2->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
 			v2->drawjob->flags |= 0x10000000u;
 			sprite_4272E0_load_mobd_item(v2, 2276, 0);
@@ -4004,7 +4005,7 @@ Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int heig
 		v5->sprite_height_step = sidebar_horizontal == 0 ? v8 : 0;
 		if (!v6)
 			v5->sprite = sprite_create(MOBD_SIDEBAR_BUTTONS, v5->script, 0);
-		v5->sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+		v5->sprite->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 		v5->sprite->field_88_unused = 1;
 		v5->sprite->x = v5->x;
 		v5->sprite->field_88_unused = 1;
@@ -4501,7 +4502,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 						lookup_idx = 15 * (v11 - *(_DWORD *)v4) / v11;
 					if (v10)
 					{
-						v10->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+						v10->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 						v13 = *(_DWORD *)(v4 + 4);
 						if (v13 <= 1)
 						{
@@ -4527,7 +4528,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 					}
 					if (v9)
 					{
-						v9->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+						v9->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 						sprite_4272E0_load_mobd_item(v9, 2312, lookup_idx);
 						v16 = v9->x + 256;
 						v17 = v9->z_index + 2;
@@ -4798,7 +4799,7 @@ SidebarButton *sidebar_add_buttton_internal(
 		v8->ptr_1C = 0;
 		v14 = sprite_create(MOBD_SIDEBAR_BUTTONS, v13, 0);
 		v8->sprite = v14;
-		v14->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+		v14->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 		v8->sprite->param = v8;
 		if (v10)
 		{
@@ -7657,27 +7658,6 @@ LABEL_18:
 		v16 = v2->__468410_stru49_array_idx;
 		v2->handler = _426860_4269B0_task_attachment_handler;
         script_sleep(v1, _468410_stru49_array[v16]._4_some_task_flags);
-	}
-}
-
-//----- (00426C40) --------------------------------------------------------
-void drawjob_update_handler_426C40_mobd(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	a2->job_details.z_index = a1->z_index;
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8) - (_47C380_mapd.mapd_cplc_render_y >> 8) - a1->_54_inside_mobd_ptr4->y_offset;
-		a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
-		a2->job_details.params = render_default_stru1;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-		a2->job_details.params = render_default_stru1;
 	}
 }
 
@@ -10852,7 +10832,7 @@ void script_432620_ingame_menu(Script *a1)
 	v8 = v7;
 	if (v7)
 	{
-		v7->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+		v7->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 		v7->x = v1->sprite->x;
 		v7->y = v1->sprite->y;
 		v7->z_index = v1->sprite->z_index + 1;
@@ -10874,7 +10854,7 @@ void script_432730_ingame_menu(Script *a1)
 	v1 = a1;
 	v2 = a1->sprite;
 	a1 = (Script *)a1->param;
-	v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+	v2->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 	sprite_load_mobd(v2, 696);
 	_47C668_ingame_menu_sprites[(int)a1] = v1->sprite;
 	while (1)
@@ -10935,7 +10915,7 @@ void script_432800_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	a1 = (Script *)a1->param;
 	v7 = v2;
-	v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+	v2->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 	sprite_load_mobd(v2, 696);
 	_47C668_ingame_menu_sprites[(int)a1] = v1->sprite;
 	while (1)
@@ -11088,7 +11068,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 			v7 += 4096;
 		} while (v6 < 5);
 	}
-	a1a->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+	a1a->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 	a1a->z_index = 1280;
 	while (1)
 	{
@@ -11327,7 +11307,7 @@ void script_432F40_ingame_menu(Script *a1)
 	v7 = v6;
 	if (v6)
 	{
-		v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+		v6->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 		v6->x = a1->sprite->x;
 		v6->y = a1->sprite->y;
 		v6->z_index = a1->sprite->z_index + 256;
@@ -12560,16 +12540,6 @@ void _4391D0_mapd_handler(Mapd_stru0 *a1, void *a2)
 	a1->mapd_cplc_item0_ptr_field_C = *((_DWORD *)a2 + 6);
 }
 
-//----- (00439200) --------------------------------------------------------
-void drawjob_update_handler_mapd_menu(Bitmap *a1, DrawJob *a2)
-{
-	a2->job_details.image = a1->draw_job_scrl;
-	a2->job_details.z_index = a1->z_index;
-	a2->job_details.x = -(_47C380_mapd.mapd_cplc_render_x >> 8);
-	a2->job_details.y = -(_47C380_mapd.mapd_cplc_render_y >> 8);
-	a2->job_details.params = render_default_stru1;
-}
-
 //----- (00439230) --------------------------------------------------------
 bool LVL_InitMapd()
 {
@@ -12711,8 +12681,6 @@ void _4393F0_call_mapd()
 			mapd_j_4391D0_handler(&_47C380_mapd, (void *)_47C390_mapd);
 	}
 }
-// 47C38C: using guessed type int currently_running_lvl_mapd_valid;
-// 47C390: using guessed type int _47C390_mapd;
 
 //----- (00439420) --------------------------------------------------------
 void bitmap_list_free()
@@ -19036,256 +19004,6 @@ void _447340_send_sidebar_buttons_message(int excluding_button_id)
 }
 
 
-//----- (004483E0) --------------------------------------------------------
-void drawjob_update_handler_4483E0_sidebar(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8) - a1->_54_inside_mobd_ptr4->y_offset;
-		a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-	}
-	a2->job_details.z_index = a1->z_index + 0x20000000;
-	a2->job_details.params = render_default_stru1;
-}
-
-//----- (00448430) --------------------------------------------------------
-void drawjob_update_handler_cursors(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8) - (_47C380_mapd.mapd_cplc_render_y >> 8) - v2->y_offset;
-		a2->job_details.image = v2->sprt;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-	}
-	a2->job_details.z_index = a1->z_index + 0x40000000;
-	a2->job_details.params = render_default_stru1;
-}
-
-//----- (004484A0) --------------------------------------------------------
-void drawjob_update_handler_4484A0_explosions(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8) - (_47C380_mapd.mapd_cplc_render_y >> 8) - a1->_54_inside_mobd_ptr4->y_offset;
-		a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-	}
-	a2->job_details.z_index = a1->z_index + 0x10000000;
-	a2->job_details.params = render_default_stru1;
-}
-
-//----- (00448510) --------------------------------------------------------
-void drawjob_update_handler_448510_aircraft(Sprite *sprite, DrawJob *job)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	v2 = sprite->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		job->job_details.x = (sprite->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		job->job_details.y = (sprite->y >> 8)
-			- (sprite->z_index >> 9)
-			- (_47C380_mapd.mapd_cplc_render_y >> 8)
-			- sprite->_54_inside_mobd_ptr4->y_offset;
-		job->job_details.image = sprite->_54_inside_mobd_ptr4->sprt;
-	}
-	else
-	{
-		job->job_details.image = 0;
-	}
-	job->job_details.z_index = sprite->z_index + 0x200000;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (00448580) --------------------------------------------------------
-void drawjob_update_handler_448580_entity_aircraft_turret(Sprite *sprite, DrawJob *job)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-	int v3; // eax@2
-	int v4; // edi@2
-
-	v2 = sprite->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		job->job_details.x = (sprite->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		v3 = (sprite->y >> 8) - (sprite->z_index >> 9) - (_47C380_mapd.mapd_cplc_render_y >> 8);
-		v4 = sprite->_54_inside_mobd_ptr4->y_offset;
-		job->job_details.z_index = 0x200001;
-		job->job_details.y = v3 - v4;
-		job->job_details.image = sprite->_54_inside_mobd_ptr4->sprt;
-		job->job_details.params = render_default_stru1;
-	}
-	else
-	{
-		job->job_details.image = 0;
-		job->job_details.params = render_default_stru1;
-	}
-}
-
-//----- (00448600) --------------------------------------------------------
-void drawjob_update_handler_448600_oilspot(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-	MobdSprtImage *v3; // eax@2
-
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8)
-			- (a1->z_index >> 9)
-			- (_47C380_mapd.mapd_cplc_render_y >> 8)
-			- a1->_54_inside_mobd_ptr4->y_offset;
-		v3 = a1->_54_inside_mobd_ptr4->sprt;
-		a2->job_details.z_index = 1;
-		a2->job_details.image = v3;
-		a2->job_details.params = render_default_stru1;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-		a2->job_details.z_index = 1;
-		a2->job_details.params = render_default_stru1;
-	}
-}
-
-//----- (00448680) --------------------------------------------------------
-void drawjob_update_handler_448680(Sprite *param, DrawJob *job)
-{
-	if (param->_54_inside_mobd_ptr4)
-	{
-		job->job_details.x = (param->x - _47C380_mapd.mapd_cplc_render_x) >> 8;
-		job->job_details.y = (param->y - _47C380_mapd.mapd_cplc_render_y) >> 8;
-		job->job_details.image = param->_54_inside_mobd_ptr4->sprt;
-	}
-	else
-	{
-		job->job_details.image = 0;
-	}
-	job->job_details.z_index = param->z_index + 0x20000000;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (004486D0) --------------------------------------------------------
-void drawjob_update_handler_4486D0_building(Entity *param, DrawJob *job)
-{
-	int v2; // eax@1
-	int v3; // eax@2
-
-	job->job_details.x = (*(_DWORD *)(param->stru60.ptr_8 + 4) + param->sprite->x - _47C380_mapd.mapd_cplc_render_x - 8448) >> 8;
-	v2 = *(_DWORD *)(param->stru60.ptr_8 + 8) + param->sprite->y;
-	if (v2 - 3840 >= 0)
-		v3 = v2 - _47C380_mapd.mapd_cplc_render_y - 3840;
-	else
-		v3 = 1024 - _47C380_mapd.mapd_cplc_render_y;
-	job->job_details.y = v3 >> 8;
-	job->job_details.z_index = 0x200000;
-	job->job_details.image = &param->pfn_render_DrawUnitsAndUi;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (00448750) --------------------------------------------------------
-void drawjob_update_handler_448750_infantry(Entity *a1, DrawJob *job)
-{
-	Sprite *v2; // eax@1
-	char *v3; // ecx@1
-	int v4; // esi@1
-	int v5; // eax@1
-
-	v2 = a1->sprite;
-	v3 = (char *)&a1->pfn_render_DrawUnitsAndUi;
-	job->job_details.x = (v2->x - _47C380_mapd.mapd_cplc_render_x - 2048) >> 8;
-	v4 = _47C380_mapd.mapd_cplc_render_y;
-	v5 = *(_DWORD *)(*((_DWORD *)v3 - 138) + 20);
-	job->job_details.z_index = 0x200000;
-	job->job_details.image = v3;
-	job->job_details.y = (v5 - v4 - 6400) >> 8;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (004487B0) --------------------------------------------------------
-void drawjob_update_handler_4487B0_vehicles_buildings(Entity *a1, DrawJob *job)
-{
-	int v2; // esi@1
-	int v3; // eax@1
-	char *v4; // ecx@1
-	int v5; // esi@1
-	int v6; // eax@1
-
-	v2 = a1->stru60.ptr_8;
-	v3 = a1->sprite->x;
-	v4 = (char *)&a1->pfn_render_DrawUnitsAndUi;
-	job->job_details.x = (*(_DWORD *)(v2 + 4) + v3 - _47C380_mapd.mapd_cplc_render_x - 4096) >> 8;
-	v5 = _47C380_mapd.mapd_cplc_render_y;
-	v6 = *(_DWORD *)(*((_DWORD *)v4 - 135) + 8) + *(_DWORD *)(*((_DWORD *)v4 - 138) + 20);
-	job->job_details.z_index = 0x200000;
-	job->job_details.image = v4;
-	job->job_details.y = (v6 - v5 - 1024) >> 8;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (00448820) --------------------------------------------------------
-void drawjob_update_handler_oiltanker(Entity *param, DrawJob *job)
-{
-	Sprite *v2; // eax@1
-	char *v3; // ecx@1
-	int v4; // esi@1
-	int v5; // eax@1
-
-	v2 = param->sprite;
-	v3 = (char *)&param->pfn_render_DrawUnitsAndUi;
-	job->job_details.x = (v2->x - _47C380_mapd.mapd_cplc_render_x - 4096) >> 8;
-	v4 = _47C380_mapd.mapd_cplc_render_y;
-	v5 = *(_DWORD *)(*((_DWORD *)v3 - 138) + 20);
-	job->job_details.z_index = 0x200000;
-	job->job_details.image = v3;
-	job->job_details.y = (v5 - v4 - 6400) >> 8;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (00448880) --------------------------------------------------------
-void drawjob_update_draw_handler_aircraft(Entity *param, DrawJob *job)
-{
-	Sprite *v2; // esi@1
-	int v3; // eax@1
-	char *v4; // ecx@1
-	int v5; // eax@1
-
-	v2 = param->sprite;
-	v3 = *(_DWORD *)(param->stru60.ptr_8 + 4);
-	v4 = (char *)&param->pfn_render_DrawUnitsAndUi;
-	job->job_details.x = (v2->x + v3 - _47C380_mapd.mapd_cplc_render_x - 4096) >> 8;
-	v5 = *(_DWORD *)(*((_DWORD *)v4 - 138) + 20)
-		- (*(_DWORD *)(*((_DWORD *)v4 - 138) + 24) >> 1)
-		- _47C380_mapd.mapd_cplc_render_y;
-	job->job_details.z_index = 0x400000;
-	job->job_details.image = v4;
-	job->job_details.y = (v5 - 1024) >> 8;
-	job->job_details.params = render_default_stru1;
-}
-
 //----- (004488F0) --------------------------------------------------------
 int entity_4488F0_is_in_firing_range(Entity *a1, Entity *a2, int entity_id)
 {
@@ -19706,41 +19424,6 @@ void __47CAF0_tasks_evt39030_array_free()
 }
 // 47CB0C: using guessed type int dword_47CB0C;
 
-//----- (0044BDC0) --------------------------------------------------------
-void drawjob_update_handler_44BDC0_entity_turret(Sprite *a1, DrawJob *a2)
-{
-	_DWORD *v2; // eax@1
-	int v3; // eax@2
-	DataMobdItem_stru0 *v4; // esi@2
-
-	v2 = (int *)a1->param;
-	if (v2)
-	{
-		v3 = v2[2];
-		v4 = a1->_54_inside_mobd_ptr4;
-		if (v4)
-		{
-			a2->job_details.x = ((*(_DWORD *)(*(_DWORD *)(v3 + 96) + 4)
-				+ *(_DWORD *)(*(_DWORD *)(v3 + 92) + 16)
-				- _47C380_mapd.mapd_cplc_render_x) >> 8)
-				- v4->x_offset;
-			a2->job_details.y = ((*(_DWORD *)(*(_DWORD *)(v3 + 96) + 8)
-				+ *(_DWORD *)(*(_DWORD *)(v3 + 92) + 20)
-				- _47C380_mapd.mapd_cplc_render_y) >> 8)
-				- a1->_54_inside_mobd_ptr4->y_offset;
-			a2->job_details.z_index = ((*(_DWORD *)(*(_DWORD *)(v3 + 92) + 24) + *(_DWORD *)(*(_DWORD *)(v3 + 92) + 20)) >> 8)
-				+ 1;
-			a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
-			a2->job_details.params = render_default_stru1;
-		}
-		else
-		{
-			a2->job_details.image = 0;
-			a2->job_details.params = render_default_stru1;
-		}
-	}
-}
-
 //----- (0044BE60) --------------------------------------------------------
 void script_44BE60_explosions(Script *a1)
 {
@@ -20086,30 +19769,6 @@ int UNIT_Init()
 		}
 	}
 	return result;
-}
-
-//----- (0044C430) --------------------------------------------------------
-void drawjob_update_handler_44C430_default_sprite(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8)
-			- (_47C380_mapd.mapd_cplc_render_y >> 8)
-			- (a1->z_index >> 9)
-			- a1->_54_inside_mobd_ptr4->y_offset;
-		a2->job_details.z_index = (a1->z_index + a1->y) >> 8;
-		a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
-		a2->job_details.params = render_default_stru1;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-		a2->job_details.params = render_default_stru1;
-	}
 }
 
 //----- (0044C4B0) --------------------------------------------------------

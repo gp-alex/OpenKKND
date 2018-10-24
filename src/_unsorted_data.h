@@ -518,7 +518,6 @@ extern int _47A300_stru51_tech_bunkers_num_items; // weak
 extern DataMobd *currently_running_lvl_mobd;
 extern Sprite *sprite_list_free_pool;
 extern Sprite sprite_47A400; // weak
-extern void(*j_drawjob_update_handler_426C40_default_sprite_handler)(Sprite *param, DrawJob *job);
 extern int currently_running_lvl_mobd_valid; // weak
 extern Sprite *sprite_list_47A4A0;
 extern Sprite *sprite_list_47A4A4;
@@ -597,7 +596,6 @@ extern Bitmap *bitmap_list_47C360;
 extern Bitmap *bitmap_list_47C364;
 extern void(*mapd_j_4391D0_handler)(Mapd_stru0 *, void *);
 extern Bitmap *bitmap_list_free_pool;
-extern void(*j_drawjob_update_handler_mapd_menu)(Bitmap *param, DrawJob *job);
 extern DrawJobList draw_list_47C5D8; // idb
 extern DrawJob *draw_list_free_pool;
 extern DrawJobList draw_list_47C5E8; // idb

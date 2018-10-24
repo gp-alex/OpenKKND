@@ -2,6 +2,7 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 #include "src/Random.h"
+#include "src/RenderDrawHandlers.h"
 #include "src/Map.h"
 #include "src/Pathfind.h"
 

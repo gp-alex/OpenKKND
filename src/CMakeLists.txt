@@ -13,8 +13,10 @@ set(UNSORTED_SOURCES
     kknd.cpp
     Random.cpp
     Render.cpp
+    RenderDrawHandlers.cpp
     Script.cpp
     ScriptEvent.cpp
+    Sprite.cpp
 	stru29.cpp
 	stru31.cpp
     Map.cpp
@@ -33,8 +35,10 @@ set(UNSORTED_HEADERS
     kknd.h
     Random.h
     Render.h
+    RenderDrawHandlers.h
 	Script.h
 	ScriptEvent.h
+    Sprite.h
 	stru29.h
 	stru31.h
     Map.h

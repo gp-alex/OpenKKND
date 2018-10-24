@@ -2,8 +2,8 @@
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
 #include "src/Random.h"
+#include "src/RenderDrawHandlers.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 
@@ -232,7 +232,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
     {
         v12 = v2->drawjob;
         v2->z_index = 0;
-        v12->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448510_aircraft;
+        v12->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_448510_aircraft;
         if (v11 > 0)
             v2->z_speed = (v2->z_index + v1->sprite->z_index) / v11;
     }
@@ -806,7 +806,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         {
             v28 = v1->drawjob;
             v1->z_index = 0;
-            v28->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448510_aircraft;
+            v28->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_448510_aircraft;
             if (v27 > 0)
                 v1->z_speed = 2 * *(_DWORD *)(*(_DWORD *)(v58 + 92) + 24) / v27;
         }
@@ -1118,7 +1118,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
         }
     }
     if (v18)
-        v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448510_aircraft;
+        v2->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_448510_aircraft;
     v2->field_88_unused = 1;
     v1->sprite->field_88_unused = 1;
     v2->x = v1->sprite->x + (((kknd_rand_debug(__FILE__, __LINE__) & 0x1F) - 16) << 8);

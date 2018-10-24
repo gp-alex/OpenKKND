@@ -399,7 +399,7 @@ bool handler_4267F0(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE side);
 void _426860_4269B0_task_attachment_handler(_4269B0_task_attachment *a1);
 void _4268B0_4269B0_task_attachment_handler(_4269B0_task_attachment *a1);
 void task_4269B0_mobd_20_handler(Script *a1);
-void drawjob_update_handler_426C40_mobd(Sprite *a1, DrawJob *a2);
+
 bool sprite_list_alloc(const int pool_size = 2000);
 void sprite_init_47A400();
 Sprite *sprite_create(enum MOBD_ID mobd_item_idx, Script *script, Sprite *parent);
@@ -416,6 +416,7 @@ void sprite_release_mobd_item(Sprite *a1);
 void sprite_427460_init_mobd_item(Sprite *pstru6);
 void sprite_list_init_mobd_items();
 void sprite_list_free();
+
 void UNIT_Handler_MobileOutpost(Script *a1);
 void entity_mobile_outpost_init(Entity *a1);
 void entity_mode_4278C0_mobile_outpost(Entity *a1);
@@ -576,7 +577,6 @@ Sprite *entity_439120_add_explosion(Entity *a1);
 Sprite *entity_439150_add_explosion(Entity *a1);
 void sprite_439180_add_explosions(Sprite *a2);
 void _4391D0_mapd_handler(Mapd_stru0 *a1, void *a2);
-void drawjob_update_handler_mapd_menu(Bitmap *a1, DrawJob *a2);
 bool LVL_InitMapd();
 Bitmap *MAPD_Draw(enum MAPD_ID mapd_idx, unsigned int image_id, int z_index);
 void bitmap_list_remove(Bitmap *a1);
@@ -753,18 +753,6 @@ void EntityTowerAttachment_handler_448290(EntityTurret *a1);
 void EntityTowerAttachment_handler_4482D0_missile_battery(EntityTurret *a1);
 void nullsub_1();
 void MessageHandler_TowersAttachment(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void drawjob_update_handler_4483E0_sidebar(Sprite *a1, DrawJob *a2);
-void drawjob_update_handler_cursors(Sprite *a1, DrawJob *a2);
-void drawjob_update_handler_4484A0_explosions(Sprite *a1, DrawJob *a2);
-void drawjob_update_handler_448510_aircraft(Sprite *sprite, DrawJob *job);
-void drawjob_update_handler_448580_entity_aircraft_turret(Sprite *sprite, DrawJob *job);
-void drawjob_update_handler_448600_oilspot(Sprite *a1, DrawJob *a2);
-void drawjob_update_handler_448680(Sprite *param, DrawJob *job);
-void drawjob_update_handler_4486D0_building(Entity *param, DrawJob *job); // idb
-void drawjob_update_handler_448750_infantry(Entity *a1, DrawJob *job);
-void drawjob_update_handler_4487B0_vehicles_buildings(Entity *a1, DrawJob *job); // idb
-void drawjob_update_handler_oiltanker(Entity *param, DrawJob *job); // idb
-void drawjob_update_draw_handler_aircraft(Entity *param, DrawJob *job); // idb
 int entity_4488F0_is_in_firing_range(Entity *a1, Entity *a2, int entity_id); // idb
 void tower_attachment_handler_448980(EntityTurret *a1);
 void tower_attachment_handler_4489B0(EntityTurret *a1);
@@ -777,7 +765,6 @@ void MessageHandler_task4_evt39030(Script *receiver, Script *sender, enum SCRIPT
 void script_evt39030_handler(Script *a1);
 bool UNIT_InitTasks();
 void __47CAF0_tasks_evt39030_array_free();
-void drawjob_update_handler_44BDC0_entity_turret(Sprite *a1, DrawJob *a2);
 void script_44BE60_explosions(Script *a1); // idb
 void EntityTurret_44BF00_handler(EntityTurret *);
 void EntityTurret_44BF70(EntityTurret *a1);
@@ -786,7 +773,6 @@ void MessageHandler_EntityScript(Script *receiver, Script *sender, enum SCRIPT_E
 bool _44C010_init_mission_globals();
 void per_player_sprite_palettes_47DC88_free();
 int UNIT_Init();
-void drawjob_update_handler_44C430_default_sprite(Sprite *a1, DrawJob *a2);
 void _44C4B0_mess_with_turrets();
 void _44C5C0_level_cleanup();
 Sprite *spawn_unit(enum UNIT_ID unit_id, int x, int y, enum PLAYER_SIDE player_side); // idb
