@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "src/Render.h"
 
 #include "src/kknd.h"
@@ -56,6 +58,21 @@ bool render_fullscreen;
 void _40E430_update_palette(unsigned int a1);
 
 bool stru1_list_init(int window_width, int window_height, const int num_stru1s = 7);
+
+
+
+struct Line
+{
+    int src_x;
+    int src_y;
+    int dst_x;
+    int dst_y;
+    int color_idx;
+};
+std::vector<Line> lines;
+
+void render_draw_line_impl(const Line &line);
+
 
 
 
@@ -190,6 +207,11 @@ void render_execute_draw_list(DrawJobList *list) {
             img->on_draw_handler(&i->job_details, 0);
         }
     }
+
+    for (auto line : lines) {
+        render_draw_line_impl(line);
+    }
+    lines.clear();
 }
 
 //----- (004122D0) --------------------------------------------------------
@@ -201,7 +223,7 @@ void render_draw_list(DrawJobList *list)
 
         // 8/16 bpp are hardcoded, introduce a walkaround for ordinary bpp
         //static auto pixels_8bpp = new unsigned char[ddsd_primary.dwWidth * ddsd_primary.dwHeight];
-        auto pixels_8bpp = new unsigned char[render_width * render_height];
+        static auto pixels_8bpp = new unsigned char[render_width * render_height];
         auto pixels_32bpp = new unsigned int[render_width * render_height];
 
         //render_locked_surface_ptr = ddsd_primary.lpSurface;
@@ -240,7 +262,7 @@ void render_draw_list(DrawJobList *list)
         gRenderer->Present();
 
 
-        delete[] pixels_8bpp;
+        //delete[] pixels_8bpp;
         delete[] pixels_32bpp;
     }
 }
@@ -443,59 +465,278 @@ void debug_mission_pathing_outline(int map_x, int map_y, int draw_x, int draw_y)
     }
 }
 
+void render_put_pixel(int x, int y, int color_idx) {
+    if (x < render_clip_x || x >= render_clip_z) {
+        return;
+    }
+    if (y < render_clip_y || y >= render_clip_w) {
+        return;
+    }
+
+    int y_off = render_locked_surface_width_px * (render_clip_y + y);
+    int x_off = x + render_clip_x;
+    auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
+    *dst = color_idx;
+}
+
+// global to draw (screen)
+int render_unproject_x(int global_x) {
+    return (global_x - _47C380_mapd.mapd_cplc_render_x - 2048) >> 8;
+}
+
+// global to draw (screen)
+int render_unproject_y(int global_y) {
+    return (global_y - _47C380_mapd.mapd_cplc_render_y - 6400) >> 8;
+}
+
+
+void render_draw_line(
+    int src_x, int src_y, int dst_x, int dst_y, int color_idx
+) {
+    lines.push_back({src_x, src_y, dst_x, dst_y, color_idx});
+}
+
+void render_put_line_pixel(int x, int y, int c) {
+    render_put_pixel(x, y, c);
+    render_put_pixel(x, y - 1, c);
+    render_put_pixel(x, y + 1, c);
+    render_put_pixel(x - 1, y, c);
+    render_put_pixel(x + 1, y, c);
+}
+
+void render_draw_line_impl(
+    const Line &line
+    //int src_x, int src_y, int dst_x, int dst_y, int color_idx
+) {
+    int x1 = render_unproject_x(line.src_x);
+    int y1 = render_unproject_y(line.src_y);
+    int x2 = render_unproject_x(line.dst_x);
+    int y2 = render_unproject_y(line.dst_y);
+    int c = line.color_idx;
+
+    int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
+    dx = x2 - x1;
+    dy = y2 - y1;
+    dx1 = fabs(dx);
+    dy1 = fabs(dy);
+    px = 2 * dy1 - dx1;
+    py = 2 * dx1 - dy1;
+    if (dy1 <= dx1)
+    {
+        if (dx >= 0)
+        {
+            x = x1;
+            y = y1;
+            xe = x2;
+        }
+        else
+        {
+            x = x2;
+            y = y2;
+            xe = x1;
+        }
+        render_put_line_pixel(x, y, c);
+        for (i = 0; x<xe; i++)
+        {
+            x = x + 1;
+            if (px<0)
+            {
+                px = px + 2 * dy1;
+            }
+            else
+            {
+                if ((dx<0 && dy<0) || (dx>0 && dy>0))
+                {
+                    y = y + 1;
+                }
+                else
+                {
+                    y = y - 1;
+                }
+                px = px + 2 * (dy1 - dx1);
+            }
+            render_put_line_pixel(x, y, c);
+        }
+    }
+    else
+    {
+        if (dy >= 0)
+        {
+            x = x1;
+            y = y1;
+            ye = y2;
+        }
+        else
+        {
+            x = x2;
+            y = y2;
+            ye = y1;
+        }
+        render_put_line_pixel(x, y, c);
+        for (i = 0; y<ye; i++)
+        {
+            y = y + 1;
+            if (py <= 0)
+            {
+                py = py + 2 * dx1;
+            }
+            else
+            {
+                if ((dx<0 && dy<0) || (dx>0 && dy>0))
+                {
+                    x = x + 1;
+                }
+                else
+                {
+                    x = x - 1;
+                }
+                py = py + 2 * (dx1 - dy1);
+            }
+            render_put_line_pixel(x, y, c);
+        }
+    }
+    /*int src_x = render_unproject_x(line.src_x);
+    int src_y = render_unproject_y(line.src_y);
+    int dst_x = render_unproject_x(line.dst_x);
+    int dst_y = render_unproject_y(line.dst_y);
+
+    int dx, dy, p, x, y;
+
+    dx = dst_x - src_x;
+    dy = dst_y - src_y;
+
+    x = src_x;
+    y = src_y;
+
+    p = 2 * dy - dx;
+
+    while (x <= dst_x)
+    {
+        render_put_pixel(x, y, line.color_idx);
+        render_put_pixel(x, y-1, line.color_idx);
+        render_put_pixel(x, y+1, line.color_idx);
+        render_put_pixel(x-1, y, line.color_idx);
+        render_put_pixel(x+1, y, line.color_idx);
+        if (p >= 0)
+        {
+            y = y + 1;
+            p = p + 2 * dy - 2 * dx;
+        }
+        else
+        {
+            p = p + 2 * dy;
+        }
+        x = x + 1;
+    }*/
+}
+
+
+void render_outline_tile(
+    int map_x, int map_y, int draw_x, int draw_y, int color_idx
+    ,const int tile_width
+    ,const int tile_height
+    ,const int border_size
+) {
+    // top
+    for (int _y = draw_y; _y < draw_y + border_size; ++_y) {
+        if (_y < 0)
+            continue;
+        if (_y >= 480)
+            break;
+        for (int _x = draw_x; _x < draw_x + tile_width; ++_x) {
+            if (_x < 0)
+                continue;
+            if (_x >= 640)
+                break;
+            render_put_pixel(_x, _y, color_idx);
+            /*int y_off = render_locked_surface_width_px * (render_clip_y + _y);
+            int x_off = _x + render_clip_x;
+            auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
+            *dst = color_idx;*/
+        }
+    }
+    // bottom
+    for (int _y = draw_y + tile_height - border_size; _y < draw_y + tile_height; ++_y) {
+        if (_y < 0)
+            continue;
+        if (_y >= 480)
+            break;
+        for (int _x = draw_x; _x < draw_x + tile_width; ++_x) {
+            if (_x < 0)
+                continue;
+            if (_x >= 640)
+                break;
+            render_put_pixel(_x, _y, color_idx);
+            /*int y_off = render_locked_surface_width_px * (render_clip_y + _y);
+            int x_off = _x + render_clip_x;
+            auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
+            *dst = color_idx;*/
+        }
+    }
+
+    // left
+    for (int _y = draw_y; _y < draw_y + tile_height; ++_y) {
+        if (_y < 0)
+            continue;
+        if (_y >= 480)
+            break;
+        for (int _x = draw_x; _x < draw_x + border_size; ++_x) {
+            if (_x < 0)
+                continue;
+            if (_x >= 640)
+                break;
+            render_put_pixel(_x, _y, color_idx);
+            /*int y_off = render_locked_surface_width_px * (render_clip_y + _y);
+            int x_off = _x + render_clip_x;
+            auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
+            *dst = color_idx;*/
+        }
+    }
+
+    // right
+    for (int _y = draw_y; _y < draw_y + tile_height; ++_y) {
+        if (_y < 0)
+            continue;
+        if (_y >= 480)
+            break;
+        for (int _x = draw_x + tile_width - border_size; _x < draw_x + tile_width; ++_x) {
+            if (_x < 0)
+                continue;
+            if (_x >= 640)
+                break;
+            render_put_pixel(_x, _y, color_idx);
+            /*int y_off = render_locked_surface_width_px * (render_clip_y + _y);
+            int x_off = _x + render_clip_x;
+            auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
+            *dst = color_idx;*/
+        }
+    }
+}
+
+
+int render_get_color_blue() {
+    return 11;
+}
+
 void debug_mission_tile_outline(int map_x, int map_y, int draw_x, int draw_y) {
     if (map_x < 0 || map_x >= map_get_width() || map_y < 0 || map_y >= map_get_height())
         return;
 
     int black = 0;
-    int blue = 11;
     int lightblue = 12;
     int teal = 13;
     int orange = 14;
 
     auto tile = boxd_get_tile(map_x, map_y);
     if (tile->IsVehicleOrBuilding()) {
-        int w = 32;
-        int h = 4;
-        for (int _y = draw_y; _y < draw_y + h; ++_y) {
-            if (_y < 0)
-                continue;
-            if (_y >= 480)
-                break;
-            for (int _x = draw_x; _x < draw_x + w; ++_x) {
-                if (_x < 0)
-                    continue;
-                if (_x >= 640)
-                    break;
-                int y_off = render_locked_surface_width_px * (render_clip_y + _y);
-                int x_off = _x + render_clip_x;
-                auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
-                *dst = blue;
-            }
-        }
+        render_outline_tile(map_x, map_y, draw_x, draw_y, render_get_color_blue());
     } else if (tile->IsImpassibleTerrain()) {
-        int w = 32;
-        int h = 4;
-        int c = black;
-        if (tile->flags & BOXD_STRU0_OBSTRUCTED)
-            c = teal;
-        else if (tile->flags & BOXD_STRU0_BLOCKED)
-            c = orange;
-        for (int _y = draw_y; _y < draw_y + h; ++_y) {
-            if (_y < 0)
-                continue;
-            if (_y >= 480)
-                break;
-            for (int _x = draw_x; _x < draw_x + w; ++_x) {
-                if (_x < 0)
-                    continue;
-                if (_x >= 640)
-                    break;
-                int y_off = render_locked_surface_width_px * (render_clip_y + _y);
-                int x_off = _x + render_clip_x;
-                auto dst = (unsigned __int8 *)render_locked_surface_ptr + x_off + y_off;
-                *dst = c;
-            }
+        if (tile->flags & BOXD_STRU0_OBSTRUCTED) {
+            render_outline_tile(map_x, map_y, draw_x, draw_y, teal);
+        } else if (tile->flags & BOXD_STRU0_BLOCKED) {
+            render_outline_tile(map_x, map_y, draw_x, draw_y, orange);
+        } else {
+            render_outline_tile(map_x, map_y, draw_x, draw_y, black);
         }
     }
 }
@@ -723,36 +964,6 @@ int render_video_draw_handler(DrawJobDetails *a1, int mode)
     return 0;
 }
 
-
-//----- (00434790) --------------------------------------------------------
-void REND_DirectDrawClearScreen(int a2)
-{
-    /*int v2; // esi@1
-    int v3; // eax@3
-    int v8; // [sp+0h] [bp-6Ch]@3
-
-    v2 = a2;
-
-    if (render_fullscreen == 1)
-    {
-        pdds_primary->EnumAttachedSurfaces(0, EnumAttachedSurfacesCallback);
-    }
-    else if (pdds_backbuffer)
-    {
-        memset(&v9, 0, sizeof(v9));
-        v9.dwFillColor = 0;
-        v9.dwSize = 100;
-        pdds_backbuffer->Blt(&_46BB50_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v9);
-    }
-    if (v2 && pdds_primary)
-    {
-        memset(&v9, 0, sizeof(v9));
-        v9.dwFillColor = 0;
-        v9.dwSize = 100;
-        pdds_primary->Blt(&_46BB50_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v9);
-    }*/
-}
-
 //----- (0040E2A0) --------------------------------------------------------
 int REND_SetRoutines()
 {
@@ -788,22 +999,7 @@ void REND_SetClip(int a1, int a2, int a3, int a4)
     render_clip_z = a3;
     render_clip_w = a4;
 }
-/*
-//----- (00434740) --------------------------------------------------------
-HRESULT __stdcall EnumAttachedSurfacesCallback(IDirectDrawSurface *lpDDSurface, DDSURFACEDESC *lpDDSurfaceDesc, void *lpContext)
-{
-    DDBLTFX v5; // [sp+0h] [bp-64h]@2
 
-    if (lpDDSurface)
-    {
-        memset(&v5, 0, sizeof(v5));
-        v5.dwFillColor = 0;
-        v5.dwSize = 100;
-        lpDDSurface->Blt(&_46BB40_enum_attached_surfaces_blt_rect, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &v5);
-    }
-    return 1;
-}
-*/
 //----- (004348B0) --------------------------------------------------------
 int render_clip(_DWORD *clipped_x, _DWORD *clipped_y, _DWORD *width, _DWORD *height, _DWORD *x, _DWORD *y)
 {
@@ -3672,75 +3868,6 @@ void _431980_update_primary_palette(Palette *pal)
     }*/
 }
 
-//----- (00431B60) --------------------------------------------------------
-/*HPALETTE _431B60_create_palette(Palette *pal, int num_entries)
-{
-    PaletteEntry *v2; // ebx@1
-    int v3; // ecx@1
-    char *v4; // esi@1
-    char *v5; // edi@1
-    int v6; // eax@1
-    char *v7; // ebp@1
-    int v8; // edx@1
-    int v9; // eax@4
-    int v10; // edx@4
-    int v11; // eax@6
-    int v12; // edx@6
-    int v14; // [sp+14h] [bp-408h]@1
-    struct
-    {
-        LOGPALETTE plpal; // [sp+18h] [bp-404h]@1
-        char pixels[0x400];
-    } v15;
-
-    v2 = pal->entires;
-    v15.plpal.palVersion = 768;
-    v15.plpal.palNumEntries = 256;
-    memset(v15.plpal.palPalEntry, 0, 0x400u);
-    v14 = num_entries - 10;
-    v3 = &v15.plpal.palPalEntry[0].peBlue - (BYTE *)v2;
-    v4 = (char *)((char *)&v15.plpal.palNumEntries + 1 - (char *)v2);
-    v5 = (char *)((char *)v15.plpal.palPalEntry - (char *)v2);
-    v6 = (int)&v2->peGreen;
-    v7 = (char *)(&v15.plpal.palPalEntry[0].peGreen - (BYTE *)v2);
-    v8 = 10;
-    do
-    {
-        *(_BYTE *)(v3 + v6) = 0;
-        *(_BYTE *)(v6 + 1) = v4[v6];
-        *(_BYTE *)v6 = v5[v6];
-        *(_BYTE *)(v6 - 1) = v7[v6];
-        v6 += 4;
-        --v8;
-    } while (v8);
-    if (v14 > 10)
-    {
-        v9 = (int)&v2[10].peGreen;
-        v10 = v14 - 10;
-        do
-        {
-            v4[v9] = *(_BYTE *)(v9 + 1);
-            v5[v9] = *(_BYTE *)v9;
-            v7[v9] = *(_BYTE *)(v9 - 1);
-            *(_BYTE *)(v9 + v3) = 5;
-            v9 += 4;
-            --v10;
-        } while (v10);
-    }
-    v11 = (int)&v2[246].peGreen;
-    v12 = 10;
-    do
-    {
-        *(_BYTE *)(v11 + v3) = 0;
-        *(_BYTE *)(v11 + 1) = v4[v11];
-        *(_BYTE *)v11 = v5[v11];
-        *(_BYTE *)(v11 - 1) = v7[v11];
-        v11 += 4;
-        --v12;
-    } while (v12);
-    return CreatePalette(&v15.plpal);
-}*/
-
 //----- (00431C40) --------------------------------------------------------
 void _431C40_on_WM_ACTIVATEAPP_software_render(void *result)
 {
@@ -3934,7 +4061,7 @@ void _40E430_update_palette(unsigned int a1)
     }
     else
     {
-        REND_DirectDrawClearScreen(0);
+        gRenderer->ClearTarget(64, 64, 64);
     }
 }
 
@@ -3942,84 +4069,8 @@ void _40E430_update_palette(unsigned int a1)
 void RENDER_SetViewportAndClear()
 {
     p_render_set_clip(0, 0, render_width, render_height);
-    REND_DirectDrawClearScreen(0);
+    gRenderer->ClearTarget(64, 64, 64);
 }
-
-//----- (0040E560) --------------------------------------------------------
-/*void _40E560_flip_gdi_update_syscolors()
-{
-    unsigned int v0; // esi@3
-    unsigned int v1; // eax@6
-    int v2; // ebp@7
-    COLORREF v3; // edi@7
-    char *v4; // esi@7
-    int v5; // eax@8
-    int v6; // ecx@9
-    unsigned __int16 v7; // dx@13
-    int v8; // [sp+4h] [bp-78h]@7
-    int v9; // [sp+8h] [bp-74h]@7
-    int v10; // [sp+Ch] [bp-70h]@7
-    unsigned int v11; // [sp+10h] [bp-6Ch]@6
-    int v12; // [sp+14h] [bp-68h]@7
-    COLORREF aRgbValues[25]; // [sp+18h] [bp-64h]@13
-
-    if (render_fullscreen == 1)
-    {
-        if (_465680_get_sys_colors)
-        {
-            v0 = 0;
-            do
-            {
-                sys_colors[v0] = GetSysColor(*(int *)((char *)&sys_colors_elements + v0 * 4));
-                ++v0;
-            } while (v0 < 25);
-            _465680_get_sys_colors = 0;
-        }
-        v1 = 0;
-        v11 = 0;
-        do
-        {
-            v2 = *((_BYTE *)&sys_colors[0] + v1 + 1);
-            v10 = 0;
-            v9 = 195075;
-            v8 = 0;
-            v12 = *((_BYTE *)sys_colors + v1);
-            v3 = (*(COLORREF *)((char *)sys_colors + v1) >> 16) & 0xFF;
-
-            int i = 0;
-            v4 = (char *)&RenderDD_primary_palette_values.entires[0].peGreen;
-            do
-            {
-                v5 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
-                    + (v2 - (unsigned __int8)*v4) * (v2 - (unsigned __int8)*v4)
-                    + (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
-                if (v5 >= v9)
-                {
-                    v6 = v10;
-                }
-                else
-                {
-                    v6 = v8;
-                    v10 = v8;
-                    if (!v5)
-                        break;
-                    v9 = (v3 - (unsigned __int8)v4[1]) * (v3 - (unsigned __int8)v4[1])
-                        + (v2 - (unsigned __int8)*v4) * (v2 - (unsigned __int8)*v4)
-                        + (v12 - (unsigned __int8)*(v4 - 1)) * (v12 - (unsigned __int8)*(v4 - 1));
-                }
-                v4 += 4;
-                i++;
-                ++v8;
-            } while (i < 256);//((int)v4 < (int)&render_sw_hdc + 1);
-            LOBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values.entires[v6].peGreen;
-            HIBYTE_HEXRAYS(v7) = RenderDD_primary_palette_values.entires[v6].peBlue;
-            *(COLORREF *)((char *)aRgbValues + v11) = RenderDD_primary_palette_values.entires[v6].peRed | (v7 << 8);
-            v1 = v11 + 4;
-            v11 = v1;
-        } while (v1 < 0x64);
-        SetSysColors(25, &sys_colors_elements, aRgbValues);
-    }
-}*/
 
 //----- (0040E6B0) --------------------------------------------------------
 void _40E6B0_set_sys_colors()

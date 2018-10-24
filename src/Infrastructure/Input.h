@@ -141,6 +141,17 @@ inline bool cursor_rbutton_just_released() {
     return state.just_released_buttons_mask & INPUT_MOUSE_RBUTTON_MASK;
 }
 
+inline int cursor_x() {
+    MouseInput state;
+    input_get_cursor_state(&state);
+    return state.cursor_x_x256;
+}
+
+inline int cursor_y() {
+    MouseInput state;
+    input_get_cursor_state(&state);
+    return state.cursor_y_x256;
+}
 
 
 

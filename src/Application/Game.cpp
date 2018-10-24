@@ -90,7 +90,7 @@ void Game::Run() {
         {
             while (1)
             {
-                REND_DirectDrawClearScreen(1);
+                gRenderer->ClearTarget(64, 64, 64);
                 if (!is_game_loading())
                 {
                     if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
@@ -194,7 +194,7 @@ void Game::Run() {
 }
 
 void Game::MainMenu() {
-    REND_DirectDrawClearScreen(1);
+    gRenderer->ClearTarget(0, 0, 0);
     int mapd_idx = 0;
     netz_47A82C = 0;
     if (!single_player_game)

@@ -60,7 +60,6 @@ int render_435320(void *pixels, int x, int y, int w, int h);
 void render_draw_tile_transparent_edges(unsigned __int8 *tile, int a2, int a3, int a4, int a5); // idb
 void render_do_draw_cursor_43A910(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, char *a5, unsigned __int16 a6, unsigned __int16 a7, unsigned __int16 a8, __int16 a9, int a11, unsigned __int16 a12, unsigned __int16 a13, unsigned __int16 a14);
 void render_draw_43B59F(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, unsigned __int8 *sprite_data, unsigned __int16 x, unsigned __int16 y, unsigned __int16 width, __int16 height, unsigned __int8 *palette, unsigned __int8 *dst_surface, __int16 dst_surface_x, unsigned __int16 dst_surface_y, unsigned __int16 dst_surface_pitch);
-void REND_DirectDrawClearScreen(int a2);
 void render_draw_43A9E7(char *a1, unsigned __int16 a2, unsigned __int16 a3, unsigned __int16 a4, __int16 a5, int a7, __int16 a8, unsigned __int16 a9, unsigned __int16 a10);
 void render_draw_43B4A6(unsigned __int8 *sprite_data, unsigned __int16 clipped_x, unsigned __int16 clipped_y, unsigned __int16 clipped_width, __int16 clipped_height, unsigned __int8 *palette, int dst_surface, unsigned __int16 dst_surface_x, unsigned __int16 dst_surface_y, unsigned __int16 dst_surface_pitch); // idb
 bool draw_list_alloc();
@@ -80,6 +79,14 @@ void _40E6B0_set_sys_colors();
 void _40E560_flip_gdi_update_syscolors();
 int REND_SetRoutines();
 
+int render_get_color_blue();
+void render_draw_line(int src_global_x, int src_global_y, int dst_global_x, int dst_global_y, int color_idx);
+void render_outline_tile(
+    int map_x, int map_y, int draw_x, int draw_y, int color_idx
+    , const int tile_width = 32
+    , const int tile_height = 32
+    , const int border_size = 3
+);
 
 
 
@@ -105,4 +112,6 @@ extern int render_width; // idb
 extern void(*j_render_434AD0)(void *pixels, int x, int y, int w, int h); // idb
 extern int render_478A94; // weak
 extern int j_render_nullsub_1; // weak
+
+
 
