@@ -1316,7 +1316,7 @@ bool _438740_save_lst()
         do
         {
             if (v4->str_0[0])
-                fprintf(v2, aSlotDSD, v3, v4, v4->level_id);
+                fprintf(v2, "Slot %d = %s %d\n", v3, v4, v4->level_id);
             ++v4;
             ++v3;
         } while ((int)v4 < (int)byte_47C230);
@@ -1350,7 +1350,7 @@ bool _438840_save_lst()
         do
         {
             if (v4->str_0[0])
-                fprintf(v2, aSlotDSD, v3, v4, v4->level_id);
+                fprintf(v2, "Slot %d = %s %d\n", v3, v4, v4->level_id);
             ++v4;
             ++v3;
         } while ((int)v4 < (int)byte_47C230);

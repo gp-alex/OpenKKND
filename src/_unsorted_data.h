@@ -220,7 +220,6 @@ extern char aD_0[5]; // weak
 extern char aD[6]; // weak
 extern int _46BB60_dmg_handler_mobd_offsets[3];
 extern char aSGameD_sav[]; // idb
-extern char aSlotDSD[]; // idb
 extern char aActiveslotD[]; // idb
 extern char aSSave_lst[]; // idb
 extern int _46BBE8_mobd_offset_table_by_stru22[8];

@@ -2478,7 +2478,6 @@ char aD_0[5] = " %d:"; // weak
 char aD[6] = "  %d:"; // weak
 int _46BB60_dmg_handler_mobd_offsets[3] = { 332, 364, 388 };
 char aSGameD_sav[] = "%s\\game%d.sav"; // idb
-char aSlotDSD[] = "Slot %d = %s %d\n"; // idb
 char aActiveslotD[] = "ActiveSlot=%d\n"; // idb
 char aSSave_lst[] = "%s\\save.lst"; // idb
 int _46BBE8_mobd_offset_table_by_stru22[8] = { 1976, 1988, 2000, 2012, 2024, 2036, 2048, 2060 };
