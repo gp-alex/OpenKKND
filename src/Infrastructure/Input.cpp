@@ -202,6 +202,14 @@ int input_combo_pressed_vk; // weak
 #define VK_Z 90
 
 
+int input_get_type() {
+    if (input_combo_pressed_vk == INPUT_KEYBOARD_RETURN_MASK) {
+        return INPUT_KEYBOARD_RETURN_MASK;
+    }
+    if (input_char_is_alpha() || input_char_is_numeric()) {
+        return INPUT_KEYBOARD_CHAR;
+    }
+}
 bool input_char_is_alpha() {
     return input_combo_pressed_vk >= VK_A && input_combo_pressed_vk <= VK_Z;
 }
@@ -220,10 +228,10 @@ bool input_char_is_any() {
 void input_char_clear() {
     input_combo_pressed_vk = 0;
 }
-char input_char_get() {
+unsigned char input_char_get() {
     return input_combo_pressed_vk;
 }
-char input_char_pop() {
+unsigned char input_char_pop() {
     auto c = input_combo_pressed_vk;
     input_combo_pressed_vk = 0;
     return c;

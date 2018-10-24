@@ -23,3 +23,4 @@
 #define INPUT_KEYBOARD_F1_MASK          0x400000
 #define INPUT_KEYBOARD_F2_MASK          0x800000
 #define INPUT_KEYBOARD_F3_MASK          0x1000000
+#define INPUT_KEYBOARD_CHAR             0x2000000

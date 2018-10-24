@@ -360,9 +360,7 @@ int _438630_read_save_lst()
     int v7; // [sp+Ch] [bp-18h]@7
     stru175 *v8; // [sp+10h] [bp-14h]@10
     enum LEVEL_ID v9; // [sp+14h] [bp-10h]@7
-    int v10; // [sp+18h] [bp-Ch]@7
-    int v11; // [sp+1Ch] [bp-8h]@7
-    int v12; // [sp+20h] [bp-4h]@7
+    char v10[12]; // [sp+18h] [bp-Ch]@7
 
     sprintf(byte_47C230, aSSave_lst, game_data_installation_dir);
     v0 = fopen(byte_47C230, aR);
@@ -385,17 +383,15 @@ int _438630_read_save_lst()
         {
             while (1)
             {
-                v10 = 0;
-                v11 = 0;
-                v12 = 0;
-                v4 = fscanf(v0, aSlotDSD, &v7, &v10, &v9);
+                v10[0] = 0;
+                v4 = fscanf(v0, "Slot %d = %s %d\n", &v7, v10, &v9);
                 if (!v4 || v4 == -1)
                     break;
                 if (v7 <= 19)
                 {
                     v5 = v7;
                     v8 = &_47C050_array[v7];
-                    strcpy(_47C050_array[v7].str_0, (const char *)&v10);
+                    strcpy(_47C050_array[v7].str_0, v10);
                     _47C050_array[v5].level_id = v9;
                 }
             }

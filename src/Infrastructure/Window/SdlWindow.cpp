@@ -175,6 +175,25 @@ void SdlWindow::WaitMessage() {
 }
 
 
+void SdlWindow::NofifyCharUp(int key, bool ctrlStatus, bool altStatus) {
+    for (auto observer : keyboardObservers) {
+        observer->OnCharUp(
+            key,
+            GetScancodePressed(SDL_SCANCODE_LCTRL) || GetScancodePressed(SDL_SCANCODE_RCTRL),
+            GetScancodePressed(SDL_SCANCODE_LALT) || GetScancodePressed(SDL_SCANCODE_RALT)
+        );
+    }
+}
+void SdlWindow::NofifySpecialKeyUp(int key, bool ctrlStatus, bool altStatus) {
+    for (auto observer : keyboardObservers) {
+        observer->OnSpecialKeyUp(
+            key,
+            GetScancodePressed(SDL_SCANCODE_LCTRL) || GetScancodePressed(SDL_SCANCODE_RCTRL),
+            GetScancodePressed(SDL_SCANCODE_LALT) || GetScancodePressed(SDL_SCANCODE_RALT)
+        );
+    }
+}
+
 void SdlWindow::MessageProcessor(SDL_Event &e) {
     switch (e.type) {
         case SDL_QUIT: {
@@ -218,30 +237,27 @@ void SdlWindow::MessageProcessor(SDL_Event &e) {
         case SDL_KEYUP: {
             int key = -1;
 
+            bool ctrlStatus = GetScancodePressed(SDL_SCANCODE_LCTRL) || GetScancodePressed(SDL_SCANCODE_RCTRL);
+            bool altStatus = GetScancodePressed(SDL_SCANCODE_LALT) || GetScancodePressed(SDL_SCANCODE_RALT);
+
             auto scan = e.key.keysym.scancode;
             if (scan >= SDL_SCANCODE_1 && scan <= SDL_SCANCODE_9) {
                 key = '1' + scan - SDL_SCANCODE_1;
+                NofifyCharUp(key, ctrlStatus, altStatus);
             } else if (scan == SDL_SCANCODE_0) {
                 key = '0';
+                NofifyCharUp(key, ctrlStatus, altStatus);
             } else if (scan >= SDL_SCANCODE_A && scan <= SDL_SCANCODE_Z) {
                 key = 'A' + scan - SDL_SCANCODE_A;
+                NofifyCharUp(key, ctrlStatus, altStatus);
             } else if (scan == SDL_SCANCODE_ESCAPE) {
                 //key = VK_ESCAPE  (convert into platform-independed KKND_INPUT_ESCAPE)
+                NofifySpecialKeyUp(INPUT_KEYBOARD_ESCAPE_MASK, ctrlStatus, altStatus);
+            } else if (scan == SDL_SCANCODE_RETURN) {
+                NofifySpecialKeyUp(INPUT_KEYBOARD_RETURN_MASK, ctrlStatus, altStatus);
             } else {
                 // even more required ...
                 // check 0041AC50 input_get_string (convert into platform-independed enum)
-            }
-            
-            if (key == -1) {
-                break;
-            }
-
-            for (auto observer : keyboardObservers) {
-                observer->OnKeyUp(
-                    key,
-                    GetScancodePressed(SDL_SCANCODE_LCTRL) || GetScancodePressed(SDL_SCANCODE_RCTRL),
-                    GetScancodePressed(SDL_SCANCODE_LALT) || GetScancodePressed(SDL_SCANCODE_RALT)
-                );
             }
 
             break;

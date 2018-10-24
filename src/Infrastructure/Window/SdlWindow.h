@@ -65,6 +65,8 @@ namespace Infrastructure {
 
     private:
         void MessageProcessor(SDL_Event &e);
+        void NofifyCharUp(int key, bool ctrlStatus, bool altStatus);
+        void NofifySpecialKeyUp(int key, bool ctrlStatus, bool altStatus);
 
         bool GetScancodePressed(int scancode) const;
 

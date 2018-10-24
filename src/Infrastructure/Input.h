@@ -72,8 +72,8 @@ bool input_char_is_whitespace();
 bool input_char_is_escape();
 bool input_char_is_any();
 void input_char_clear();
-char input_char_get();
-char input_char_pop();
+unsigned char input_char_get();
+unsigned char input_char_pop();
 
 
 

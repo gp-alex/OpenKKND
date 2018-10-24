@@ -6511,7 +6511,7 @@ __int16 input_get_string(
 			}
 		} while (!input_char_is_any());
 
-		switch (char c = input_char_get())
+		switch (auto c = (unsigned)input_char_get())
 		{
 		case 37: // vk_left
 			if (v5 > 0)
@@ -6543,6 +6543,7 @@ __int16 input_get_string(
 			strcpy((char *)v6, v12);
 			goto LABEL_19;
 		case 13: // vk_return
+        case INPUT_KEYBOARD_RETURN_MASK: // kknd return
 		LABEL_19:
 			v11 = 0;
 			goto LABEL_41;

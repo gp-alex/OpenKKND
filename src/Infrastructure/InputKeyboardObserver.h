@@ -11,7 +11,8 @@ namespace Infrastructure {
             this->log = InfrastructureDependencies::Resolve<Log>();
         }
 
-        virtual void OnKeyUp(int key, bool ctrl_status, bool alt_status) override;
+        virtual void OnCharUp(int key, bool ctrl_status, bool alt_status) override;
+        virtual void OnSpecialKeyUp(int key, bool ctrl_status, bool alt_status) override;
 
     private:
         std::shared_ptr<Log> log;
