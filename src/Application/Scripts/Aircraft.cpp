@@ -6,6 +6,7 @@
 #include "src/RenderDrawHandlers.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Sprite.h"
 #include "src/stru31.h"
 
 #include "Engine/Entity.h"

@@ -1,10 +1,11 @@
 #include "src/_unsorted_data.h"
 #include "src/kknd.h"
+#include "src/Map.h"
 #include "src/Random.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Sound.h"
-#include "src/Map.h"
+#include "src/Sprite.h"
 
 #include "src/Engine/Entity.h"
 #include "src/Engine/EntityFactory.h"

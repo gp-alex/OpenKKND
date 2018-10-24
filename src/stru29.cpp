@@ -1,10 +1,10 @@
-#include "src/kknd.h"
+#include "src/stru29.h"
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
-#include "src/stru29.h"
+#include "src/kknd.h"
 #include "src/Script.h"
+#include "src/Sprite.h"
 
 
 stru29 stru29_list_47C610;

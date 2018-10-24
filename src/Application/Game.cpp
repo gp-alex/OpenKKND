@@ -4,18 +4,19 @@ using Application::Game;
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
+#include "src/Cursor.h"
+#include "src/Coroutine.h"
 #include "src/kknd.h"
+#include "src/Map.h"
+#include "src/Pathfind.h"
 #include "src/Random.h"
 #include "src/Render.h"
 #include "src/stru29.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
-#include "src/Cursor.h"
-#include "src/Coroutine.h"
 #include "src/Sound.h"
+#include "src/Sprite.h"
 #include "src/Video.h"
-#include "src/Map.h"
-#include "src/Pathfind.h"
 
 #include "src/Application/GameWindowObserver.h"
 

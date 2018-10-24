@@ -10,6 +10,7 @@
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
 #include "src/Sound.h"
+#include "src/Sprite.h"
 
 #include "src/Engine/Entity.h"
 #include "src/Engine/EntityFactory.h"

@@ -489,140 +489,6 @@ struct DataSectionOffset
 	void *ptr;
 };
 
-/* 292 */
-struct Bitmap
-{
-	Bitmap *next;
-	Bitmap *prev;
-	DrawJob *draw_job;
-	MapdScrlImage *draw_job_scrl;
-	int z_index;
-};
-
-
-#define SPRITE_EXPLOSION_MOBD_OFFSET_BIG                            0   // huge explosion: nuke, building detonation
-#define SPRITE_EXPLOSION_MOBD_OFFSET_SMALL                          220 // small explosion
-#define SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_SURV_RIFLEMAN_DEATH       568
-#define SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_MUTE_BERSERKER_DEATH      636
-#define SPRITE_EXPLOSION_MOBD_OFFSET_MUTE_GIAN_BEETLE_ACID_SPLASH   704
-
-#define SPRITE_DIRE_WOLF_MOBD_OFFSET_DEATH 1216
-
-#define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_LEFT       0
-#define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_RIGHT      12
-#define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_MISSION    24
-
-/* 293 */
-struct Sprite
-{
-	Sprite *next;
-	Sprite *prev;
-	Sprite *parent;
-	enum MOBD_ID mobd_id;
-	int x;
-	int y;
-	int z_index;
-
-	int x_speed;
-	int y_speed;
-	int z_speed;
-
-	int x_speed_factor_2;
-	int y_speed_factor_2;
-	int z_speed_factor_2;
-
-	int x_speed_limit;
-	int y_speed_limit;
-	int z_speed_limit;
-
-	int x_speed_factor_1;
-	int y_speed_factor_1;
-	int z_speed_factor_1;
-
-    DataMobdItem_stru0 **_inside_mobd_item;
-    DataMobdItem_stru0 **_inside_mobd_item_2;
-	DataMobdItem_stru0 *_54_inside_mobd_ptr4;
-	Sprite_stru58 *pstru58;
-	stru7 *pstru7;
-    int _60_mobd_anim_speed;//_60_mobd_field_0_int;
-    int _64_mobd_anim_related;//field_64;
-	DrawJob *drawjob;
-	Script *script;
-	DataCplcItem_ptr1_stru20 *cplc_ptr1_pstru20;
-	DataCplcItem_ptr1 *cplc_ptr1;
-	DataCplc_stru0 *cplc_stru0;
-	void *param;
-	void *_80_entity__stru29__sprite__initial_hitpoints;
-	int field_84;
-	int field_88_unused;
-	__int16 field_8C_infantry_damage;
-	__int16 field_8E_vehicle_damage;
-	__int16 field_90_building_damage;
-	__int16 field_92;
-};
-
-/* 294 */
-struct stru7
-{
-	int field_0;
-	int _4_psprite_pstru7_idx;
-	bool (*pfn_8_ui_hint_box)(Sprite *, Sprite *, int, void *, void *);
-	bool (*pfn_C)(Sprite *, Sprite *, int, void *, void *);
-};
-
-/* 295 */
-struct DataBoxd
-{
-	DataBoxdItem *items;
-};
-
-/* 296 */
-struct DataBoxdItem
-{
-	int field_0_num_things;
-	int some_map_width_scale;
-	int some_map_height_scale;
-	int map_num_x_tiles;
-	int map_num_y_tiles;
-	BoxdTile *map_tiles[2];
-};
-
-/* 297 */
-struct DataCplc
-{
-	DataCplcItem *items;
-};
-
-/* 298 */
-struct DataCplcItem
-{
-	int size;
-	DataCplcItem_ptr1 *ptr1;
-	DataCplcItem_ptr1 *ptr2;
-	DataCplcItem_ptr1 *ptr3;
-	DataCplcItem_ptr1 *ptr4;
-};
-
-/* 299 */
-struct DataCplc_stru0
-{
-	DataCplc_stru0 *next;
-	DataCplc_stru0 *prev;
-	Sprite *sprite;
-};
-
-/* 300 */
-struct DataCplcItem_ptr3
-{
-	int field_0;
-	int field_4_x_width;
-	int field_8_y_height;
-	int field_C;
-	int ptr_10;
-	int ptr_14;
-	DataCplcItem_ptr3 *next;
-	DataCplcItem_ptr3 *next2;
-};
 
 /* 301 */
 struct stru8
@@ -2109,3 +1975,152 @@ struct Mapd_stru0
 };
 
 #pragma pack(pop)
+
+
+
+
+
+
+
+
+
+
+
+
+// sprite-related stuff: requires extraction
+
+/* 292 */
+struct Bitmap
+{
+    Bitmap *next;
+    Bitmap *prev;
+    DrawJob *draw_job;
+    MapdScrlImage *draw_job_scrl;
+    int z_index;
+};
+
+
+/* 294 */
+struct stru7
+{
+    int field_0;
+    int _4_psprite_pstru7_idx;
+    bool(*pfn_8_ui_hint_box)(Sprite *, Sprite *, int, void *, void *);
+    bool(*pfn_C)(Sprite *, Sprite *, int, void *, void *);
+};
+
+/* 295 */
+struct DataBoxd
+{
+    DataBoxdItem *items;
+};
+
+/* 296 */
+struct DataBoxdItem
+{
+    int field_0_num_things;
+    int some_map_width_scale;
+    int some_map_height_scale;
+    int map_num_x_tiles;
+    int map_num_y_tiles;
+    BoxdTile *map_tiles[2];
+};
+
+/* 297 */
+struct DataCplc
+{
+    DataCplcItem *items;
+};
+
+/* 298 */
+struct DataCplcItem
+{
+    int size;
+    DataCplcItem_ptr1 *ptr1;
+    DataCplcItem_ptr1 *ptr2;
+    DataCplcItem_ptr1 *ptr3;
+    DataCplcItem_ptr1 *ptr4;
+};
+
+/* 299 */
+struct DataCplc_stru0
+{
+    DataCplc_stru0 *next;
+    DataCplc_stru0 *prev;
+    Sprite *sprite;
+};
+
+/* 300 */
+struct DataCplcItem_ptr3
+{
+    int field_0;
+    int field_4_x_width;
+    int field_8_y_height;
+    int field_C;
+    int ptr_10;
+    int ptr_14;
+    DataCplcItem_ptr3 *next;
+    DataCplcItem_ptr3 *next2;
+};
+
+
+#define SPRITE_EXPLOSION_MOBD_OFFSET_BIG                            0   // huge explosion: nuke, building detonation
+#define SPRITE_EXPLOSION_MOBD_OFFSET_SMALL                          220 // small explosion
+#define SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_SURV_RIFLEMAN_DEATH       568
+#define SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_MUTE_BERSERKER_DEATH      636
+#define SPRITE_EXPLOSION_MOBD_OFFSET_MUTE_GIAN_BEETLE_ACID_SPLASH   704
+
+#define SPRITE_DIRE_WOLF_MOBD_OFFSET_DEATH          1216
+
+#define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_LEFT       0
+#define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_RIGHT      12
+#define SPRITE_OUTCOME_MODAL_MOBD_OFFSET_MISSION    24
+
+/* 293 */
+struct Sprite
+{
+    Sprite *next;
+    Sprite *prev;
+    Sprite *parent;
+    enum MOBD_ID mobd_id;
+    int x;
+    int y;
+    int z_index;
+
+    int x_speed;
+    int y_speed;
+    int z_speed;
+
+    int x_speed_factor_2;
+    int y_speed_factor_2;
+    int z_speed_factor_2;
+
+    int x_speed_limit;
+    int y_speed_limit;
+    int z_speed_limit;
+
+    int x_speed_factor_1;
+    int y_speed_factor_1;
+    int z_speed_factor_1;
+
+    DataMobdItem_stru0 **_inside_mobd_item;
+    DataMobdItem_stru0 **_inside_mobd_item_2;
+    DataMobdItem_stru0 *_54_inside_mobd_ptr4;
+    Sprite_stru58 *pstru58;
+    stru7 *pstru7;
+    int _60_mobd_anim_speed;//_60_mobd_field_0_int;
+    int _64_mobd_anim_related;//field_64;
+    DrawJob *drawjob;
+    Script *script;
+    DataCplcItem_ptr1_stru20 *cplc_ptr1_pstru20;
+    DataCplcItem_ptr1 *cplc_ptr1;
+    DataCplc_stru0 *cplc_stru0;
+    void *param;
+    void *_80_entity__stru29__sprite__initial_hitpoints;
+    int field_84;
+    int field_88_unused;
+    __int16 field_8C_infantry_damage;
+    __int16 field_8E_vehicle_damage;
+    __int16 field_90_building_damage;
+    __int16 field_92;
+};

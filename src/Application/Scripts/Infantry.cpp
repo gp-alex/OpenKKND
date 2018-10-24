@@ -8,8 +8,9 @@
 #include "src/RenderDrawHandlers.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
-#include "src/stru31.h"
+#include "src/Sprite.h"
 #include "src/Sound.h"
+#include "src/stru31.h"
 
 #include "src/Engine/Entity.h"
 #include "src/Engine/EntityFactory.h"
