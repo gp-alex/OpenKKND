@@ -12,9 +12,16 @@
 #include "src/Infrastructure/KeyboardInputEnum.h"
 
 using Infrastructure::SdlWindow;
-using Infrastructure::InputObserver;
+using Infrastructure::MouseObserver;
 using Infrastructure::KeyboardObserver;
 using Infrastructure::WindowObserver;
+
+// variables for right mouse button drag detection
+int mouse_right_button_pressed_x = -1;
+int mouse_right_button_pressed_y = -1;
+bool mouse_right_button_down = false;
+const int mouse_right_button_drag_min_dx = 5;
+const int mouse_right_button_drag_min_dy = 5;
 
 /* kknd key mask to SDL scancode mapping */
 std::map<int, int> kknd_key_mask_scancode_map =
@@ -174,7 +181,6 @@ void SdlWindow::PeekMessageAll() {
 void SdlWindow::WaitMessage() {
 }
 
-
 void SdlWindow::NofifyCharUp(int key, bool ctrlStatus, bool altStatus) {
     for (auto observer : keyboardObservers) {
         observer->OnCharUp(
@@ -184,6 +190,7 @@ void SdlWindow::NofifyCharUp(int key, bool ctrlStatus, bool altStatus) {
         );
     }
 }
+
 void SdlWindow::NofifySpecialKeyUp(int key, bool ctrlStatus, bool altStatus) {
     for (auto observer : keyboardObservers) {
         observer->OnSpecialKeyUp(
@@ -204,13 +211,23 @@ void SdlWindow::MessageProcessor(SDL_Event &e) {
         }
 
         case SDL_MOUSEMOTION: {
-            for (auto observer : inputObservers) {
+            for (auto observer : mouseObservers) {
                 observer->OnMouseMove(
                     e.motion.x, e.motion.y,
                     e.motion.xrel, e.motion.yrel,
                     e.motion.state & SDL_BUTTON_LMASK,
                     e.motion.state & SDL_BUTTON_RMASK
                 );
+
+                // mouse right button drag
+                if (mouse_right_button_down) {
+                    int dx = mouse_right_button_pressed_x - e.motion.x;
+                    int dy = mouse_right_button_pressed_y - e.motion.y;
+                    if (abs(dx) >= mouse_right_button_drag_min_dx ||abs(dy) >= mouse_right_button_drag_min_dy) {
+                        printf("right mouse scrolling startx:%d starty:%d x:%d, y:%d dx:%d dy:%d\n", mouse_right_button_pressed_x, mouse_right_button_pressed_y, e.motion.x, e.motion.y, dx, dy);
+                        observer->OnMouseRightDrag(mouse_right_button_pressed_x, mouse_right_button_pressed_y, e.motion.x, e.motion.y, dx, dy);
+                    }
+                }
             }
             break;
         }
@@ -223,12 +240,27 @@ void SdlWindow::MessageProcessor(SDL_Event &e) {
             bool pressed = e.button.state == SDL_PRESSED;
 
             if (e.button.button == SDL_BUTTON_LEFT) {
-                for (auto observer : inputObservers) {
+                for (auto observer : mouseObservers) {
                     observer->OnMouseLeftButton(x, y, pressed);
                 }
             } else if (e.button.button == SDL_BUTTON_RIGHT) {
-                for (auto observer : inputObservers) {
+                for (auto observer : mouseObservers) {
                     observer->OnMouseRightButton(x, y, pressed);
+
+                    //mouse right button drag - right button pressed
+                    if (pressed) {
+                        printf("mouse right button pressed x: %d y: %d\n", x, y);
+                        mouse_right_button_pressed_x = x;
+                        mouse_right_button_pressed_y = y;
+                        mouse_right_button_down = true;
+                    }
+                    else { //mouse right button drag - right button released
+                        printf("mouse right button released x: %d y: %d\n", x, y);
+                        mouse_right_button_pressed_x = -1;
+                        mouse_right_button_pressed_y = -1;
+                        mouse_right_button_down = false;
+                    }
+                    
                 }
             }
             break;
@@ -270,8 +302,8 @@ void SdlWindow::AddObserver(std::shared_ptr<WindowObserver> observer) {
     windowObservers.push_back(observer);
 }
 
-void SdlWindow::AddObserver(std::shared_ptr<InputObserver> observer) {
-    inputObservers.push_back(observer);
+void SdlWindow::AddObserver(std::shared_ptr<MouseObserver> observer) {
+    mouseObservers.push_back(observer);
 }
 
 void SdlWindow::AddObserver(std::shared_ptr<KeyboardObserver> observer) {

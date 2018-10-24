@@ -9,7 +9,7 @@
 #include "src/Infrastructure/DependencyInjection.h"
 //#include "src/Infrastructure/KeyboardInputEnum.h"
 
-#include "src/Infrastructure/Window/InputObserver.h"
+#include "src/Infrastructure/Window/MouseObserver.h"
 #include "src/Infrastructure/Window/KeyboardObserver.h"
 #include "src/Infrastructure/Window/Window.h"
 #include "src/Infrastructure/Window/WindowConfig.h"
@@ -28,7 +28,7 @@ namespace Infrastructure {
         // 
         virtual bool Initialize() override;
         virtual void AddObserver(std::shared_ptr<WindowObserver> observer) override;
-        virtual void AddObserver(std::shared_ptr<InputObserver> observer) override;
+        virtual void AddObserver(std::shared_ptr<MouseObserver> observer) override;
         virtual void AddObserver(std::shared_ptr<KeyboardObserver> observer) override;
 
         // dimensions
@@ -75,8 +75,8 @@ namespace Infrastructure {
 
         typedef std::list<std::shared_ptr<WindowObserver>> WindowObservers;
         WindowObservers windowObservers;
-        typedef std::list<std::shared_ptr<InputObserver>> InputObservers;
-        InputObservers inputObservers;
+        typedef std::list<std::shared_ptr<MouseObserver>> MouseObservers;
+        MouseObservers mouseObservers;
         typedef std::list<std::shared_ptr<KeyboardObserver>> KeyboardObservers;
         KeyboardObservers keyboardObservers;
 

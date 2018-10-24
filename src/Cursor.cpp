@@ -620,9 +620,8 @@ LABEL_27:
         goto LABEL_71;
     }
 
-
-    // right mouse buttoon drag - bugged
-    /*_47C380_mapd.mapd_cplc_render_x += 2 * _47A5E0_mouse_input.cursor_dx_x256 - dword_477898;
+    // right mouse button drag
+    _47C380_mapd.mapd_cplc_render_x += 2 * _47A5E0_mouse_input.cursor_dx_x256 - dword_477898;
     if (_47C380_mapd.mapd_cplc_render_x >= 0)
     {
         v25 = a1a;
@@ -643,7 +642,8 @@ LABEL_27:
     else
     {
         _47C380_mapd.mapd_cplc_render_y = 0;
-    }*/
+    }
+
     v2->_70_sprite->field_88_unused = 1;
     v2->_70_sprite->x = v2->cursor_x + _47C380_mapd.mapd_cplc_render_x;
     v2->_70_sprite->field_88_unused = 1;
@@ -2452,7 +2452,7 @@ void cursor_sidebar_handler(CursorHandler *a1)
 
 
 // test
-class GameCursor : public Infrastructure::InputObserver {
+class GameCursor : public Infrastructure::MouseObserver {
 public:
     CursorHandler v62;
     GameCursor(CursorHandler *v62) {

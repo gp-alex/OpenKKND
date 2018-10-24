@@ -5,7 +5,7 @@ add_library(InfrastructureWindow "")
 
 target_sources(InfrastructureWindow
     PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/InputObserver.h"
+        "${CMAKE_CURRENT_LIST_DIR}/MouseObserver.h"
         "${CMAKE_CURRENT_LIST_DIR}/KeyboardObserver.h"
         "${CMAKE_CURRENT_LIST_DIR}/WindowConfig.h"
         "${CMAKE_CURRENT_LIST_DIR}/WindowConfigFactory.h"
