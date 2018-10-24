@@ -514,6 +514,7 @@ void render_draw_line_impl(
     int y2 = render_unproject_y(line.dst_y);
     int c = line.color_idx;
 
+    // Bresenham's Line Algorithm
     int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
     dx = x2 - x1;
     dy = y2 - y1;
@@ -595,39 +596,6 @@ void render_draw_line_impl(
             render_put_line_pixel(x, y, c);
         }
     }
-    /*int src_x = render_unproject_x(line.src_x);
-    int src_y = render_unproject_y(line.src_y);
-    int dst_x = render_unproject_x(line.dst_x);
-    int dst_y = render_unproject_y(line.dst_y);
-
-    int dx, dy, p, x, y;
-
-    dx = dst_x - src_x;
-    dy = dst_y - src_y;
-
-    x = src_x;
-    y = src_y;
-
-    p = 2 * dy - dx;
-
-    while (x <= dst_x)
-    {
-        render_put_pixel(x, y, line.color_idx);
-        render_put_pixel(x, y-1, line.color_idx);
-        render_put_pixel(x, y+1, line.color_idx);
-        render_put_pixel(x-1, y, line.color_idx);
-        render_put_pixel(x+1, y, line.color_idx);
-        if (p >= 0)
-        {
-            y = y + 1;
-            p = p + 2 * dy - 2 * dx;
-        }
-        else
-        {
-            p = p + 2 * dy;
-        }
-        x = x + 1;
-    }*/
 }
 
 
@@ -3534,35 +3502,34 @@ bool draw_list_alloc()
 }
 
 //----- (0043B710) --------------------------------------------------------
-DrawJob *draw_list_add(void *param, void(*on_update_handler)(void *, DrawJob *))
+DrawJob *draw_list_add(void *param, DrawUpdateHandler on_update_handler)
 {
     DrawJob *result; // eax@1
 
     result = draw_list_free_pool;
     if ((DrawJob **)draw_list_free_pool == &draw_list_free_pool)
     {
-        result = 0;
+        return nullptr;
     }
-    else
-    {
-        draw_list_free_pool = draw_list_free_pool->next;
 
-        result->next = (DrawJob *)&draw_list_47C5E8;
-        result->prev = draw_list_47C5E8.prev;
-        draw_list_47C5E8.prev->next = result;
-        draw_list_47C5E8.prev = result;
+    draw_list_free_pool = draw_list_free_pool->next;
 
-        result->job_details.params = render_default_stru1;
-        result->on_update_handler_param = param;
-        result->job_details.field_8 = 0;
-        result->job_details.image = 0;
-        result->field_34 = 0;
-        result->field_38 = 0;
-        result->job_details.palette = 0;
-        result->job_details.flags = 0;
-        result->flags = 0;
-        result->on_update_handler = on_update_handler;
-    }
+    result->next = (DrawJob *)&draw_list_47C5E8;
+    result->prev = draw_list_47C5E8.prev;
+    draw_list_47C5E8.prev->next = result;
+    draw_list_47C5E8.prev = result;
+
+    result->job_details.params = render_default_stru1;
+    result->job_details.field_8 = 0;
+    result->job_details.image = 0;
+    result->field_34 = 0;
+    result->field_38 = 0;
+    result->job_details.palette = 0;
+    result->job_details.flags = 0;
+    result->flags = 0;
+    result->on_update_handler = on_update_handler;
+    result->on_update_handler_param = param;
+
     return result;
 }
 

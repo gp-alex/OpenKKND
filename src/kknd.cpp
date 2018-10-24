@@ -5623,16 +5623,13 @@ void entity_410CF0_aircraft(Entity *a1)
 {
 	Entity *v1; // esi@1
 	Sprite *v2; // ecx@1
-	DrawJob *v3; // eax@1
 
 	v1 = a1;
 	v2 = a1->sprite;
 	v1->field_288 = 0;
 	v1->pfn_render_DrawUnitsAndUi = render_sprt_draw_handler;
 	v1->_28C_stru26_stru0__or__stru27_stru0__or__EntityBuildingAttachment_stru14__or__EntityOilTankerAttachment_stru70 = _4795F0_stru26_array[0].data[27];
-	v3 = draw_list_add(v2, (void(*)(void *, DrawJob *))drawjob_update_draw_handler_aircraft);
-	v1->drawjob = v3;
-	v3->on_update_handler_param = v1;
+	v1->drawjob = draw_list_add(v1, (DrawUpdateHandler)drawjob_update_draw_handler_aircraft);
 	v1->drawjob->flags |= 0x40000000u;
 }
 
@@ -5642,7 +5639,6 @@ void entity_set_draw_handlers(Entity *a1)
 	Entity *v1; // esi@1
 	enum UNIT_ID v2; // eax@1
 	void(*v3)(Entity *, DrawJob *); // edx@3
-	DrawJob *v4; // eax@5
 
 	v1 = a1;
 	v2 = a1->unit_id;
@@ -5658,9 +5654,8 @@ void entity_set_draw_handlers(Entity *a1)
 		v3 = drawjob_update_handler_448750_infantry;
 		a1->_28C_stru26_stru0__or__stru27_stru0__or__EntityBuildingAttachment_stru14__or__EntityOilTankerAttachment_stru70 = _479740_stru27_array[0].data[11];
 	}
-	v4 = draw_list_add(a1->sprite, (void(*)(void *, DrawJob *))v3);
-	v1->drawjob = v4;
-	v4->on_update_handler_param = v1;
+
+	v1->drawjob = draw_list_add(v1, (DrawUpdateHandler)v3);
 	entity_410710_status_bar(v1);
 	v1->drawjob->flags |= 0x40000000u;
 }
@@ -5672,8 +5667,6 @@ void entity_410DC0_building(Entity *a1)
 	EntityBuildingState *v2; // edi@1
 	EntityBuildingAttachment_stru14 *v3; // eax@1
 	EntityBuildingAttachment_stru14 *v4; // eax@2
-	Sprite *v5; // ecx@2
-	DrawJob *v6; // eax@2
 
 	v1 = a1;
 	v2 = (EntityBuildingState *)a1->state;
@@ -5686,12 +5679,9 @@ void entity_410DC0_building(Entity *a1)
 		LOBYTE_HEXRAYS(v2->pstru14->field_8) = 0;
 		v4 = v2->pstru14;
 		v1->field_288 = 0;
-		v5 = v1->sprite;
 		v1->_28C_stru26_stru0__or__stru27_stru0__or__EntityBuildingAttachment_stru14__or__EntityOilTankerAttachment_stru70 = v4;
 		v1->pfn_render_DrawUnitsAndUi = render_sprt_draw_handler;
-		v6 = draw_list_add(v5, (void(*)(void *, DrawJob *))drawjob_update_handler_4486D0_building);
-		v1->drawjob = v6;
-		v6->on_update_handler_param = v1;
+		v1->drawjob = draw_list_add(v1, (DrawUpdateHandler)drawjob_update_handler_4486D0_building);
 		entity_410BE0_status_bar(v1);
 		v1->drawjob->flags |= 0x40000000u;
 	}
@@ -5704,8 +5694,6 @@ void entity_oil_tanker_initialize_state(Entity *a1)
 	EntityOilTankerState *v2; // edi@1
 	EntityOilTankerAttachment_stru70 *v3; // eax@1
 	EntityOilTankerAttachment_stru70 *v4; // eax@2
-	Sprite *v5; // ecx@2
-	DrawJob *v6; // eax@2
 	void *v7; // edx@2
 	void *v8; // edi@2
 	int v9; // edx@2
@@ -5734,12 +5722,9 @@ void entity_oil_tanker_initialize_state(Entity *a1)
 		LOBYTE_HEXRAYS(v2->pstru70->field_8) = 0;
 		v4 = v2->pstru70;
 		v1->field_288 = 0;
-		v5 = v1->sprite;
 		v1->_28C_stru26_stru0__or__stru27_stru0__or__EntityBuildingAttachment_stru14__or__EntityOilTankerAttachment_stru70 = v4;
 		v1->pfn_render_DrawUnitsAndUi = render_sprt_draw_handler;
-		v6 = draw_list_add(v5, (void(*)(void *, DrawJob *))drawjob_update_handler_oiltanker);
-		v1->drawjob = v6;
-		v6->on_update_handler_param = v1;
+		v1->drawjob = draw_list_add(v1, (DrawUpdateHandler)drawjob_update_handler_oiltanker);
 		v7 = (void *)(*((_DWORD *)v1->state + 28) + 9);
 		memset(v7, 1u, 0x120u);
 		memset(v7, 0xA6u, 0x20u);
@@ -7786,7 +7771,7 @@ Sprite *sprite_create(enum MOBD_ID mobd_item_idx, Script *script, Sprite *parent
 		v5 = sprite_list_free_pool;
 		result = (Sprite *)draw_list_add(
 			sprite_list_free_pool,
-			(void(*)(void *, DrawJob *))j_drawjob_update_handler_426C40_default_sprite_handler);
+			(DrawUpdateHandler)j_drawjob_update_handler_426C40_default_sprite_handler);
 		if (result)
 		{
 			sprite_list_free_pool = v5->next;
@@ -12672,7 +12657,7 @@ Bitmap *MAPD_Draw(enum MAPD_ID mapd_idx, unsigned int image_id, int z_index)
 				v7 = bitmap_list_free_pool;
 				result = (Bitmap *)draw_list_add(
 					bitmap_list_free_pool,
-					(void(*)(void *, DrawJob *))j_drawjob_update_handler_mapd_menu);
+					(DrawUpdateHandler)j_drawjob_update_handler_mapd_menu);
 				v7->draw_job = (DrawJob *)result;
 				if (result)
 				{

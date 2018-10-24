@@ -62,12 +62,6 @@ void render_do_draw_cursor_43A910(bool _CF, char _ZF, char _SF, unsigned __int8 
 void render_draw_43B59F(bool _CF, char _ZF, char _SF, unsigned __int8 _OF, unsigned __int8 *sprite_data, unsigned __int16 x, unsigned __int16 y, unsigned __int16 width, __int16 height, unsigned __int8 *palette, unsigned __int8 *dst_surface, __int16 dst_surface_x, unsigned __int16 dst_surface_y, unsigned __int16 dst_surface_pitch);
 void render_draw_43A9E7(char *a1, unsigned __int16 a2, unsigned __int16 a3, unsigned __int16 a4, __int16 a5, int a7, __int16 a8, unsigned __int16 a9, unsigned __int16 a10);
 void render_draw_43B4A6(unsigned __int8 *sprite_data, unsigned __int16 clipped_x, unsigned __int16 clipped_y, unsigned __int16 clipped_width, __int16 clipped_height, unsigned __int8 *palette, int dst_surface, unsigned __int16 dst_surface_x, unsigned __int16 dst_surface_y, unsigned __int16 dst_surface_pitch); // idb
-bool draw_list_alloc();
-DrawJob *draw_list_add(void *param, void(*on_update_handler)(void *, DrawJob *)); // idb
-bool draw_list_update_and_draw();
-void draw_list_update(DrawJobList *list);
-void draw_list_z_order(DrawJobList *list);
-void draw_list_free();
 void _40E400_set_palette(Palette *palette);
 void _431980_update_primary_palette(Palette *palette_entries);
 void _408410_dim_palette();
@@ -79,6 +73,20 @@ void _40E6B0_set_sys_colors();
 void _40E560_flip_gdi_update_syscolors();
 int REND_SetRoutines();
 
+
+
+typedef void(*DrawUpdateHandler)(void *, DrawJob *);
+bool draw_list_alloc();
+DrawJob *draw_list_add(void *update_handler_param, DrawUpdateHandler on_update_handler);
+bool draw_list_update_and_draw();
+void draw_list_update(DrawJobList *list);
+void draw_list_z_order(DrawJobList *list);
+void draw_list_free();
+
+
+
+int render_unproject_x(int global_x);
+int render_unproject_y(int global_y);
 int render_get_color_blue();
 void render_draw_line(int src_global_x, int src_global_y, int dst_global_x, int dst_global_y, int color_idx);
 void render_outline_tile(
