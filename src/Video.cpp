@@ -818,7 +818,7 @@ int VIDEO_Play(int id)
     if (!v1)
     {
         draw_list_alloc();
-        REND_DirectDrawClearScreen(1);
+        gRenderer->ClearTarget(64, 64, 64);
         sprintf(a1, (const char *)aSFmvMh_fmv_vbc, app_root_dir);
         if (VIDEO_ReadAndAllocDrawJob(a1, 0, 0, 100) == 1 && !VIDEO_IsVideoInvalid())
         {
