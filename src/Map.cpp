@@ -2,8 +2,10 @@
 
 #include "src/_unsorted_data.h"
 #include "src/_unsorted_functions.h"
+#include "src/RenderDrawHandlers.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Sprite.h"
 
 #include "src/Engine/Entity.h"
 

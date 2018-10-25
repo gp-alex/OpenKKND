@@ -3,9 +3,10 @@
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 #include "src/kknd.h"
-#include "src/Script.h"
 #include "src/Map.h"
 #include "src/Pathfind.h"
+#include "src/Script.h"
+#include "src/Sprite.h"
 
 #include "Engine/Infrastructure/EntityRepository.h"
 

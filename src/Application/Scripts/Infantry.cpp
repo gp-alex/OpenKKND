@@ -1,14 +1,16 @@
-#include "src/kknd.h"
-#include "src/Random.h"
-#include "src/stru31.h"
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-#include "src/Script.h"
-#include "src/ScriptEvent.h"
 #include "src/Cursor.h"
-#include "src/Sound.h"
+#include "src/kknd.h"
 #include "src/Map.h"
 #include "src/Pathfind.h"
+#include "src/Random.h"
+#include "src/RenderDrawHandlers.h"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
+#include "src/Sprite.h"
+#include "src/Sound.h"
+#include "src/stru31.h"
 
 #include "src/Engine/Entity.h"
 #include "src/Engine/EntityFactory.h"
@@ -3916,7 +3918,7 @@ void script_4188F0(Script *a1)
         v4 = v5;
         if (v5)
         {
-            v5->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448680;
+            v5->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448680_repair;
             sprite_load_mobd(v5, CURSOR_MOBD_OFFSET_REPAIR);
             v4->z_index = 0;
             v4->_60_mobd_anim_speed = 0;
@@ -3997,7 +3999,7 @@ void script_418A10(Script *a1)
         v4 = v5;
         if (v5)
         {
-            v5->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448680;
+            v5->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448680_repair;
             sprite_load_mobd(v5, CURSOR_MOBD_OFFSET_REPAIR);
             v4->z_index = 0;
             v4->_60_mobd_anim_speed = 0;

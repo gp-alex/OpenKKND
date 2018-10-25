@@ -1,9 +1,8 @@
-#include "src/kknd.h"
-
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-
+#include "src/kknd.h"
 #include "src/Random.h"
+#include "src/Sprite.h"
 
 #include "Engine/Entity.h"
 

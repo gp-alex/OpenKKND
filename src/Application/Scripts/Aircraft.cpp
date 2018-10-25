@@ -3,8 +3,10 @@
 #include "src/kknd.h"
 #include "src/Random.h"
 #include "src/Render.h"
+#include "src/RenderDrawHandlers.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Sprite.h"
 #include "src/stru31.h"
 
 #include "Engine/Entity.h"
@@ -39,7 +41,7 @@ void entity_401110_aircraft(Entity *a1)
                 SCRIPT_FUNCTION,
                 v1->stru60.ptr_0);
             v2->turret_sprite = v3;
-            v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448580_entity_aircraft_turret;
+            v3->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_448580_entity_aircraft_turret;
             v2->turret_sprite->drawjob->flags |= 0x10000000u;
             v2->turret_sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[v1->player_side]];
             v4 = v2->turret_sprite->script;
@@ -153,7 +155,7 @@ void UNIT_Handler_Aircraft(Script *a1)
         v2->sprite->x = v7;
         v2->sprite->field_88_unused = 1;
         v2->sprite->y = v8;
-        v2->sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448510_aircraft;
+        v2->sprite->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_448510_aircraft;
         v2->sprite->z_index = 46080;
         v2->script->event_handler = EventHandler_Aircraft;
         v10 = v2->sprite;
@@ -196,7 +198,7 @@ void entity_mode_401480_aircraft(Entity *a1)
         if (v3)
         {
             v3->z_index = v1->sprite->z_index + 256;
-            v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448510_aircraft;
+            v3->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_448510_aircraft;
         }
         script_sleep(v1->script, 20);
     }
@@ -319,7 +321,7 @@ void entity_mode_4016B0_aircraft(Entity *a1)
                 sprite_load_mobd(v4, v5);
             v7 = v6->drawjob;
             v6->z_index = v1->sprite->z_index;
-            v7->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_448580_entity_aircraft_turret;
+            v7->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_448580_entity_aircraft_turret;
             v8 = v6->script;
             v6->param = v3;
             v8->param = 0;

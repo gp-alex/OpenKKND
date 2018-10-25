@@ -5,18 +5,20 @@
 
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
-#include "src/Random.h"
-#include "src/Render.h"
-#include "src/stru29.h"
-#include "src/stru31.h"
-#include "src/Script.h"
-#include "src/ScriptEvent.h"
 #include "src/Cursor.h"
 #include "src/Coroutine.h"
-#include "src/Sound.h"
-#include "src/Video.h"
 #include "src/Map.h"
 #include "src/Pathfind.h"
+#include "src/Random.h"
+#include "src/Render.h"
+#include "src/RenderDrawHandlers.h"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
+#include "src/Sound.h"
+#include "src/Sprite.h"
+#include "src/stru29.h"
+#include "src/stru31.h"
+#include "src/Video.h"
 
 #include "src/Application/Game.h"
 #include "src/Application/GameFactory.h"
@@ -244,7 +246,7 @@ void script_401C30_sidebar(Script *a1)
 			v2->field_88_unused = 1;
 			v2->y = 0x13800;
 			v2->z_index = 3;
-			v4->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+			v4->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 			v2->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
 			v2->drawjob->flags |= 0x10000000u;
 			sprite_4272E0_load_mobd_item(v2, 2276, 0);
@@ -4004,7 +4006,7 @@ Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int heig
 		v5->sprite_height_step = sidebar_horizontal == 0 ? v8 : 0;
 		if (!v6)
 			v5->sprite = sprite_create(MOBD_SIDEBAR_BUTTONS, v5->script, 0);
-		v5->sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+		v5->sprite->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 		v5->sprite->field_88_unused = 1;
 		v5->sprite->x = v5->x;
 		v5->sprite->field_88_unused = 1;
@@ -4501,7 +4503,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 						lookup_idx = 15 * (v11 - *(_DWORD *)v4) / v11;
 					if (v10)
 					{
-						v10->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+						v10->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 						v13 = *(_DWORD *)(v4 + 4);
 						if (v13 <= 1)
 						{
@@ -4527,7 +4529,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 					}
 					if (v9)
 					{
-						v9->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+						v9->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 						sprite_4272E0_load_mobd_item(v9, 2312, lookup_idx);
 						v16 = v9->x + 256;
 						v17 = v9->z_index + 2;
@@ -4798,7 +4800,7 @@ SidebarButton *sidebar_add_buttton_internal(
 		v8->ptr_1C = 0;
 		v14 = sprite_create(MOBD_SIDEBAR_BUTTONS, v13, 0);
 		v8->sprite = v14;
-		v14->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+		v14->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 		v8->sprite->param = v8;
 		if (v10)
 		{
@@ -5623,16 +5625,13 @@ void entity_410CF0_aircraft(Entity *a1)
 {
 	Entity *v1; // esi@1
 	Sprite *v2; // ecx@1
-	DrawJob *v3; // eax@1
 
 	v1 = a1;
 	v2 = a1->sprite;
 	v1->field_288 = 0;
 	v1->pfn_render_DrawUnitsAndUi = render_sprt_draw_handler;
 	v1->_28C_stru26_stru0__or__stru27_stru0__or__EntityBuildingAttachment_stru14__or__EntityOilTankerAttachment_stru70 = _4795F0_stru26_array[0].data[27];
-	v3 = draw_list_add(v2, (void(*)(void *, DrawJob *))drawjob_update_draw_handler_aircraft);
-	v1->drawjob = v3;
-	v3->on_update_handler_param = v1;
+	v1->drawjob = draw_list_add(v1, (DrawUpdateHandler)drawjob_update_draw_handler_aircraft);
 	v1->drawjob->flags |= 0x40000000u;
 }
 
@@ -5642,7 +5641,6 @@ void entity_set_draw_handlers(Entity *a1)
 	Entity *v1; // esi@1
 	enum UNIT_ID v2; // eax@1
 	void(*v3)(Entity *, DrawJob *); // edx@3
-	DrawJob *v4; // eax@5
 
 	v1 = a1;
 	v2 = a1->unit_id;
@@ -5658,9 +5656,8 @@ void entity_set_draw_handlers(Entity *a1)
 		v3 = drawjob_update_handler_448750_infantry;
 		a1->_28C_stru26_stru0__or__stru27_stru0__or__EntityBuildingAttachment_stru14__or__EntityOilTankerAttachment_stru70 = _479740_stru27_array[0].data[11];
 	}
-	v4 = draw_list_add(a1->sprite, (void(*)(void *, DrawJob *))v3);
-	v1->drawjob = v4;
-	v4->on_update_handler_param = v1;
+
+	v1->drawjob = draw_list_add(v1, (DrawUpdateHandler)v3);
 	entity_410710_status_bar(v1);
 	v1->drawjob->flags |= 0x40000000u;
 }
@@ -5672,8 +5669,6 @@ void entity_410DC0_building(Entity *a1)
 	EntityBuildingState *v2; // edi@1
 	EntityBuildingAttachment_stru14 *v3; // eax@1
 	EntityBuildingAttachment_stru14 *v4; // eax@2
-	Sprite *v5; // ecx@2
-	DrawJob *v6; // eax@2
 
 	v1 = a1;
 	v2 = (EntityBuildingState *)a1->state;
@@ -5686,12 +5681,9 @@ void entity_410DC0_building(Entity *a1)
 		LOBYTE_HEXRAYS(v2->pstru14->field_8) = 0;
 		v4 = v2->pstru14;
 		v1->field_288 = 0;
-		v5 = v1->sprite;
 		v1->_28C_stru26_stru0__or__stru27_stru0__or__EntityBuildingAttachment_stru14__or__EntityOilTankerAttachment_stru70 = v4;
 		v1->pfn_render_DrawUnitsAndUi = render_sprt_draw_handler;
-		v6 = draw_list_add(v5, (void(*)(void *, DrawJob *))drawjob_update_handler_4486D0_building);
-		v1->drawjob = v6;
-		v6->on_update_handler_param = v1;
+		v1->drawjob = draw_list_add(v1, (DrawUpdateHandler)drawjob_update_handler_4486D0_building);
 		entity_410BE0_status_bar(v1);
 		v1->drawjob->flags |= 0x40000000u;
 	}
@@ -5704,8 +5696,6 @@ void entity_oil_tanker_initialize_state(Entity *a1)
 	EntityOilTankerState *v2; // edi@1
 	EntityOilTankerAttachment_stru70 *v3; // eax@1
 	EntityOilTankerAttachment_stru70 *v4; // eax@2
-	Sprite *v5; // ecx@2
-	DrawJob *v6; // eax@2
 	void *v7; // edx@2
 	void *v8; // edi@2
 	int v9; // edx@2
@@ -5734,12 +5724,9 @@ void entity_oil_tanker_initialize_state(Entity *a1)
 		LOBYTE_HEXRAYS(v2->pstru70->field_8) = 0;
 		v4 = v2->pstru70;
 		v1->field_288 = 0;
-		v5 = v1->sprite;
 		v1->_28C_stru26_stru0__or__stru27_stru0__or__EntityBuildingAttachment_stru14__or__EntityOilTankerAttachment_stru70 = v4;
 		v1->pfn_render_DrawUnitsAndUi = render_sprt_draw_handler;
-		v6 = draw_list_add(v5, (void(*)(void *, DrawJob *))drawjob_update_handler_oiltanker);
-		v1->drawjob = v6;
-		v6->on_update_handler_param = v1;
+		v1->drawjob = draw_list_add(v1, (DrawUpdateHandler)drawjob_update_handler_oiltanker);
 		v7 = (void *)(*((_DWORD *)v1->state + 28) + 9);
 		memset(v7, 1u, 0x120u);
 		memset(v7, 0xA6u, 0x20u);
@@ -7674,704 +7661,6 @@ LABEL_18:
         script_sleep(v1, _468410_stru49_array[v16]._4_some_task_flags);
 	}
 }
-
-//----- (00426C40) --------------------------------------------------------
-void drawjob_update_handler_426C40_mobd(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	a2->job_details.z_index = a1->z_index;
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8) - (_47C380_mapd.mapd_cplc_render_y >> 8) - a1->_54_inside_mobd_ptr4->y_offset;
-		a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
-		a2->job_details.params = render_default_stru1;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-		a2->job_details.params = render_default_stru1;
-	}
-}
-
-//----- (00426CB0) --------------------------------------------------------
-bool sprite_list_alloc(const int num_sprites)
-{
-	currently_running_lvl_mobd = (DataMobd *)LVL_FindSection((const char *)MOBD);
-	if (currently_running_lvl_mobd)
-	{
-		currently_running_lvl_mobd_valid = 1;
-		if (sprite_list = new Sprite[num_sprites])
-		{
-			sprite_list_free_pool = sprite_list;
-            sprite_list_free_pool->prev = (Sprite *)&sprite_list_free_pool;
-			for (int i = 0; i < num_sprites - 1; ++i)
-			{
-                sprite_list[i].next = &sprite_list[i + 1];
-			}
-            sprite_list[num_sprites - 1].next = (Sprite *)&sprite_list_free_pool;
-			sprite_list_47A4A4 = (Sprite *)&sprite_list_47A4A0;
-			sprite_list_47A4A0 = (Sprite *)&sprite_list_47A4A0;
-			sprite_init_47A400();
-			j_drawjob_update_handler_426C40_default_sprite_handler = drawjob_update_handler_426C40_mobd;
-			return true;
-		}
-        return false;
-	}
-	else
-	{
-		currently_running_lvl_mobd_valid = 0;
-		return true;
-	}
-}
-
-//----- (00426D40) --------------------------------------------------------
-void sprite_init_47A400()
-{
-	sprite_47A400.parent = 0;
-	sprite_47A400.z_index = 0;
-	sprite_47A400.y = 0;
-	sprite_47A400.x = 0;
-	sprite_47A400.z_speed = 0;
-	sprite_47A400.y_speed = 0;
-	sprite_47A400.x_speed = 0;
-	sprite_47A400.z_speed_factor_2 = 0;
-	sprite_47A400.y_speed_factor_2 = 0;
-	sprite_47A400.x_speed_factor_2 = 0;
-	sprite_47A400.z_speed_limit = 0x7FFFFFFF;
-	sprite_47A400.y_speed_limit = 0x7FFFFFFF;
-	sprite_47A400.x_speed_limit = 0x7FFFFFFF; // max signed int
-	sprite_47A400.z_speed_factor_1 = 0;
-	sprite_47A400.y_speed_factor_1 = 0;
-	sprite_47A400.x_speed_factor_1 = 0;
-	sprite_47A400._64_mobd_anim_related = 0;
-	sprite_47A400._60_mobd_anim_speed = 0;
-	sprite_47A400._inside_mobd_item = 0;
-	sprite_47A400._inside_mobd_item_2 = 0;
-	sprite_47A400._54_inside_mobd_ptr4 = 0;
-	sprite_47A400.script = 0;
-	sprite_47A400.cplc_ptr1 = 0;
-	sprite_47A400.cplc_stru0 = 0;
-	sprite_47A400.cplc_ptr1_pstru20 = 0;
-	sprite_47A400.param = 0;
-	sprite_47A400._80_entity__stru29__sprite__initial_hitpoints = 0;
-	sprite_47A400.field_84 = 0;
-	sprite_47A400.pstru7 = _4640E0_stru7_array;
-	sprite_47A400.pstru58 = 0;
-	sprite_47A400.field_88_unused = 0;
-	sprite_47A400.field_8C_infantry_damage = 0;
-	sprite_47A400.field_8E_vehicle_damage = 0;
-	sprite_47A400.field_90_building_damage = 0;
-}
-// 47A400: using guessed type Sprite sprite_47A400;
-
-//----- (00426E00) --------------------------------------------------------
-Sprite *sprite_create(enum MOBD_ID mobd_item_idx, Script *script, Sprite *parent)
-{
-	Script *v3; // ebp@1
-	Sprite *result; // eax@2
-	Sprite *v5; // ebx@3
-	enum MOBD_ID v6; // [sp+10h] [bp-4h]@1
-
-	v6 = mobd_item_idx;
-	v3 = script;
-	if ((Sprite **)sprite_list_free_pool == &sprite_list_free_pool)
-	{
-		result = 0;
-	}
-	else
-	{
-		v5 = sprite_list_free_pool;
-		result = (Sprite *)draw_list_add(
-			sprite_list_free_pool,
-			(void(*)(void *, DrawJob *))j_drawjob_update_handler_426C40_default_sprite_handler);
-		if (result)
-		{
-			sprite_list_free_pool = v5->next;
-			memcpy(v5, &sprite_47A400, sizeof(Sprite));
-			v5->next = (Sprite *)&sprite_list_47A4A0;
-			v5->prev = sprite_list_47A4A4;
-			sprite_list_47A4A4->next = v5;
-			sprite_list_47A4A4 = v5;
-			v5->mobd_id = v6;
-			v5->script = v3;
-			if (v3)
-				v3->sprite = v5;
-			v5->drawjob = (DrawJob *)result;
-			if (parent)
-			{
-				v5->parent = parent;
-				v5->x = parent->x;
-				v5->y = parent->y;
-				v5->z_index = parent->z_index;
-				if (!v3)
-					v5->script = parent->script;
-			}
-			result = v5;
-		}
-	}
-	return result;
-}
-// 47A400: using guessed type Sprite sprite_47A400;
-
-//----- (00426EC0) --------------------------------------------------------
-Sprite *sprite_create_scripted(
-    enum MOBD_ID mobd_item_idx, Sprite *parent, void(*script)(Script *), enum SCRIPT_ROUTINE_TYPE task_type,
-    Entity_stru_dmg_related *a5
-)
-{
-	Sprite *v5; // esi@1
-	enum MOBD_ID v6; // edi@1
-	Sprite *result; // eax@3
-
-	v5 = parent;
-	v6 = mobd_item_idx;
-
-	if (!script)
-	{
-		result = 0;
-	LABEL_8:
-		result = sprite_create(v6, (Script *)result, v5);
-		if (result && v5)
-		{
-			if (a5)
-			{
-				result->x = a5->x_offset + v5->x;
-				result->y = a5->y_offset + v5->y;
-				result->z_index = a5->z_index_offset + v5->z_index;
-			}
-		}
-		return result;
-	}
-	if (task_type == SCRIPT_FUNCTION)
-		result = (Sprite *)script_create_function(SCRIPT_TYPE_INVALID, script);
-	else if (task_type == SCRIPT_COROUTINE)
-		result = (Sprite *)script_create_coroutine(SCRIPT_TYPE_INVALID, script, 0);
-    else
-    {
-        __debugbreak();
-        result = false;
-    }
-	if (result)
-		goto LABEL_8;
-	return result;
-}
-
-//----- (00426F40) --------------------------------------------------------
-void sprite_list_remove(Sprite *a1)
-{
-	Sprite *v1; // esi@1
-	DrawJob *v2; // eax@1
-	DataCplcItem_ptr1 *v3; // eax@3
-	DataCplc_stru0 *v4; // ecx@6
-
-	v1 = a1;
-	v2 = a1->drawjob;
-	if (v2)
-		v2->flags |= 0x80000000;
-	v3 = a1->cplc_ptr1;
-	if (v3 && v3->_20_stru20.sprite == a1)
-		v3->_20_stru20.sprite = 0;
-	v4 = a1->cplc_stru0;
-	if (v4)
-		cplc_4062E0_stru0_list_remove(v4);
-	v1->prev->next = v1->next;
-	v1->next->prev = v1->prev;
-	v1->next = sprite_list_free_pool;
-	sprite_list_free_pool = v1;
-}
-
-//----- (00426F90) --------------------------------------------------------
-void sprite_list_remove_scripted(Sprite *a1)
-{
-	Sprite *v1; // esi@1
-	Script *v2; // ecx@1
-	DrawJob *v3; // eax@3
-	DataCplcItem_ptr1 *v4; // eax@5
-	DataCplc_stru0 *v5; // ecx@8
-
-	v1 = a1;
-	v2 = a1->script;
-	if (v2)
-	{
-		script_deinit(v2);
-		v1->script = 0;
-	}
-	v3 = v1->drawjob;                             // INLINED  426F40  sprite_list_remove
-	if (v3)
-		v3->flags |= 0x80000000;
-	v4 = v1->cplc_ptr1;
-	if (v4 && v4->_20_stru20.sprite == v1)
-		v4->_20_stru20.sprite = 0;
-	v5 = v1->cplc_stru0;
-	if (v5)
-		cplc_4062E0_stru0_list_remove(v5);
-	v1->prev->next = v1->next;
-	v1->next->prev = v1->prev;
-	v1->next = sprite_list_free_pool;
-	sprite_list_free_pool = v1;
-}
-
-//----- (00427000) --------------------------------------------------------
-Sprite *sprite_list_find_by_mobd_id(enum MOBD_ID mobd_id)
-{
-	Sprite *result; // eax@1
-
-	result = sprite_list_47A4A0;
-	if ((Sprite **)sprite_list_47A4A0 == &sprite_list_47A4A0)
-	{
-	LABEL_4:
-		result = 0;
-	}
-	else
-	{
-		while (result->mobd_id != mobd_id)
-		{
-			result = result->next;
-			if ((Sprite **)result == &sprite_list_47A4A0)
-				goto LABEL_4;
-		}
-	}
-	return result;
-}
-
-//----- (00427020) --------------------------------------------------------
-void sprite_list_update_positions()
-{
-	Sprite *i; // esi@2
-	Script *v1; // eax@4
-	int v2; // eax@5
-
-	if (currently_running_lvl_mobd_valid)
-	{
-		bodx_404D50_sprite_list((Sprite *)&sprite_list_47A4A0);
-		for (i = sprite_list_47A4A0; (Sprite **)i != &sprite_list_47A4A0; i = i->next)
-		{
-			if (is_async_execution_supported && (v1 = i->script) != 0)
-				v2 = v1->field_1C & 1;
-			else
-				v2 = 1;
-			if (!v2)
-				continue;
-
-			i->x += i->x_speed;
-            if (i->x_speed > 0)
-                boxd_404F40_sprite(i, 0, 1);
-            else if (i->x_speed < 0)
-                boxd_404F40_sprite(i, 1, 1);
-
-			i->y += i->y_speed;
-            if (i->y_speed > 0)
-                boxd_404F40_sprite(i, 2, 1);
-            else if (i->y_speed < 0)
-                boxd_404F40_sprite(i, 3, 1);
-
-			i->z_index += i->z_speed;
-			if (i->x_speed == 0 && i->y_speed == 0)
-			{
-                boxd_404F40_sprite(i, 0, i->field_88_unused ? 1 : 0);
-			}
-
-			i->field_88_unused = 1;
-			if (i->x_speed < 0)
-			{
-				i->x_speed += i->x_speed_factor_1;
-				if (i->x_speed > 0)
-                    i->x_speed = 0;
-			}
-			else
-			{
-				i->x_speed -= i->x_speed_factor_1;
-				if (i->x_speed < 0)
-                    i->x_speed = 0;
-			}
-
-            if (i->x_speed_factor_2)
-            {
-                i->x_speed += i->x_speed_factor_2;
-                if (i->x_speed < 0)
-                {
-                    if (i->x_speed < -i->x_speed_limit)
-                    {
-                        i->x_speed = -i->x_speed_limit;
-                        if (i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_X_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-                        }
-                    }
-                }
-                else
-                {
-                    if (i->x_speed > i->x_speed_limit)
-                    {
-                        i->x_speed = i->x_speed_limit;
-                        if (i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_X_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-                        }
-                    }
-                }
-            }
-
-
-			if (i->y_speed < 0)
-			{
-				i->y_speed += i->y_speed_factor_1;
-				if (i->y_speed > 0)
-                    i->y_speed = 0;
-			}
-			else
-			{
-				i->y_speed -= i->y_speed_factor_1;
-				if (i->y_speed < 0)
-                    i->y_speed = 0;
-			}
-
-            if (i->y_speed_factor_2)
-            {
-                i->y_speed += i->y_speed_factor_2;
-                if (i->y_speed < 0)
-                {
-                    if (i->y_speed < -i->y_speed_limit)
-                    {
-                        i->y_speed = -i->y_speed_limit;
-                        if (i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_Y_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-
-                        }
-                    }
-                }
-                else
-                {
-                    if (i->y_speed > i->y_speed_limit)
-                    {
-                        i->y_speed = i->y_speed_limit;
-                        if (i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_Y_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-                        }
-                    }
-                }
-            }
-
-			if (i->z_speed < 0)
-			{
-				i->z_speed += i->z_speed_factor_1;
-				if (i->z_speed > 0)
-                    i->z_speed = 0;
-			}
-			else
-			{
-				i->z_speed -= i->z_speed_factor_1;
-				if (i->z_speed < 0)
-                    i->z_speed = 0;
-			}
-
-			if (i->z_speed_factor_2)
-			{
-				i->z_speed += i->z_speed_factor_2;
-				if (i->z_speed < 0)
-				{
-                    if (i->z_speed < -i->z_speed_limit)
-                    {
-                        i->z_speed = -i->z_speed_limit;
-                        if (i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_Z_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-                        }
-                    }
-				}
-				else
-				{
-                    if (i->z_speed > i->z_speed_limit)
-                    {
-                        i->z_speed = i->z_speed_limit;
-                        if (!i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_Z_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-                        }
-                    }
-				}
-			}
-		}
-	}
-}
-
-//----- (004272A0) --------------------------------------------------------
-void sprite_load_mobd(Sprite *a1, int offset)
-{
-	if (a1)
-	{
-        DataMobdItem_stru0 **v2 = &currently_running_lvl_mobd[a1->mobd_id].items->_[offset / 4];
-		a1->_inside_mobd_item = v2;
-        a1->_inside_mobd_item_2 = v2;
-
-		if (*v2)
-			a1->_60_mobd_anim_speed = ((DataMobdItem_stru2 *)v2)->flags;
-		a1->_64_mobd_anim_related = -1;
-
-		sprite_427460_init_mobd_item(a1);
-	}
-}
-
-//----- (004272E0) --------------------------------------------------------
-void sprite_4272E0_load_mobd_item(Sprite *a1, int lookup_table_offset, int lookup_idx)
-{
-    auto lookup_table = (DataMobdItem_stru2 **)(
-        (char *)&currently_running_lvl_mobd[a1->mobd_id].items->_ + lookup_table_offset
-    );
-    auto v = lookup_table[lookup_idx];
-
-    DataMobdItem_stru0 **v3; // eax@1
-	v3 = *(DataMobdItem_stru0 ***)(
-        (char *)&currently_running_lvl_mobd[a1->mobd_id].items->_ + lookup_table_offset + 4 * lookup_idx
-    );
-
-	a1->_inside_mobd_item = (DataMobdItem_stru0 **)v;
-	if (v)
-	{
-		if (v->flags)
-			a1->_60_mobd_anim_speed = v->flags;
-		a1->_64_mobd_anim_related = -1;
-		a1->_inside_mobd_item_2 = (DataMobdItem_stru0 **)v;
-		sprite_427460_init_mobd_item(a1);
-	}
-}
-
-//----- (00427320) --------------------------------------------------------
-void sprite_427320_load_mobd_item_sound(Sprite *a1, int offset)
-{
-    DataMobdItem_stru0 **v2; // esi@1
-    DataMobdItem_stru0 **v3; // eax@3
-    DataMobdItem_stru0 **v6; // edx@6
-    DataMobdItem_stru0 **v7; // eax@6
-	DataMobdItem_stru0 *v9; // edx@6
-	Sprite_stru58 *v10; // eax@6
-	enum SOUND_ID v11; // edx@6
-
-	v2 = a1->_inside_mobd_item;
-	if (v2)
-	{
-		v6 = (DataMobdItem_stru0 **)((char *)currently_running_lvl_mobd[a1->mobd_id].items + offset);
-		v7 = (DataMobdItem_stru0 **)((char *)v6 + (unsigned int)((char *)a1->_inside_mobd_item_2 - (char *)v2));
-		a1->_inside_mobd_item = v6;
-		a1->_inside_mobd_item_2 = v7;
-		a1->_54_inside_mobd_ptr4 = v7[0];
-		v9 = a1->_54_inside_mobd_ptr4;
-		v10 = (Sprite_stru58 *)v7[4];
-		a1->field_88_unused = 1;
-		a1->pstru58 = v10;
-		v11 = v9->_14_sound_id;
-		if (v11)
-			sprite_408800_play_sound(a1, v11, 16, 0);
-	}
-	else if (a1)
-	{
-        sprite_4272E0_load_mobd_item(a1, offset, 0);
-		/*v3 = (DataMobdItem_stru0 **)((char *)currently_running_lvl_mobd[a1->mobd_id].items + offset);
-		a1->_inside_mobd_item = v3;
-        a1->_inside_mobd_item_2 = a1->_inside_mobd_item;
-		if (v3[0])
-			a1->_60_mobd_field_0_int = (int)v3[0];
-		a1->field_64 = -1;
-		sprite_427460_init_mobd_item(a1);*/
-	}
-}
-
-//----- (004273B0) --------------------------------------------------------
-void sprite_4273B0_load_mobd_item_sound(Sprite *a1, int mobd_lookup_offset, int mobd_lookup_id)
-{
-    DataMobdItem_stru0 **v3; // esi@1
-    DataMobdItem_stru0 **v4; // eax@2
-    DataMobdItem_stru0 **v7; // eax@6
-    DataMobdItem_stru0 **v8; // edx@6
-    DataMobdItem_stru0 **v9; // eax@7
-	DataMobdItem_stru0 *v11; // edx@7
-	Sprite_stru58 *v12; // eax@7
-	enum SOUND_ID v13; // edx@7
-
-	v3 = a1->_inside_mobd_item;
-	if (v3)
-	{
-		v7 = (DataMobdItem_stru0 **)((char *)a1->_inside_mobd_item_2 - (char *)v3);
-		v8 = *(DataMobdItem_stru0 ***)((char *)&currently_running_lvl_mobd[a1->mobd_id].items->_
-			+ 4 * mobd_lookup_id
-			+ mobd_lookup_offset);
-		a1->_inside_mobd_item = v8;
-		if (v8)
-		{
-			v9 = (DataMobdItem_stru0 **)((char *)v7 + (_DWORD)v8);
-			a1->_inside_mobd_item_2 = v9;
-
-			a1->_54_inside_mobd_ptr4 = v9[0];
-			v11 = a1->_54_inside_mobd_ptr4;
-			v12 = (Sprite_stru58 *)(*v9)->ptr_10;
-			a1->field_88_unused = 1;
-			a1->pstru58 = v12;
-			v13 = v11->_14_sound_id;
-			if (v13)
-				sprite_408800_play_sound(a1, v13, 16, 0);
-		}
-	}
-	else
-	{
-        sprite_4272E0_load_mobd_item(a1, mobd_lookup_offset, mobd_lookup_id);
-		/*v4 = *(DataMobdItem_stru0 ***)((char *)&currently_running_lvl_mobd[a1->mobd_id].items->_
-			+ 4 * mobd_lookup_id
-			+ mobd_lookup_offset);
-		a1->_inside_mobd_item = v4;
-		if (v4)
-		{
-			if (v4[0])
-				a1->_60_mobd_anim_speed = (int)v4[0];
-			a1->field_64 = -1;
-			a1->_inside_mobd_item_2 = a1->_inside_mobd_item;
-			sprite_427460_init_mobd_item(a1);
-		}*/
-	}
-}
-
-//----- (00427450) --------------------------------------------------------
-void sprite_release_mobd_item(Sprite *a1)
-{
-	a1->_inside_mobd_item = 0;
-	a1->_inside_mobd_item_2 = 0;
-	a1->_54_inside_mobd_ptr4 = 0;
-	a1->pstru58 = 0;
-}
-
-//----- (00427460) --------------------------------------------------------
-void sprite_427460_init_mobd_item(Sprite *pstru6)
-{
-	Sprite *v1; // esi@1
-	int v3; // eax@2
-    //DataMobdItem_stru0 **v4; // eax@3
-	DataMobdItem_stru0 *v5; // ecx@3
-	Script *v6; // eax@4
-    DataMobdItem_stru0 *v7; // eax@7
-	Script *v10; // eax@7
-	DataMobdItem_stru0 *v12; // eax@10
-	enum SOUND_ID v13; // edx@10
-	DataMobdItem_stru1 *v14; // ecx@12
-	Script *v15; // eax@13
-
-	v1 = pstru6;
-    DataMobdItem_stru2 *v2 = (DataMobdItem_stru2 *)pstru6->_inside_mobd_item_2;
-	if (v2)
-	{
-		v3 = v1->_64_mobd_anim_related;
-		if (v3 < 0)
-		{
-			v1->_64_mobd_anim_related = v3 & 0x7FFFFFFF;
-
-            v5 = v2->pstru0;
-			if (v5)
-			{
-				if (v5 == (DataMobdItem_stru0 *)-1)
-				{
-                    v1->_inside_mobd_item_2 = v1->_inside_mobd_item + 1;
-
-					v7 = v1->_inside_mobd_item_2[0];
-					v1->_54_inside_mobd_ptr4 = v7;
-
-					v10 = v1->script;
-					v1->pstru58 = (Sprite_stru58 *)v7->ptr_10;
-					if (v10)
-					{
-						v10->flags_20 |= SCRIPT_FLAGS_20_10000000;
-						v1->script->flags_24 |= v1->script->flags_20;
-					}
-				}
-				else
-				{
-					v1->_inside_mobd_item_2 = v1->_inside_mobd_item_2 + 1;
-					v1->_54_inside_mobd_ptr4 = v5;
-					v1->pstru58 = (Sprite_stru58 *)v5->ptr_10;
-				}
-				v12 = v1->_54_inside_mobd_ptr4;
-				v1->field_88_unused = 1;
-				v13 = v12->_14_sound_id;
-				if (v13)
-					sprite_408800_play_sound(v1, v13, 16, 0);
-				v14 = v1->_54_inside_mobd_ptr4->field_18;
-				if (v14)
-				{
-					v15 = v1->script;
-					if (v15)
-					{
-						if (v15->_28_yield_flags & SCRIPT_FLAGS_20_40000)
-						{
-							script_trigger_event(0, (SCRIPT_EVENT)((int)EVT_MOUSE_HOVER | 0x1), v14, v1->script);
-							v1->script->flags_20 |= SCRIPT_FLAGS_20_40000;
-							v1->script->flags_24 |= v1->script->flags_20;
-						}
-					}
-				}
-			}
-			else
-			{
-				v6 = v1->script;
-				v1->_inside_mobd_item_2 = 0;
-				v1->_inside_mobd_item = 0;
-				if (v6)
-				{
-					v6->flags_20 |= SCRIPT_FLAGS_20_10000000;
-					v1->script->flags_24 |= v1->script->flags_20;
-					v1->_64_mobd_anim_related -= v1->_60_mobd_anim_speed;
-					return;
-				}
-			}
-		}
-		v1->_64_mobd_anim_related -= v1->_60_mobd_anim_speed;
-	}
-}
-
-//----- (00427580) --------------------------------------------------------
-void sprite_list_init_mobd_items()
-{
-	Sprite *i; // esi@2
-	Script *v1; // eax@4
-	signed __int16 v2; // ax@5
-
-	if (currently_running_lvl_mobd_valid)
-	{
-		for (i = sprite_list_47A4A0; (Sprite **)i != &sprite_list_47A4A0; i = i->next)
-		{
-			if (is_async_execution_supported && (v1 = i->script) != 0)
-				v2 = v1->field_1C & 1;
-			else
-				v2 = 1;
-			if (v2)
-				sprite_427460_init_mobd_item(i);
-		}
-	}
-}
-// 47A498: using guessed type int currently_running_lvl_mobd_valid;
-// 47C764: using guessed type __int16 is_async_execution_supported;
-
-//----- (004275D0) --------------------------------------------------------
-void sprite_list_free()
-{
-	if (currently_running_lvl_mobd_valid)
-	{
-		if (sprite_list)
-		{
-			free(sprite_list);
-			currently_running_lvl_mobd_valid = 0;
-			sprite_list = 0;
-		}
-	}
-}
-// 47A498: using guessed type int currently_running_lvl_mobd_valid;
 
 //----- (00427600) --------------------------------------------------------
 void UNIT_Handler_MobileOutpost(Script *a1)
@@ -10867,7 +10156,7 @@ void script_432620_ingame_menu(Script *a1)
 	v8 = v7;
 	if (v7)
 	{
-		v7->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+		v7->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 		v7->x = v1->sprite->x;
 		v7->y = v1->sprite->y;
 		v7->z_index = v1->sprite->z_index + 1;
@@ -10889,7 +10178,7 @@ void script_432730_ingame_menu(Script *a1)
 	v1 = a1;
 	v2 = a1->sprite;
 	a1 = (Script *)a1->param;
-	v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+	v2->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 	sprite_load_mobd(v2, 696);
 	_47C668_ingame_menu_sprites[(int)a1] = v1->sprite;
 	while (1)
@@ -10950,7 +10239,7 @@ void script_432800_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	a1 = (Script *)a1->param;
 	v7 = v2;
-	v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+	v2->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 	sprite_load_mobd(v2, 696);
 	_47C668_ingame_menu_sprites[(int)a1] = v1->sprite;
 	while (1)
@@ -11103,7 +10392,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 			v7 += 4096;
 		} while (v6 < 5);
 	}
-	a1a->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+	a1a->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 	a1a->z_index = 1280;
 	while (1)
 	{
@@ -11342,7 +10631,7 @@ void script_432F40_ingame_menu(Script *a1)
 	v7 = v6;
 	if (v6)
 	{
-		v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+		v6->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 		v6->x = a1->sprite->x;
 		v6->y = a1->sprite->y;
 		v6->z_index = a1->sprite->z_index + 256;
@@ -12575,16 +11864,6 @@ void _4391D0_mapd_handler(Mapd_stru0 *a1, void *a2)
 	a1->mapd_cplc_item0_ptr_field_C = *((_DWORD *)a2 + 6);
 }
 
-//----- (00439200) --------------------------------------------------------
-void drawjob_update_handler_mapd_menu(Bitmap *a1, DrawJob *a2)
-{
-	a2->job_details.image = a1->draw_job_scrl;
-	a2->job_details.z_index = a1->z_index;
-	a2->job_details.x = -(_47C380_mapd.mapd_cplc_render_x >> 8);
-	a2->job_details.y = -(_47C380_mapd.mapd_cplc_render_y >> 8);
-	a2->job_details.params = render_default_stru1;
-}
-
 //----- (00439230) --------------------------------------------------------
 bool LVL_InitMapd()
 {
@@ -12672,7 +11951,7 @@ Bitmap *MAPD_Draw(enum MAPD_ID mapd_idx, unsigned int image_id, int z_index)
 				v7 = bitmap_list_free_pool;
 				result = (Bitmap *)draw_list_add(
 					bitmap_list_free_pool,
-					(void(*)(void *, DrawJob *))j_drawjob_update_handler_mapd_menu);
+					(DrawUpdateHandler)j_drawjob_update_handler_mapd_menu);
 				v7->draw_job = (DrawJob *)result;
 				if (result)
 				{
@@ -12726,8 +12005,6 @@ void _4393F0_call_mapd()
 			mapd_j_4391D0_handler(&_47C380_mapd, (void *)_47C390_mapd);
 	}
 }
-// 47C38C: using guessed type int currently_running_lvl_mapd_valid;
-// 47C390: using guessed type int _47C390_mapd;
 
 //----- (00439420) --------------------------------------------------------
 void bitmap_list_free()
@@ -19051,256 +18328,6 @@ void _447340_send_sidebar_buttons_message(int excluding_button_id)
 }
 
 
-//----- (004483E0) --------------------------------------------------------
-void drawjob_update_handler_4483E0_sidebar(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8) - a1->_54_inside_mobd_ptr4->y_offset;
-		a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-	}
-	a2->job_details.z_index = a1->z_index + 0x20000000;
-	a2->job_details.params = render_default_stru1;
-}
-
-//----- (00448430) --------------------------------------------------------
-void drawjob_update_handler_cursors(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8) - (_47C380_mapd.mapd_cplc_render_y >> 8) - v2->y_offset;
-		a2->job_details.image = v2->sprt;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-	}
-	a2->job_details.z_index = a1->z_index + 0x40000000;
-	a2->job_details.params = render_default_stru1;
-}
-
-//----- (004484A0) --------------------------------------------------------
-void drawjob_update_handler_4484A0_explosions(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8) - (_47C380_mapd.mapd_cplc_render_y >> 8) - a1->_54_inside_mobd_ptr4->y_offset;
-		a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-	}
-	a2->job_details.z_index = a1->z_index + 0x10000000;
-	a2->job_details.params = render_default_stru1;
-}
-
-//----- (00448510) --------------------------------------------------------
-void drawjob_update_handler_448510_aircraft(Sprite *sprite, DrawJob *job)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	v2 = sprite->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		job->job_details.x = (sprite->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		job->job_details.y = (sprite->y >> 8)
-			- (sprite->z_index >> 9)
-			- (_47C380_mapd.mapd_cplc_render_y >> 8)
-			- sprite->_54_inside_mobd_ptr4->y_offset;
-		job->job_details.image = sprite->_54_inside_mobd_ptr4->sprt;
-	}
-	else
-	{
-		job->job_details.image = 0;
-	}
-	job->job_details.z_index = sprite->z_index + 0x200000;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (00448580) --------------------------------------------------------
-void drawjob_update_handler_448580_entity_aircraft_turret(Sprite *sprite, DrawJob *job)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-	int v3; // eax@2
-	int v4; // edi@2
-
-	v2 = sprite->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		job->job_details.x = (sprite->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		v3 = (sprite->y >> 8) - (sprite->z_index >> 9) - (_47C380_mapd.mapd_cplc_render_y >> 8);
-		v4 = sprite->_54_inside_mobd_ptr4->y_offset;
-		job->job_details.z_index = 0x200001;
-		job->job_details.y = v3 - v4;
-		job->job_details.image = sprite->_54_inside_mobd_ptr4->sprt;
-		job->job_details.params = render_default_stru1;
-	}
-	else
-	{
-		job->job_details.image = 0;
-		job->job_details.params = render_default_stru1;
-	}
-}
-
-//----- (00448600) --------------------------------------------------------
-void drawjob_update_handler_448600_oilspot(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-	MobdSprtImage *v3; // eax@2
-
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8)
-			- (a1->z_index >> 9)
-			- (_47C380_mapd.mapd_cplc_render_y >> 8)
-			- a1->_54_inside_mobd_ptr4->y_offset;
-		v3 = a1->_54_inside_mobd_ptr4->sprt;
-		a2->job_details.z_index = 1;
-		a2->job_details.image = v3;
-		a2->job_details.params = render_default_stru1;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-		a2->job_details.z_index = 1;
-		a2->job_details.params = render_default_stru1;
-	}
-}
-
-//----- (00448680) --------------------------------------------------------
-void drawjob_update_handler_448680(Sprite *param, DrawJob *job)
-{
-	if (param->_54_inside_mobd_ptr4)
-	{
-		job->job_details.x = (param->x - _47C380_mapd.mapd_cplc_render_x) >> 8;
-		job->job_details.y = (param->y - _47C380_mapd.mapd_cplc_render_y) >> 8;
-		job->job_details.image = param->_54_inside_mobd_ptr4->sprt;
-	}
-	else
-	{
-		job->job_details.image = 0;
-	}
-	job->job_details.z_index = param->z_index + 0x20000000;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (004486D0) --------------------------------------------------------
-void drawjob_update_handler_4486D0_building(Entity *param, DrawJob *job)
-{
-	int v2; // eax@1
-	int v3; // eax@2
-
-	job->job_details.x = (*(_DWORD *)(param->stru60.ptr_8 + 4) + param->sprite->x - _47C380_mapd.mapd_cplc_render_x - 8448) >> 8;
-	v2 = *(_DWORD *)(param->stru60.ptr_8 + 8) + param->sprite->y;
-	if (v2 - 3840 >= 0)
-		v3 = v2 - _47C380_mapd.mapd_cplc_render_y - 3840;
-	else
-		v3 = 1024 - _47C380_mapd.mapd_cplc_render_y;
-	job->job_details.y = v3 >> 8;
-	job->job_details.z_index = 0x200000;
-	job->job_details.image = &param->pfn_render_DrawUnitsAndUi;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (00448750) --------------------------------------------------------
-void drawjob_update_handler_448750_infantry(Entity *a1, DrawJob *job)
-{
-	Sprite *v2; // eax@1
-	char *v3; // ecx@1
-	int v4; // esi@1
-	int v5; // eax@1
-
-	v2 = a1->sprite;
-	v3 = (char *)&a1->pfn_render_DrawUnitsAndUi;
-	job->job_details.x = (v2->x - _47C380_mapd.mapd_cplc_render_x - 2048) >> 8;
-	v4 = _47C380_mapd.mapd_cplc_render_y;
-	v5 = *(_DWORD *)(*((_DWORD *)v3 - 138) + 20);
-	job->job_details.z_index = 0x200000;
-	job->job_details.image = v3;
-	job->job_details.y = (v5 - v4 - 6400) >> 8;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (004487B0) --------------------------------------------------------
-void drawjob_update_handler_4487B0_vehicles_buildings(Entity *a1, DrawJob *job)
-{
-	int v2; // esi@1
-	int v3; // eax@1
-	char *v4; // ecx@1
-	int v5; // esi@1
-	int v6; // eax@1
-
-	v2 = a1->stru60.ptr_8;
-	v3 = a1->sprite->x;
-	v4 = (char *)&a1->pfn_render_DrawUnitsAndUi;
-	job->job_details.x = (*(_DWORD *)(v2 + 4) + v3 - _47C380_mapd.mapd_cplc_render_x - 4096) >> 8;
-	v5 = _47C380_mapd.mapd_cplc_render_y;
-	v6 = *(_DWORD *)(*((_DWORD *)v4 - 135) + 8) + *(_DWORD *)(*((_DWORD *)v4 - 138) + 20);
-	job->job_details.z_index = 0x200000;
-	job->job_details.image = v4;
-	job->job_details.y = (v6 - v5 - 1024) >> 8;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (00448820) --------------------------------------------------------
-void drawjob_update_handler_oiltanker(Entity *param, DrawJob *job)
-{
-	Sprite *v2; // eax@1
-	char *v3; // ecx@1
-	int v4; // esi@1
-	int v5; // eax@1
-
-	v2 = param->sprite;
-	v3 = (char *)&param->pfn_render_DrawUnitsAndUi;
-	job->job_details.x = (v2->x - _47C380_mapd.mapd_cplc_render_x - 4096) >> 8;
-	v4 = _47C380_mapd.mapd_cplc_render_y;
-	v5 = *(_DWORD *)(*((_DWORD *)v3 - 138) + 20);
-	job->job_details.z_index = 0x200000;
-	job->job_details.image = v3;
-	job->job_details.y = (v5 - v4 - 6400) >> 8;
-	job->job_details.params = render_default_stru1;
-}
-
-//----- (00448880) --------------------------------------------------------
-void drawjob_update_draw_handler_aircraft(Entity *param, DrawJob *job)
-{
-	Sprite *v2; // esi@1
-	int v3; // eax@1
-	char *v4; // ecx@1
-	int v5; // eax@1
-
-	v2 = param->sprite;
-	v3 = *(_DWORD *)(param->stru60.ptr_8 + 4);
-	v4 = (char *)&param->pfn_render_DrawUnitsAndUi;
-	job->job_details.x = (v2->x + v3 - _47C380_mapd.mapd_cplc_render_x - 4096) >> 8;
-	v5 = *(_DWORD *)(*((_DWORD *)v4 - 138) + 20)
-		- (*(_DWORD *)(*((_DWORD *)v4 - 138) + 24) >> 1)
-		- _47C380_mapd.mapd_cplc_render_y;
-	job->job_details.z_index = 0x400000;
-	job->job_details.image = v4;
-	job->job_details.y = (v5 - 1024) >> 8;
-	job->job_details.params = render_default_stru1;
-}
-
 //----- (004488F0) --------------------------------------------------------
 int entity_4488F0_is_in_firing_range(Entity *a1, Entity *a2, int entity_id)
 {
@@ -19721,41 +18748,6 @@ void __47CAF0_tasks_evt39030_array_free()
 }
 // 47CB0C: using guessed type int dword_47CB0C;
 
-//----- (0044BDC0) --------------------------------------------------------
-void drawjob_update_handler_44BDC0_entity_turret(Sprite *a1, DrawJob *a2)
-{
-	_DWORD *v2; // eax@1
-	int v3; // eax@2
-	DataMobdItem_stru0 *v4; // esi@2
-
-	v2 = (int *)a1->param;
-	if (v2)
-	{
-		v3 = v2[2];
-		v4 = a1->_54_inside_mobd_ptr4;
-		if (v4)
-		{
-			a2->job_details.x = ((*(_DWORD *)(*(_DWORD *)(v3 + 96) + 4)
-				+ *(_DWORD *)(*(_DWORD *)(v3 + 92) + 16)
-				- _47C380_mapd.mapd_cplc_render_x) >> 8)
-				- v4->x_offset;
-			a2->job_details.y = ((*(_DWORD *)(*(_DWORD *)(v3 + 96) + 8)
-				+ *(_DWORD *)(*(_DWORD *)(v3 + 92) + 20)
-				- _47C380_mapd.mapd_cplc_render_y) >> 8)
-				- a1->_54_inside_mobd_ptr4->y_offset;
-			a2->job_details.z_index = ((*(_DWORD *)(*(_DWORD *)(v3 + 92) + 24) + *(_DWORD *)(*(_DWORD *)(v3 + 92) + 20)) >> 8)
-				+ 1;
-			a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
-			a2->job_details.params = render_default_stru1;
-		}
-		else
-		{
-			a2->job_details.image = 0;
-			a2->job_details.params = render_default_stru1;
-		}
-	}
-}
-
 //----- (0044BE60) --------------------------------------------------------
 void script_44BE60_explosions(Script *a1)
 {
@@ -20101,30 +19093,6 @@ int UNIT_Init()
 		}
 	}
 	return result;
-}
-
-//----- (0044C430) --------------------------------------------------------
-void drawjob_update_handler_44C430_default_sprite(Sprite *a1, DrawJob *a2)
-{
-	DataMobdItem_stru0 *v2; // eax@1
-
-	v2 = a1->_54_inside_mobd_ptr4;
-	if (v2)
-	{
-		a2->job_details.x = (a1->x >> 8) - (_47C380_mapd.mapd_cplc_render_x >> 8) - v2->x_offset;
-		a2->job_details.y = (a1->y >> 8)
-			- (_47C380_mapd.mapd_cplc_render_y >> 8)
-			- (a1->z_index >> 9)
-			- a1->_54_inside_mobd_ptr4->y_offset;
-		a2->job_details.z_index = (a1->z_index + a1->y) >> 8;
-		a2->job_details.image = a1->_54_inside_mobd_ptr4->sprt;
-		a2->job_details.params = render_default_stru1;
-	}
-	else
-	{
-		a2->job_details.image = 0;
-		a2->job_details.params = render_default_stru1;
-	}
 }
 
 //----- (0044C4B0) --------------------------------------------------------

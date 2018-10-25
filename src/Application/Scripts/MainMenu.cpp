@@ -1,11 +1,12 @@
-#include "src/kknd.h"
-
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
+#include "src/kknd.h"
 #include "src/stru29.h"
 #include "src/Render.h"
+#include "src/RenderDrawHandlers.h"
 #include "src/Script.h"
 #include "src/ScriptEvent.h"
+#include "src/Sprite.h"
 
 //----- (0043C0E0) --------------------------------------------------------
 void script_mobd79_evt1__main_menu_new_game(Script *a1)

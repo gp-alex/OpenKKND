@@ -1,7 +1,9 @@
 #include "src/kknd.h"
 #include "src/_unsorted_data.h"
 #include "src/Map.h"
+#include "src/RenderDrawHandlers.h"
 #include "src/ScriptEvent.h"
+#include "src/Sprite.h"
 
 #include "src/Engine/Entity.h"
 #include "src/Engine/EntityFactory.h"

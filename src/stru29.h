@@ -1,6 +1,6 @@
 #pragma once
-
-struct Sprite;
+#include "src/kknd.h"
+#include "src/Script.h"
 
 /* 355 */
 struct stru29
