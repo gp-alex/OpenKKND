@@ -1795,56 +1795,135 @@ LABEL_15:
 
 Entity *debug_pathing_entity = nullptr;
 //----- (0041B970) --------------------------------------------------------
-int Map_41B970_straight_line_pathing(Entity *a1, int target_x, int target_y)
+int Map_41B970_straight_line_pathing(Entity *entity, int target_x, int target_y)
 {
-    Sprite *v5; // edx@1
+    /*
+    Entity *tmp_entity;
+    Entity *tmp_entity2;
+    Sprite *entity_sprite;
+    int current_x;
+    int current_y;
+    int dx1;
+    int dx2;
+    int dy1;
+    int dy2;
+    int v13;
+    int v14;
+    int v15;
+    int v16;
+
+    tmp_entity = entity;
+    entity_sprite = entity->sprite;
+    current_x = entity_sprite->x;
+    current_y = entity_sprite->y;
+    tmp_entity->pathing.num_waypoints = 0; //pathing.num_waypoints = 0;
+    if (current_y > target_y)
+    {
+        dx1 = (target_x - current_x) / 256;
+        dy1 = (current_y - target_y) / 256;
+        if (dx1 <= 0)
+        {
+            tmp_entity2 = tmp_entity;
+            v16 = -256;
+            v15 = -256;
+            v14 = (current_y - target_y) / 256;
+            v13 = -dx1;
+            if (-dx1 > dy1)
+                return boxd_41BA30(current_x, current_y, v13, v14, -256, -256, tmp_entity);
+        }
+        else
+        {
+            tmp_entity2 = tmp_entity;
+            v16 = -256;
+            v15 = 256;
+            v14 = (current_y - target_y) / 256;
+            v13 = dx1;
+            if (dx1 > dy1)
+                return boxd_41BA30(current_x, current_y, dx1, v14, 256, -256, tmp_entity);
+        }
+    }
+    else
+    {
+        dx2 = (target_x - current_x) / 256;
+        dy2 = (target_y - current_y) / 256;
+        if (dx2 <= 0)
+        {
+            tmp_entity2 = tmp_entity;
+            v16 = 256;
+            v15 = -256;
+            v14 = (target_y - current_y) / 256;
+            v13 = -dx2;
+            if (-dx2 > dy2)
+                return boxd_41BA30(current_x, current_y, v13, dy2, -256, 256, tmp_entity);
+        }
+        else
+        {
+            tmp_entity2 = tmp_entity;
+            v16 = 256;
+            v15 = 256;
+            v14 = (target_y - current_y) / 256;
+            v13 = dx2;
+            if (dx2 > dy2)
+                return boxd_41BA30(current_x, current_y, dx2, dy2, 256, 256, tmp_entity);
+        }
+    }
+    return boxd_41BC60(current_x, current_y, v13, v14, v15, v16, tmp_entity2);
+    */
+
+    
+    Sprite *entity_sprite; // edx@1
     int v8; // eax@2
     int v9; // ebx@2
-    debug_pathing_entity = a1;
-    v5 = a1->sprite;
-    a1->pathing.num_waypoints = 0;
-    if (v5->y > target_y)
+    debug_pathing_entity = entity;
+    entity_sprite = entity->sprite;
+    entity->pathing.num_waypoints = 0;
+    int current_x = entity_sprite->x;
+    int current_y = entity_sprite->y;
+
+    printf("sprite_x: %d sprint_y:%d target_x:%d target_y:%d", (current_x / 256), (current_y / 256), (target_x / 256), target_y / 256);
+    
+    if (current_y > target_y) // up
     {
-        // moving up
-        int dx = (target_x - v5->x) / 256;
-        int dy = (v5->y - target_y) / 256;
+        //calculate dx and dy
+        int dx = (target_x - current_x) / 256;
+        int dy = (current_y - target_y) / 256;
         if (dx <= 0)
         {
             // up left
             if (abs(dx) > dy)
-                return boxd_41BA30(v5->x, v5->y, abs(dx), dy, -256, -256, a1);
+                return boxd_41BA30(current_x, current_y, abs(dx), dy, -256, -256, entity);
             else
-                return boxd_41BC60(v5->x, v5->y, abs(dx), dy, -256, -256, a1);
+                return boxd_41BC60(current_x, current_y, abs(dx), dy, -256, -256, entity);
         }
         else
         {
             //up right
             if (dx > dy)
-                return boxd_41BA30(v5->x, v5->y, dx, dy, 256, -256, a1);
+                return boxd_41BA30(current_x, current_y, dx, dy, 256, -256, entity);
             else
-                return boxd_41BC60(v5->x, v5->y, dx, dy, 256, -256, a1);
+                return boxd_41BC60(current_x, current_y, dx, dy, 256, -256, entity);
         }
     }
     else
     {
         // moving down
-        int dx = (target_x - v5->x) / 256;
-        int dy = (target_y - v5->y) / 256;
+        int dx = (target_x - current_x) / 256;
+        int dy = (target_y - current_y) / 256;
         if (dx <= 0)
         {
             // down left
             if (abs(dx) > dy)
-                return boxd_41BA30(v5->x, v5->y, abs(dx), dy, -256, 256, a1);
+                return boxd_41BA30(current_x, current_y, abs(dx), dy, -256, 256, entity);
             else
-                return boxd_41BC60(v5->x, v5->y, abs(dx), dy, -256, 256, a1);
+                return boxd_41BC60(current_x, current_y, abs(dx), dy, -256, 256, entity);
         }
         else
         {
             // down right
             if (dx > dy)
-                return boxd_41BA30(v5->x, v5->y, dx, dy, 256, 256, a1);
+                return boxd_41BA30(current_x, current_y, dx, dy, 256, 256, entity);
             else
-                return boxd_41BC60(v5->x, v5->y, dx, dy, 256, 256, a1);
+                return boxd_41BC60(current_x, current_y, dx, dy, 256, 256, entity);
         }
     }
 }
