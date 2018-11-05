@@ -1792,14 +1792,10 @@ LABEL_15:
 }
 
 
-
-
-
 Entity *debug_pathing_entity = nullptr;
 //----- (0041B970) --------------------------------------------------------
-int Map_41B970_straight_line_pathing(Entity *entity, int target_x, int target_y)
+int Map_41B970_straight_line_pathing_old_refactored(Entity *entity, int target_x, int target_y)
 {
-    // OLD REFACTORED (by kresimirv)
     Entity *tmp_entity;
     Entity *tmp_entity2;
     Sprite *entity_sprite;
@@ -1818,7 +1814,7 @@ int Map_41B970_straight_line_pathing(Entity *entity, int target_x, int target_y)
     entity_sprite = entity->sprite;
     current_x = entity_sprite->x;
     current_y = entity_sprite->y;
-    tmp_entity->pathing.num_waypoints = 0; //pathing.num_waypoints = 0;
+    tmp_entity->pathing.num_waypoints = 0;
     if (current_y > target_y)
     {
         dx1 = (target_x - current_x) / 256;
@@ -1870,9 +1866,11 @@ int Map_41B970_straight_line_pathing(Entity *entity, int target_x, int target_y)
         }
     }
     return boxd_41BC60(current_x, current_y, v13, v14, v15, v16, tmp_entity2);
-   
+}
 
-    /* REFACTORED (by gp-alex)
+//----- (0041B970) --------------------------------------------------------
+int Map_41B970_straight_line_pathing_new_refactored(Entity *entity, int target_x, int target_y)
+{
     Sprite *entity_sprite; // edx@1
     int v8; // eax@2
     int v9; // ebx@2
@@ -1882,8 +1880,6 @@ int Map_41B970_straight_line_pathing(Entity *entity, int target_x, int target_y)
     int current_x = entity_sprite->x;
     int current_y = entity_sprite->y;
 
-    printf("sprite_x: %d sprint_y:%d target_x:%d target_y:%d", (current_x / 256), (current_y / 256), (target_x / 256), target_y / 256);
-    
     if (current_y > target_y) // up
     {
         //calculate dx and dy
@@ -1928,13 +1924,17 @@ int Map_41B970_straight_line_pathing(Entity *entity, int target_x, int target_y)
                 return boxd_41BC60(current_x, current_y, dx, dy, 256, 256, entity);
         }
     }
-    */
+}
+
+//----- (0041B970) --------------------------------------------------------
+int Map_41B970_straight_line_pathing(Entity *entity, int target_x, int target_y)
+{
+    return Map_41B970_straight_line_pathing_old_refactored(entity, target_x, target_y);
 }
 
 //----- (0041BA30) --------------------------------------------------------
-int boxd_41BA30(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity)
+int boxd_41BA30_old_refactored(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity)
 {
-    // OLD REFACTORED (by kresimirv)
     int global_map_x; // ebx
     int v8; // esi
     int v9; // eax
@@ -1976,11 +1976,8 @@ int boxd_41BA30(int x, int y, int dx, int dy, int x_step, int y_step, Entity *en
     do
     {
         v30[v9] = 0;
-        
-        //entity->array_15C[v9] = -1;
-        //entity->array_184[v19] = -1;
-        entity->_15C_waypoints_xs[v9] = -1;
-        entity->_15C_waypoints_ys[v19] = -1;
+        entity->_15C_waypoints_xs[v9] = -1;  //entity->array_15C[v9] = -1;
+        entity->_15C_waypoints_ys[v19] = -1; //entity->array_184[v19] = -1;
         v9 = v19 + 1;
         v15 = __OFSUB__(v19 + 1, 10);
         v14 = v19++ - 9 < 0;
@@ -2047,8 +2044,11 @@ int boxd_41BA30(int x, int y, int dx, int dy, int x_step, int y_step, Entity *en
             return boxd_41C060(v19, entity, a3a, v23, a5a, a6a, v30, a8);
         v8 = v25;
     }
+}
 
-    /* // REFACTORED (by gp-alex)
+//----- (0041BA30) --------------------------------------------------------
+int boxd_41BA30_new_refactored(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity)
+{
     int v8; // esi@1
     int v10; // eax@7
     int v16; // eax@20
@@ -2067,7 +2067,6 @@ int boxd_41BA30(int x, int y, int dx, int dy, int x_step, int y_step, Entity *en
 
     int map_x = global2map(x);
     int map_y = global2map(y);
-    printf("currx: %d  curry: %d\n", map_x, map_y);
     int next_x = x;
     int next_y = y;
     DataBoxd_stru0_per_map_unit *tile = boxd_get_tile(map_x, map_y);
@@ -2106,7 +2105,7 @@ int boxd_41BA30(int x, int y, int dx, int dy, int x_step, int y_step, Entity *en
 
         int next_map_x = global2map(next_x);
         int next_map_y = global2map(next_y);
-        
+
         unsigned __int8 v15 = __OFSUB__(next_map_x, map_x);
         bool v13 = next_x == map_x;
         bool v14 = next_x - map_x < 0;
@@ -2131,47 +2130,23 @@ int boxd_41BA30(int x, int y, int dx, int dy, int x_step, int y_step, Entity *en
         if (next_map_y < map_y)
             tile -= map_get_width();
 
-        
         v16 = boxd_40EA50_classify_tile_objects(entity, next_map_x, next_map_y, tile);
-        printf("nextx: %d  nexty: %d class:%d\n", next_map_x, next_map_y, v16);
         if (Map_41BE90_add_waypoint(&v19, v16, &a3a, &v23, entity, v30, a5a, a6a, next_map_x, next_map_y, &a11, &a8) != 6)
             return 1;
     }
 
     return boxd_41C060(v19, entity, a3a, v23, a5a, a6a, v30, a8);
-    */
 }
 
-void entity_log_pathing(Entity *e) {
-    log("indexer: %u", e->pathing.num_waypoints);
-    if (e->pathing.num_waypoints > 0) {
-        char buf[4096];
-
-        buf[0] = 0;
-        for (int i = 0; i < e->pathing.num_waypoints; ++i) {
-            sprintf(buf + strlen(buf), "(%X,%X), ", e->_15C_waypoints_xs[i], e->_15C_waypoints_ys[i]);
-        }
-        log("_15C_waypoints = [%s]", buf);
-
-        buf[0] = 0;
-        for (int i = 0; i < e->pathing.num_waypoints; ++i) {
-            sprintf(buf + strlen(buf), "(%X,%X), ", e->_1AC_waypoints_xs[i], e->_1AC_waypoints_ys[i]);
-        }
-        log("_1AC_waypoints = [%s]", buf);
-
-        buf[0] = 0;
-        for (int i = 0; i < e->pathing.num_waypoints; ++i) {
-            sprintf(buf + strlen(buf), "(%X,%X), ", e->_1FC_waypoints_xs[i], e->_1FC_waypoints_ys[i]);
-        }
-        log("_1FC_waypoints = [%s]", buf);
-    }
+//----- (0041BA30) --------------------------------------------------------
+int boxd_41BA30(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity)
+{
+    return boxd_41BA30_old_refactored(x, y, dx, dy, x_step, y_step, entity);
 }
-
 
 //----- (0041BC60) --------------------------------------------------------
-int boxd_41BC60_new(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity)
+int boxd_41BC60_old_refactored(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity)
 {
-    // OLD REFACTORED (by kresimirv)
     int global_map_x; // ebx
     int v8; // esi
     int v9; // eax
@@ -2213,10 +2188,8 @@ int boxd_41BC60_new(int x, int y, int dx, int dy, int x_step, int y_step, Entity
     do
     {
         v30[v9] = 0;
-        //entity->array_15C[v9] = -1;
-        //entity->array_184[v19] = -1;
-        entity->_15C_waypoints_xs[v9] = -1;
-        entity->_15C_waypoints_ys[v19] = -1;
+        entity->_15C_waypoints_xs[v9] = -1;   //entity->array_15C[v9] = -1;
+        entity->_15C_waypoints_ys[v19] = -1;  //entity->array_184[v19] = -1;
         v9 = v19 + 1;
         v15 = __OFSUB__(v19 + 1, 10);
         v14 = v19++ - 9 < 0;
@@ -2283,8 +2256,11 @@ int boxd_41BC60_new(int x, int y, int dx, int dy, int x_step, int y_step, Entity
             return boxd_41C060(v19, entity, a3a, v23, v32, v31, v30, a8);
         v8 = v25;
     }
+}
 
-    /* // REFACTORED (by gp-alex)
+//----- (0041BC60) --------------------------------------------------------
+int boxd_41BC60_new_refactored(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity)
+{
     int v8; // esi@1
     int a3a; // [sp+1Ch] [bp-9Ch]@3
     int a8; // [sp+20h] [bp-98h]@3
@@ -2364,133 +2340,43 @@ int boxd_41BC60_new(int x, int y, int dx, int dy, int x_step, int y_step, Entity
         //entity_log_pathing(entity);
     }
     return result;
-    */
 }
 
 //----- (0041BC60) --------------------------------------------------------
-int boxd_41BC60_old(int x, int y, int a3, int a4, int a5, int a6, Entity *a7)
-{
-    int v7; // ebx@1
-    int v8; // esi@1 
-    int v9; // eax@1
-    int v10; // eax@7
-    int v11; // esi@9
-    int v12; // edi@9 
-    bool v13; // zf@9
-    bool v14; // sf@9
-    unsigned __int8 v15; // of@9
-    int v16; // eax@20
-    DataBoxd_stru0_per_map_unit *a4a; // [sp+10h] [bp-A8h]@1
-    int v19; // [sp+14h] [bp-A4h]@1
-    int v20; // [sp+18h] [bp-A0h]@1
-    int a3a; // [sp+1Ch] [bp-9Ch]@3
-    int a8; // [sp+20h] [bp-98h]@3
-    int v23; // [sp+24h] [bp-94h]@3
-    int v24; // [sp+28h] [bp-90h]@1
-    int v25; // [sp+2Ch] [bp-8Ch]@5 
-    int v26; // [sp+30h] [bp-88h]@1
-    int v27; // [sp+34h] [bp-84h]@9
-    int a11; // [sp+38h] [bp-80h]@3
-    int v29; // [sp+3Ch] [bp-7Ch]@1
-    int v30[10]; // [sp+40h] [bp-78h]@2
-    int v31[10]; // [sp+68h] [bp-50h]@20
-    int v32[10]; // [sp+90h] [bp-28h]@20 
-    int v33; // [sp+C0h] [bp+8h]@3
-
-    a7->pathing.destination_map_x = 0;
-    a7->pathing.destination_map_y = 0;
-    v20 = y >> 13;
-    v7 = x >> 13;
-    v24 = x;
-    a4a = boxd_get_tile(x >> 13, y >> 13);
-    v26 = 2 * a3;
-    v29 = 2 * a3 - 2 * a4;
-    v8 = 2 * a3 - a4;
-    v9 = 0;
-    v19 = 0;
-    do
-    {
-        v30[v9] = 0;
-        a7->_15C_waypoints_xs[v9] = -1;
-        a7->_15C_waypoints_ys[v19] = -1;
-        v9 = v19 + 1;
-        v15 = __OFSUB__(v19 + 1, 10);
-        v14 = v19++ - 9 < 0;
-    } while (v14 ^ v15);
-    v19 = 0;
-    a3a = 0;
-    v23 = 0;
-    a11 = 0;
-    a8 = 0;
-    v13 = a4 == 0;
-    v33 = a4 - 1;
-    if (v13)
-        return boxd_41C060(v19, a7, a3a, v23, v32, v31, v30, a8);
-    while (1)
-    {
-        if (v8 < 0)
-        {
-            v10 = v26;
-        }
-        else
-        {
-            v10 = v29;
-            x += a5;
-            v24 = x;
-        }
-        v25 = v10 + v8;
-        y += a6;
-        v11 = x >> 13;
-        v12 = y >> 13;
-        v15 = __OFSUB__(x >> 13, v7);
-        v13 = x >> 13 == v7;
-        v14 = (x >> 13) - v7 < 0;
-        v27 = y;
-        if (x >> 13 == v7)
-        {
-            if (v12 == v20)
-                goto LABEL_22;
-            v15 = __OFSUB__(v11, v7);
-            v13 = v11 == v7;
-            v14 = v11 - v7 < 0;
-        }
-        if (!((unsigned __int8)(v14 ^ v15) | v13))
-        {
-            v15 = __OFSUB__(v11, v7);
-            v14 = v11 - v7 < 0;
-            ++a4a;
-        }
-        if (v14 ^ v15)
-            --a4a;
-        if (v12 > v20)
-            a4a += map_get_width();
-        if (v12 < v20)
-            a4a -= map_get_width();
-        v7 = x >> 13;
-        v20 = y >> 13;
-        v16 = boxd_40EA50_classify_tile_objects(a7, v11, v12, a4a);
-        if (Map_41BE90_add_waypoint(&v19, v16, &a3a, &v23, a7, v30, v32, v31, v11, v12, &a11, &a8) != 6)
-            return 1;
-        y = v27;
-        x = v24;
-    LABEL_22:
-        v13 = v33-- == 0;
-        if (v13)
-            return boxd_41C060(v19, a7, a3a, v23, v32, v31, v30, a8);
-        v8 = v25;
-    }
-}
-
 int boxd_41BC60(int x, int y, int dx, int dy, int x_step, int y_step, Entity *entity) {
-    //int one = boxd_41BC60_new(x, y, dx, dy, x_step, y_step, entity);
+    //int one = boxd_41BC60_new_refactored(x, y, dx, dy, x_step, y_step, entity);
     //entity->pathing.num_waypoints = 0; // reset
-    //int two = boxd_41BC60_old(x, y, dx, dy, x_step, y_step, entity);
+    //int two = boxd_41BC60_old_refactored(x, y, dx, dy, x_step, y_step, entity);
     //assert(one == two);
     //return two;
 
-    return boxd_41BC60_new(x, y, dx, dy, x_step, y_step, entity);
+    return boxd_41BC60_old_refactored(x, y, dx, dy, x_step, y_step, entity);
 }
 
+void entity_log_pathing(Entity *e) {
+    log("indexer: %u", e->pathing.num_waypoints);
+    if (e->pathing.num_waypoints > 0) {
+        char buf[4096];
+
+        buf[0] = 0;
+        for (int i = 0; i < e->pathing.num_waypoints; ++i) {
+            sprintf(buf + strlen(buf), "(%X,%X), ", e->_15C_waypoints_xs[i], e->_15C_waypoints_ys[i]);
+        }
+        log("_15C_waypoints = [%s]", buf);
+
+        buf[0] = 0;
+        for (int i = 0; i < e->pathing.num_waypoints; ++i) {
+            sprintf(buf + strlen(buf), "(%X,%X), ", e->_1AC_waypoints_xs[i], e->_1AC_waypoints_ys[i]);
+        }
+        log("_1AC_waypoints = [%s]", buf);
+
+        buf[0] = 0;
+        for (int i = 0; i < e->pathing.num_waypoints; ++i) {
+            sprintf(buf + strlen(buf), "(%X,%X), ", e->_1FC_waypoints_xs[i], e->_1FC_waypoints_ys[i]);
+        }
+        log("_1FC_waypoints = [%s]", buf);
+    }
+}
 
 DataBoxd_stru0_per_map_unit *boxd_get_tile(int map_x, int map_y) {
     if (map_x < 0 || map_x >= map_get_width()) {
