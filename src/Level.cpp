@@ -249,19 +249,15 @@ void GAME_PrepareSuperLvl(int mapd_idx)
 //----- (00423320) --------------------------------------------------------
 bool on_level_finished()
 {
-    Bitmap **v0; // esi@1
     void *v1; // eax@12
 
-    v0 = _47A010_mapd_item_being_drawn;
-    do
-    {
-        if (*v0)
-        {
-            bitmap_list_remove(*v0);
-            *v0 = 0;
+    for (int i = 0; i < 3; ++i) {
+        if (_47A010_mapd_item_being_drawn[i]) {
+            bitmap_list_remove(_47A010_mapd_item_being_drawn[i]);
+            _47A010_mapd_item_being_drawn[i] = 0;
         }
-        ++v0;
-    } while ((int)v0 < (int)& _47A01C_sound_id);
+    }
+ 
     nullsub_1();
     stru37_stru38_list_free();
     _44C5C0_level_cleanup();
