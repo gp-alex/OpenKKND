@@ -178,13 +178,20 @@ Sound *active_sound_list_head;
 Sound *active_sound_list_begin() {
     return active_sound_list_head;
 }
-Sound *active_sound_list_prepend(Sound *sound) {
-    return active_sound_list_head = sound;
-}
+
 // end of list of sounds that are currently playing
 Sound *active_sound_list_end() {
     return (Sound *)&active_sound_list_tail;
 }
+
+Sound *active_sound_list_prepend(Sound *sound) {
+    auto head = active_sound_list_begin();
+    sound->next = head;
+    sound->prev = active_sound_list_end();
+    head->prev = sound;
+    return active_sound_list_head = sound;
+}
+
 // remove sound from active list
 void active_sound_list_remove(Sound *sound) {
     auto next = sound->next;
@@ -553,7 +560,6 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
     return 0;
     void *v5; // eax@0
     int v6; // eax@3
-    Sound *v7; // eax@4
     int result; // eax@7
     sound_stru_2 *v9; // esi@10
     Sound *v10; // ebx@12
@@ -574,7 +580,6 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
 
     v24 = a2;
 
-    v7 = 0;
     v23.dwFlags = 0;
     v23.dwSize = 0;
     v23.dwBufferBytes = 0;
@@ -595,10 +600,6 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
                     if (!++sound_list_last_id)
                         sound_list_last_id = 1;
                     v10->id = sound_list_last_id;
-                    v7 = active_sound_list_begin();
-                    v10->next = v7;
-                    v10->prev = active_sound_list_end();
-                    v7->prev = v10;
                     active_sound_list_prepend(v10);
                 }
                 if (v10)
@@ -682,7 +683,6 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
 {
     int result; // eax@2
     Sound *v6; // ebx@3
-    Sound *v7; // eax@6
     int v8; // eax@10
     int v9; // esi@11
     int v10; // eax@11
@@ -711,10 +711,6 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
         if (!++sound_list_last_id)
             sound_list_last_id = 1;
         v6->id = sound_list_last_id;
-        v7 = active_sound_list_begin();
-        v6->next = v7;
-        v6->prev = active_sound_list_end();
-        v7->prev = v6;
         active_sound_list_prepend(v6);
 
         if (v6)
