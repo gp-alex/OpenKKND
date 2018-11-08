@@ -156,18 +156,18 @@ void sound_video_stop() {
 
 
 
-Sound *sound_list_free_pool;
+Sound *inactive_sound_list_head;
 // get free sound from pool
-Sound *sound_list_claim() {
-    auto sound = sound_list_free_pool;
-    sound_list_free_pool = sound_list_free_pool->next;
+Sound *inactive_sound_list_pop() {
+    auto sound = inactive_sound_list_head;
+    inactive_sound_list_head = inactive_sound_list_head->next;
 
     return sound;
 }
 // return unused sound to the free pool
-void sound_list_reclaim(Sound *sound) {
-    sound->next = sound_list_free_pool;
-    sound_list_free_pool = sound;
+void inactive_sound_list_prepend(Sound *sound) {
+    sound->next = inactive_sound_list_head;
+    inactive_sound_list_head = sound;
 }
 
 
@@ -200,7 +200,7 @@ void active_sound_list_remove(Sound *sound) {
         next->prev = prev;
     if (prev)
         prev->next = next;
-    sound_list_reclaim(sound);
+    inactive_sound_list_prepend(sound);
 }
 
 
@@ -456,7 +456,7 @@ bool sound_initialize()
     active_sound_list_tail = 0;
     active_sound_list_head = active_sound_list_end();
     sound_list_47C3D4 = active_sound_list_end();
-    sound_list_free_pool = 0;
+    inactive_sound_list_head = 0;
     if (DirectSoundCreate(0, &pds, 0))
         return 1;
 
@@ -485,7 +485,7 @@ bool sound_initialize()
         active_sound_list_tail = 0;
         active_sound_list_head = active_sound_list_end();
         sound_list_47C3D4 = active_sound_list_end();
-        sound_list_free_pool = sound_list;
+        inactive_sound_list_head = sound_list;
         sound_initialized = 1;
         result = 1;
     }
@@ -593,7 +593,7 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
             v9 = _47C4E0_sounds[sound_id];
             if (v9 != faction_slv && v9)
             {
-                v10 = sound_list_claim();
+                v10 = inactive_sound_list_pop();
                 if (v10)
                 {
                     memset(v10, 0, sizeof(Sound));
@@ -704,7 +704,7 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
     v16 = name;
     if (sound_initialized)
     {
-        v6 = sound_list_claim();
+        v6 = inactive_sound_list_pop();
         if (!v6)
             return 0;
         memset(v6, 0, sizeof(Sound));
