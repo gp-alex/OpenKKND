@@ -981,6 +981,8 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_433810_ingame_menu),
     MAKE_HANDLER_PTR(script_4339F0_ingame_menu),
     MAKE_HANDLER_PTR(script_4338F0_ingame_menu),
+    MAKE_HANDLER_PTR(script_433AF0_ingame_menu),
+    MAKE_HANDLER_PTR(script_433BA0_ingame_menu),
 
     MAKE_HANDLER_PTR(script_440810_mobd45),
     MAKE_HANDLER_PTR(script_441780_mobd45_evt8),
