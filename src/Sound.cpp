@@ -1169,7 +1169,7 @@ void _43A370_process_sound()
     int i; // [sp+1Ch] [bp-8h]@1
     int v20; // [sp+20h] [bp-4h]@9
 
-    v0 = active_sound_list_head;
+    v0 = active_sound_list_begin();
     for (i = 0; v0 != active_sound_list_end(); v0 = v0->next)
     {
         if (!v0)
