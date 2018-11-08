@@ -508,6 +508,7 @@ bool sound_initialize()
         //active_sound_list_head = 0;
         //sound_list_47C3D4 = 0;
         //inactive_sound_list_head = sound_list;
+        inactive_sound_list_prepend(sound_list);
         sound_initialized = 1;
         result = 1;
     }
