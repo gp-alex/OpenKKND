@@ -51,8 +51,6 @@ bool is_mission_running = false;
 
 //----- (00423460) --------------------------------------------------------
 void Game::Run() {
-    Bitmap **v3; // esi@27
-
     int window_width = 640;
     int window_height = 480;
     bool fullscreen = false;
@@ -116,16 +114,14 @@ void Game::Run() {
                             draw_list_update_and_draw();
                             TimedMessagePump();
                         } while (!_47DCF4_wm_quit_received && game_state == GAME_STATE::MainMenu);
-                        v3 = _47A010_mapd_item_being_drawn;
-                        do
-                        {
-                            if (*v3)
-                            {
-                                bitmap_list_remove(*v3);
-                                *v3 = 0;
+
+                        for (int i = 0; i < 3; ++i) {
+                            if (_47A010_mapd_item_being_drawn[i]) {
+                                bitmap_list_remove(_47A010_mapd_item_being_drawn[i]);
+                                _47A010_mapd_item_being_drawn[i] = 0;
                             }
-                            ++v3;
-                        } while ((int)v3 < (int)& _47A01C_sound_id);
+                        }
+
                         LVL_Deinit();
                         dword_47A180 = 0;
                         free(current_level_lvl);
