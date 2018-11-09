@@ -985,6 +985,9 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_433BA0_ingame_menu),
     MAKE_HANDLER_PTR(script_433C30_ingame_menu),
     MAKE_HANDLER_PTR(script_433C90_ingame_menu),
+    MAKE_HANDLER_PTR(script_433D20_ingame_menu), //mission briefing
+    MAKE_HANDLER_PTR(script_433DB0_ingame_menu), //options - sound settings
+    MAKE_HANDLER_PTR(script_431F10_ingame_menu), //options - sound settings
 
     MAKE_HANDLER_PTR(script_440810_mobd45),
     MAKE_HANDLER_PTR(script_441780_mobd45_evt8),

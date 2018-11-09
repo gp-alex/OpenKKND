@@ -11,7 +11,7 @@
 #include "src/Engine/Entity.h"
 
 #include "src/Infrastructure/PlatformSpecific/OsTools.h"
-
+#include <list>
 
 
 #pragma comment(lib, "Dsound.lib") // DirectSoundCreate
@@ -156,51 +156,71 @@ void sound_video_stop() {
 
 
 
-Sound *inactive_sound_list_head;
+//Sound *inactive_sound_list_head;
+std::list<Sound*> inactive_sound_list;
 // get free sound from pool
 Sound *inactive_sound_list_pop() {
-    auto sound = inactive_sound_list_head;
+    /*auto sound = inactive_sound_list_head;
     inactive_sound_list_head = inactive_sound_list_head->next;
 
-    return sound;
+    return sound;*/
+    return inactive_sound_list.front();
 }
 // return unused sound to the free pool
 void inactive_sound_list_prepend(Sound *sound) {
-    sound->next = inactive_sound_list_head;
-    inactive_sound_list_head = sound;
+    /*sound->next = inactive_sound_list_head;
+    inactive_sound_list_head = sound;*/
+    inactive_sound_list.push_front(sound);
 }
 
 
 
-int active_sound_list_tail; // weak
-Sound *active_sound_list_head;
+//Sound *active_sound_list_tail; // weak
+//Sound *active_sound_list_head;
+std::list<Sound*> active_sound_list;
 // list of sounds that are currently playing
 Sound *active_sound_list_begin() {
-    return active_sound_list_head;
+    //return active_sound_list_head;
+    return active_sound_list.front();
 }
 
 // end of list of sounds that are currently playing
 Sound *active_sound_list_end() {
-    return (Sound *)&active_sound_list_tail;
+    //return active_sound_list_tail;
+    return active_sound_list.back();
 }
 
 Sound *active_sound_list_prepend(Sound *sound) {
-    auto head = active_sound_list_begin();
-    sound->next = head;
-    sound->prev = active_sound_list_end();
-    head->prev = sound;
-    return active_sound_list_head = sound;
+    active_sound_list.push_front(sound);
+    return active_sound_list.front();
+    /*auto head = active_sound_list_begin();
+    if (head != 0) {
+        sound->next = head;
+        sound->prev = active_sound_list_end();
+        head->prev = sound;
+        active_sound_list_head = sound;
+    }
+    else {
+        active_sound_list_head = sound;
+        active_sound_list_tail = sound;
+    }
+   
+    return active_sound_list_head;*/
 }
 
 // remove sound from active list
 void active_sound_list_remove(Sound *sound) {
-    auto next = sound->next;
+    active_sound_list.pop_front();
+    /*auto next = sound->next;
     auto prev = sound->prev;
     if (next)
         next->prev = prev;
     if (prev)
         prev->next = next;
-    inactive_sound_list_prepend(sound);
+    if (sound == active_sound_list_head) {
+        active_sound_list_head = next;
+    }
+    inactive_sound_list_prepend(sound);*/
 }
 
 
@@ -453,10 +473,12 @@ bool sound_initialize()
     } while (v4 >= 1);
     sound_initialized = 0;
     sound_list_last_id = 0;
-    active_sound_list_tail = 0;
-    active_sound_list_head = active_sound_list_end();
-    sound_list_47C3D4 = active_sound_list_end();
-    inactive_sound_list_head = 0;
+    //active_sound_list_tail = 0;
+    //active_sound_list_head = 0;
+    active_sound_list_prepend(0);
+    sound_list_47C3D4 = 0;
+    //inactive_sound_list_head = 0;
+    inactive_sound_list_prepend(0);
     if (DirectSoundCreate(0, &pds, 0))
         return 1;
 
@@ -482,10 +504,11 @@ bool sound_initialize()
             v6 = sound_list;
         }
         sound_list[7].next = 0;
-        active_sound_list_tail = 0;
-        active_sound_list_head = active_sound_list_end();
-        sound_list_47C3D4 = active_sound_list_end();
-        inactive_sound_list_head = sound_list;
+        //active_sound_list_tail = 0;
+        //active_sound_list_head = 0;
+        //sound_list_47C3D4 = 0;
+        //inactive_sound_list_head = sound_list;
+        inactive_sound_list_prepend(sound_list);
         sound_initialized = 1;
         result = 1;
     }
@@ -1403,8 +1426,9 @@ void sound_list_43A800(int a1)
 
     if (_47C5D4_sound_threaded_snd_id && sound_initialized)
     {
-        v1 = active_sound_list_head;
-        if (active_sound_list_head->id == _47C5D4_sound_threaded_snd_id)
+        //v1 = active_sound_list_head;
+        v1 = active_sound_list_begin();
+        if (v1->id == _47C5D4_sound_threaded_snd_id)
         {
         LABEL_6:
             v2 = v1->pdsb;

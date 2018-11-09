@@ -2114,26 +2114,26 @@ char *aUnit_initFaile = "UNIT_Init() failed\n";
 char *aSpriteLoadFail = "sprite load failed\n";
 CustomMission custom_missions[20] =
 {
-	{ /*&off_46C4F0*/nullptr, "mb_m01.wav" },
-	{ /*&off_46C520*/nullptr, "mb_m02.wav" },
-	{ /*&off_46C548*/nullptr, "mb_m03.wav" },
-	{ /*&off_46C578*/nullptr, "mb_m04.wav" },
-	{ /*&off_46C598*/nullptr, "mb_m05.wav" },
-	{ /*&off_46C5C0*/nullptr, "mb_m06.wav" },
-	{ /*&off_46C5F8*/nullptr, "mb_m07.wav" },
-	{ /*&off_46C630*/nullptr, "mb_m08.wav" },
-	{ /*&off_46C658*/nullptr, "mb_m09.wav" },
-	{ /*&off_46C688*/nullptr, "mb_m10.wav" },
-	{ /*&off_46C6B0*/nullptr, "mb_s01.wav" },
-	{ /*&off_46C6D0*/nullptr, "mb_s02.wav" },
-	{ /*&off_46C6F0*/nullptr, "mb_s03.wav" },
-	{ /*&off_46C738*/nullptr, "mb_s04.wav" },
-	{ /*&off_46C778*/nullptr, "mb_s05.wav" },
-	{ /*&off_46C7B8*/nullptr, "mb_s06.wav" },
-	{ /*&off_46C7F0*/nullptr, "mb_s07.wav" },
-	{ /*&off_46C828*/nullptr, "mb_s08.wav" },
-	{ /*&off_46C860*/nullptr, "mb_s09.wav" },
-	{ /*&off_46C888*/nullptr, "mb_s10.wav" }
+    { { "%FRESH MEAT", "~Though it makes me shiver to my", "soul, I sense that the Symmetrics", "have made their presence felt near", "one of our camps.", "~Their vile buildings taint our", "sweeping view of the landscape and", "would lower property values if such", "things still existed.", "~Clear their sorry, Symmetric selves", "from the land." } , "mb_m01.wav" },
+    { { "%THE AMOEBA", "~Our prosperous war camp is coming", "under threat -- the Symmetrics are", "gathering their forces, and we fear", "the results.", "~Our big camp, though prosperous, is", "too distant from the enemy, so you", "must set up another camp and deal", "with the enemy in close quarters." }, "mb_m02.wav" },
+    { { "%THE GAUNTLET", "~We have the Symmetrics backed into", "a defended valley.", "~They are cringing and will soon beg", "for mercy.", "~We need you to enter the valley", "through its only entrance and show", "the enemy none of this mercy.", "~Let them taste what a second Scourge", "would be like." }, "mb_m03.wav" },
+    { { "%STAND AND FIGHT", "~We keep weeding out the foul", "Symmetrics and, just like weeds,", "they keep returning.", "~This time they pester one of our", "camps like pests.", "~Exterminate them." }, "mb_m04.wav" },
+    { { "%THE PROPHECY", "~I feel a disturbance in the ... well,", "just a disturbance.", "~I fear that an enormous attack from", "the Symmetrics is in the making.", "I cannot be sure.", "~I feel that you should build up", "defenses that can withstand just", "such an attack, should it eventuate." }, "mb_m05.wav" },
+    { { "%TRAITORS", "~Alas, one of our Chieftains has", "fallen ill to the Scourge sickness.", "His mind betrays him as it betrays", "us -- he has made a pact with the", "Symmetrics!", "~His loyal clan follows him, and the", "two groups now fight as one.", "~He must be brought into alignment", "with his spirit once again.", "~So kill him.", "~That should do it." }, "mb_m06.wav" },
+    { { "%THE PURSUIT", "~We are a peaceful people.", "All we wish is to set up our homes", "and help prevent the Earth from", "further damage.", "~But the Symmetrics won't let us.", "Even now, they pursue and harass a", "convoy which only wants to set up a", "war camp.", "~Use our head start to complete the", "camp's set-up, then, with much love,", "annihilate the enemy." }, "mb_m07.wav" },
+    { { "%HIVE MIND", "~The enemy is falling to its", "claustrophobic nature -- they have", "set up their supply lines in a", "valley.", "~It's time to attack from the", "heavens -- use our glorious", "Thunder Wasps to accomplish", "this task." }, "mb_m08.wav" },
+    { { "%BOMBARDMENT", "~The creatures stir.", "They hear sounds on the horizon,", "and I fear it is the Symmetric's own", "heavenly attack -- the metal birds.", "Or it could be a Wilbur Bomber Air", "Strike.", "~Whatever it is, prepare for it,", "survive it, then hunt down the enemy", "and destroy them for daring to use", "our skies for themselves." }, "mb_m09.wav" },
+    { { "%HAND OF GOD", "~As we speak, our glorious warriors", "and beasts surround a Symmetric base.", "Our animals grow excited at the smell", "of soiled uniforms.", "~Using all of our forces, tighten your", "grip on the base and crush it,", "destroying everything." }, "mb_m10.wav" },
+    { { "%SQUISH", "~An unsightly Freaker village has", "sprung up near one of our pristine,", "high-tech encampments. Even if it's", "just for the pure aesthetics of it", "all, go in there and take out the", "garbage." }, "mb_s01.wav" },
+    { { "%COUNTER - ATTACK", "~Those mutants failed at their ambush,", "and we want them to fail even more.", "We've traced them back to their", "pitiful camp.", "You know what to do." }, "mb_s02.wav" },
+    { { "%DISTRESS", "~Our people in Communications have", "picked up a distress signal.", "Sure, it could be an old-world mobile", "phone with really good batteries, but", "we'd best be sure.", "~The signal is coming from a bunker in", "the badlands.", "~I don't know exactly what some of our", "highest ranking leaders were doing in", "the badlands in the first place, but", "that's where you have to go to rescue", "them.", "~And if it is just a mobile phone,", "bring it back.", "~I feel so common without one. " }, "mb_s03.wav" },
+    { { "%TRICKLE FEED", "~Well, Commander, what we've got here", "is a SNAFU, and don't say", "'Gesundheit' -- I really tire of", "that gag.", "~What's happened is some joker", "changed everyone's watches, so", "instead of having a big force to", "trash a Freak camp, you've initially", "only got a little force.", "~Over the course of the mission, your", "reinforcements will trickle in as", "their watches catch up -- hopefully,", "you won't be dead by then." }, "mb_s04.wav" },
+    { { "%S.O.S.", "~We've got a small base, and generally", "size doesn't count.", "But not this time.", "~This time, we've got a small base,", "the Freaks have got a large one, and", "we're in trouble.", "~Your mission is to hold off those", "freaky little dung people.", "~Reinforcements are on the way from a", "Survivor camp 15 minutes away; wait", "until they arrive, then reduce the", "size of the Freak camp to nothing.", "~That'll learn them for overextending." }, "mb_s05.wav" },
+    { { "%BUG HUNT", "~We've lost communications with an", "isolated base, Commander, and we want", "you to deal with it.", "~It's probably nothing more than one", "of those dead-beat communications", "guys kicking the power out of the", "wall again, but fix what needs to be", "fixed and deal with whatever needs to", "be dealt with, and slap everyone's", "wrists for wasting our time while", "you're at it." }, "mb_s06.wav" },
+    { { "%THE INFILTRATOR", "~The enemy have set up a camp and", "sent stragglers all over the place.", "They know we're here, and they're", "going to expect a big, crushing", "attack which could easily wipe", "them off this part of our world.", "~But we're not going to play their", "little game. We're going to send", "one single sniper with one gun and", "no armour to clear the whole damn", "area. That'll show 'em." }, "mb_s07.wav" },
+    { { "%JAIL BREAK", "~It's rescue time again, Commander.", "One of our patrols was captured by a", "mutant ambush.", "~Our people are alive, but there's no", "telling how long it'll be before the", "Freaks start performing some crazy", "death ceremony or other.", "~We want you to get in there and", "rescue the captured patrol, then", "perform a religious ceremony of your", "own -- sacrifice all the Freaks to", "nothing in particular." }, "mb_s08.wav" },
+    { { "%WAGONS HO", "~Those filthy Freaks have taken to the", "high ground and they're stinking up", "all the valleys around them.", "And they are killing people, which is", "a bad thing as well.Hold your nose", "while you hunt them down and kill", "them." }, "mb_s09.wav" },
+    { { "%TAG TEAM", "~One of our little bases is under", "constant attack.", "~And that really ticks us off.", "~What's worse is that the base is in a", "tight position and it can't be", "expanded enough to eradicate those", "irritating little Freaks.", "~Take a Mobile Outpost and set it up", "somewhere spacious, then build up", "your army.", "~Join forces with the original little", "camp and squash the Freaks like the", "cockroaches they aspire to be." }, "mb_s10.wav" }
 };
 char *aW = "w";
 
