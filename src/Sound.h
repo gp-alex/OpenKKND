@@ -137,7 +137,7 @@ void sound_stop(int sound_id);
 void sound_free_sounds();
 void _43A370_process_sound();
 void sound_deinit();
-void sound_list_43A800(int a1);
+void sound_threaded_set_volume(int a1);
 
 SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id);
 SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced);

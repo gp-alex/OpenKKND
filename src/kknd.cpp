@@ -9792,7 +9792,7 @@ void script_431F10_ingame_menu(Script *a1)
 	int v13; // eax@22
 	int v14; // ecx@23
 	__int64 v15; // rax@28
-	int v16; // eax@28
+	int sound_volume; // eax@28
 	int v17; // [sp+10h] [bp-10Ch]@1
 	int v18; // [sp+14h] [bp-108h]@1
 	//char name[260]; // [sp+18h] [bp-104h]@36
@@ -9876,36 +9876,36 @@ void script_431F10_ingame_menu(Script *a1)
 			else
 			{
 				v15 = 16 * ((v13 - v1->x) >> 8);
-				v16 = ((BYTE4(v15) & 0x7F) + (int)v15) >> 7;
+				sound_volume = ((BYTE4(v15) & 0x7F) + (int)v15) >> 7;
 				if (v12 == (void *)1)
 				{
-					_4690A8_unit_sounds_volume = v16;
+					_4690A8_unit_sounds_volume = sound_volume;
 				}
 				else
 				{
-					_4690AC_level_wav_sound_offset = v16;
-					if (v16)
+					_4690AC_level_wav_sound_offset = sound_volume;
+					if (sound_volume)
 						goto LABEL_44;
 					if (dword_4690B0 && _47C5D4_sound_threaded_snd_id)
 					{
 						sound_stop(_47C5D4_sound_threaded_snd_id);
-						v16 = _4690AC_level_wav_sound_offset;
+						sound_volume = _4690AC_level_wav_sound_offset;
 					}
-					if (v16)
+					if (sound_volume)
 					{
 					LABEL_44:
 						if (!dword_4690B0)
 						{
 							sound_play_threaded(levels[current_level_idx].wav_filename, 1, _4690AC_level_wav_sound_offset, 16, 0);
-							v16 = _4690AC_level_wav_sound_offset;
+							sound_volume = _4690AC_level_wav_sound_offset;
 						}
-						if (v16)
+						if (sound_volume) // sound volume in ingame menu
 						{
-							sound_list_43A800(v16);
-							v16 = _4690AC_level_wav_sound_offset;
+							sound_threaded_set_volume(sound_volume);
+							sound_volume = _4690AC_level_wav_sound_offset;
 						}
 					}
-					dword_4690B0 = v16;
+					dword_4690B0 = sound_volume;
 				}
 			}
 		}
