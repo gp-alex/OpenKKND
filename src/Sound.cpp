@@ -75,7 +75,7 @@ int _47C4E8_num_sounds; // weak
 int sound_volumes[16];
 Sound *sound_list_head;
 int sound_pans[16];
-int Sound_47C578[16];
+//int Sound_47C578[16];
 Sound *sound_list;
 int _47C5C0_can_sound; // weak
 int sound_list_last_id; // weak
@@ -145,9 +145,9 @@ int sound_list_free_pool_total() {
             if (head->next == nullptr) break;
             head = head->next;
 
-            if (count > 10) {
+            /*if (count > 10) {
                 printf("TOTAL LOOP: %d\n", count);
-            }
+            }*/
         }
         return count;
     }
@@ -398,11 +398,11 @@ bool sound_initialize()
     }
 
     //init Sound_47C578
-    int counter = 0;
+   /* int counter = 0;
     for (int i = 17; i >= 1; i--) {
         Sound_47C578[counter] = -1000.0 * 0.69314718055994528623 * log2((double)i * 0.05882352941176471);
         ++counter;
-    }
+    }*/
 
     sound_initialized = 0;
     sound_list_last_id = 0;
@@ -807,7 +807,7 @@ void _439C10_sound_thread(Sound *a1)
     WAVEFORMATEX v55; // [sp+13Ch] [bp-3Ch]@71
     DSBCAPS v56; // [sp+150h] [bp-28h]@8
     DSBUFFERDESC v57; // [sp+164h] [bp-14h]@1
-
+    printf("\nSOUND THREAD START\n");
     v1 = a1;
     v57.dwFlags = 0;
     v57.dwBufferBytes = 0;
@@ -1079,6 +1079,7 @@ void _439C10_sound_thread(Sound *a1)
         } while (v35 < 50);
     }
 LABEL_89:
+    printf("\nSOUND THREAD STOP\n");
     v1->pdsb->Stop();
     v1->file->close();
     v41 = v1->flags;
@@ -1091,42 +1092,60 @@ LABEL_89:
 //----- (0043A2B0) --------------------------------------------------------
 void sound_stop(int sound_id)
 {
-    Sound *v1; // esi@3
-    int v2; // eax@7
-    int v3; // eax@10
+    Sound *sound; // esi@3
+    int flags; // eax@7
+    int flags2; // eax@10
 
     if (sound_id && sound_initialized)
     {
-        v1 = sound_list_free_pool;
+        //find sound by id - look only list head
+        sound = sound_list_free_pool;
         if (sound_list_free_pool->id == sound_id)
         {
-        LABEL_6:
-            if (v1->field_14 == -3)
+            if (sound->field_14 == -3)
             {
-                v2 = v1->flags;
-                LOBYTE_HEXRAYS(v2) = v2 | 0x20;
-                v1->flags = v2;
+                flags = sound->flags;
+                LOBYTE_HEXRAYS(flags) = flags | 0x20;
+                sound->flags = flags;
             }
             else
             {
-                v1->pdsb->Stop();
-                v1->pdsb->SetCurrentPosition(0);
+                sound->pdsb->Stop();
+                sound->pdsb->SetCurrentPosition(0);
             }
-            if (v1->field_18)
+            if (sound->field_18)
             {
-                v3 = v1->flags;
-                v1->field_18 = 0;
-                LOBYTE_HEXRAYS(v3) = v3 & 0xFB;
-                v1->flags = v3;
+                flags2 = sound->flags;
+                sound->field_18 = 0;
+                LOBYTE_HEXRAYS(flags2) = flags2 & 0xFB;
+                sound->flags = flags2;
             }
         }
-        else
+        else //find sound by id - look through list
         {
-            while ((int *)v1 != &sound_list_end)
+            while ((int *)sound != &sound_list_end)
             {
-                v1 = v1->next;
-                if (v1->id == sound_id)
-                    goto LABEL_6;
+                sound = sound->next;
+                if (sound->id == sound_id) {
+                    if (sound->field_14 == -3)
+                    {
+                        flags = sound->flags;
+                        LOBYTE_HEXRAYS(flags) = flags | 0x20;
+                        sound->flags = flags;
+                    }
+                    else
+                    {
+                        sound->pdsb->Stop();
+                        sound->pdsb->SetCurrentPosition(0);
+                    }
+                    if (sound->field_18)
+                    {
+                        flags2 = sound->flags;
+                        sound->field_18 = 0;
+                        LOBYTE_HEXRAYS(flags2) = flags2 & 0xFB;
+                        sound->flags = flags2;
+                    }
+                }
             }
         }
     }
@@ -1186,8 +1205,8 @@ void _43A370_process_sound()
     v0 = sound_list_free_pool;
     for (i = 0; (int *)v0 != &sound_list_end; v0 = v0->next)
     {
-        int total = sound_list_free_pool_total();
-        printf("TOTAL: %d\n", total);
+        //int total = sound_list_free_pool_total();
+        //printf("TOTAL: %d\n", total);
 
         if (!v0)
             break;
@@ -1441,7 +1460,7 @@ void sound_threaded_set_volume(int sound_volume)
 
     if (_47C5D4_sound_threaded_snd_id && sound_initialized)
     {
-        //found sound by id - look only list head
+        //find sound by id - look only list head
         sound = sound_list_free_pool;
         if (sound_list_free_pool->id == _47C5D4_sound_threaded_snd_id)
         {
@@ -1450,7 +1469,7 @@ void sound_threaded_set_volume(int sound_volume)
             if (sound_buffer)
                 sound_buffer->SetVolume(sound_volumes[sound_volume]); //set volume
         }
-        else  //found sound by id - look through list
+        else  //find sound by id - look through list
         {
             while ((int *)sound != &sound_list_end)
             {

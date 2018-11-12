@@ -2470,7 +2470,7 @@ char *mission_briefings[30] =
 }; // weak
 int _4690A8_unit_sounds_volume = 16;
 int _4690AC_level_wav_sound_offset = 16; // idb
-int dword_4690B0 = 16; // weak
+int _4690B0_sound_volume_previous = 16; // weak
 int dword_4690B4 = 24576; // weak
 char asc_46BB14[18] = "                 ";
 char aD_1[] = "%d:"; // idb

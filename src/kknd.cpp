@@ -9884,17 +9884,19 @@ void script_431F10_ingame_menu(Script *a1)
 				else
 				{
 					_4690AC_level_wav_sound_offset = sound_volume;
-					if (sound_volume)
-						goto LABEL_44;
-					if (dword_4690B0 && _47C5D4_sound_threaded_snd_id)
+                    if (sound_volume) 
+                    {
+                        goto LABEL_44;
+                    }
+					if (_4690B0_sound_volume_previous && _47C5D4_sound_threaded_snd_id)
 					{
 						sound_stop(_47C5D4_sound_threaded_snd_id);
 						sound_volume = _4690AC_level_wav_sound_offset;
 					}
 					if (sound_volume)
 					{
-					LABEL_44:
-						if (!dword_4690B0)
+                    LABEL_44:
+						if (!_4690B0_sound_volume_previous)
 						{
 							sound_play_threaded(levels[current_level_idx].wav_filename, 1, _4690AC_level_wav_sound_offset, 16, 0);
 							sound_volume = _4690AC_level_wav_sound_offset;
@@ -9905,7 +9907,7 @@ void script_431F10_ingame_menu(Script *a1)
 							sound_volume = _4690AC_level_wav_sound_offset;
 						}
 					}
-					dword_4690B0 = sound_volume;
+					_4690B0_sound_volume_previous = sound_volume;
 				}
 			}
 		}
