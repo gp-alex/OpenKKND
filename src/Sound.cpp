@@ -66,7 +66,7 @@ struct sound_stru_2
 
 
 
-int sound_list_end; // weak
+Sound *sound_list_end; // weak
 Sound *sound_list_free_pool;
 Sound *sound_list_47C3D4;
 sound_stru_2 **_47C4E0_sounds;
@@ -135,11 +135,11 @@ void _439C10_sound_thread(Sound *a1); // idb
 void sound_list_remove(Sound *a1);
 
 int sound_list_free_pool_total() {
-   
+    return 0;
     Sound *head = sound_list_free_pool;
     if (head != 0) {
         int count = 0;
-        for (int i = 0; (int *)head != &sound_list_end; )
+        for (int i = 0; head != sound_list_end; )
         {
             count++;
             if (head->next == nullptr) break;
@@ -408,8 +408,8 @@ bool sound_initialize()
     sound_list_last_id = 0;
     sound_list_end = 0;
 
-    sound_list_free_pool = (Sound *)&sound_list_end;
-    sound_list_47C3D4 = (Sound *)&sound_list_end;
+    sound_list_free_pool = sound_list_end;
+    sound_list_47C3D4 = sound_list_end;
     sound_list_head = 0;
 
     if (DirectSoundCreate(0, &pds, 0))
@@ -441,8 +441,8 @@ bool sound_initialize()
         sound_list[7].next = 0;
 
         sound_list_end = 0;
-        sound_list_free_pool = (Sound *)&sound_list_end;
-        sound_list_47C3D4 = (Sound *)&sound_list_end;
+        sound_list_free_pool = sound_list_end;
+        sound_list_47C3D4 = sound_list_end;
         sound_list_head = sound_list;
 
         sound_initialized = 1;
@@ -700,14 +700,28 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
             goto LABEL_18;
         sound_list_head = sound_list_head->next;
         memset(v6, 0, sizeof(Sound));
-        if (!++sound_list_last_id)
+        if (!++sound_list_last_id) {
             sound_list_last_id = 1;
+        }
+        if (sound_list_last_id == 1) {
+            sound_list_end = sound_list_free_pool;
+        }
         v6->id = sound_list_last_id;
-        v7 = sound_list_free_pool;
-        v6->next = sound_list_free_pool;
-        v6->prev = (Sound *)&sound_list_end;
-        sound_list_free_pool->prev = v6;
-        sound_list_free_pool = v6;
+        if (sound_list_free_pool == 0) {
+            sound_list_free_pool = v6;
+            v6->next = 0;
+            v6->prev = 0;
+            sound_list_end = sound_list_free_pool;
+        } 
+        else {
+            v7 = sound_list_free_pool;
+            v6->next = sound_list_free_pool;
+            v6->prev = (Sound *)&sound_list_end;
+            sound_list_free_pool->prev = v6;
+            sound_list_free_pool = v6;
+            sound_list_end = sound_list_free_pool;
+        }
+        
         if (v6)
         {
             v9 = v6->flags | 8;
@@ -807,6 +821,7 @@ void _439C10_sound_thread(Sound *a1)
     WAVEFORMATEX v55; // [sp+13Ch] [bp-3Ch]@71
     DSBCAPS v56; // [sp+150h] [bp-28h]@8
     DSBUFFERDESC v57; // [sp+164h] [bp-14h]@1
+    
     printf("\nSOUND THREAD START\n");
     v1 = a1;
     v57.dwFlags = 0;
@@ -1123,7 +1138,7 @@ void sound_stop(int sound_id)
         }
         else //find sound by id - look through list
         {
-            while ((int *)sound != &sound_list_end)
+            while (sound != sound_list_end)
             {
                 sound = sound->next;
                 if (sound->id == sound_id) {
@@ -1162,7 +1177,7 @@ void sound_free_sounds()
     {
         do
         {
-            if ((int *)v0 == &sound_list_end)
+            if (v0 == sound_list_end)
                 break;
             v1 = v0->next;
             sound_list_remove(v0);
@@ -1203,7 +1218,7 @@ void _43A370_process_sound()
     int v20; // [sp+20h] [bp-4h]@9
 
     v0 = sound_list_free_pool;
-    for (i = 0; (int *)v0 != &sound_list_end; v0 = v0->next)
+    for (i = 0; v0 != sound_list_end; v0 = v0->next)
     {
         //int total = sound_list_free_pool_total();
         //printf("TOTAL: %d\n", total);
@@ -1314,7 +1329,7 @@ void sound_deinit()
     {
         do
         {
-            if ((int *)v0 == &sound_list_end)
+            if (v0 == sound_list_end)
                 break;
             v1 = v0->next;
             sound_list_remove(v0);
@@ -1471,7 +1486,7 @@ void sound_threaded_set_volume(int sound_volume)
         }
         else  //find sound by id - look through list
         {
-            while ((int *)sound != &sound_list_end)
+            while (sound != sound_list_end)
             {
                 sound = sound->next;
                 if (sound->id == _47C5D4_sound_threaded_snd_id) 
