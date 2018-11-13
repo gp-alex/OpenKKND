@@ -4109,9 +4109,9 @@ void _408550_multi_pal()
     PaletteEntry *v12; // ebx@14
     char *v13; // edx@14
     int v15; // ecx@16
-    BYTE v16; // [sp+10h] [bp-45Ch]@4
-    BYTE v17; // [sp+14h] [bp-458h]@4
-    BYTE v18; // [sp+18h] [bp-454h]@4
+    int v16; // [sp+10h] [bp-45Ch]@4
+    int v17; // [sp+14h] [bp-458h]@4
+    int v18; // [sp+18h] [bp-454h]@4
     char v19[80]; // [sp+1Ch] [bp-450h]@2
     Palette v20_; // [sp+6Ch] [bp-400h]@4
     PaletteEntry *v20 = v20_.entires;
