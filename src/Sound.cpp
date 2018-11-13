@@ -65,15 +65,14 @@ struct sound_stru_2
 
 
 
-
-Sound *sound_list_end; // weak
 Sound *sound_list_free_pool;
-Sound *sound_list_47C3D4;
+Sound *sound_list_end; // weak
+Sound *sound_list_head;
+//Sound *sound_list_47C3D4;
 sound_stru_2 **_47C4E0_sounds;
 LPDIRECTSOUND pds; // idb
 int _47C4E8_num_sounds; // weak
 int sound_volumes[16];
-Sound *sound_list_head;
 int sound_pans[16];
 //int Sound_47C578[16];
 Sound *sound_list;
@@ -409,7 +408,7 @@ bool sound_initialize()
     sound_list_end = 0;
 
     sound_list_free_pool = sound_list_end;
-    sound_list_47C3D4 = sound_list_end;
+    //sound_list_47C3D4 = sound_list_end;
     sound_list_head = 0;
 
     if (DirectSoundCreate(0, &pds, 0))
@@ -442,7 +441,7 @@ bool sound_initialize()
 
         sound_list_end = 0;
         sound_list_free_pool = sound_list_end;
-        sound_list_47C3D4 = sound_list_end;
+        //sound_list_47C3D4 = sound_list_end;
         sound_list_head = sound_list;
 
         sound_initialized = 1;
@@ -703,9 +702,6 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
         if (!++sound_list_last_id) {
             sound_list_last_id = 1;
         }
-        if (sound_list_last_id == 1) {
-            sound_list_end = sound_list_free_pool;
-        }
         v6->id = sound_list_last_id;
         if (sound_list_free_pool == 0) {
             sound_list_free_pool = v6;
@@ -716,10 +712,10 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
         else {
             v7 = sound_list_free_pool;
             v6->next = sound_list_free_pool;
-            v6->prev = (Sound *)&sound_list_end;
+            v6->prev = 0;
             sound_list_free_pool->prev = v6;
             sound_list_free_pool = v6;
-            sound_list_end = sound_list_free_pool;
+            //sound_list_end = sound_list_free_pool;
         }
         
         if (v6)
@@ -1543,6 +1539,7 @@ void sound_list_remove(Sound *a1)
         }
         if (v1->task)
             script_trigger_event(0, EVT_MSG_sound_neg3, 0, v1->task);
+        //remove from pool
         v5 = v1->next;
         v1->task = 0;
         if (v5)
@@ -1550,6 +1547,13 @@ void sound_list_remove(Sound *a1)
         v6 = v1->prev;
         if (v6)
             v6->next = v1->next;
+
+        sound_list_free_pool = v5;
+        if (v1 == sound_list_end) {
+            sound_list_end = v6;
+        }
+
+        //add to head list
         v1->next = sound_list_head;
         sound_list_head = v1;
     }
