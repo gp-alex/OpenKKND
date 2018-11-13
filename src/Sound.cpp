@@ -72,8 +72,8 @@ Sound *sound_list_head;
 sound_stru_2 **_47C4E0_sounds;
 LPDIRECTSOUND pds; // idb
 int _47C4E8_num_sounds; // weak
-int sound_volumes[16];
-int sound_pans[16];
+int sound_volumes[17];
+int sound_pans[17];
 //int Sound_47C578[16];
 Sound *sound_list;
 int _47C5C0_can_sound; // weak
@@ -391,7 +391,7 @@ bool sound_initialize()
     BOOL result; // eax@10
  
     //init sound volumes & sound pans
-    for (int i = 0; i < 16; ++i)
+    for (int i = 0; i < 17; ++i)
     {
         sound_volumes[i] = sound_pans[i] = 1000.0 * 0.69314718055994528623 * log2((double)(i + 1) * 0.05882352941176471);
     }
@@ -1173,8 +1173,8 @@ void sound_free_sounds()
     {
         do
         {
-            if (v0 == sound_list_end)
-                break;
+            /*if (v0 == sound_list_end)
+                break;*/
             v1 = v0->next;
             sound_list_remove(v0);
             v0 = v1;
