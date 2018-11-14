@@ -126,33 +126,29 @@ enum SOUND_ID : __int32
     SOUND_193 = 193,
 };
 
+void sound_start_video_playback();
+void sound_end_video_playback();
+bool sound_video_get_position(int *play, int *write);
+void sound_video_stop();
 
-
-
-bool LVL_LoadSlv(const char *slv_filename);
 bool sound_initialize();
-int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset, Script *script);
-int sound_play_threaded(const char *name, int a2, int sound_volume_offset, int sound_pan_offset, Script *task); // idb
-void sound_stop(int sound_id);
-void sound_free_sounds();
-void _43A370_process_sound();
-void sound_deinit();
-void sound_threaded_set_volume(int a1);
+bool LVL_LoadSlv(const char *slv_filename);
 
 SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id);
 SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced);
 SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced);
 SOUND_ID get_unit_ready_sound(UNIT_ID unit_id);
 
-void sound_start_video_playback();
-void sound_end_video_playback();
-bool sound_video_get_position(int *play, int *write);
-void sound_video_stop();
+int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset, Script *script);
+int sound_play_threaded(const char *name, int a2, int sound_volume_offset, int sound_pan_offset, Script *task); // idb
+void sound_threaded_set_volume(int a1);
+void _43A370_process_sound();
+void sound_stop(int sound_id);
+void sound_free_sounds();
+void sound_deinit();
 
 
 extern int _47C5D4_sound_threaded_snd_id; // idb
-
-
 
 extern SOUND_ID _468988_sound_ids[4];
 extern SOUND_ID _468998_sound_ids[4];
