@@ -160,10 +160,10 @@ void Game::Run() {
                     TimedMessagePump();
                     if (is_game_saving())
                     {
-                        sound_list_43A800(0);
+                        sound_threaded_set_volume(0);
                         if (!GAME_Save())
                             GAME_OnSaveFailed();
-                        sound_list_43A800(_4690AC_level_wav_sound_offset);
+                        sound_threaded_set_volume(_4690AC_level_wav_sound_offset);
                     }
                 } while (!_47DCF4_wm_quit_received && game_state == GAME_STATE::MainMenu);
                 is_mission_running = false;
