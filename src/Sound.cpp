@@ -133,10 +133,12 @@ bool sound_stru_2_43A710(sound_stru_2 *a1, WAVEFORMATEX **a2, int *a3, unsigned 
 void _439C10_sound_thread(Sound *a1); // idb
 void sound_list_remove(Sound *a1);
 
-int sound_list_free_pool_total() {
+int sound_list_free_pool_total() 
+{
     return 0;
     Sound *head = sound_list_free_pool;
-    if (head != 0) {
+    if (head != 0) 
+    {
         int count = 0;
         for (int i = 0; head != sound_list_end; )
         {
@@ -144,7 +146,8 @@ int sound_list_free_pool_total() {
             if (head->next == nullptr) break;
             head = head->next;
 
-            /*if (count > 10) {
+            /*if (count > 10) 
+            {
                 printf("TOTAL LOOP: %d\n", count);
             }*/
         }
@@ -159,22 +162,26 @@ int sound_list_free_pool_total() {
 DSBUFFERDESC video_477DE4_dsb_desc; // weak
 IDirectSoundBuffer *video_477DE4_dsb;
 
-void sound_start_video_playback() {
+void sound_start_video_playback() 
+{
 
 }
 
-void sound_end_video_playback() {
+void sound_end_video_playback() 
+{
 
 }
 
-bool sound_video_get_position(int *play, int *write) {
+bool sound_video_get_position(int *play, int *write) 
+{
     return S_OK == video_477DE4_dsb->GetCurrentPosition(
         (LPDWORD)play,
         (LPDWORD)write
     );
 }
 
-void sound_video_stop() {
+void sound_video_stop() 
+{
     video_477DE4_dsb->Stop();
     video_477DE4_dsb->Release();
 }
@@ -398,7 +405,8 @@ bool sound_initialize()
 
     //init Sound_47C578
    /* int counter = 0;
-    for (int i = 17; i >= 1; i--) {
+    for (int i = 17; i >= 1; i--) 
+    {
         Sound_47C578[counter] = -1000.0 * 0.69314718055994528623 * log2((double)i * 0.05882352941176471);
         ++counter;
     }*/
@@ -515,7 +523,6 @@ bool LVL_LoadSlv(const char *slv_filename)
 //----- (004396C0) --------------------------------------------------------
 int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset, Script *script)
 {
-    return 0;
     void *v5; // eax@0
     int v6; // eax@3
     Sound *v7; // eax@4
@@ -565,13 +572,30 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
                     sound_list_head = sound_list_head->next;
                     memset(v10, 0, sizeof(Sound));
                     if (!++sound_list_last_id)
+                    {
                         sound_list_last_id = 1;
+                    }
+                        
+                    if (sound_list_last_id == 1) 
+                    {
+                        sound_list_end = sound_list_free_pool;
+                    }
                     v10->id = sound_list_last_id;
-                    v7 = sound_list_free_pool;
-                    v10->next = sound_list_free_pool;
-                    v10->prev = (Sound *)&sound_list_end;
-                    sound_list_free_pool->prev = v10;
-                    sound_list_free_pool = v10;
+                    if (sound_list_free_pool == 0) 
+                    {
+                        sound_list_free_pool = v10;
+                        v10->next = 0;
+                        v10->prev = 0;
+                        sound_list_end = sound_list_free_pool;
+                    }
+                    else 
+                    {
+                        v7 = sound_list_free_pool;
+                        v10->next = sound_list_free_pool;
+                        v10->prev = 0;
+                        sound_list_free_pool->prev = v10;
+                        sound_list_free_pool = v10;
+                    }
                 }
                 if (v10)
                 {
@@ -699,11 +723,13 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
             goto LABEL_18;
         sound_list_head = sound_list_head->next;
         memset(v6, 0, sizeof(Sound));
-        if (!++sound_list_last_id) {
+        if (!++sound_list_last_id) 
+        {
             sound_list_last_id = 1;
         }
         v6->id = sound_list_last_id;
-        if (sound_list_free_pool == 0) {
+        if (sound_list_free_pool == 0) 
+        {
             sound_list_free_pool = v6;
             v6->next = 0;
             v6->prev = 0;
@@ -1137,7 +1163,8 @@ void sound_stop(int sound_id)
             while (sound != sound_list_end)
             {
                 sound = sound->next;
-                if (sound->id == sound_id) {
+                if (sound->id == sound_id) 
+                {
                     if (sound->field_14 == -3)
                     {
                         flags = sound->flags;
@@ -1549,7 +1576,8 @@ void sound_list_remove(Sound *a1)
             v6->next = v1->next;
 
         sound_list_free_pool = v5;
-        if (v1 == sound_list_end) {
+        if (v1 == sound_list_end) 
+        {
             sound_list_end = v6;
         }
 
