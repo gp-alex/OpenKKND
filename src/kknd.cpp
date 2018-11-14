@@ -10292,7 +10292,7 @@ void _41AC50_string_draw_handler(const char *a1, int cursor_pos)
 }
 
 //----- (00432990) --------------------------------------------------------
-void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
+void script_432990_ingame_input_savegame_name(Script *a1, int a2, int a3)
 {
 	Sprite *v3; // esi@1
 	int v4; // edi@1
@@ -10302,7 +10302,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 	Sprite *v8; // eax@10
 	int v9; // edi@18
 	int v10; // ebx@18
-	stru175 *v11; // esi@18
+	stru175_savegame *v11; // esi@18
 	Script *v12; // ebp@30
 	int v13; // esi@30
 	int v14; // edi@30
@@ -10350,15 +10350,15 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 		5);
 	_47C65C_render_string = v5;
 	_47C664_ingame_menu_sprite = v3;
-	v24 = _47C050_array_idx - 4;
-	if (_47C050_array_idx - 4 >= 0)
+	v24 = _47C050_current_savegame_idx - 4;
+	if (_47C050_current_savegame_idx - 4 >= 0)
 	{
 		v23 = 4;
 	}
 	else
 	{
 		v24 = 0;
-		v23 = _47C050_array_idx;
+		v23 = _47C050_current_savegame_idx;
 	}
 	if (v5)
 	{
@@ -10408,12 +10408,12 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 				sprite_load_mobd(a1a, 1064);
 				v9 = v24;
 				v10 = 5;
-				v11 = &_47C050_array[v24];
+				v11 = &_47C050_savegames[v24];
 				do
 				{
-					if ((int)v11 >= (int) & _47C050_array[2])
+					if ((int)v11 >= (int) & _47C050_savegames[2])
 					{
-						if ((int)v11 >= (int) & _47C050_array[10])
+						if ((int)v11 >= (int) & _47C050_savegames[10])
 							sprintf(a2a, aD_1, v9);
 						else
 							sprintf(a2a, aD_0, v9);
@@ -10423,8 +10423,8 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 						sprintf(a2a, aD, v9);
 					}
 					render_string_443D80(_47C65C_render_string, a2a, 0);
-					if (v11->str_0[0])
-						render_string_443D80(_47C65C_render_string, v11->str_0, 0);
+					if (v11->name[0])
+						render_string_443D80(_47C65C_render_string, v11->name, 0);
 					render_string_443D80(_47C65C_render_string, asc_464C88, 0);
 					++v9;
 					++v11;
@@ -10510,7 +10510,7 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 					sprite_list_remove(a1a);
 					script_terminate(v25);
 				}
-				_47C050_array_idx = v23 + v24;
+				_47C050_current_savegame_idx = v23 + v24;
 				if (a3)
 					break;
 				if ((v13 || v15) && _438740_save_lst())
@@ -10539,8 +10539,8 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 			sprite_load_mobd(a1a, 1096);
 			dword_47C6C4 = 1;
 			if (input_get_string(
-				_47C050_array[_47C050_array_idx].str_0,
-				0xBu,
+				_47C050_savegames[_47C050_current_savegame_idx].name,
+				11,
 				_41AC50_string_draw_handler,
 				1,
 				v12))
@@ -10549,8 +10549,8 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 				v19 = 0;
 				while (1)
 				{
-					v20 = _47C050_array_idx;
-					v21 = _47C050_array[_47C050_array_idx].str_0[v19];
+					v20 = _47C050_current_savegame_idx;
+					v21 = _47C050_savegames[_47C050_current_savegame_idx].name[v19];
 					if (!v21)
 						goto LABEL_69;
 					v32[v18++] = isalpha(v21) || isdigit(v21) ? v21 : 95;
@@ -10558,14 +10558,14 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 						break;
 					v12 = v25;
 				}
-				v20 = _47C050_array_idx;
+				v20 = _47C050_current_savegame_idx;
 				v12 = v25;
 			LABEL_69:
 				if (v18 > 0)
 				{
 					v22 = v20;
-					memcpy(&_47C050_array[v22], v32, v18);
-					_47C050_array[v22].level_id = current_level_idx;
+					memcpy(&_47C050_savegames[v22], v32, v18);
+					_47C050_savegames[v22].level_id = current_level_idx;
 					if (_438840_save_lst())
 						script_trigger_event(v12, EVT_MSG_1530_OPEN_GAME_MENU, 0, task_47C028);
 				}
@@ -10585,19 +10585,19 @@ void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3)
 //----- (00432F00) --------------------------------------------------------
 void script_432F00_ingame_menu(Script *a1)
 {
-	script_432990_ingame_menu_read_keyboard_input(a1, 1, 0);
+	script_432990_ingame_input_savegame_name(a1, 1, 0);
 }
 
 //----- (00432F20) --------------------------------------------------------
 void script_432F20_ingame_menu_read_keyboard_input(Script *a1)
 {
-	script_432990_ingame_menu_read_keyboard_input(a1, 0, 0);
+	script_432990_ingame_input_savegame_name(a1, 0, 0);
 }
 
 //----- (00432F30) --------------------------------------------------------
 void script_432F30_ingame_menu_read_keyboard_input(Script *a1)
 {
-	script_432990_ingame_menu_read_keyboard_input(a1, 0, 1);
+	script_432990_ingame_input_savegame_name(a1, 0, 1);
 }
 
 //----- (00432F40) --------------------------------------------------------

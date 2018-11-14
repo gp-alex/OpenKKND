@@ -12,6 +12,70 @@
 using Engine::EntityFactory;
 
 
+void savegame_list_clear() {
+    _47C050_current_savegame_idx = 0;
+
+    for (int i = 0; i < savegames_max; ++i) {
+        memset(_47C050_savegames[i].name, 0, sizeof(_47C050_savegames[i].name));
+    }
+}
+
+bool savegame_is_slot_valid(int slot) {
+    if (slot >= savegames_max) {
+        return false;
+    }
+    return _47C050_savegames[slot].name[0] != 0;
+}
+
+void savegame_list_print(FILE *f) {
+    for (int i = 0; i < savegames_max; ++i) {
+        if (savegame_is_slot_valid(i)) {
+            fprintf(f, "Slot %d = %s %d\n", i, _47C050_savegames[i].name, _47C050_savegames[i].level_id);
+        }
+    }
+}
+
+//----- (00438630) --------------------------------------------------------
+int _438630_read_save_lst()
+{
+    FILE *v0; // ebx@1
+    int v3; // eax@4
+    int v4; // eax@7
+    int v5; // edx@10
+    int v7; // [sp+Ch] [bp-18h]@7
+    stru175_savegame *v8; // [sp+10h] [bp-14h]@10
+    enum LEVEL_ID v9; // [sp+14h] [bp-10h]@7
+    char v10[12]; // [sp+18h] [bp-Ch]@7
+
+    sprintf(byte_47C230, aSSave_lst, game_data_installation_dir);
+    v0 = fopen(byte_47C230, aR);
+    if (v0)
+    {
+        savegame_list_clear();
+        v3 = fscanf(v0, aActiveslotD, &_47C050_current_savegame_idx);
+        if (!v3)
+            _47C050_current_savegame_idx = 0;
+        if (v3 != -1)
+        {
+            while (1)
+            {
+                v10[0] = 0;
+                v4 = fscanf(v0, "Slot %d = %s %d\n", &v7, v10, &v9);
+                if (!v4 || v4 == -1)
+                    break;
+                if (v7 <= 19)
+                {
+                    v5 = v7;
+                    v8 = &_47C050_savegames[v7];
+                    strcpy(_47C050_savegames[v7].name, v10);
+                    _47C050_savegames[v5].level_id = v9;
+                }
+            }
+        }
+        fclose(v0);
+    }
+    return 0;
+}
 
 //----- (0041CAC0) --------------------------------------------------------
 bool is_game_loading()
@@ -1235,9 +1299,7 @@ void _4243C0_kknd_sve_update_last_level(const char *a1)
 {
     FILE *v1; // edi@1
     int v2; // ebx@3
-    int *v3; // esi@5
     int v4; // ebx@8
-    int *v5; // esi@10
     int v6; // [sp+8h] [bp-108h]@1
     int a2; // [sp+Ch] [bp-104h]@1
     char filename[256]; // [sp+10h] [bp-100h]@1
@@ -1266,12 +1328,9 @@ void _4243C0_kknd_sve_update_last_level(const char *a1)
             v2 = 47 - (unsigned __int16)current_surv_level;
             fprintf(v1, "%03d", (unsigned __int16)current_surv_level);
         }
-        v3 = kknd_sve_array_463070;
-        do
-        {
-            fprintf(v1, "%03d", *v3 ^ v2);
-            ++v3;
-        } while ((int)v3 < (int)kknd_sve_array_4630AC);
+        for (int i = 0; i < 15; ++i) {
+            fprintf(v1, "%03d", kknd_sve_array_463070[i] ^ v2);
+        }
         if ((unsigned __int16)current_mute_level <= (int)(unsigned __int16)v6)
         {
             v4 = 69 - (unsigned __int16)v6;
@@ -1283,12 +1342,9 @@ void _4243C0_kknd_sve_update_last_level(const char *a1)
             v4 = 69 - (unsigned __int16)current_mute_level;
             fprintf(v1, "%03d", (unsigned __int16)current_mute_level);
         }
-        v5 = kknd_sve_array_4630AC;
-        do
-        {
-            fprintf(v1, "%03d", *v5 ^ v4);
-            ++v5;
-        } while ((int)v5 < (int)&dword_4630E8);
+        for (int i = 0; i < 15; ++i) {
+            fprintf(v1, "%03d", kknd_sve_array_4630AC[i] ^ v4);
+        }
         fclose(v1);
     }
 }
@@ -1299,29 +1355,19 @@ bool _438740_save_lst()
     int v0; // esi@1
     FILE *v1; // eax@3
     FILE *v2; // ebx@3
-    int v3; // edi@4
-    stru175 *v4; // esi@4
 
-    v0 = _47C050_array_idx;
-    if (_47C050_array[_47C050_array_idx].str_0[0]
-        && (sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_array_idx),
-            _41CAE0_prepare_to_load_level(byte_47C230, _47C050_array[v0].level_id))
+    v0 = _47C050_current_savegame_idx;
+    if (_47C050_savegames[_47C050_current_savegame_idx].name[0]
+        && (sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_current_savegame_idx),
+            _41CAE0_prepare_to_load_level(byte_47C230, _47C050_savegames[v0].level_id))
         && (game_state = GAME_STATE::Mission,
             sprintf(byte_47C230, aSSave_lst, game_data_installation_dir),
             //SetFileAttributesA(byte_47C230, 0x80u),
             v1 = fopen(byte_47C230, "w"),
             (v2 = v1) != 0))
     {
-        fprintf(v1, aActiveslotD, _47C050_array_idx);
-        v3 = 0;
-        v4 = _47C050_array;
-        do
-        {
-            if (v4->str_0[0])
-                fprintf(v2, "Slot %d = %s %d\n", v3, v4, v4->level_id);
-            ++v4;
-            ++v3;
-        } while ((int)v4 < (int)byte_47C230);
+        fprintf(v1, aActiveslotD, _47C050_current_savegame_idx);
+        savegame_list_print(v2);
         fclose(v2);
         return true;
     }
@@ -1334,28 +1380,18 @@ bool _438840_save_lst()
     int v0; // esi@1
     FILE *v1; // eax@3
     FILE *v2; // ebx@3
-    int v3; // edi@4
-    stru175 *v4; // esi@4
 
-    v0 = _47C050_array_idx;
-    if (_47C050_array[_47C050_array_idx].str_0[0]
-        && (sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_array_idx),
-            _41CB30_prepare_to_save_level(byte_47C230, _47C050_array[v0].level_id))
+    v0 = _47C050_current_savegame_idx;
+    if (_47C050_savegames[_47C050_current_savegame_idx].name[0]
+        && (sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_current_savegame_idx),
+            _41CB30_prepare_to_save_level(byte_47C230, _47C050_savegames[v0].level_id))
         && (sprintf(byte_47C230, aSSave_lst, game_data_installation_dir),
             //SetFileAttributesA(byte_47C230, 0x80u),
             v1 = fopen(byte_47C230, "w"),
             (v2 = v1) != 0))
     {
-        fprintf(v1, aActiveslotD, _47C050_array_idx);
-        v3 = 0;
-        v4 = _47C050_array;
-        do
-        {
-            if (v4->str_0[0])
-                fprintf(v2, "Slot %d = %s %d\n", v3, v4, v4->level_id);
-            ++v4;
-            ++v3;
-        } while ((int)v4 < (int)byte_47C230);
+        fprintf(v1, aActiveslotD, _47C050_current_savegame_idx);
+        savegame_list_print(v2);
         fclose(v2);
         return true;
     }

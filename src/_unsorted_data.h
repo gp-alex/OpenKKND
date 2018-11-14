@@ -582,9 +582,10 @@ extern Script *task_47C028; // idb
 extern int dword_47C030; // weak
 extern int _47C048_num_attack_projectile_sprites; // weak
 extern int _47C04C_num_explosions_max20; // weak
-extern stru175 _47C050_array[20];
+const int savegames_max = 20;
+extern stru175_savegame _47C050_savegames[savegames_max];
 extern char byte_47C230[256]; // idb
-extern int _47C050_array_idx; // idb
+extern int _47C050_current_savegame_idx; // idb
 extern stru28 *stru28_list_47C338;
 extern stru28 *stru28_list_47C33C;
 extern stru28 *stru28_list;

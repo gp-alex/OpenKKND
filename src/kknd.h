@@ -1743,9 +1743,9 @@ struct EntityOilTankerState
 };
 
 /* 429 */
-struct stru175
+struct stru175_savegame
 {
-	char str_0[12];
+	char name[12];
 	int field_C;
 	int field_10;
 	enum LEVEL_ID level_id;
