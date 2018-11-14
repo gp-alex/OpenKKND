@@ -212,7 +212,7 @@ extern int dword_468FDC; // weak
 extern char *mission_briefings[30]; // weak
 extern int _4690A8_unit_sounds_volume;
 extern int _4690AC_level_wav_sound_offset; // idb
-extern int dword_4690B0; // weak
+extern int _4690B0_sound_volume_previous; // weak
 extern int dword_4690B4; // weak
 extern char asc_46BB14[18];
 extern char aD_1[]; // idb

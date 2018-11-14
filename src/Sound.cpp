@@ -2,22 +2,15 @@
 #include <process.h>    // _beginthread, _endthread
 
 #include "src/Sound.h"
-
 #include "src/kknd.h"
 #include "src/Random.h"
 #include "src/ScriptEvent.h"
 #include "src/_unsorted_functions.h"
-
 #include "src/Engine/Entity.h"
 
 #include "src/Infrastructure/PlatformSpecific/OsTools.h"
 
-
-
 #pragma comment(lib, "Dsound.lib") // DirectSoundCreate
-
-
-
 
 
 /* 262 */
@@ -52,7 +45,6 @@ struct Sound
     char field_147;
 };
 
-
 /* 428 */
 struct sound_stru_2
 {
@@ -62,13 +54,18 @@ struct sound_stru_2
     int data;
 };
 
-Sound *sound_list_47C3D4;
+
+DSBUFFERDESC video_477DE4_dsb_desc; // weak
+IDirectSoundBuffer *video_477DE4_dsb;
+
+Sound *sound_list_free_pool;
+Sound *sound_list_end; // weak
+Sound *sound_list_head;
 sound_stru_2 **_47C4E0_sounds;
 LPDIRECTSOUND pds; // idb
 int _47C4E8_num_sounds; // weak
-int sound_volumes[16];
-int sound_pans[16];
-int Sound_47C578[16];
+int sound_volumes[17];
+int sound_pans[17];
 Sound *sound_list;
 int _47C5C0_can_sound; // weak
 int sound_list_last_id; // weak
@@ -129,83 +126,149 @@ void sound_list_remove(Sound *a1);
 
 
 
-
-
-DSBUFFERDESC video_477DE4_dsb_desc; // weak
-IDirectSoundBuffer *video_477DE4_dsb;
-
-void sound_start_video_playback() {
+void sound_start_video_playback() 
+{
 
 }
 
-void sound_end_video_playback() {
+void sound_end_video_playback() 
+{
 
 }
 
-bool sound_video_get_position(int *play, int *write) {
+bool sound_video_get_position(int *play, int *write) 
+{
     return S_OK == video_477DE4_dsb->GetCurrentPosition(
         (LPDWORD)play,
         (LPDWORD)write
     );
 }
 
-void sound_video_stop() {
+void sound_video_stop() 
+{
     video_477DE4_dsb->Stop();
     video_477DE4_dsb->Release();
 }
 
+//----- (00439440) --------------------------------------------------------
+// Initialize game sound
+bool sound_initialize()
+{
+    Sound *sound; // ecx@9
+    BOOL result; // eax@10
+ 
+    //init sound volumes & sound pans
+    for (int i = 0; i < 17; ++i)
+    {
+        sound_volumes[i] = sound_pans[i] = 1000.0 * 0.69314718055994528623 * log2((double)(i + 1) * 0.05882352941176471);
+    }
 
+    sound_initialized = 0;
+    sound_list_last_id = 0;
+    sound_list_end = 0;
 
-Sound *inactive_sound_list_head;
-// get free sound from pool
-Sound *inactive_sound_list_pop() {
-    auto sound = inactive_sound_list_head;
-    inactive_sound_list_head = inactive_sound_list_head->next;
+    sound_list_free_pool = sound_list_end;
+    sound_list_head = 0;
 
-    return sound;
+    if (DirectSoundCreate(0, &pds, 0))
+        return 1;
+
+    HWND hwnd = (HWND)gWindow->GetHwnd();
+    if (pds->SetCooperativeLevel(hwnd, 1))
+    {
+        pds->Release();
+        pds = 0;
+        return 1;
+    }
+    
+    //generate 7 empty Sound objects
+    sound_list = (Sound *)malloc(0xA40u);
+    memset(sound_list, 0, 0xA40u);
+    sound = sound_list;
+    if (sound_list)
+    {
+        int counter = 0;
+        while (1)
+        {
+            sound[counter].next = &sound[counter + 1];
+            ++counter;
+            if (counter >= 7)
+                break;
+            sound = sound_list;
+        }
+        sound_list[7].next = 0;
+
+        sound_list_end = 0;
+        sound_list_free_pool = sound_list_end;
+        sound_list_head = sound_list;
+
+        sound_initialized = 1;
+        result = 1;
+    }
+    else
+    {
+        pds->Release();
+        pds = 0;
+        result = 1;
+    }
+    return result;
 }
-// return unused sound to the free pool
-void inactive_sound_list_prepend(Sound *sound) {
-    sound->next = inactive_sound_list_head;
-    inactive_sound_list_head = sound;
+
+//----- (00439610) --------------------------------------------------------
+// Load game sound file
+bool LVL_LoadSlv(const char *slv_filename)
+{
+    DataHunk *v1; // eax@2
+    DataSectionOffset *v2; // eax@4
+    sound_stru_2 **v3; // edx@4
+    char *v4; // esi@4
+    int v5; // ecx@7
+    int v6; // ecx@9
+    sound_stru_2 **v7; // eax@10
+    sound_stru_2 *v8; // edx@11
+
+    _47C5C0_can_sound = 0;
+    if (sound_initialized)
+    {
+        v1 = LVL_LoadLevel(slv_filename);
+        faction_slv = v1;
+        if (v1 || (v1 = LVL_LoadLevel("sound.slv"), (faction_slv = v1) != 0))
+        {
+            v2 = v1->section_table;
+            v3 = 0;
+            _47C4E0_sounds = 0;
+            v4 = (char *)&v2->ptr;
+            if (v2->ptr)
+            {
+                do
+                {
+                    if (!strncmp("SOUN", v2->name, 4u))
+                        _47C4E0_sounds = *(sound_stru_2 ***)v4;
+                    v5 = *((_DWORD *)v4 + 2);
+                    v4 += 8;
+                    v2 = (DataSectionOffset *)(v4 - 4);
+                } while (v5);
+                v3 = _47C4E0_sounds;
+            }
+            v6 = 0;
+            if (*v3)
+            {
+                v7 = v3;
+                do
+                {
+                    v8 = v7[1];
+                    ++v7;
+                    ++v6;
+                } while (v8);
+            }
+            _47C4E8_num_sounds = v6;
+            _47C5C0_can_sound = 1;
+        }
+    }
+    return 1;
 }
 
-
-
-int active_sound_list_tail; // weak
-Sound *active_sound_list_head;
-// list of sounds that are currently playing
-Sound *active_sound_list_begin() {
-    return active_sound_list_head;
-}
-
-// end of list of sounds that are currently playing
-Sound *active_sound_list_end() {
-    return (Sound *)&active_sound_list_tail;
-}
-
-Sound *active_sound_list_prepend(Sound *sound) {
-    auto head = active_sound_list_begin();
-    sound->next = head;
-    sound->prev = active_sound_list_end();
-    head->prev = sound;
-    return active_sound_list_head = sound;
-}
-
-// remove sound from active list
-void active_sound_list_remove(Sound *sound) {
-    auto next = sound->next;
-    auto prev = sound->prev;
-    if (next)
-        next->prev = prev;
-    if (prev)
-        prev->next = next;
-    inactive_sound_list_prepend(sound);
-}
-
-
-
-
+// Get unit sound ID
 SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id)
 {
     switch (unit_id)
@@ -243,7 +306,7 @@ SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id)
     }
 }
 
-
+// Get unit confirmation sound
 SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced)
 {
     if (is_21st_century(unit_id))
@@ -303,7 +366,7 @@ SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced)
     }
 }
 
-
+// Get unit confirmation sound
 SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced)
 {
     if (is_21st_century(unit_id))
@@ -371,7 +434,7 @@ SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced)
     }
 }
 
-
+// Get unit ready sound ID
 SOUND_ID get_unit_ready_sound(UNIT_ID unit_id)
 {
     switch (unit_id)
@@ -406,160 +469,13 @@ SOUND_ID get_unit_ready_sound(UNIT_ID unit_id)
     }
 }
 
-
-
-//----- (00439440) --------------------------------------------------------
-bool sound_initialize()
-{
-    int v0; // eax@1
-    int *v1; // esi@1
-    int v2; // eax@3
-    int *v3; // esi@3
-    int v4; // esi@5
-    int *v5; // edi@5
-    Sound *v6; // ecx@9
-    BOOL result; // eax@10
-    int v8; // eax@11
-    int v9; // [sp+Ch] [bp-4h]@5
-
-    v0 = 0;
-    v1 = sound_volumes;
-    for (int i = 0; i < 16; ++i)
-    {
-        //*v1 = (signed __int64)(__FYL2X__((double)(v0 + 1) * 0.05882352941176471, 0.69314718055994528623) * 1000.0);
-        *v1 = 1000.0 * 0.69314718055994528623 * log2((double)(v0 + 1) * 0.05882352941176471);
-        ++v1;
-        ++v0;
-    }
-    v2 = 0;
-    v3 = sound_pans;
-    for (int i = 0; i < 16; ++i)
-    {
-        //*v3 = (signed __int64)(__FYL2X__((double)(v2 + 1) * 0.05882352941176471, 0.69314718055994528623) * 1000.0);
-        *v3 = 1000.0 * 0.69314718055994528623 * log2((double)(v2 + 1) * 0.05882352941176471);
-        ++v3;
-        ++v2;
-    }
-    v4 = 17;
-    v5 = Sound_47C578;
-    v9 = 17;
-    do
-    {
-        //*v5 = (signed __int64)(__FYL2X__((double)v9 * 0.05882352941176471, 0.69314718055994528623) * -1000.0);
-        *v5 = -1000.0 * 0.69314718055994528623 * log2((double)v9 * 0.05882352941176471);
-        --v4;
-        ++v5;
-        v9 = v4;
-    } while (v4 >= 1);
-    sound_initialized = 0;
-    sound_list_last_id = 0;
-    active_sound_list_tail = 0;
-    active_sound_list_head = active_sound_list_end();
-    sound_list_47C3D4 = active_sound_list_end();
-    inactive_sound_list_head = 0;
-    if (DirectSoundCreate(0, &pds, 0))
-        return 1;
-
-    HWND hwnd = (HWND)gWindow->GetHwnd();
-    if (pds->SetCooperativeLevel(hwnd, 1))
-    {
-        pds->Release();
-        pds = 0;
-        return 1;
-    }
-    sound_list = (Sound *)malloc(0xA40u);
-    memset(sound_list, 0, 0xA40u);
-    v6 = sound_list;
-    if (sound_list)
-    {
-        v8 = 0;
-        while (1)
-        {
-            v6[v8].next = &v6[v8 + 1];
-            ++v8;
-            if (v8 >= 7)
-                break;
-            v6 = sound_list;
-        }
-        sound_list[7].next = 0;
-        active_sound_list_tail = 0;
-        active_sound_list_head = active_sound_list_end();
-        sound_list_47C3D4 = active_sound_list_end();
-        inactive_sound_list_head = sound_list;
-        sound_initialized = 1;
-        result = 1;
-    }
-    else
-    {
-        pds->Release();
-        pds = 0;
-        result = 1;
-    }
-    return result;
-}
-
-
-
-
-//----- (00439610) --------------------------------------------------------
-bool LVL_LoadSlv(const char *slv_filename)
-{
-    DataHunk *v1; // eax@2
-    DataSectionOffset *v2; // eax@4
-    sound_stru_2 **v3; // edx@4
-    char *v4; // esi@4
-    int v5; // ecx@7
-    int v6; // ecx@9
-    sound_stru_2 **v7; // eax@10
-    sound_stru_2 *v8; // edx@11
-
-    _47C5C0_can_sound = 0;
-    if (sound_initialized)
-    {
-        v1 = LVL_LoadLevel(slv_filename);
-        faction_slv = v1;
-        if (v1 || (v1 = LVL_LoadLevel("sound.slv"), (faction_slv = v1) != 0))
-        {
-            v2 = v1->section_table;
-            v3 = 0;
-            _47C4E0_sounds = 0;
-            v4 = (char *)&v2->ptr;
-            if (v2->ptr)
-            {
-                do
-                {
-                    if (!strncmp("SOUN", v2->name, 4u))
-                        _47C4E0_sounds = *(sound_stru_2 ***)v4;
-                    v5 = *((_DWORD *)v4 + 2);
-                    v4 += 8;
-                    v2 = (DataSectionOffset *)(v4 - 4);
-                } while (v5);
-                v3 = _47C4E0_sounds;
-            }
-            v6 = 0;
-            if (*v3)
-            {
-                v7 = v3;
-                do
-                {
-                    v8 = v7[1];
-                    ++v7;
-                    ++v6;
-                } while (v8);
-            }
-            _47C4E8_num_sounds = v6;
-            _47C5C0_can_sound = 1;
-        }
-    }
-    return 1;
-}
-
 //----- (004396C0) --------------------------------------------------------
-int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset, Script *script)
+// Play unit sound
+int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int pan_offset, Script *script)
 {
-    return 0;
     void *v5; // eax@0
     int v6; // eax@3
+    Sound *v7; // eax@4
     int result; // eax@7
     sound_stru_2 *v9; // esi@10
     Sound *v10; // ebx@12
@@ -568,6 +484,12 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
     bool v13; // zf@21
     unsigned int v14; // ecx@25
     void *v15; // eax@27
+    Sound *v16; // eax@33
+    Sound *v17; // eax@35
+    Sound *v18; // eax@37
+    Sound *v19; // eax@46
+    Sound *v20; // eax@48
+    Sound *v21; // eax@50
     int v22; // [sp+0h] [bp-3Ch]@3
     DSBUFFERDESC v23; // [sp+Ch] [bp-30h]@4
     int v24; // [sp+20h] [bp-1Ch]@1
@@ -578,8 +500,9 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
     const void *v29; // [sp+34h] [bp-8h]@21
     int a3a; // [sp+38h] [bp-4h]@4
 
-    v24 = a2;
+    v24 = sound_flags;
 
+    v7 = 0;
     v23.dwFlags = 0;
     v23.dwSize = 0;
     v23.dwBufferBytes = 0;
@@ -593,14 +516,36 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
             v9 = _47C4E0_sounds[sound_id];
             if (v9 != faction_slv && v9)
             {
-                v10 = inactive_sound_list_pop();
-                if (v10)
+                v10 = sound_list_head;
+                if (sound_list_head)
                 {
+                    sound_list_head = sound_list_head->next;
                     memset(v10, 0, sizeof(Sound));
                     if (!++sound_list_last_id)
+                    {
                         sound_list_last_id = 1;
+                    }
+                        
+                    if (sound_list_last_id == 1) 
+                    {
+                        sound_list_end = sound_list_free_pool;
+                    }
                     v10->id = sound_list_last_id;
-                    active_sound_list_prepend(v10);
+                    if (sound_list_free_pool == 0) 
+                    {
+                        sound_list_free_pool = v10;
+                        v10->next = 0;
+                        v10->prev = 0;
+                        sound_list_end = sound_list_free_pool;
+                    }
+                    else 
+                    {
+                        v7 = sound_list_free_pool;
+                        v10->next = sound_list_free_pool;
+                        v10->prev = 0;
+                        sound_list_free_pool->prev = v10;
+                        sound_list_free_pool = v10;
+                    }
                 }
                 if (v10)
                 {
@@ -614,7 +559,16 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
                     v23.dwFlags = 232;
                     if (pds->CreateSoundBuffer(&v23, &v10->pdsb, 0))
                     {
-                        active_sound_list_remove(v10);
+                        v16 = v10->next;
+                        if (v16)
+                            v16->prev = v10->prev;
+                        v17 = v10->prev;
+                        if (v17)
+                            v17->next = v10->next;
+                        v18 = sound_list_head;
+                        v10->next = sound_list_head;
+                        sound_list_head = v10;
+
                         result = 0;
                     }
                     else
@@ -629,8 +583,17 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
                             || v12->Lock(0, v23.dwBufferBytes, &v26, (LPDWORD)&script, (LPVOID *)&v27, (LPDWORD)&v28, 0))
                         {
                             (*v11)->Release();
+                            v19 = v10->next;
                             *v11 = 0;
-                            active_sound_list_remove(v10);
+                            if (v19)
+                                v19->prev = v10->prev;
+                            v20 = v10->prev;
+                            if (v20)
+                                v20->next = v10->next;
+                            v21 = sound_list_head;
+                            v10->next = sound_list_head;
+                            sound_list_head = v10;
+
                             result = 0;
                         }
                         else
@@ -679,10 +642,12 @@ int sound_play(enum SOUND_ID sound_id, int a2, int volume_offset, int pan_offset
 }
 
 //----- (00439AA0) --------------------------------------------------------
+// Play background music (on new thread)
 int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int sound_pan_offset, Script *task)
 {
     int result; // eax@2
     Sound *v6; // ebx@3
+    Sound *v7; // eax@6
     int v8; // eax@10
     int v9; // esi@11
     int v10; // eax@11
@@ -704,15 +669,31 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
     v16 = name;
     if (sound_initialized)
     {
-        v6 = inactive_sound_list_pop();
-        if (!v6)
-            return 0;
+        v6 = sound_list_head;
+        if (!sound_list_head)
+            goto LABEL_18;
+        sound_list_head = sound_list_head->next;
         memset(v6, 0, sizeof(Sound));
-        if (!++sound_list_last_id)
+        if (!++sound_list_last_id) 
+        {
             sound_list_last_id = 1;
+        }
         v6->id = sound_list_last_id;
-        active_sound_list_prepend(v6);
-
+        if (sound_list_free_pool == 0) 
+        {
+            sound_list_free_pool = v6;
+            v6->next = 0;
+            v6->prev = 0;
+            sound_list_end = sound_list_free_pool;
+        } 
+        else {
+            v7 = sound_list_free_pool;
+            v6->next = sound_list_free_pool;
+            v6->prev = 0;
+            sound_list_free_pool->prev = v6;
+            sound_list_free_pool = v6;
+        }
+        
         if (v6)
         {
             v9 = v6->flags | 8;
@@ -753,6 +734,7 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
 }
 
 //----- (00439C10) --------------------------------------------------------
+// Background sound thread
 void _439C10_sound_thread(Sound *a1)
 {
     Sound *v1; // esi@1
@@ -796,6 +778,10 @@ void _439C10_sound_thread(Sound *a1)
     char v39; // dl@85
     unsigned int v40; // ecx@85
     int v41; // eax@90
+    Sound *v42; // eax@91
+    Sound *v43; // eax@93
+    Sound *v44; // eax@96
+    Sound *v45; // eax@98
     int num_bytes; // [sp+108h] [bp-70h]@9
     void *v47; // [sp+10Ch] [bp-6Ch]@9
     void *v48; // [sp+110h] [bp-68h]@9
@@ -808,7 +794,7 @@ void _439C10_sound_thread(Sound *a1)
     WAVEFORMATEX v55; // [sp+13Ch] [bp-3Ch]@71
     DSBCAPS v56; // [sp+150h] [bp-28h]@8
     DSBUFFERDESC v57; // [sp+164h] [bp-14h]@1
-
+    
     v1 = a1;
     v57.dwFlags = 0;
     v57.dwBufferBytes = 0;
@@ -828,8 +814,15 @@ void _439C10_sound_thread(Sound *a1)
     if (!v4 || !file_read_wav(v4, &out_data, &a3))
     {
         v1->file->close();
+        v44 = v1->next;
         v1->flags = v1->flags & 0xFFFFFFF7 | 0x40;
-        active_sound_list_remove(v1);
+        if (v44)
+            v44->prev = v1->prev;
+        v45 = v1->prev;
+        if (v45)
+            v45->next = v1->next;
+        v1->next = sound_list_head;
+        sound_list_head = v1;
         _endthread();
     }
     v1->field_40 = a3;
@@ -841,8 +834,15 @@ void _439C10_sound_thread(Sound *a1)
     if (pds->CreateSoundBuffer(&v57, &v1->pdsb, 0))
     {
         v1->file->close();
+        v42 = v1->next;
         v1->flags = v1->flags & 0xFFFFFFF7 | 0x40;
-        active_sound_list_remove(v1);
+        if (v42)
+            v42->prev = v1->prev;
+        v43 = v1->prev;
+        if (v43)
+            v43->next = v1->next;
+        v1->next = sound_list_head;
+        sound_list_head = v1;
         _endthread();
     }
     (*v5)->SetPan(sound_pans[v1->sound_pan_offset]);
@@ -1075,72 +1075,111 @@ LABEL_89:
     _endthread();
 }
 
+
+//----- (0043A800) --------------------------------------------------------
+// Set background sound volume
+void sound_threaded_set_volume(int sound_volume)
+{
+    Sound *sound; // eax@3
+    IDirectSoundBuffer *sound_buffer; // edx@6
+
+    if (_47C5D4_sound_threaded_snd_id && sound_initialized)
+    {
+        //find sound by id - look only list head
+        sound = sound_list_free_pool;
+        if (sound_list_free_pool->id == _47C5D4_sound_threaded_snd_id)
+        {
+            sound_buffer = sound->pdsb;
+            sound->sound_volume_offset = sound_volume;
+            if (sound_buffer)
+                sound_buffer->SetVolume(sound_volumes[sound_volume]); //set volume
+        }
+        else  //find sound by id - look through list
+        {
+            while (sound != sound_list_end)
+            {
+                sound = sound->next;
+                if (sound->id == _47C5D4_sound_threaded_snd_id)
+                {
+                    sound_buffer = sound->pdsb;
+                    sound->sound_volume_offset = sound_volume;
+                    if (sound_buffer)
+                        sound_buffer->SetVolume(sound_volumes[sound_volume]); //set volume
+                }
+            }
+        }
+    }
+}
+// 47C398: using guessed type int sound_list_end;
+
+
 //----- (0043A2B0) --------------------------------------------------------
+// Stop music playback
 void sound_stop(int sound_id)
 {
-    Sound *v1; // esi@3
-    int v2; // eax@7
-    int v3; // eax@10
+    Sound *sound; // esi@3
+    int flags; // eax@7
+    int flags2; // eax@10
 
     if (sound_id && sound_initialized)
     {
-        v1 = active_sound_list_begin();
-        if (v1->id == sound_id)
+        //find sound by id - look only list head
+        sound = sound_list_free_pool;
+        if (sound_list_free_pool->id == sound_id)
         {
-        LABEL_6:
-            if (v1->field_14 == -3)
+            if (sound->field_14 == -3)
             {
-                v2 = v1->flags;
-                LOBYTE_HEXRAYS(v2) = v2 | 0x20;
-                v1->flags = v2;
+                flags = sound->flags;
+                LOBYTE_HEXRAYS(flags) = flags | 0x20;
+                sound->flags = flags;
             }
             else
             {
-                v1->pdsb->Stop();
-                v1->pdsb->SetCurrentPosition(0);
+                sound->pdsb->Stop();
+                sound->pdsb->SetCurrentPosition(0);
             }
-            if (v1->field_18)
+            if (sound->field_18)
             {
-                v3 = v1->flags;
-                v1->field_18 = 0;
-                LOBYTE_HEXRAYS(v3) = v3 & 0xFB;
-                v1->flags = v3;
+                flags2 = sound->flags;
+                sound->field_18 = 0;
+                LOBYTE_HEXRAYS(flags2) = flags2 & 0xFB;
+                sound->flags = flags2;
             }
         }
-        else
+        else //find sound by id - look through list
         {
-            while (v1 != active_sound_list_end())
+            while (sound != sound_list_end)
             {
-                v1 = v1->next;
-                if (v1->id == sound_id)
-                    goto LABEL_6;
+                sound = sound->next;
+                if (sound->id == sound_id) 
+                {
+                    if (sound->field_14 == -3)
+                    {
+                        flags = sound->flags;
+                        LOBYTE_HEXRAYS(flags) = flags | 0x20;
+                        sound->flags = flags;
+                    }
+                    else
+                    {
+                        sound->pdsb->Stop();
+                        sound->pdsb->SetCurrentPosition(0);
+                    }
+                    if (sound->field_18)
+                    {
+                        flags2 = sound->flags;
+                        sound->field_18 = 0;
+                        LOBYTE_HEXRAYS(flags2) = flags2 & 0xFB;
+                        sound->flags = flags2;
+                    }
+                }
             }
         }
     }
 }
 
-//----- (0043A320) --------------------------------------------------------
-void sound_free_sounds()
-{
-    Sound *v1; // esi@3
-
-    for (auto i = active_sound_list_begin(); i != active_sound_list_end(); )
-    {
-        auto next = i->next;
-        sound_list_remove(i);
-
-        i = next;
-    }
-
-    _47C5C0_can_sound = 0;
-    if (faction_slv)
-    {
-        free(faction_slv);
-        faction_slv = 0;
-    }
-}
 
 //----- (0043A370) --------------------------------------------------------
+// Process sound
 void _43A370_process_sound()
 {
     Sound *v0; // esi@1
@@ -1165,8 +1204,8 @@ void _43A370_process_sound()
     int i; // [sp+1Ch] [bp-8h]@1
     int v20; // [sp+20h] [bp-4h]@9
 
-    v0 = active_sound_list_begin();
-    for (i = 0; v0 != active_sound_list_end(); v0 = v0->next)
+    v0 = sound_list_free_pool;
+    for (i = 0; v0 != sound_list_end; v0 = v0->next)
     {
         if (!v0)
             break;
@@ -1188,7 +1227,6 @@ void _43A370_process_sound()
                         v6 = 0;
                         v20 = 17;
                         v7 = sound_volumes;
-                        int loop_idx = 0;
                         while (1)
                         {
                             v8 = abs(*v7 - *v4);
@@ -1200,9 +1238,8 @@ void _43A370_process_sound()
                                 v5 = v8;
                             }
                             ++v7;
-                            ++loop_idx;
                             ++v6;
-                            if (loop_idx >= sizeof(sound_volumes) / sizeof(sound_volumes[0]))
+                            if ((int)v7 >= (int)&sound_list_head)
                             {
                                 v6 = v20;
                                 break;
@@ -1265,11 +1302,120 @@ void _43A370_process_sound()
     }
 }
 
+
+//----- (0043A320) --------------------------------------------------------
+void sound_free_sounds()
+{
+    Sound *v0; // ecx@1
+    Sound *v1; // esi@3
+
+    v0 = sound_list_free_pool;
+    if (sound_list_free_pool)
+    {
+        do
+        {
+            //if (v0 == sound_list_end)
+            //break;
+            v1 = v0->next;
+            sound_list_remove(v0);
+            v0 = v1;
+        } while (v1);
+    }
+    _47C5C0_can_sound = 0;
+    if (faction_slv)
+    {
+        free(faction_slv);
+        faction_slv = 0;
+    }
+}
+
+
+//----- (0043A850) --------------------------------------------------------
+void sound_list_remove(Sound *a1)
+{
+    Sound *v1; // esi@1
+    int v2; // edx@5
+    File *v3; // ecx@7
+    IDirectSoundBuffer *v4; // eax@9
+    Sound *v5; // eax@13
+    Sound *v6; // eax@15
+
+    v1 = a1;
+    if (a1)
+    {
+        if (_47C5D4_sound_threaded_snd_id == a1->id)
+            _47C5D4_sound_threaded_snd_id = 0;
+        if (a1->field_14 == -3)
+        {
+            v2 = a1->flags | 0x20;
+            a1->flags = v2;
+            if (!(v2 & 0x40))
+            {
+                do
+                    Sleep(0x14u);
+                while (!(v1->flags & 0x40));
+            }
+            v3 = v1->file;
+            if (v3)
+            {
+                v3->close();
+                v1->file = 0;
+            }
+        }
+        v4 = v1->pdsb;
+        if (v4)
+        {
+            v4->Stop();
+            v1->pdsb->Release();
+            v1->pdsb = 0;
+        }
+        if (v1->task)
+            script_trigger_event(0, EVT_MSG_sound_neg3, 0, v1->task);
+        //remove from pool
+        v5 = v1->next;
+        v1->task = 0;
+        if (v5)
+            v5->prev = v1->prev;
+        v6 = v1->prev;
+        if (v6)
+            v6->next = v1->next;
+
+        sound_list_free_pool = v5;
+        if (v1 == sound_list_end)
+        {
+            sound_list_end = v6;
+        }
+
+        //add to head list
+        v1->next = sound_list_head;
+        sound_list_head = v1;
+    }
+}
+
 //----- (0043A510) --------------------------------------------------------
 void sound_deinit()
 {
-    sound_free_sounds();
+    Sound *v0; // ecx@1
+    Sound *v1; // esi@3
 
+    v0 = sound_list_free_pool;                    // INLINED 43A320
+    if (sound_list_free_pool)
+    {
+        do
+        {
+            if (v0 == sound_list_end)
+                break;
+            v1 = v0->next;
+            sound_list_remove(v0);
+            v0 = v1;
+        } while (v1);
+    }
+    _47C5C0_can_sound = 0;
+    if (faction_slv)
+    {
+        free(faction_slv);
+        faction_slv = 0;
+    }
     if (sound_initialized == 1)
     {
         sound_initialized = 0;
@@ -1278,6 +1424,7 @@ void sound_deinit()
         free(sound_list);
     }
 }
+
 
 //----- (0043A590) --------------------------------------------------------
 bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3)
@@ -1393,77 +1540,4 @@ bool sound_stru_2_43A710(sound_stru_2 *a1, WAVEFORMATEX **a2, int *a3, unsigned 
         }
     }
     return 0;
-}
-
-//----- (0043A800) --------------------------------------------------------
-void sound_list_43A800(int a1)
-{
-    Sound *v1; // eax@3
-    IDirectSoundBuffer *v2; // edx@6
-
-    if (_47C5D4_sound_threaded_snd_id && sound_initialized)
-    {
-        v1 = active_sound_list_head;
-        if (active_sound_list_head->id == _47C5D4_sound_threaded_snd_id)
-        {
-        LABEL_6:
-            v2 = v1->pdsb;
-            v1->sound_volume_offset = a1;
-            if (v2)
-                v2->SetVolume(sound_volumes[a1]);
-        }
-        else
-        {
-            while (v1 != active_sound_list_end())
-            {
-                v1 = v1->next;
-                if (v1->id == _47C5D4_sound_threaded_snd_id)
-                    goto LABEL_6;
-            }
-        }
-    }
-}
-
-//----- (0043A850) --------------------------------------------------------
-void sound_list_remove(Sound *a1)
-{
-    Sound *v1; // esi@1
-    int v2; // edx@5
-    File *v3; // ecx@7
-    IDirectSoundBuffer *v4; // eax@9
-
-    v1 = a1;
-    if (a1)
-    {
-        if (_47C5D4_sound_threaded_snd_id == a1->id)
-            _47C5D4_sound_threaded_snd_id = 0;
-        if (a1->field_14 == -3)
-        {
-            v2 = a1->flags | 0x20;
-            a1->flags = v2;
-            if (!(v2 & 0x40))
-            {
-                do
-                    Sleep(0x14u);
-                while (!(v1->flags & 0x40));
-            }
-            v3 = v1->file;
-            if (v3)
-            {
-                v3->close();
-                v1->file = 0;
-            }
-        }
-        v4 = v1->pdsb;
-        if (v4)
-        {
-            v4->Stop();
-            v1->pdsb->Release();
-            v1->pdsb = 0;
-        }
-        if (v1->task)
-            script_trigger_event(0, EVT_MSG_sound_neg3, 0, v1->task);
-        v1->task = 0;
-        active_sound_list_remove(v1);
-    }
 }

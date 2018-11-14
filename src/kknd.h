@@ -367,8 +367,8 @@ struct __declspec(align(4)) LevelDesc
 /* 270 */
 struct CustomMission
 {
-	const char **briefing;
-	const char *wav_filename;
+    const char* briefing[20] = { 0 };
+    const char *wav_filename = 0;
 };
 
 
