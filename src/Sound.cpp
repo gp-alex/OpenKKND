@@ -57,22 +57,22 @@ struct sound_stru_2
 
 DSBUFFERDESC video_477DE4_dsb_desc; // weak
 IDirectSoundBuffer *video_477DE4_dsb;
+LPDIRECTSOUND pds; // idb
 
 Sound *sound_list_free_pool;
-Sound *sound_list_end; // weak
+Sound *sound_list_free_pool_end; // weak
+Sound *sound_list;
 Sound *sound_list_head;
+int sound_list_last_id; // weak
+int _47C5D4_sound_threaded_snd_id; // idb
 sound_stru_2 **_47C4E0_sounds;
-LPDIRECTSOUND pds; // idb
+bool sound_initialized = false;
 int _47C4E8_num_sounds; // weak
 int sound_volumes[17];
 int sound_pans[17];
-Sound *sound_list;
 int _47C5C0_can_sound; // weak
-int sound_list_last_id; // weak
 void *faction_slv; // idb
-bool sound_initialized = false;
 int dword_47C5D0; // weak
-int _47C5D4_sound_threaded_snd_id; // idb
 
 
 SOUND_ID _468988_sound_ids[4] = { SOUND_69, SOUND_53, SOUND_51, SOUND_50 };
@@ -165,9 +165,9 @@ bool sound_initialize()
 
     sound_initialized = 0;
     sound_list_last_id = 0;
-    sound_list_end = 0;
+    sound_list_free_pool_end = 0;
 
-    sound_list_free_pool = sound_list_end;
+    sound_list_free_pool = sound_list_free_pool_end;
     sound_list_head = 0;
 
     if (DirectSoundCreate(0, &pds, 0))
@@ -198,8 +198,8 @@ bool sound_initialize()
         }
         sound_list[7].next = 0;
 
-        sound_list_end = 0;
-        sound_list_free_pool = sound_list_end;
+        sound_list_free_pool_end = 0;
+        sound_list_free_pool = sound_list_free_pool_end;
         sound_list_head = sound_list;
 
         sound_initialized = 1;
@@ -528,7 +528,7 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
                         
                     if (sound_list_last_id == 1) 
                     {
-                        sound_list_end = sound_list_free_pool;
+                        sound_list_free_pool_end = sound_list_free_pool;
                     }
                     v10->id = sound_list_last_id;
                     if (sound_list_free_pool == 0) 
@@ -536,7 +536,7 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
                         sound_list_free_pool = v10;
                         v10->next = 0;
                         v10->prev = 0;
-                        sound_list_end = sound_list_free_pool;
+                        sound_list_free_pool_end = sound_list_free_pool;
                     }
                     else 
                     {
@@ -684,7 +684,7 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
             sound_list_free_pool = v6;
             v6->next = 0;
             v6->prev = 0;
-            sound_list_end = sound_list_free_pool;
+            sound_list_free_pool_end = sound_list_free_pool;
         } 
         else {
             v7 = sound_list_free_pool;
@@ -1096,7 +1096,7 @@ void sound_threaded_set_volume(int sound_volume)
         }
         else  //find sound by id - look through list
         {
-            while (sound != sound_list_end)
+            while (sound != sound_list_free_pool_end)
             {
                 sound = sound->next;
                 if (sound->id == _47C5D4_sound_threaded_snd_id)
@@ -1110,7 +1110,7 @@ void sound_threaded_set_volume(int sound_volume)
         }
     }
 }
-// 47C398: using guessed type int sound_list_end;
+// 47C398: using guessed type int sound_list_free_pool_end;
 
 
 //----- (0043A2B0) --------------------------------------------------------
@@ -1148,7 +1148,7 @@ void sound_stop(int sound_id)
         }
         else //find sound by id - look through list
         {
-            while (sound != sound_list_end)
+            while (sound != sound_list_free_pool_end)
             {
                 sound = sound->next;
                 if (sound->id == sound_id) 
@@ -1205,7 +1205,7 @@ void _43A370_process_sound()
     int v20; // [sp+20h] [bp-4h]@9
 
     v0 = sound_list_free_pool;
-    for (i = 0; v0 != sound_list_end; v0 = v0->next)
+    for (i = 0; v0 != sound_list_free_pool_end; v0 = v0->next)
     {
         if (!v0)
             break;
@@ -1314,7 +1314,7 @@ void sound_free_sounds()
     {
         do
         {
-            //if (v0 == sound_list_end)
+            //if (v0 == sound_list_free_pool_end)
             //break;
             v1 = v0->next;
             sound_list_remove(v0);
@@ -1381,9 +1381,9 @@ void sound_list_remove(Sound *a1)
             v6->next = v1->next;
 
         sound_list_free_pool = v5;
-        if (v1 == sound_list_end)
+        if (v1 == sound_list_free_pool_end)
         {
-            sound_list_end = v6;
+            sound_list_free_pool_end = v6;
         }
 
         //add to head list
@@ -1403,8 +1403,8 @@ void sound_deinit()
     {
         do
         {
-            if (v0 == sound_list_end)
-                break;
+            //if (v0 == sound_list_free_pool_end)
+            //    break;
             v1 = v0->next;
             sound_list_remove(v0);
             v0 = v1;
