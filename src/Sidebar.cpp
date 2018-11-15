@@ -310,25 +310,30 @@ void sidebar_button_handler_infantry_open(SidebarButton *a1)
 //----- (00445F00) --------------------------------------------------------
 void sidebar_button_handler_infantry_close(SidebarButton *a1)
 {
-    ProductionGroup *i; // esi@1
-    Sprite *v2; // ecx@3
+    //ProductionGroup *i; // esi@1
+    //Sprite *v2; // ecx@3
 
-    for (i = &_47C798_infantry_pg;
-        i->next != (ProductionGroup *)&_47C798_infantry_pg;
-        i = i->next)
-    {
-        if (i->sidebar)
-        {
-            v2 = i->sprite;
-            if (v2)
-            {
-                sprite_list_remove(v2);
-                i->sprite = 0;
-            }
-            sidebar_list_remove(i->sidebar);
-            i->sidebar = 0;
-        }
-    }
+    //for (i = &_47C798_infantry_pg;
+    //    i->next != (ProductionGroup *)&_47C798_infantry_pg;
+    //    i = i->next)
+    //{
+    //    if (i->sidebar)
+    //    {
+    //        v2 = i->sprite;
+    //        if (v2)
+    //        {
+    //            sprite_list_remove(v2);
+    //            i->sprite = 0;
+    //        }
+    //        sidebar_list_remove(i->sidebar);
+    //        i->sidebar = 0;
+    //    }
+    //}
+    //_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 0;
+
+    auto p = ProductionGroupAccessor(PRODUCTION_GROUP_INFANTRY);
+    if (p->next != p)
+        sidebar_list_remove(p->next->sidebar);
     _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 0;
 }
 
@@ -401,26 +406,31 @@ void sidebar_button_handler_vehicles_open(SidebarButton *a1)
 //----- (00446070) --------------------------------------------------------
 void sidebar_button_handler_vehicles_close(SidebarButton *a1)
 {
-    Sprite *v2; // ecx@3
+    //Sprite *v2; // ecx@3
 
-    for (
-        auto i = ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES);
-        i != ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES);
-        i = i->next
-        )
-    {
-        if (i->sidebar)
-        {
-            v2 = i->sprite;
-            if (v2)
-            {
-                sprite_list_remove(v2);
-                i->sprite = 0;
-            }
-            sidebar_list_remove(i->sidebar);
-            i->sidebar = 0;
-        }
-    }
+    //for (
+    //    auto i = ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES);
+    //    i != ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES);
+    //    i = i->next
+    //    )
+    //{
+    //    if (i->sidebar)
+    //    {
+    //        v2 = i->sprite;
+    //        if (v2)
+    //        {
+    //            sprite_list_remove(v2);
+    //            i->sprite = 0;
+    //        }
+    //        sidebar_list_remove(i->sidebar);
+    //        i->sidebar = 0;
+    //    }
+    //}
+    //_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_VEHICLES] = 0;
+
+    auto p = ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES);
+    if (p->next != p)
+        sidebar_list_remove(p->next->sidebar);
     _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_VEHICLES] = 0;
 }
 
@@ -509,8 +519,13 @@ void sidebar_button_handler_buildings_open(SidebarButton *a1)
 //----- (00446330) --------------------------------------------------------
 void sidebar_button_handler_buildings_close(SidebarButton *a1)
 {
-    if (_47C830_buildings_pg.next != (ProductionGroup *)&_47C830_buildings_pg)
-        sidebar_list_remove(_47C830_buildings_pg.next->sidebar);
+    //if (_47C830_buildings_pg.next != (ProductionGroup *)&_47C830_buildings_pg)
+    //    sidebar_list_remove(_47C830_buildings_pg.next->sidebar);
+    //_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_BUILDINGS] = 0;
+
+    auto p = ProductionGroupAccessor(PRODUCTION_GROUP_BUILDINGS);
+    if (p->next != p)
+        sidebar_list_remove(p->next->sidebar);
     _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_BUILDINGS] = 0;
 }
 
