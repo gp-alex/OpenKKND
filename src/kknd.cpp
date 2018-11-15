@@ -17134,52 +17134,51 @@ void sidebar_close_all() {
 //----- (00445DA0) --------------------------------------------------------
 void sidebar_button_handler_infantry_open(SidebarButton *a1)
 {
-	ProductionGroup *v1; // edi@1
-	int v3; // ebp@6
-	Sprite *v4; // eax@8
-	int v5; // ecx@9
-	ProductionOption *i; // esi@10
+    ProductionGroup *v1; // edi@1
+    int v3; // ebp@6
+    Sprite *v4; // eax@8
+    int v5; // ecx@9
+    ProductionOption *i; // esi@10
 
     sidebar_close_all();
 
-    //v1 = _47C79C_infantry_production_group_last;
-    v1 = ProductionGroupAccessor(PRODUCTION_GROUP_INFANTRY)->prev;
-	if (v1 != (ProductionGroup *)&_47C798_infantry_pg)
-	{
-		v3 = 256;
-		do
-		{
-			v1->sidebar = sidebar_list_create(0, 0, v3, 128, 0);
-			if (!v1->sprite)
-			{
-				v4 = sprite_create(MOBD_SIDEBAR_BUTTONS, 0, v1->sidebar->sprite);
-				if (v4)
-				{
-					v1->sprite = v4;
-					v4->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-					v5 = v4->y;
-					v4->field_88_unused = 1;
-					v4->y = v5 - 1024;
-					v4->z_index = 3;
-					sprite_load_mobd(
-						v4,
-						_4701B8_mobd_lookups_per_ProductionGroup_field44[2 * v1->_44_mobd_lookup_idx + 1]);
-				}
-			}
-			for (i = v1->prev_option; (ProductionOption **)i != &v1->next_option; i = i->prev)
-				sidebar_add_button_4(
-					v1->sidebar,
-					i->mobd_lookup_table_offset,
-					sidebar_button_handler_order_unit_click,
-					(int)&i->_14_pcost,
-					i->cost,
-					i,
-					i->unit_id);
-			v1 = v1->prev;
-			v3 -= 32;
-		} while (v1 != (ProductionGroup *)&_47C798_infantry_pg);
-	}
-	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 1;
+    v1 = ProductionGroupAccessor(PRODUCTION_GROUP_INFANTRY)->next;
+    if (v1 != ProductionGroupAccessor(PRODUCTION_GROUP_INFANTRY))
+    {
+        v3 = 256;
+        do
+        {
+            v1->sidebar = sidebar_list_create(0, 0, v3, 128, 0);
+            if (!v1->sprite)
+            {
+                v4 = sprite_create(MOBD_SIDEBAR_BUTTONS, 0, v1->sidebar->sprite);
+                if (v4)
+                {
+                    v1->sprite = v4;
+                    v4->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+                    v5 = v4->y;
+                    v4->field_88_unused = 1;
+                    v4->y = v5 - 1024;
+                    v4->z_index = 3;
+                    sprite_load_mobd(
+                        v4,
+                        _4701B8_mobd_lookups_per_ProductionGroup_field44[2 * v1->_44_mobd_lookup_idx + 1]);
+                }
+            }
+            for (i = v1->prev_option; (ProductionOption **)i != &v1->next_option; i = i->prev)
+                sidebar_add_button_4(
+                    v1->sidebar,
+                    i->mobd_lookup_table_offset,
+                    sidebar_button_handler_order_unit_click,
+                    (int)&i->_14_pcost,
+                    i->cost,
+                    i,
+                    i->unit_id);
+            v1 = v1->next;
+            v3 -= 32;
+        } while (v1->next != ProductionGroupAccessor(PRODUCTION_GROUP_INFANTRY));
+    }
+    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 1;
 }
 
 //----- (00445EC0) --------------------------------------------------------
@@ -17201,26 +17200,27 @@ void sidebar_button_handler_order_unit_click(SidebarButton *a1)
 //----- (00445F00) --------------------------------------------------------
 void sidebar_button_handler_infantry_close(SidebarButton *a1)
 {
-	ProductionGroup *i; // esi@1
-	Sprite *v2; // ecx@3
+    Sprite *v2; // ecx@3
 
-	for (i = &_47C798_infantry_pg;
-		i->next != (ProductionGroup *)&_47C798_infantry_pg;
-		i = i->next)
-	{
-		if (i->sidebar)
-		{
-			v2 = i->sprite;
-			if (v2)
-			{
-				sprite_list_remove(v2);
-				i->sprite = 0;
-			}
-			sidebar_list_remove(i->sidebar);
-			i->sidebar = 0;
-		}
-	}
-	_47C990_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 0;
+    for (
+        auto i = ProductionGroupAccessor(PRODUCTION_GROUP_INFANTRY);
+        i != ProductionGroupAccessor(PRODUCTION_GROUP_INFANTRY);
+        i = i->next
+        )
+    {
+        if (i->sidebar)
+        {
+            v2 = i->sprite;
+            if (v2)
+            {
+                sprite_list_remove(v2);
+                i->sprite = 0;
+            }
+            sidebar_list_remove(i->sidebar);
+            i->sidebar = 0;
+        }
+    }
+    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 0;
 }
 
 //----- (00445F50) --------------------------------------------------------
