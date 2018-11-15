@@ -24,6 +24,7 @@ set(UNSORTED_SOURCES
     Development.cpp
     Level.cpp
     SaveLoad.cpp
+	Sidebar.cpp
 )
 
 set(UNSORTED_HEADERS
@@ -43,6 +44,7 @@ set(UNSORTED_HEADERS
 	stru31.h
     Map.h
     Pathfind.h
+	Sidebar.h
 )
 
 add_library(Unsorted STATIC ${UNSORTED_SOURCES} ${UNSORTED_HEADERS})
