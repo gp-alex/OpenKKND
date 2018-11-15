@@ -4688,7 +4688,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
 			*(_DWORD *)(v4 + 4) = 1;
 			v8 = v3->open_handler;
 			if (v8)
-				((void(__thiscall *)(SidebarButton *))v8)(v3);
+                v8(v3);
 			goto LABEL_23;
 		}
 		show_message_ex(0, aUnitsAreUnavai);
