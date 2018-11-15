@@ -624,6 +624,988 @@ void sidebar_close_all()
     //while (v2 < 5);
 }
 
+//----- (0040F480) --------------------------------------------------------
+Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int height, int sidebar_horizontal)
+{
+    Sidebar *v5; // esi@1
+    Sprite *v6; // edi@1
+    Sidebar *result; // eax@5
+    int v8; // ecx@8
+
+    v5 = sidebar_list_head;
+    v6 = sprite;
+    if (sidebar_list_head)
+        sidebar_list_head = sidebar_list_head->next;
+    else
+        v5 = 0;
+    if (v5)
+    {
+        v5->script = script;
+        if (!script)
+            v5->script = script_create_coroutine(SCRIPT_TYPE_51914_sidebar, script_sidebar, 0);
+        v5->num_buttons = 0;
+        v5->x = (width + render_width - 320) << 8;
+        v5->w = height << 8;
+        v5->sprite_width_step = sidebar_horizontal == 1 ? sidebar_button_list_item_width : 0;
+        v8 = sidebar_button_list_sidebar_height;
+        v5->sprite = v6;
+        v5->sprite_height_step = sidebar_horizontal == 0 ? v8 : 0;
+        if (!v6)
+            v5->sprite = sprite_create(MOBD_SIDEBAR_BUTTONS, v5->script, 0);
+        v5->sprite->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+        v5->sprite->field_88_unused = 1;
+        v5->sprite->x = v5->x;
+        v5->sprite->field_88_unused = 1;
+        v5->sprite->y = v5->w;
+        v5->sprite->z_index = 1;
+        v5->sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
+        v5->sprite->drawjob->flags |= 0x10000000u;
+        v5->sprite->param = v5;
+        v5->button_list_head = (SidebarButton *)&v5->button_list_free_pool;
+        v5->button_list_free_pool = (SidebarButton *)&v5->button_list_free_pool;
+        v5->next = stru22_list_479548;
+        v5->prev = (Sidebar *)&stru22_list_479548;
+        result = v5;
+        stru22_list_479548->prev = v5;
+        stru22_list_479548 = v5;
+    }
+    else
+    {
+        result = 0;
+    }
+    return result;
+}
+
+//----- (0040F3A0) --------------------------------------------------------
+bool sidebar_button_list_alloc()
+{
+    Sidebar *v0; // eax@1
+    int v1; // ecx@2
+    SidebarButton *v2; // eax@4
+    int v3; // ecx@5
+
+    v0 = (Sidebar *)malloc(0x4C0u);
+    sidebar_list = v0;
+    if (!v0)
+        goto LABEL_11;
+    sidebar_list_head = v0;
+    v1 = 0;
+    do
+    {
+        v0[v1].next = &v0[v1 + 1];
+        v0 = sidebar_list;
+        ++v1;
+    } while (v1 < 15);
+    sidebar_list[15].next = 0;
+    stru22_list_479548 = (Sidebar *)&stru22_list_479548;
+    stru22_list_47954C = (Sidebar *)&stru22_list_479548;
+    v2 = (SidebarButton *)malloc(0x7D0u);
+    sidebar_button_list = v2;
+    if (v2)
+    {
+        sidebar_button_list_head = v2;
+        v3 = 0;
+        do
+        {
+            v2[v3].next = &v2[v3 + 1];
+            v2 = sidebar_button_list;
+            ++v3;
+        } while (v3 < 49);
+        sidebar_button_list[49].next = 0;
+        sidebar_button_list_4795A0 = (SidebarButton *)&sidebar_button_list_4795A0;
+        sidebar_button_list_4795A4 = (SidebarButton *)&sidebar_button_list_4795A0;
+        sidebar_button_list_item_width = 0x2000;
+        sidebar_button_list_sidebar_height = 0x2000;
+        return true;
+    }
+    else
+    {
+    LABEL_11:
+        return false;
+    }
+}
+
+//----- (0040F5D0) --------------------------------------------------------
+void script_40F5D0_sidebar_button_1_2(Script *a1)
+{
+    Script *v1; // ebx@1
+    Sprite *v2; // ecx@1
+    int v3; // edx@1
+    int v4; // esi@3
+    int v5; // edi@3
+    int v6; // ebp@3
+    ScriptEvent *i; // eax@3
+    enum SCRIPT_EVENT v8; // ecx@4
+    int v9; // esi@15
+    ScriptEvent *j; // eax@15
+    enum SCRIPT_EVENT v11; // ecx@16
+    SidebarButton *v12; // edi@27
+    void(*v13)(SidebarButton *); // eax@27
+    int v14; // esi@30
+    ScriptEvent *k; // eax@32
+    enum SCRIPT_EVENT v16; // ecx@33
+    Sprite *v17; // ebp@43
+    int v18; // edi@43
+    int v19; // esi@44
+    ScriptEvent *m; // eax@44
+    enum SCRIPT_EVENT v21; // ecx@45
+    void(*v22)(SidebarButton *); // eax@59
+    ScriptEvent *l; // eax@65
+    Sprite *v24; // [sp+10h] [bp-Ch]@1
+    int v25; // [sp+14h] [bp-8h]@14
+    int v26; // [sp+14h] [bp-8h]@30
+    int v27; // [sp+18h] [bp-4h]@14
+    SidebarButton *a1a; // [sp+20h] [bp+4h]@1
+
+    v1 = a1;
+    v2 = a1->sprite;
+    v24 = v2;
+    a1a = (SidebarButton *)v2->param;
+    v3 = a1a->mobd_lookup_table_offset;
+    while (1)
+    {
+        sprite_4272E0_load_mobd_item(v2, v3, 0);
+        while (1)
+        {
+            v4 = 0;
+            v5 = 0;
+            v6 = 0;
+            script_wait_event(v1);
+            for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
+            {
+                v8 = i->event;
+                if (v8 == EVT_MSG_1548_sidebar)
+                    v6 = 1;
+                if (v8 == EVT_MSG_1514)
+                    v4 = 1;
+                if (v8 == EVT_MSG_SELECTED)
+                    v5 = 1;
+                script_discard_event(i);
+            }
+            if (v6 && !v4)
+            {
+                v12 = a1a;
+                goto LABEL_64;
+            }
+            if (v5)
+            {
+                v25 = 0;
+                v27 = 0;
+                sprite_4272E0_load_mobd_item(v24, a1a->mobd_lookup_table_offset, 1);
+                do
+                {
+                    script_yield_any_trigger(v1, 1);
+                    v9 = 0;
+                    for (j = script_get_next_event(v1); j; j = script_get_next_event(v1))
+                    {
+                        v11 = j->event;
+                        if (v11 == EVT_MSG_1548_sidebar)
+                            v27 = 1;
+                        if (v11 == -2)
+                        {
+                            v9 = 1;
+                        }
+                        else if (v11 == EVT_MSG_DESELECTED)
+                        {
+                            v25 = 1;
+                        }
+                        script_discard_event(j);
+                    }
+                    if (v27)
+                        break;
+                    sprite_4272E0_load_mobd_item(v24, a1a->mobd_lookup_table_offset, v9 != 0);
+                } while (!v25);
+                if (v9 && v25)
+                    break;
+            }
+        }
+        v12 = a1a;
+        v6 = 0;
+        v13 = a1a->open_handler;
+        if (v13)
+            (v13)(a1a);
+        if (!a1a->close_handler)
+        {
+            v17 = v24;
+            goto LABEL_62;
+        }
+        v26 = 0;
+        v14 = 0;
+        do
+        {
+            if (v6)
+                goto LABEL_64;
+            script_wait_event(v1);
+            for (k = script_get_next_event(v1); k; k = script_get_next_event(v1))
+            {
+                v16 = k->event;
+                if (v16 == EVT_MSG_1548_sidebar)
+                    v6 = 1;
+                if (v16 == EVT_MSG_SELECTED)
+                {
+                    v14 = 1;
+                }
+                else if (v16 == EVT_MSG_DESELECTED)
+                {
+                    v26 = 1;
+                }
+                script_discard_event(k);
+            }
+        } while (!v14);
+        if (v6)
+        {
+        LABEL_64:
+            sprite_load_mobd(v24, 1980);
+            while (v6)
+            {
+                script_wait_event(v1);
+                for (l = script_get_next_event(v1); l; l = script_get_next_event(v1))
+                {
+                    if (l->event == EVT_MSG_1514)
+                        v6 = 0;
+                    script_discard_event(l);
+                }
+            }
+            v3 = v12->mobd_lookup_table_offset;
+            v2 = v24;
+        }
+        else
+        {
+            if (v26)
+            {
+                v17 = v24;
+            }
+            else
+            {
+                v17 = v24;
+                v18 = 0;
+                sprite_4272E0_load_mobd_item(v24, a1a->mobd_lookup_table_offset, 1);
+                do
+                {
+                    script_yield_any_trigger(v1, 1);
+                    v19 = 0;
+                    for (m = script_get_next_event(v1); m; m = script_get_next_event(v1))
+                    {
+                        v21 = m->event;
+                        if (v21 == EVT_MSG_1548_sidebar)
+                            v18 = 1;
+                        if (v21 == EVT_MOUSE_HOVER)
+                        {
+                            v19 = 1;
+                        }
+                        else if (v21 == EVT_MSG_DESELECTED)
+                        {
+                            v26 = 1;
+                        }
+                        script_discard_event(m);
+                    }
+                    if (v18)
+                        break;
+                    if (v19)
+                    {
+                        sprite_4272E0_load_mobd_item(v24, a1a->mobd_lookup_table_offset, 1);
+                    }
+                    else if (!a1a->close_handler)
+                    {
+                        sprite_4272E0_load_mobd_item(v24, a1a->mobd_lookup_table_offset, 0);
+                    }
+                } while (!v26);
+                v12 = a1a;
+            }
+            v22 = v12->close_handler;
+            if (v22)
+            {
+                (v22)(v12);
+                v3 = v12->mobd_lookup_table_offset;
+                v2 = v17;
+                continue;
+            }
+        LABEL_62:
+            v3 = v12->mobd_lookup_table_offset;
+            v2 = v17;
+        }
+    }
+}
+
+//----- (0040F8F0) --------------------------------------------------------
+void script_40F8F0_sidebar_button_3(Script *a1)
+{
+    Script *v1; // ebp@1
+    Sprite *v2; // ecx@1
+    int v3; // edx@1
+    int v4; // esi@3
+    int v5; // edi@3
+    int v6; // ebx@3
+    ScriptEvent *i; // eax@3
+    enum SCRIPT_EVENT v8; // ecx@4
+    int v9; // edi@14
+    int v10; // ebx@14
+    int v11; // esi@15
+    ScriptEvent *j; // eax@15
+    enum SCRIPT_EVENT v13; // ecx@16
+    SidebarButton *v14; // edi@31
+    void(*v15)(SidebarButton *); // eax@31
+    int v16; // esi@34
+    ScriptEvent *k; // eax@37
+    enum SCRIPT_EVENT v18; // edx@38
+    int v19; // edi@49
+    int v20; // esi@50
+    ScriptEvent *l; // eax@50
+    enum SCRIPT_EVENT v22; // ecx@51
+    void(*v23)(SidebarButton *); // eax@66
+    ScriptEvent *m; // eax@71
+    Sprite *v25; // [sp+10h] [bp-8h]@1
+    int v26; // [sp+14h] [bp-4h]@34
+    SidebarButton *a1a; // [sp+1Ch] [bp+4h]@1
+
+    v1 = a1;
+    v2 = a1->sprite;
+    v25 = v2;
+    a1a = (SidebarButton *)v2->param;
+    v3 = a1a->mobd_lookup_table_offset;
+    while (1)
+    {
+        sprite_4272E0_load_mobd_item(v2, v3, 0);
+        while (1)
+        {
+            v4 = 0;
+            v5 = 0;
+            v6 = 0;
+            script_wait_event(v1);
+            for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
+            {
+                v8 = i->event;
+                if (v8 == EVT_MSG_1548_sidebar)
+                    v6 = 1;
+                if (v8 == EVT_MSG_1514)
+                    v4 = 1;
+                if (v8 == EVT_MSG_SELECTED)
+                    v5 = 1;
+                script_discard_event(i);
+            }
+            if (v6 && !v4)
+            {
+                v14 = a1a;
+                goto LABEL_70;
+            }
+            if (v5)
+            {
+                v9 = 0;
+                v10 = 0;
+                sprite_4272E0_load_mobd_item(v25, a1a->mobd_lookup_table_offset, 1);
+                do
+                {
+                    script_yield_any_trigger(v1, 1);
+                    v11 = 0;
+                    for (j = script_get_next_event(v1); j; j = script_get_next_event(v1))
+                    {
+                        v13 = j->event;
+                        if (v13 == EVT_MSG_1548_sidebar)
+                            v10 = 1;
+                        if (v13 == EVT_MOUSE_HOVER)
+                        {
+                            v11 = 1;
+                        }
+                        else if (v13 == EVT_MSG_DESELECTED || v13 == EVT_MSG_1513)
+                        {
+                            v9 = 1;
+                        }
+                        script_discard_event(j);
+                    }
+                    if (v10)
+                        break;
+                    if (v11)
+                        sprite_4272E0_load_mobd_item(v25, a1a->mobd_lookup_table_offset, 1);
+                    else
+                        sprite_4272E0_load_mobd_item(v25, a1a->mobd_lookup_table_offset, 0);
+                } while (!v9);
+                if (v11 && v9)
+                    break;
+            }
+        }
+        v14 = a1a;
+        v6 = 0;
+        v15 = a1a->open_handler;
+        if (v15)
+            (v15)(a1a);
+        if (a1a->close_handler)
+        {
+            v26 = 0;
+            v16 = 0;
+            do
+            {
+                if (v6)
+                    goto LABEL_70;
+                if (v26)
+                    break;
+                script_wait_event(v1);
+                for (k = script_get_next_event(v1); k; k = script_get_next_event(v1))
+                {
+                    v18 = k->event;
+                    if (v18 == EVT_MSG_1548_sidebar)
+                        v6 = 1;
+                    if (v18 == EVT_MSG_SELECTED)
+                    {
+                        v16 = 1;
+                    }
+                    else if (v18 == EVT_MSG_DESELECTED || v18 == EVT_MSG_1513)
+                    {
+                        v26 = 1;
+                    }
+                    script_discard_event(k);
+                }
+            } while (!v16);
+            if (!v6)
+            {
+                if (!v26)
+                {
+                    v19 = 0;
+                    sprite_4272E0_load_mobd_item(v25, a1a->mobd_lookup_table_offset, 1);
+                    do
+                    {
+                        script_yield_any_trigger(v1, 1);
+                        v20 = 0;
+                        for (l = script_get_next_event(v1); l; l = script_get_next_event(v1))
+                        {
+                            v22 = l->event;
+                            if (v22 == EVT_MSG_1548_sidebar)
+                                v19 = 1;
+                            if (v22 == EVT_MOUSE_HOVER)
+                            {
+                                v20 = 1;
+                            }
+                            else if (v22 == EVT_MSG_DESELECTED || v22 == EVT_MSG_1513)
+                            {
+                                v26 = 1;
+                            }
+                            script_discard_event(l);
+                        }
+                        if (v19)
+                            break;
+                        if (v20)
+                        {
+                            sprite_4272E0_load_mobd_item(v25, a1a->mobd_lookup_table_offset, 1);
+                        }
+                        else if (!a1a->close_handler)
+                        {
+                            sprite_4272E0_load_mobd_item(v25, a1a->mobd_lookup_table_offset, 0);
+                        }
+                    } while (!v26);
+                    v14 = a1a;
+                }
+                v23 = v14->close_handler;
+                if (v23)
+                    (v23)(v14);
+                goto LABEL_68;
+            }
+        LABEL_70:
+            sprite_load_mobd(v25, 1980);
+            while (v6)
+            {
+                script_wait_event(v1);
+                for (m = script_get_next_event(v1); m; m = script_get_next_event(v1))
+                {
+                    if (m->event == EVT_MSG_1514)
+                        v6 = 0;
+                    script_discard_event(m);
+                }
+            }
+            v3 = v14->mobd_lookup_table_offset;
+            v2 = v25;
+        }
+        else
+        {
+        LABEL_68:
+            v3 = v14->mobd_lookup_table_offset;
+            v2 = v25;
+        }
+    }
+}
+
+//----- (0040FC10) --------------------------------------------------------
+void script_40FC10_sidebar_button_4(Script *a1)
+{
+    Script *v1; // ebp@1
+    Sprite *v2; // edi@1
+    SidebarButton *v3; // ebx@1
+    int v4; // esi@1
+    ScriptEvent *j; // eax@5
+    ScriptEvent *k; // eax@11
+    enum SCRIPT_EVENT v7; // ecx@12
+    void(*v8)(SidebarButton *); // eax@21
+    Sprite *v9; // ebp@26
+    Sprite *v10; // eax@26
+    int v11; // ecx@26
+    Sprite *v12; // edi@26
+    int v13; // eax@29
+    int v14; // ebx@34
+    int v15; // edx@34
+    int v16; // edi@36
+    int v17; // edx@36
+    int v18; // edi@37
+    int v19; // ebx@37
+    ScriptEvent *i; // eax@39
+    enum SCRIPT_EVENT v21; // edx@40
+    int v22; // edx@41
+    int v23; // edx@46
+    int v24; // edi@54
+    int v25; // eax@57
+    DrawJob *v26; // eax@61
+    unsigned int v27; // ecx@61
+    Sprite *v28; // ecx@72
+    Sprite *v29; // ecx@74
+    int v30; // [sp+10h] [bp-1Ch]@3
+    int v31; // [sp+10h] [bp-1Ch]@11
+    int v32; // [sp+10h] [bp-1Ch]@26
+    int lookup_idx; // [sp+14h] [bp-18h]@26
+    Sprite *v34; // [sp+18h] [bp-14h]@10
+    Sprite *v35; // [sp+18h] [bp-14h]@26
+    int v36; // [sp+1Ch] [bp-10h]@37
+    SidebarButton *v37; // [sp+20h] [bp-Ch]@1
+    Sprite *v38; // [sp+24h] [bp-8h]@1
+    int v39; // [sp+28h] [bp-4h]@26
+
+    v1 = a1;
+    v2 = a1->sprite;
+    v38 = v2;
+    v3 = (SidebarButton *)v2->param;
+    v37 = v3;
+    v4 = v3->ptr_1C;
+    while (1)
+    {
+        do
+        {
+            while (1)
+            {
+                v30 = 0;
+                if (!*(_DWORD *)v4 && !*(_DWORD *)(v4 + 4))
+                    break;
+            LABEL_23:
+                sprite_4272E0_load_mobd_item(v2, v3->mobd_lookup_table_offset, 1);
+                if (*(_DWORD *)v4 <= 0)
+                    *(_DWORD *)v4 = v3->field_18;
+                if (*(_DWORD *)v4)
+                {
+                    v32 = *(_DWORD *)v4;
+                    lookup_idx = 0;
+                    v39 = v3->field_18 / 16;
+                    v9 = sprite_create(MOBD_SIDEBAR_BUTTONS, 0, v2);
+                    v10 = sprite_create(MOBD_SIDEBAR_BUTTONS, 0, v2);
+                    v11 = v3->field_18;
+                    v12 = v10;
+                    v35 = v10;
+                    if (v32 < v11)
+                        lookup_idx = 15 * (v11 - *(_DWORD *)v4) / v11;
+                    if (v10)
+                    {
+                        v10->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+                        v13 = *(_DWORD *)(v4 + 4);
+                        if (v13 <= 1)
+                        {
+                            v12->drawjob->flags |= 0x40000000u;
+                        }
+                        else if (v13 >= 10)
+                        {
+                            sprite_load_mobd(v12, 2160);
+                        }
+                        else
+                        {
+                            sprite_4272E0_load_mobd_item(v12, 2276, v13 - 1);
+                        }
+                        v14 = v12->y + 6656;
+                        v15 = v12->z_index + 2;
+                        v12->x += 2048;
+                        v12->field_88_unused = 1;
+                        v12->y = v14;
+                        v12->z_index = v15;
+                        v12->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
+                        v12->drawjob->flags |= 0x10000000u;
+                        *(_DWORD *)(v4 + 12) = (int)v12;
+                    }
+                    if (v9)
+                    {
+                        v9->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+                        sprite_4272E0_load_mobd_item(v9, 2312, lookup_idx);
+                        v16 = v9->x + 256;
+                        v17 = v9->z_index + 2;
+                        v9->field_88_unused = 1;
+                        v9->x = v16;
+                        v9->z_index = v17;
+                        v9->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
+                        v9->drawjob->flags |= 0x10000000u;
+                        *(_DWORD *)(v4 + 8) = (int)v9;
+                    }
+                    while (1)
+                    {
+                        v18 = *(_DWORD *)(v4 + 4);
+                        v19 = 0;
+                        v36 = 0;
+                        script_sleep(a1, 6);
+                        if (v18 != *(_DWORD *)(v4 + 4))
+                            v36 = 1;
+                        for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
+                        {
+                            v21 = i->event;
+                            if (v21 == 1513)
+                            {
+                                v22 = *(_DWORD *)(v4 + 4);
+                                if (v22 > 0)
+                                {
+                                    if (v22 <= 9)
+                                        *(_DWORD *)(v4 + 4) = v22 - 1;
+                                    else
+                                        *(_DWORD *)(v4 + 4) = 9;
+                                LABEL_49:
+                                    v19 = 1;
+                                    goto LABEL_50;
+                                }
+                            }
+                            else if (v21 == 1511)
+                            {
+                                v23 = *(_DWORD *)(v4 + 4);
+                                if (v23 >= 9)
+                                    *(_DWORD *)(v4 + 4) = 4000000;
+                                else
+                                    *(_DWORD *)(v4 + 4) = v23 + 1;
+                                goto LABEL_49;
+                            }
+                        LABEL_50:
+                            script_discard_event(i);
+                        }
+                        if (!*(_DWORD *)(v4 + 4))
+                            goto LABEL_71;
+                        if (_44CDC0_sidebar_is_units_limit())
+                            break;
+                        if (v36)
+                        {
+                            v24 = 0;
+                            v32 = *(_DWORD *)v4;
+                            lookup_idx = 0;
+                            v19 = 1;
+                            sprite_4272E0_load_mobd_item(v9, 2312, 0);
+                        }
+                        else
+                        {
+                            v24 = lookup_idx;
+                        }
+                        if (v19)
+                        {
+                            v25 = *(_DWORD *)(v4 + 4);
+                            if (v25 <= 1)
+                            {
+                                v26 = v35->drawjob;
+                                v27 = v26->flags | 0x40000000;
+                            }
+                            else
+                            {
+                                if (v25 >= 10)
+                                    sprite_load_mobd(v35, 2160);
+                                else
+                                    sprite_4272E0_load_mobd_item(v35, 2276, v25 - 1);
+                                v26 = v35->drawjob;
+                                v27 = v26->flags & 0xBFFFFFFF;
+                            }
+                            v26->flags = v27;
+                        }
+                        if (v32 - *(_DWORD *)v4 >= v39)
+                        {
+                            v32 -= v39;
+                            if (v24 < 15)
+                            {
+                                lookup_idx = v24 + 1;
+                                sprite_4272E0_load_mobd_item(v9, 2312, v24 + 1);
+                            }
+                        }
+                        if (!*(_DWORD *)v4)
+                            goto LABEL_72;
+                    }
+                    if (*(_DWORD *)(v4 + 4))
+                    {
+                        *(_DWORD *)(v4 + 4) = 0;
+                        show_message_ex(0, aUnitsAreUnavai);
+                    }
+                LABEL_71:
+                    stru38_list_427FD0((int *)v4, 1);
+                    *(_DWORD *)v4 = 0;
+                LABEL_72:
+                    v28 = *(Sprite **)(v4 + 8);
+                    if (v28)
+                    {
+                        sprite_list_remove(v28);
+                        *(_DWORD *)(v4 + 8) = 0;
+                    }
+                    v29 = *(Sprite **)(v4 + 12);
+                    if (v29)
+                    {
+                        sprite_list_remove(v29);
+                        *(_DWORD *)(v4 + 12) = 0;
+                    }
+                    v3 = v37;
+                    v2 = v38;
+                    v1 = a1;
+                }
+            }
+            sprite_4272E0_load_mobd_item(v2, v3->mobd_lookup_table_offset, 0);
+            script_wait_event(v1);
+            for (j = script_get_next_event(v1); j; j = script_get_next_event(v1))
+            {
+                if (j->event == 1511)
+                    v30 = 1;
+                script_discard_event(j);
+            }
+        } while (!v30);
+        v34 = 0;
+        sprite_4272E0_load_mobd_item(v2, v3->mobd_lookup_table_offset, 1);
+        do
+        {
+            script_yield_any_trigger(v1, 1);
+            v31 = 0;
+            for (k = script_get_next_event(v1); k; k = script_get_next_event(v1))
+            {
+                v7 = k->event;
+                if (v7 == -2)
+                {
+                    v31 = 1;
+                }
+                else if (v7 == 1512)
+                {
+                    v34 = (Sprite *)1;
+                }
+                script_discard_event(k);
+            }
+            sprite_4272E0_load_mobd_item(v2, v3->mobd_lookup_table_offset, v31 != 0);
+        } while (!v34);
+        if (!v31)
+            goto LABEL_23;
+        if (!_44CDC0_sidebar_is_units_limit())
+        {
+            *(_DWORD *)v4 = v3->field_18;
+            *(_DWORD *)(v4 + 4) = 1;
+            v8 = v3->open_handler;
+            if (v8)
+                v8(v3);
+            goto LABEL_23;
+        }
+        show_message_ex(0, aUnitsAreUnavai);
+    }
+}
+
+//----- (004100C0) --------------------------------------------------------
+SidebarButton *sidebar_add_button_1(Sidebar *sidebar, int mobd_lookup_table_offset, void(*open_handler)(SidebarButton *), void *param, void *task_context)
+{
+    return sidebar_add_buttton_internal(
+        sidebar,
+        mobd_lookup_table_offset,
+        script_40F5D0_sidebar_button_1_2,
+        open_handler,
+        0,
+        param,
+        task_context,
+        SCRIPT_TYPE_47802_fog_of_war
+    );
+}
+
+//----- (004100F0) --------------------------------------------------------
+SidebarButton *sidebar_add_button_2(Sidebar *sidebar, int mobd_lookup_table_offset, void(*button_open_handler)(SidebarButton *), void(*button_close_handler)(SidebarButton *), void *task_context)
+{
+    return sidebar_add_buttton_internal(
+        sidebar,
+        mobd_lookup_table_offset,
+        script_40F5D0_sidebar_button_1_2,
+        button_open_handler,
+        button_close_handler,
+        0,
+        task_context,
+        SCRIPT_TYPE_47802_fog_of_war
+    );
+}
+
+//----- (00410120) --------------------------------------------------------
+SidebarButton *sidebar_add_button_3(Sidebar *sidebar, int mobd_lookup_table_offset, void(*button_open_handler)(SidebarButton *), void(*button_close_handler)(SidebarButton *), void *task_context)
+{
+    return sidebar_add_buttton_internal(
+        sidebar,
+        mobd_lookup_table_offset,
+        script_40F8F0_sidebar_button_3,
+        button_open_handler,
+        button_close_handler,
+        0,
+        task_context,
+        SCRIPT_TYPE_48059
+    );
+}
+
+//----- (00410150) --------------------------------------------------------
+SidebarButton *sidebar_add_button_4(Sidebar *sidebar, int mobd_lookup_table_offset, void(*button_open_handler)(SidebarButton *), int a4, int a5, void *param, enum UNIT_ID a7)
+{
+    SidebarButton *result; // eax@1
+
+    result = sidebar_add_buttton_internal(
+        sidebar,
+        mobd_lookup_table_offset,
+        (void(*)(Script *))script_40FC10_sidebar_button_4,
+        button_open_handler,
+        0,
+        param,
+        (void *)a7,
+        SCRIPT_TYPE_47802_fog_of_war
+    );
+    if (result)
+    {
+        result->field_18 = a5;
+        result->ptr_1C = a4;
+    }
+    return result;
+}
+
+//----- (00410190) --------------------------------------------------------
+SidebarButton *sidebar_add_buttton_internal(
+    Sidebar *a1, int mobd_lookup_table_offset, void(*task_routine)(Script *),
+    void(*open_handler)(SidebarButton *), void(*close_handler)(SidebarButton *), void *param,
+    void *task_context, enum SCRIPT_TYPE event
+)
+{
+    SidebarButton *v8; // esi@1
+    int mobd_lookup_table_0ffset; // ebp@1
+    Sidebar *v10; // edi@1
+    SidebarButton *result; // eax@5
+    Script *v12; // eax@6
+    Script *v13; // edx@6
+    Sprite *v14; // eax@6
+    int v15; // eax@8
+
+    v8 = sidebar_button_list_head;
+    mobd_lookup_table_0ffset = mobd_lookup_table_offset;
+    v10 = a1;
+    if (sidebar_button_list_head)
+        sidebar_button_list_head = sidebar_button_list_head->next;
+    else
+        v8 = 0;
+    if (v8)
+    {
+        v12 = script_create_coroutine(event, task_routine, 0);
+        v8->task = v12;
+        v12->param = task_context;
+        v8->mobd_lookup_table_offset = mobd_lookup_table_0ffset;
+        v8->open_handler = open_handler;
+        v8->close_handler = close_handler;
+        v13 = v8->task;
+        v8->param = param;
+        v8->field_18 = 0;
+        v8->ptr_1C = 0;
+        v14 = sprite_create(MOBD_SIDEBAR_BUTTONS, v13, 0);
+        v8->sprite = v14;
+        v14->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+        v8->sprite->param = v8;
+        if (v10)
+        {
+            v8->prev = v10->button_list_head;
+            v8->next = (SidebarButton *)&v10->button_list_free_pool;
+            v10->button_list_head->next = v8;
+            v10->button_list_head = v8;
+            v8->sprite->field_88_unused = 1;
+            v8->sprite->x = v10->x + v10->num_buttons * v10->sprite_width_step;
+            if (task_context == (void *)-11)
+            {
+                v8->sprite->field_88_unused = 1;
+                v15 = 13 * v10->sprite_height_step;
+            }
+            else
+            {
+                v8->sprite->field_88_unused = 1;
+                v15 = v10->num_buttons * v10->sprite_height_step;
+            }
+            v8->sprite->y = v10->w + v15;
+            ++v10->num_buttons;
+            v8->sprite->z_index = 1;
+            v8->sprite->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
+            v8->sprite->drawjob->flags |= 0x10000000u;
+        }
+        result = v8;
+    }
+    else
+    {
+        result = 0;
+    }
+    return result;
+}
+
+//----- (004102D0) --------------------------------------------------------
+void sidebar_remove_button(Sidebar *a1, SidebarButton *a2)
+{
+    SidebarButton *v2; // edi@1
+    int v3; // esi@3
+    Sprite *v4; // ecx@5
+
+    v2 = a2;
+    if (a1)
+    {
+        --a1->num_buttons;
+        a2->prev->next = a2->next;
+        a2->next->prev = a2->prev;
+        if (a2->field_18)
+        {
+            v3 = a2->ptr_1C + 8;
+            if (*(_DWORD *)v3)
+            {
+                sprite_list_remove(*(Sprite **)v3);
+                *(_DWORD *)v3 = 0;
+            }
+            v4 = *(Sprite **)(v3 + 4);
+            if (v4)
+            {
+                sprite_list_remove(v4);
+                *(_DWORD *)(v3 + 4) = 0;
+            }
+        }
+    }
+    sprite_list_remove(v2->sprite);
+    script_deinit(v2->task);
+    v2->next = sidebar_button_list_head;
+    sidebar_button_list_head = v2;
+}
+
+//----- (00410340) --------------------------------------------------------
+void sidebar_list_remove(Sidebar *a1)
+{
+    Sidebar *v1; // edi@1
+    SidebarButton *v2; // edx@1
+    SidebarButton *v3; // edx@1
+    Script *v4; // ecx@3
+
+    if (a1 == 0)
+    {
+        return;
+    }
+
+    v1 = a1;
+    v2 = a1->button_list_free_pool;
+    v3 = (SidebarButton *)&a1->button_list_free_pool;
+    if (v2 != (SidebarButton *)&a1->button_list_free_pool)
+    {
+        do
+        {
+            sidebar_remove_button(v1, v2);
+            v2 = v3->next;
+        } while (v3->next != v3);
+    }
+    sprite_list_remove(v1->sprite);
+    v4 = v1->script;
+    if (v4->script_type == SCRIPT_TYPE_51914_sidebar)
+        script_deinit(v4);
+    v1->next->prev = v1->prev;
+    v1->prev->next = v1->next;
+    v1->next = sidebar_list_head;
+    sidebar_list_head = v1;
+}
+
+//----- (004103A0) --------------------------------------------------------
+void sidebar_list_free()
+{
+    free(sidebar_button_list);
+    free(sidebar_list);
+}
+
 //----- (00446E90) --------------------------------------------------------
 void sidebar_deinit()
 {
