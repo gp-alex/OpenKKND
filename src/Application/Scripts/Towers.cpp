@@ -144,6 +144,11 @@ void entity_mode_tower_dead(Entity *a1)
 }
 
 void tower_on_attacked(Entity *e, Entity *attacker) {
+    //quick fix - TODO - find out why retaliation_target is NULL
+    if (e->retaliation_target == 0) 
+    {
+        return;
+    }
     auto v5 = e->retaliation_target;
     int v6 = v5->entity_id;
     if (!v5 || v6 == 0 || v6 != e->retaliation_target_id)

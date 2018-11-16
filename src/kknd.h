@@ -4,6 +4,7 @@
 #include "src/Render.h"
 #include "src/Script.h"
 #include "src/Sound.h"
+#include "src/Sidebar.h"
 
 #include "src/Infrastructure/File.h"
 #include "src/Infrastructure/Netz.h"
@@ -751,45 +752,6 @@ struct ProductionGroup
 	int field_3C;
 	int field_40;
 	int _44_mobd_lookup_idx;
-	Sprite *sprite;
-};
-
-/* 330 */
-struct Sidebar
-{
-	Sidebar *next;
-	Sidebar *prev;
-	Script *script;
-	int num_buttons;
-	int x;
-	int w;
-	int sprite_width_step;
-	int sprite_height_step;
-	Sprite *sprite;
-	SidebarButton *button_list_free_pool;
-	SidebarButton *button_list_head;
-	int field_2C;
-	int field_30;
-	int field_34;
-	int field_38;
-	int field_3C;
-	int field_40;
-	int field_44;
-	int field_48;
-};
-
-/* 331 */
-struct SidebarButton
-{
-	SidebarButton *next;
-	SidebarButton *prev;
-	Script *task;
-	void(*open_handler)(SidebarButton *);
-	void(*close_handler)(SidebarButton *);
-	int mobd_lookup_table_offset;
-	int field_18;
-	int ptr_1C;
-	void *param;
 	Sprite *sprite;
 };
 
