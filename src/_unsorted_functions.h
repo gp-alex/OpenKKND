@@ -1,6 +1,7 @@
 #pragma once
 #include "src/kknd.h"
 
+int savegame_fix_name(int slot);
 void stru28_list_free();
 void UNIT_AttachHandler_DockPoint(Script *self);
 void EntityTowerAttachment_handler_4010C0(EntityTurret *a1);
@@ -473,7 +474,7 @@ void _41AC50_string_draw_handler(const char *a1, int a2);
 void script_432990_ingame_input_savegame_name(Script *a1, int a2, int a3); // idb
 void script_432F00_ingame_menu(Script *a1); // idb
 void script_432F20_ingame_menu_read_keyboard_input(Script *);
-void script_432F30_ingame_menu_read_keyboard_input(Script *a1); // idb
+void script_ingame_menu_save_game(Script *a1); // idb
 void script_432F40_ingame_menu(Script *a1);
 void script_433060_ingame_menu_DA000000(Script *a1);
 void script_433640(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offset, int z_index_offset);

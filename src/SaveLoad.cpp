@@ -35,6 +35,22 @@ void savegame_list_print(FILE *f) {
     }
 }
 
+
+int savegame_fix_name(int slot) {
+    int i = 0;
+    while (1)
+    {
+        auto v21 = _47C050_savegames[slot].name[i];
+        if (!v21)
+            break;
+        _47C050_savegames[slot].name[i++] = isalpha(v21) || isdigit(v21) ? v21 : '_';
+        if (i >= 40)
+            break;
+    }
+
+    return i;
+}
+
 //----- (00438630) --------------------------------------------------------
 int _438630_read_save_lst()
 {

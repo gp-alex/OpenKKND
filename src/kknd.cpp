@@ -10311,11 +10311,6 @@ void script_432990_ingame_input_savegame_name(Script *a1, int a2, int a3)
 	int v15; // ebx@30
 	ScriptEvent *i; // eax@30
 	int v17; // edx@32
-	int v18; // esi@60
-	int v19; // edi@60
-	int v20; // eax@62
-	char v21; // bl@62
-	int v22; // eax@70
 	int v23; // [sp+10h] [bp-54h]@5
 	int v24; // [sp+14h] [bp-50h]@4
 	Script *v25; // [sp+18h] [bp-4Ch]@1
@@ -10325,7 +10320,6 @@ void script_432990_ingame_input_savegame_name(Script *a1, int a2, int a3)
 	int v29; // [sp+28h] [bp-3Ch]@1
 	int v30; // [sp+2Ch] [bp-38h]@1
 	char a2a[12]; // [sp+30h] [bp-34h]@20
-	char v32[40]; // [sp+3Ch] [bp-28h]@65
 
 	v3 = a1->sprite;
 	v28 = a2;
@@ -10547,27 +10541,15 @@ void script_432990_ingame_input_savegame_name(Script *a1, int a2, int a3)
 				1,
 				v12))
 			{
-				v18 = 0;
-				v19 = 0;
-				while (1)
-				{
-					v20 = _47C050_current_savegame_idx;
-					v21 = _47C050_savegames[_47C050_current_savegame_idx].name[v19];
-					if (!v21)
-						goto LABEL_69;
-					v32[v18++] = isalpha(v21) || isdigit(v21) ? v21 : 95;
-					if (++v19 >= 40)
-						break;
-					v12 = v25;
-				}
-				v20 = _47C050_current_savegame_idx;
+                int slot = _47C050_current_savegame_idx;
+                int v18 = savegame_fix_name(_47C050_current_savegame_idx);
+
 				v12 = v25;
-			LABEL_69:
+//			LABEL_69:
 				if (v18 > 0)
 				{
-					v22 = v20;
-					memcpy(&_47C050_savegames[v22], v32, v18);
-					_47C050_savegames[v22].level_id = current_level_idx;
+					//memcpy(&_47C050_savegames[v22], v32, v18);
+					_47C050_savegames[slot].level_id = current_level_idx;
 					if (_438840_save_lst())
 						script_trigger_event(v12, EVT_MSG_1530_OPEN_GAME_MENU, 0, task_47C028);
 				}
@@ -10596,12 +10578,6 @@ void script_432F20_ingame_menu_read_keyboard_input(Script *a1)
 	script_432990_ingame_input_savegame_name(a1, 0, 0);
 }
 
-//----- (00432F30) --------------------------------------------------------
-void script_432F30_ingame_menu_read_keyboard_input(Script *a1)
-{
-	script_432990_ingame_input_savegame_name(a1, 0, 1);
-}
-
 //----- (00432F40) --------------------------------------------------------
 void script_432F40_ingame_menu(Script *a1)
 {
@@ -10614,7 +10590,7 @@ void script_432F40_ingame_menu(Script *a1)
 	Sprite *v7; // edi@11
 
 	script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
-	v1 = sprite_create_scripted(MOBD_FONT_ITALIC, a1->sprite, script_432F30_ingame_menu_read_keyboard_input, SCRIPT_COROUTINE, 0);
+	v1 = sprite_create_scripted(MOBD_FONT_ITALIC, a1->sprite, script_ingame_menu_save_game, SCRIPT_COROUTINE, 0);
 	if (v1)
 		v1->script->field_1C = 1;
 	v2 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_433E60_ingame_menu, SCRIPT_COROUTINE, 0);

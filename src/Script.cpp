@@ -999,7 +999,7 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_440ED0_mobd45_evt8),
 
     // ingame menu - save game
-    MAKE_HANDLER_PTR(script_432F30_ingame_menu_read_keyboard_input),
+    MAKE_HANDLER_PTR(script_ingame_menu_save_game),
     MAKE_HANDLER_PTR(script_433E60_ingame_menu),
     MAKE_HANDLER_PTR(script_433FB0_ingame_menu),
     MAKE_HANDLER_PTR(script_433ED0_ingame_menu),

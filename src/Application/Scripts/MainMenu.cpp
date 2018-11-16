@@ -541,3 +541,10 @@ LABEL_54:
         _43BAB0_move_cursor(v11);
     goto LABEL_56;
 }
+
+
+//----- (00432F30) --------------------------------------------------------
+void script_ingame_menu_save_game(Script *a1)
+{
+    script_432990_ingame_input_savegame_name(a1, 0, 1);
+}
