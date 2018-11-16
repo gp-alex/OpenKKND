@@ -203,7 +203,6 @@ LABEL_17:
     return 1;
 }
 
-
 //----- (00446D60) --------------------------------------------------------
 void sidebar_button_handler_cash_open(SidebarButton *a1)
 {
@@ -333,7 +332,20 @@ void sidebar_button_handler_infantry_close(SidebarButton *a1)
 
     auto p = ProductionGroupAccessor(PRODUCTION_GROUP_INFANTRY);
     if (p->next != p)
-        sidebar_list_remove(p->next->sidebar);
+    {
+        if (p->next->sidebar)
+        {
+            auto v2 = p->next->sprite;
+            if (v2)
+            {
+                sprite_list_remove(v2);
+                p->next->sprite = 0;
+            }
+            sidebar_list_remove(p->next->sidebar);
+            p->next->sidebar = 0;
+        }
+    }
+        
     _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_INFANTRY] = 0;
 }
 
@@ -430,65 +442,20 @@ void sidebar_button_handler_vehicles_close(SidebarButton *a1)
 
     auto p = ProductionGroupAccessor(PRODUCTION_GROUP_VEHICLES);
     if (p->next != p)
-        sidebar_list_remove(p->next->sidebar);
-    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_VEHICLES] = 0;
-}
-
-//----- (004460C0) --------------------------------------------------------
-void sidebar_button_handler_airstrike_open(SidebarButton *a1)
-{
-    ProductionGroup *v1; // ebx@1
-    Sidebar *v3; // eax@6
-    ProductionOption *v4; // esi@6
-
-    sidebar_close_all();
-
-    v1 = ProductionGroupAccessor(PRODUCTION_GROUP_AIRCRAFT)->prev;
-    if (v1 != ProductionGroupAccessor(PRODUCTION_GROUP_AIRCRAFT))
     {
-        v3 = sidebar_list_create(0, 0, 256, 256, 0);
-        v4 = v1->prev_option;
-        for (v1->sidebar = v3; (ProductionOption **)v4 != &v1->next_option; v4 = v4->prev)
-            sidebar_add_button_4(
-                v1->sidebar,
-                v4->mobd_lookup_table_offset,
-                sidebar_button_handler_order_unit_click,
-                (int)&v4->_14_pcost,
-                v4->cost,
-                v4,
-                v4->unit_id);
+        if (p->next->sidebar)
+        {
+            auto v2 = p->next->sprite;
+            if (v2)
+            {
+                sprite_list_remove(v2);
+                p->next->sprite = 0;
+            }
+            sidebar_list_remove(p->next->sidebar);
+            p->next->sidebar = 0;
+        }
     }
-    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_AIRCRAFT] = 1;
-}
-
-//----- (00446170) --------------------------------------------------------
-void sidebar_button_handler_airstrike_close(SidebarButton *a1)
-{
-    auto p = ProductionGroupAccessor(PRODUCTION_GROUP_AIRCRAFT);
-    if (p->next != p)
-        sidebar_list_remove(p->next->sidebar);
-    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_AIRCRAFT] = 0;
-}
-
-//----- (00446190) --------------------------------------------------------
-void sidebar_button_handler_446190_open(SidebarButton *a1)
-{
-    SidebarButton **v1; // esi@1
-
-    script_trigger_event(0, EVT_MSG_1519, 0, game_cursor_script);
-    v1 = _47CA08_sidebar_buttons;
-    do
-    {
-        if (v1 != &_47CA08_sidebar_buttons[1])
-            script_trigger_event(0, EVT_MSG_DESELECTED, 0, (*v1)->task);
-        ++v1;
-    } while (v1 <= &_47CA08_sidebar_buttons[1]);
-}
-
-//----- (004461E0) --------------------------------------------------------
-void sidebar_button_handler_4461E0_close(SidebarButton *a1)
-{
-    script_trigger_event(0, EVT_MSG_1520, 0, game_cursor_script);
+    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_VEHICLES] = 0;
 }
 
 //----- (00446200) --------------------------------------------------------
@@ -528,7 +495,6 @@ void sidebar_button_handler_buildings_close(SidebarButton *a1)
         sidebar_list_remove(p->next->sidebar);
     _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_BUILDINGS] = 0;
 }
-
 
 //----- (004462B0) --------------------------------------------------------
 void sidebar_button_handler_order_building_click(SidebarButton *a1)
@@ -606,6 +572,63 @@ void sidebar_button_handler_towers_close(SidebarButton *a1)
     if (p->next != p)
         sidebar_list_remove(p->next->sidebar);
     _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_TOWERS] = 0;
+}
+
+//----- (004460C0) --------------------------------------------------------
+void sidebar_button_handler_airstrike_open(SidebarButton *a1)
+{
+    ProductionGroup *v1; // ebx@1
+    Sidebar *v3; // eax@6
+    ProductionOption *v4; // esi@6
+
+    sidebar_close_all();
+
+    v1 = ProductionGroupAccessor(PRODUCTION_GROUP_AIRCRAFT)->prev;
+    if (v1 != ProductionGroupAccessor(PRODUCTION_GROUP_AIRCRAFT))
+    {
+        v3 = sidebar_list_create(0, 0, 256, 256, 0);
+        v4 = v1->prev_option;
+        for (v1->sidebar = v3; (ProductionOption **)v4 != &v1->next_option; v4 = v4->prev)
+            sidebar_add_button_4(
+                v1->sidebar,
+                v4->mobd_lookup_table_offset,
+                sidebar_button_handler_order_unit_click,
+                (int)&v4->_14_pcost,
+                v4->cost,
+                v4,
+                v4->unit_id);
+    }
+    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_AIRCRAFT] = 1;
+}
+
+//----- (00446170) --------------------------------------------------------
+void sidebar_button_handler_airstrike_close(SidebarButton *a1)
+{
+    auto p = ProductionGroupAccessor(PRODUCTION_GROUP_AIRCRAFT);
+    if (p->next != p)
+        sidebar_list_remove(p->next->sidebar);
+    _47C990_production.sidebar_open_mask[PRODUCTION_GROUP_AIRCRAFT] = 0;
+}
+
+//----- (00446190) --------------------------------------------------------
+void sidebar_button_handler_446190_open(SidebarButton *a1)
+{
+    SidebarButton **v1; // esi@1
+
+    script_trigger_event(0, EVT_MSG_1519, 0, game_cursor_script);
+    v1 = _47CA08_sidebar_buttons;
+    do
+    {
+        if (v1 != &_47CA08_sidebar_buttons[1])
+            script_trigger_event(0, EVT_MSG_DESELECTED, 0, (*v1)->task);
+        ++v1;
+    } while (v1 <= &_47CA08_sidebar_buttons[1]);
+}
+
+//----- (004461E0) --------------------------------------------------------
+void sidebar_button_handler_4461E0_close(SidebarButton *a1)
+{
+    script_trigger_event(0, EVT_MSG_1520, 0, game_cursor_script);
 }
 
 void sidebar_close_all() 
