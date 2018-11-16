@@ -1,7 +1,11 @@
 #include "src/Sidebar.h"
 
+#include "src/_unsorted_data.h"
 #include "src/kknd.h"
-#include "src/kknd.cpp"
+#include "src/Script.h"
+#include "src/ScriptEvent.h"
+#include "src/Sprite.h"
+#include "src/RenderDrawHandlers.h"
 
 
 
