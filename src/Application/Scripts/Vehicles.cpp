@@ -701,7 +701,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v5);
             break;
-        case EVT_MSG_1528:
+        case EVT_MSG_1528_cancel:
             v7 = (Entity *)*((_DWORD *)v6 + 1);
             if (v7 && v7->entity_id == *((_DWORD *)v6 + 6))
             {

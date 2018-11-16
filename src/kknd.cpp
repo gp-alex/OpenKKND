@@ -9933,7 +9933,7 @@ void script_4321A0_ingame_menu(Script *a1)
 
 	v1 = a1->sprite;
 	dword_47C6C4 = 1;
-	script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
+	script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
 	_47C65C_render_string = render_string_create(
 		0,
 		currently_running_lvl_mobd[MOBD_FONT_ITALIC].items,
@@ -9994,7 +9994,7 @@ void script_ingame_menu_mission_briefing(Script *script)
 
     temp_script_1 = script;
     temp_script_2 = script;
-    script_trigger_event_group(script, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
+    script_trigger_event_group(script, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
     render_string = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 120, 70, 42, 15, 0x200003E9, 14, 5);
     _47C65C_render_string = render_string;
     if (render_string)
@@ -10119,9 +10119,9 @@ void script_4325B0_ingame_menu_trigger_events(Script *a1)
 	v1 = a1;
 	dword_47C6F8 = 0;
 	stru29_list_443BF0_remove_some();
-	script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000006);
-	script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000007);
-	script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000008);
+	script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000006);
+	script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000007);
+	script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000008);
 	script_trigger_event_group(v1, EVT_MSG_1546_repair_at_station, 0, SCRIPT_TYPE_1);
 	script_trigger_event_group(v1, EVT_MSG_1546_repair_at_station, 0, SCRIPT_TYPE_19);
 }
@@ -10161,7 +10161,7 @@ void script_432730_ingame_menu(Script *a1)
 					{
 						if (v6 == EVT_MSG_SELECTED)
 							goto LABEL_8;
-						if (v6 == EVT_MSG_1528)
+						if (v6 == EVT_MSG_1528_cancel)
 							break;
 					}
 				LABEL_9:
@@ -10266,28 +10266,19 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 	int v9; // edi@18
 	int v10; // ebx@18
 	stru175_savegame *v11; // esi@18
-	Script *v12; // ebp@30
 	int v13; // esi@30
-	int v14; // edi@30
-	int v15; // ebx@30
 	ScriptEvent *i; // eax@30
 	int v17; // edx@32
 	int v23; // [sp+10h] [bp-54h]@5
 	int v24; // [sp+14h] [bp-50h]@4
-	Script *v25; // [sp+18h] [bp-4Ch]@1
 	int v26; // [sp+1Ch] [bp-48h]@1
 	Sprite *a1a; // [sp+20h] [bp-44h]@1
-	int v28; // [sp+24h] [bp-40h]@1
-	int v29; // [sp+28h] [bp-3Ch]@1
 	int v30; // [sp+2Ch] [bp-38h]@1
 	char a2a[12]; // [sp+30h] [bp-34h]@20
 
 	v3 = a1->sprite;
-	v28 = a2;
-	v25 = a1;
 	a1a = a1->sprite;
 	v4 = a2 != 0 ? 256 : 96;
-	v29 = 0;
 	v26 = 0;
 	v30 = a2 != 0 ? 256 : 96;
 	if (a2)
@@ -10324,7 +10315,7 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 		v7 = (v4 + 14) << 8;
 		do
 		{
-			if (v28)
+			if (a2)
 				v8 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, 0, script_432800_ingame_menu, SCRIPT_COROUTINE, 0);
 			else
 				v8 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, 0, script_432730_ingame_menu, SCRIPT_COROUTINE, 0);
@@ -10335,7 +10326,7 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 				v8->x = 0xE800;
 				v8->y = v7;
 				v8->z_index = 2560;
-				if (v28)
+				if (a2)
 				{
 					v8->script->script_type = SCRIPT_TYPE_DA000008;
 					stru29_list_4439F0(v8, 0, 0, 1, 0);
@@ -10351,6 +10342,10 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 	}
 	a1a->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
 	a1a->z_index = 1280;
+
+    bool loading = false;
+    bool saving = false;
+    bool cancelling = false;
 	while (1)
 	{
 		while (1)
@@ -10368,16 +10363,16 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 				v11 = &_47C050_savegames[v24];
 				do
 				{
-					if ((int)v11 >= (int) & _47C050_savegames[2])
+                    if (v24 >= 10) {
+                        sprintf(a2a, "%d:", v9);
+                    }
+					else if (v24 >= 2)
 					{
-						if ((int)v11 >= (int) & _47C050_savegames[10])
-							sprintf(a2a, aD_1, v9);
-						else
-							sprintf(a2a, aD_0, v9);
+                        sprintf(a2a, " %d:", v9);
 					}
 					else
 					{
-						sprintf(a2a, aD, v9);
+						sprintf(a2a, "  %d:", v9);
 					}
 					render_string_443D80(_47C65C_render_string, a2a, 0);
 					if (v11->name[0])
@@ -10391,12 +10386,12 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 				{
 					if (v26 > 0)
 						--v26;
-				} while (!(script_yield_any_trigger(v25, 1) & SCRIPT_FLAGS_20_EVENT_TRIGGER));
-				v12 = v25;
+				} while (!(script_yield_any_trigger(a1, 1) & SCRIPT_FLAGS_20_EVENT_TRIGGER));
+
 				v13 = 0;
-				v14 = 0;
-				v15 = 0;
-				for (i = script_get_next_event(v25); i; i = script_get_next_event(v25))
+				loading = false;
+                saving = false;
+				for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 				{
 					switch (i->event)
 					{
@@ -10444,20 +10439,21 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 						}
 						break;
 					case EVT_MSG_1549:
-						v15 = 1;
+                        loading = true;
 						break;
 					case EVT_CMD_ENTITY_MOVE:
-						v14 = 1;
+                        saving = true;
 						break;
-					case EVT_MSG_1528:
-						v29 = 1;
+					case EVT_MSG_1528_cancel:
+                        cancelling = true;
 						break;
 					default:
 						break;
 					}
 					script_discard_event(i);
 				}
-				if (v29)
+
+				if (cancelling)
 				{
 					if (_47C65C_render_string)
 					{
@@ -10465,14 +10461,14 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 						_47C65C_render_string = 0;
 					}
 					sprite_list_remove(a1a);
-					script_terminate(v25);
+					script_terminate(a1);
 				}
 				_47C050_current_savegame_idx = v23 + v24;
 				if (true_save_false_load)
 					break;
-				if ((v13 || v15) && _438740_save_lst())
+				if ((v13 || loading) && _438740_update_save_lst_and_gamestate())
 				{
-					if (v28)
+					if (a2)
 					{
 						sub_43BAA0();
 						script_deinit(_47C6E0_task);
@@ -10481,10 +10477,10 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 					}
 					else
 					{
-						script_trigger_event_group(v25, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000001);
+						script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
 						sprite_list_remove((Sprite *)task_47C028->param);
-						if (v25 != task_47C028)
-							script_trigger_event(v25, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
+						if (a1 != task_47C028)
+							script_trigger_event(a1, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
 					}
 				}
 			}
@@ -10500,26 +10496,24 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 				11,
 				_41AC50_string_draw_handler,
 				1,
-				v12))
+                a1))
 			{
                 int slot = _47C050_current_savegame_idx;
                 int v18 = savegame_fix_name(_47C050_current_savegame_idx);
 
-				v12 = v25;
 //			LABEL_69:
 				if (v18 > 0)
 				{
 					//memcpy(&_47C050_savegames[v22], v32, v18);
 					_47C050_savegames[slot].level_id = current_level_idx;
-					if (_438840_save_lst())
-						script_trigger_event(v12, EVT_MSG_1530_OPEN_GAME_MENU, 0, task_47C028);
+					if (_438840_update_save_lst())
+						script_trigger_event(a1, EVT_MSG_1530_OPEN_GAME_MENU, 0, task_47C028);
 				}
 			}
 			dword_47C6C4 = 0;
 		}
-		if (v14)
+		if (saving)
 		{
-			v12 = v25;
 			goto LABEL_59;
 		}
 	}
@@ -10644,7 +10638,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 						switch (v7)
 						{
 						case 5:
-							script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000001);
+							script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
 							if (!_47C65C_render_string)
 								goto LABEL_45;
 							render_string_list_remove(_47C65C_render_string);
@@ -10653,14 +10647,14 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 								goto LABEL_46;
 							goto LABEL_47;
 						case 6:
-							script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000001);
+							script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
 							sprite_list_remove((Sprite *)task_47C028->param);
 							v9 = task_47C028;
 							if (v1 != task_47C028)
 								goto LABEL_46;
 							goto LABEL_47;
 						case 7:
-							script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000001);
+							script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
 							sprite_list_remove((Sprite *)task_47C028->param);
 							v9 = task_47C028;
 							if (v1 != task_47C028)
@@ -10668,7 +10662,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 							goto LABEL_47;
 						case 3:
 						case 4:
-							script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000003);
+							script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000003);
 							if (!_47C65C_render_string)
 								goto LABEL_45;
 							render_string_list_remove(_47C65C_render_string);
@@ -10685,7 +10679,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 								render_string_list_remove(_47C65C_render_string);
 								_47C65C_render_string = 0;
 							}
-							script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000001);
+							script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
 						LABEL_45:
 							v9 = task_47C028;
 							if (v1 != task_47C028)
@@ -10714,14 +10708,14 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 						v7 = 5;
 						script_ingame_menu_mission_briefing(v1);
 						break;
-					case EVT_MSG_1528:
+					case EVT_MSG_1528_cancel:
 					LABEL_51:
 						if (single_player_game || dword_47C030)
 							a1a = 0;
 						break;
 					case EVT_MSG_1527:
 						v7 = 4;
-						script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
+						script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
 						_47C65C_render_string = render_string_create(
 							0,
 							currently_running_lvl_mobd[MOBD_FONT_ITALIC].items,
@@ -10745,7 +10739,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 						break;
 					case EVT_CMD_ENTITY_ATTACK:
 						v7 = 3;
-						script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
+						script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
 						_47C65C_render_string = render_string_create(
 							0,
 							currently_running_lvl_mobd[MOBD_FONT_ITALIC].items,
@@ -10786,7 +10780,7 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 			if (!is_async_execution_supported)
 				a1a = 0;
 		} while (a1a);
-		script_trigger_event_group(v1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
+		script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
 		v3 = v15;
 	}
 	is_async_execution_supported = v2;
@@ -10945,7 +10939,7 @@ void script_433960_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000002, -92, v1, 5);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_BORDERLESS_CURSOR, 0, 0))
 	{
-		script_trigger_event(a1, EVT_MSG_1528, 0, task_47C028);
+		script_trigger_event(a1, EVT_MSG_1528_cancel, 0, task_47C028);
         script_sleep(a1, 1);
 	}
 	v2 = a1->sprite;
@@ -11031,7 +11025,7 @@ void script_433BA0_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000003, 0, 120, 1);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_STILL, 1, 0))
 	{
-		script_trigger_event_group(0, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000003);
+		script_trigger_event_group(0, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000003);
 		if (_47C65C_render_string)
 		{
 			render_string_list_remove(_47C65C_render_string);
@@ -11068,7 +11062,7 @@ void script_433C90_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000003, 0, 120, 1);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_STILL, 1, 0))
 	{
-		script_trigger_event_group(0, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000003);
+		script_trigger_event_group(0, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000003);
 		if (_47C65C_render_string)
 		{
 			render_string_list_remove(_47C65C_render_string);
@@ -11091,7 +11085,7 @@ void script_433D20_ingame_menu(Script *a1)
 	script_433640(a1, SCRIPT_TYPE_DA000001, -55, 185, 3);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_RUNNING, 1, 0))
 	{
-		script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000001);
+		script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
 		if (_47C65C_render_string)
 			render_string_list_remove(_47C65C_render_string);
 		if (a1 != task_47C028)
@@ -11118,7 +11112,7 @@ void script_433DB0_ingame_menu(Script *a1)
 			render_string_list_remove(_47C65C_render_string);
 			_47C65C_render_string = 0;
 		}
-		script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000001);
+		script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
 		if (a1 != task_47C028)
 			script_trigger_event(a1, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
 	}
@@ -11198,9 +11192,9 @@ void script_434390_ingame_menu(Script *a1)
 	{
 		dword_47C6F8 = 0;
 		stru29_list_443BF0_remove_some();
-		script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000006);
-		script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000007);
-		script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000008);
+		script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000006);
+		script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000007);
+		script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000008);
 		script_trigger_event_group(a1, EVT_MSG_1546_repair_at_station, 0, SCRIPT_TYPE_1);
 		script_trigger_event_group(a1, EVT_MSG_1546_repair_at_station, 0, SCRIPT_TYPE_19);
 	}
@@ -11235,7 +11229,7 @@ void script_434460_DA000007(Script *a1)
         script_wait_event(a1);
 		for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
 		{
-			if (i->event == EVT_MSG_1528)
+			if (i->event == EVT_MSG_1528_cancel)
 				v1 = 1;
 			script_discard_event(i);
 		}
@@ -11327,7 +11321,7 @@ bool script_434500(Script *a1, int mobd_offset, int a3, int a4)
 			break;
 		for (j = script_get_next_event(v4); j; j = script_get_next_event(v4))
 		{
-			if (j->event == EVT_MSG_1528)
+			if (j->event == EVT_MSG_1528_cancel)
 				v10 = 0;
 			script_discard_event(j);
 		}
@@ -11347,7 +11341,7 @@ LABEL_31:
 			break;
 		for (k = script_get_next_event(v4); k; k = script_get_next_event(v4))
 		{
-			if (k->event == EVT_MSG_1528)
+			if (k->event == EVT_MSG_1528_cancel)
 				v13 = 0;
 			script_discard_event(k);
 		}
@@ -11935,7 +11929,7 @@ void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
 			case EVT_MSG_SELECTED:
 				v3 = 1;
 				break;
-			case EVT_MSG_1528:
+			case EVT_MSG_1528_cancel:
 				v3 = 1;
 				break;
 			}
@@ -11985,7 +11979,7 @@ void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
 			case EVT_MSG_SELECTED:
 				v3 = 1;
 				break;
-			case EVT_MSG_1528:
+			case EVT_MSG_1528_cancel:
 				v3 = 1;
 				break;
 			}
@@ -12411,7 +12405,7 @@ void script_43DA80_mobd45_modem(Script *a1)
 				case EVT_MSG_SELECTED:
 					v6 = 1;
 					break;
-				case EVT_MSG_1528:
+				case EVT_MSG_1528_cancel:
 					v6 = 1;
 					break;
 				}
@@ -12558,7 +12552,7 @@ void script_43DD90_mobd45_modem(Script *a1)
 				case EVT_MSG_SELECTED:
 					v4 = 1;
 					break;
-				case EVT_MSG_1528:
+				case EVT_MSG_1528_cancel:
 					v4 = 1;
 					break;
 				}
@@ -13082,7 +13076,7 @@ void script_43EA90_mobd45(Script *a1)
 				case EVT_MSG_SELECTED:
 					v3 = 1;
 					break;
-				case EVT_MSG_1528:
+				case EVT_MSG_1528_cancel:
 					v3 = 1;
 					break;
 				}
@@ -13127,7 +13121,7 @@ void script_43EB80_mobd45(Script *a1)
 				case EVT_MSG_SELECTED:
 					v3 = 1;
 					break;
-				case EVT_MSG_1528:
+				case EVT_MSG_1528_cancel:
 					v3 = 1;
 					break;
 				}
@@ -13174,7 +13168,7 @@ void script_43EC70_mobd45(Script *a1)
 				case EVT_MSG_SELECTED:
 					v4 = 1;
 					break;
-				case EVT_MSG_1528:
+				case EVT_MSG_1528_cancel:
 					v4 = 1;
 					break;
 				}
@@ -13720,7 +13714,7 @@ void script_43FAD0_mobd45_evt5(Script *a1)
 					if (dword_47C660 != dword_47C5F8)
 					{
 						dword_47C5F8 = dword_47C660;
-						script_trigger_event_group(a1, EVT_MSG_1528, 0, a1->script_type);
+						script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, a1->script_type);
 						if (dword_47C660)
 						{
 							if (dword_47C608 > dword_47C660 - 1)
@@ -14193,7 +14187,7 @@ void script_440810_mobd45(Script *a1)
 				case EVT_MSG_SELECTED:
 					v8 = 1;
 					break;
-				case EVT_MSG_1528:
+				case EVT_MSG_1528_cancel:
 					v8 = 1;
 					break;
 				}
@@ -15509,7 +15503,7 @@ void script_442BB0_mobd46(Script *a1)
 							case EVT_MSG_SELECTED:
 								v13 = 1;
 								break;
-							case EVT_MSG_1528:
+							case EVT_MSG_1528_cancel:
 								v13 = 1;
 								v12 = 0;
 								break;
@@ -15619,7 +15613,7 @@ void script_442BB0_mobd46(Script *a1)
 					case EVT_MSG_SELECTED:
 						v26 = 1;
 						break;
-					case EVT_MSG_1528:
+					case EVT_MSG_1528_cancel:
 						v26 = 1;
 						v25 = 0;
 						break;
@@ -15768,17 +15762,17 @@ void script_443290_mobd45(Script *a1)
 		if (netz_47C6C0_mapd_idx == 14)
 		{
 			dword_47C6E8 = 0;
-			script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_14);
+			script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_14);
 		}
 		else if (v4)
 		{
 			dword_47C6E8 = (unsigned __int16)current_mute_level;
-			script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_14);
+			script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_14);
 		}
 		else
 		{
 			dword_47C6E8 = (unsigned __int16)current_surv_level;
-			script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_14);
+			script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_14);
 		}
 	}
 }

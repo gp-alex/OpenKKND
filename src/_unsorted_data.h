@@ -214,9 +214,6 @@ extern int _4690AC_level_wav_sound_offset; // idb
 extern int _4690B0_sound_volume_previous; // weak
 extern int dword_4690B4; // weak
 extern char asc_46BB14[18];
-extern char aD_1[]; // idb
-extern char aD_0[5]; // weak
-extern char aD[6]; // weak
 extern int _46BB60_dmg_handler_mobd_offsets[3];
 extern char aSGameD_sav[]; // idb
 extern char aActiveslotD[]; // idb

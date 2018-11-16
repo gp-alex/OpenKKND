@@ -2472,9 +2472,6 @@ int _4690AC_level_wav_sound_offset = 16; // idb
 int _4690B0_sound_volume_previous = 16; // weak
 int dword_4690B4 = 24576; // weak
 char asc_46BB14[18] = "                 ";
-char aD_1[] = "%d:"; // idb
-char aD_0[5] = " %d:"; // weak
-char aD[6] = "  %d:"; // weak
 int _46BB60_dmg_handler_mobd_offsets[3] = { 332, 364, 388 };
 char aSGameD_sav[] = "%s\\game%d.sav"; // idb
 char aActiveslotD[] = "ActiveSlot=%d\n"; // idb

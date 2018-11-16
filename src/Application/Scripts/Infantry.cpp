@@ -4717,7 +4717,7 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
         case EVT_CMD_ENTITY_ATTACK:
             entity_attack(v4, (_47CAF0_task_attachment1_attack_task *)param);
             break;
-        case EVT_MSG_1528:
+        case EVT_MSG_1528_cancel:
             entity_41A890_evt1528(v4);
             break;
         case EVT_MSG_1525:

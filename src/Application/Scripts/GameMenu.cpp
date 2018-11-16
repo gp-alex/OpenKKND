@@ -22,7 +22,7 @@ void script_ingame_menu_create_load_dialog(Script *a1)
     Sprite *v8; // edi@11
 
     v1 = a1;
-    script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
+    script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
     v2 = sprite_create_scripted(MOBD_FONT_ITALIC, v1->sprite, script_ingame_menu_load_game_list, SCRIPT_COROUTINE, 0);
     if (v2)
         v2->script->field_1C = 1;
@@ -125,7 +125,7 @@ void script_ingame_menu_save_game_cancel(Script *a1)
     script_433640(a1, SCRIPT_TYPE_DA000001, 0, 153, 3);
     if (script_434500(a1, CURSOR_MOBD_OFFSET_816, 1, 0))
     {
-        script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000001);
+        script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
         sprite_list_remove((Sprite *)task_47C028->param);
         if (a1 != task_47C028)
             script_trigger_event(a1, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
@@ -196,7 +196,7 @@ void script_ingame_menu_load_game_cancel(Script *a1)
     script_433640(a1, SCRIPT_TYPE_DA000001, 0, 153, 3);
     if (script_434500(a1, CURSOR_MOBD_OFFSET_816, 1, 0))
     {
-        script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000001);
+        script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
         sprite_list_remove((Sprite *)task_47C028->param);
         if (a1 != task_47C028)
             script_trigger_event(a1, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
@@ -219,7 +219,7 @@ void script_ingame_menu_create_save_dialog(Script *a1)
     Sprite *v6; // eax@11
     Sprite *v7; // edi@11
 
-    script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
+    script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
     //list
     v1 = sprite_create_scripted(MOBD_FONT_ITALIC, a1->sprite, script_ingame_menu_save_game_list, SCRIPT_COROUTINE, 0);
     if (v1)

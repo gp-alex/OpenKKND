@@ -1366,50 +1366,51 @@ void _4243C0_kknd_sve_update_last_level(const char *a1)
 }
 
 //----- (00438740) --------------------------------------------------------
-bool _438740_save_lst()
+bool _438740_update_save_lst_and_gamestate()
 {
     int v0; // esi@1
     FILE *v1; // eax@3
-    FILE *v2; // ebx@3
 
     v0 = _47C050_current_savegame_idx;
-    if (_47C050_savegames[_47C050_current_savegame_idx].name[0]
-        && (sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_current_savegame_idx),
-            _41CAE0_prepare_to_load_level(byte_47C230, _47C050_savegames[v0].level_id))
-        && (game_state = GAME_STATE::Mission,
-            sprintf(byte_47C230, aSSave_lst, game_data_installation_dir),
-            //SetFileAttributesA(byte_47C230, 0x80u),
-            v1 = fopen(byte_47C230, "w"),
-            (v2 = v1) != 0))
-    {
-        fprintf(v1, aActiveslotD, _47C050_current_savegame_idx);
-        savegame_list_print(v2);
-        fclose(v2);
-        return true;
+    if (_47C050_savegames[_47C050_current_savegame_idx].name[0]) {
+        sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_current_savegame_idx);
+        if (_41CAE0_prepare_to_load_level(byte_47C230, _47C050_savegames[v0].level_id)) {
+            game_state = GAME_STATE::Mission;
+            sprintf(byte_47C230, aSSave_lst, game_data_installation_dir);
+            //SetFileAttributesA(byte_47C230, 0x80u)
+            v1 = fopen(byte_47C230, "w");
+            if (v1)
+            {
+                fprintf(v1, aActiveslotD, _47C050_current_savegame_idx);
+                savegame_list_print(v1);
+                fclose(v1);
+                return true;
+            }
+        }
     }
     return false;
 }
 
 //----- (00438840) --------------------------------------------------------
-bool _438840_save_lst()
+bool _438840_update_save_lst()
 {
     int v0; // esi@1
     FILE *v1; // eax@3
-    FILE *v2; // ebx@3
 
     v0 = _47C050_current_savegame_idx;
-    if (_47C050_savegames[_47C050_current_savegame_idx].name[0]
-        && (sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_current_savegame_idx),
-            _41CB30_prepare_to_save_level(byte_47C230, _47C050_savegames[v0].level_id))
-        && (sprintf(byte_47C230, aSSave_lst, game_data_installation_dir),
-            //SetFileAttributesA(byte_47C230, 0x80u),
-            v1 = fopen(byte_47C230, "w"),
-            (v2 = v1) != 0))
-    {
-        fprintf(v1, aActiveslotD, _47C050_current_savegame_idx);
-        savegame_list_print(v2);
-        fclose(v2);
-        return true;
+    if (_47C050_savegames[_47C050_current_savegame_idx].name[0]) {
+        sprintf(byte_47C230, aSGameD_sav, game_data_installation_dir, _47C050_current_savegame_idx);
+        if (_41CB30_prepare_to_save_level(byte_47C230, _47C050_savegames[v0].level_id)) {
+            sprintf(byte_47C230, aSSave_lst, game_data_installation_dir);
+            //SetFileAttributesA(byte_47C230, 0x80u)
+            v1 = fopen(byte_47C230, "w");
+            if (v1) {
+                fprintf(v1, aActiveslotD, _47C050_current_savegame_idx);
+                savegame_list_print(v1);
+                fclose(v1);
+                return true;
+            }
+        }
     }
     return false;
 }

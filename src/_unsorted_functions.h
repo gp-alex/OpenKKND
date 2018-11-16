@@ -533,8 +533,8 @@ void UNIT_Handler_ResearchBuilding(Script *a1);
 void entity_mode_researchlab_completed(Entity *a1);
 void entity_mode_researchlab_on_death(Entity *); // idb
 int _438630_read_save_lst();
-bool _438740_save_lst();
-bool _438840_save_lst();
+bool _438740_update_save_lst_and_gamestate();
+bool _438840_update_save_lst();
 int stru28_list_alloc();
 void _4389A0_prolly_create_map_damage_decal(int x, int y); // idb
 void _438B40_reset_explosions();
