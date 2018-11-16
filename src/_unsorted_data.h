@@ -116,7 +116,6 @@ extern char *fmv_lvl;
 extern char *aSFmvS;
 extern char *aEvolvout_vbc;
 extern char *aSurvout_vbc;
-extern char *aLoadgamestateF;
 extern char *aUnit_initFaile;
 extern char *aSpriteLoadFail;
 extern CustomMission custom_missions[20];

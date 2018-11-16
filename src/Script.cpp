@@ -999,12 +999,20 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_440ED0_mobd45_evt8),
 
     // ingame menu - save game
-    MAKE_HANDLER_PTR(script_ingame_menu_save_game),
-    MAKE_HANDLER_PTR(script_433E60_ingame_menu),
-    MAKE_HANDLER_PTR(script_433FB0_ingame_menu),
-    MAKE_HANDLER_PTR(script_433ED0_ingame_menu),
-    MAKE_HANDLER_PTR(script_433F40_ingame_menu),
+    MAKE_HANDLER_PTR(script_ingame_menu_save_game_list),
+    MAKE_HANDLER_PTR(script_ingame_menu_save_game_save),
+    MAKE_HANDLER_PTR(script_ingame_menu_save_game_cancel),
+    MAKE_HANDLER_PTR(script_ingame_menu_save_game_up),
+    MAKE_HANDLER_PTR(script_ingame_menu_save_game_down),
     MAKE_HANDLER_PTR(script_421D60_on_savegame_failed),
+
+    // ingame menu - load game
+    MAKE_HANDLER_PTR(script_ingame_menu_create_load_dialog),
+    MAKE_HANDLER_PTR(script_ingame_menu_load_game_list),
+    MAKE_HANDLER_PTR(script_ingame_menu_load_game_load),
+    MAKE_HANDLER_PTR(script_ingame_menu_load_game_cancel),
+    MAKE_HANDLER_PTR(script_ingame_menu_load_game_up),
+    MAKE_HANDLER_PTR(script_ingame_menu_load_game_down),
 };
 
 

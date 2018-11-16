@@ -464,18 +464,46 @@ void script_431E60_mobd_20_input(Script *a1);
 void script_431F10_ingame_menu(Script *a1); // idb
 void script_4321A0_ingame_menu(Script *a1);
 void script_ingame_menu_mission_briefing(Script *script);
+
+// =========== IN-GAME LOAD dialog scripts ===================
+// main dialog script
+void script_ingame_menu_create_load_dialog(Script *a1);
+// control with savegames list 
+void script_ingame_menu_load_game_list(Script *);
+// load btn
+void script_ingame_menu_load_game_load(Script *a1); // idb
+// cancel btn
+void script_ingame_menu_load_game_cancel(Script *a1); // idb
+// up arrow
+void script_ingame_menu_load_game_up(Script *a1); // idb
+// down arrow
+void script_ingame_menu_load_game_down(Script *a1); // idb
+// =======
+
+
+// =========== IN-GAME SAVE dialog scripts ===================
+// main dialog script
+void script_ingame_menu_create_save_dialog(Script *a1);
+// control with savegames list 
+void script_ingame_menu_save_game_list(Script *a1);
+// save btn
+void script_ingame_menu_save_game_save(Script *a1);
+// cancel btn
+void script_ingame_menu_save_game_cancel(Script *a1);
+// up arrow
+void script_ingame_menu_save_game_up(Script *a1);
+// down arrow
+void script_ingame_menu_save_game_down(Script *a1);
+// =======
+
+void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load); // idb
+void script_432F00_ingame_menu(Script *a1); // idb
 void script_432400_ingame_menu_create_sprites(Script *a1);
 void script_432510_ingame_menu_create_sprites(Script *a1);
 void script_4325B0_ingame_menu_trigger_events(Script *a1);
-void script_432620_ingame_menu(Script *a1);
 void script_432730_ingame_menu(Script *a1); // idb
 void script_432800_ingame_menu(Script *a1); // idb
 void _41AC50_string_draw_handler(const char *a1, int a2);
-void script_432990_ingame_input_savegame_name(Script *a1, int a2, int a3); // idb
-void script_432F00_ingame_menu(Script *a1); // idb
-void script_432F20_ingame_menu_read_keyboard_input(Script *);
-void script_ingame_menu_save_game(Script *a1); // idb
-void script_432F40_ingame_menu(Script *a1);
 void script_433060_ingame_menu_DA000000(Script *a1);
 void script_433640(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offset, int z_index_offset);
 void script_4336E0(Script *script, enum SCRIPT_TYPE type, int x_offset, int y_offset, int z_index_offset);
@@ -492,14 +520,6 @@ void script_433C30_ingame_menu(Script *a1); // idb
 void script_433C90_ingame_menu(Script *a1); // idb
 void script_433D20_ingame_menu(Script *a1); // idb
 void script_433DB0_ingame_menu(Script *a1); // idb
-void script_433E60_ingame_menu(Script *a1); // idb
-void script_433ED0_ingame_menu(Script *a1); // idb
-void script_433F40_ingame_menu(Script *a1); // idb
-void script_433FB0_ingame_menu(Script *a1); // idb
-void script_434040_ingame_menu_load_game_related(Script *a1); // idb
-void script_4340B0_ingame_menu(Script *a1); // idb
-void script_434120_ingame_menu(Script *a1); // idb
-void script_434190_ingame_menu(Script *a1); // idb
 void script_434220_ingame_menu(Script *a1); // idb
 void script_4342A0_ingame_menu(Script *a1); // idb
 void script_434310_ingame_menu(Script *a1); // idb

@@ -544,7 +544,13 @@ LABEL_54:
 
 
 //----- (00432F30) --------------------------------------------------------
-void script_ingame_menu_save_game(Script *a1)
+void script_ingame_menu_save_game_list(Script *a1)
 {
-    script_432990_ingame_input_savegame_name(a1, 0, 1);
+    script_ingame_menu_saveload(a1, 0, true);
+}
+
+//----- (00432F20) --------------------------------------------------------
+void script_ingame_menu_load_game_list(Script *a1)
+{
+    script_ingame_menu_saveload(a1, 0, false);
 }

@@ -10126,7 +10126,7 @@ void script_4325B0_ingame_menu_trigger_events(Script *a1)
 // 47C6F8: using guessed type int dword_47C6F8;
 
 //----- (00432620) --------------------------------------------------------
-void script_432620_ingame_menu(Script *a1)
+void script_ingame_menu_create_load_dialog(Script *a1)
 {
 	Script *v1; // esi@1
 	Sprite *v2; // eax@1
@@ -10139,19 +10139,19 @@ void script_432620_ingame_menu(Script *a1)
 
 	v1 = a1;
 	script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
-	v2 = sprite_create_scripted(MOBD_FONT_ITALIC, v1->sprite, script_432F20_ingame_menu_read_keyboard_input, SCRIPT_COROUTINE, 0);
+	v2 = sprite_create_scripted(MOBD_FONT_ITALIC, v1->sprite, script_ingame_menu_load_game_list, SCRIPT_COROUTINE, 0);
 	if (v2)
 		v2->script->field_1C = 1;
-	v3 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_434040_ingame_menu_load_game_related, SCRIPT_COROUTINE, 0);
+	v3 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_ingame_menu_load_game_load, SCRIPT_COROUTINE, 0);
 	if (v3)
 		v3->script->field_1C = 1;
-	v4 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_434190_ingame_menu, SCRIPT_COROUTINE, 0);
+	v4 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_ingame_menu_load_game_cancel, SCRIPT_COROUTINE, 0);
 	if (v4)
 		v4->script->field_1C = 1;
-	v5 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_4340B0_ingame_menu, SCRIPT_COROUTINE, 0);
+	v5 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_ingame_menu_load_game_up, SCRIPT_COROUTINE, 0);
 	if (v5)
 		v5->script->field_1C = 1;
-	v6 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_434120_ingame_menu, SCRIPT_COROUTINE, 0);
+	v6 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_ingame_menu_load_game_down, SCRIPT_COROUTINE, 0);
 	if (v6)
 		v6->script->field_1C = 1;
 	v7 = sprite_create(MOBD_INGAME_MENU_CONTROLS, 0, 0);
@@ -10294,7 +10294,7 @@ void _41AC50_string_draw_handler(const char *a1, int cursor_pos)
 }
 
 //----- (00432990) --------------------------------------------------------
-void script_432990_ingame_input_savegame_name(Script *a1, int a2, int a3)
+void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 {
 	Sprite *v3; // esi@1
 	int v4; // edi@1
@@ -10507,7 +10507,7 @@ void script_432990_ingame_input_savegame_name(Script *a1, int a2, int a3)
 					script_terminate(v25);
 				}
 				_47C050_current_savegame_idx = v23 + v24;
-				if (a3)
+				if (true_save_false_load)
 					break;
 				if ((v13 || v15) && _438740_save_lst())
 				{
@@ -10569,17 +10569,11 @@ void script_432990_ingame_input_savegame_name(Script *a1, int a2, int a3)
 //----- (00432F00) --------------------------------------------------------
 void script_432F00_ingame_menu(Script *a1)
 {
-	script_432990_ingame_input_savegame_name(a1, 1, 0);
-}
-
-//----- (00432F20) --------------------------------------------------------
-void script_432F20_ingame_menu_read_keyboard_input(Script *a1)
-{
-	script_432990_ingame_input_savegame_name(a1, 0, 0);
+	script_ingame_menu_saveload(a1, 1, 0);
 }
 
 //----- (00432F40) --------------------------------------------------------
-void script_432F40_ingame_menu(Script *a1)
+void script_ingame_menu_create_save_dialog(Script *a1)
 {
 	Sprite *v1; // eax@1
 	Sprite *v2; // eax@3
@@ -10590,19 +10584,21 @@ void script_432F40_ingame_menu(Script *a1)
 	Sprite *v7; // edi@11
 
 	script_trigger_event_group(a1, EVT_MSG_1528, 0, SCRIPT_TYPE_DA000002);
-	v1 = sprite_create_scripted(MOBD_FONT_ITALIC, a1->sprite, script_ingame_menu_save_game, SCRIPT_COROUTINE, 0);
+    //list
+	v1 = sprite_create_scripted(MOBD_FONT_ITALIC, a1->sprite, script_ingame_menu_save_game_list, SCRIPT_COROUTINE, 0);
 	if (v1)
 		v1->script->field_1C = 1;
-	v2 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_433E60_ingame_menu, SCRIPT_COROUTINE, 0);
+    //save
+	v2 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_save_game_save, SCRIPT_COROUTINE, 0);
 	if (v2)
 		v2->script->field_1C = 1;
-	v3 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_433FB0_ingame_menu, SCRIPT_COROUTINE, 0);
+	v3 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_save_game_cancel, SCRIPT_COROUTINE, 0);
 	if (v3)
 		v3->script->field_1C = 1;
-	v4 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_433ED0_ingame_menu, SCRIPT_COROUTINE, 0);
+	v4 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_save_game_up, SCRIPT_COROUTINE, 0);
 	if (v4)
 		v4->script->field_1C = 1;
-	v5 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_433F40_ingame_menu, SCRIPT_COROUTINE, 0);
+	v5 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_save_game_down, SCRIPT_COROUTINE, 0);
 	if (v5)
 		v5->script->field_1C = 1;
 	v6 = sprite_create(MOBD_INGAME_MENU_CONTROLS, 0, 0);
@@ -10854,11 +10850,11 @@ void script_433060_ingame_menu_DA000000(Script *a1)
 						break;
 					case EVT_MSG_1509_stru11:
 						v7 = 6;
-						script_432620_ingame_menu(v1);
+						script_ingame_menu_create_load_dialog(v1);
 						break;
 					case EVT_MSG_1507_stru11:
 						v7 = 7;
-						script_432F40_ingame_menu(v1);
+						script_ingame_menu_create_save_dialog(v1);
 						break;
 					default:
 						break;
@@ -11215,7 +11211,7 @@ void script_433DB0_ingame_menu(Script *a1)
 // 47C6C4: using guessed type int dword_47C6C4;
 
 //----- (00433E60) --------------------------------------------------------
-void script_433E60_ingame_menu(Script *a1)
+void script_ingame_menu_save_game_save(Script *a1)
 {
 	_438630_read_save_lst();
 	script_433640(a1, SCRIPT_TYPE_DA000001, -80, 153, 3);
@@ -11233,7 +11229,7 @@ void script_433E60_ingame_menu(Script *a1)
 }
 
 //----- (00433ED0) --------------------------------------------------------
-void script_433ED0_ingame_menu(Script *a1)
+void script_ingame_menu_save_game_up(Script *a1)
 {
 	script_433640(a1, SCRIPT_TYPE_DA000001, -180, 153, 3);
 	while (true)
@@ -11251,7 +11247,7 @@ void script_433ED0_ingame_menu(Script *a1)
 }
 
 //----- (00433F40) --------------------------------------------------------
-void script_433F40_ingame_menu(Script *a1)
+void script_ingame_menu_save_game_down(Script *a1)
 {
 	script_433640(a1, SCRIPT_TYPE_DA000001, -130, 153, 3);
 	while (true)
@@ -11269,7 +11265,7 @@ void script_433F40_ingame_menu(Script *a1)
 }
 
 //----- (00433FB0) --------------------------------------------------------
-void script_433FB0_ingame_menu(Script *a1)
+void script_ingame_menu_save_game_cancel(Script *a1)
 {
 	script_433640(a1, SCRIPT_TYPE_DA000001, 0, 153, 3);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_816, 1, 0))
@@ -11286,7 +11282,7 @@ void script_433FB0_ingame_menu(Script *a1)
 }
 
 //----- (00434040) --------------------------------------------------------
-void script_434040_ingame_menu_load_game_related(Script *a1)
+void script_ingame_menu_load_game_load(Script *a1)
 {
 	_438630_read_save_lst();
 	script_433640(a1, SCRIPT_TYPE_DA000001, -80, 153, 3);
@@ -11304,7 +11300,7 @@ void script_434040_ingame_menu_load_game_related(Script *a1)
 }
 
 //----- (004340B0) --------------------------------------------------------
-void script_4340B0_ingame_menu(Script *a1)
+void script_ingame_menu_load_game_up(Script *a1)
 {
 	script_433640(a1, SCRIPT_TYPE_DA000001, -180, 153, 3);
 	while (true)
@@ -11322,7 +11318,7 @@ void script_4340B0_ingame_menu(Script *a1)
 }
 
 //----- (00434120) --------------------------------------------------------
-void script_434120_ingame_menu(Script *a1)
+void script_ingame_menu_load_game_down(Script *a1)
 {
 	script_433640(a1, SCRIPT_TYPE_DA000001, -130, 153, 3);
 	while (true)
@@ -11340,7 +11336,7 @@ void script_434120_ingame_menu(Script *a1)
 }
 
 //----- (00434190) --------------------------------------------------------
-void script_434190_ingame_menu(Script *a1)
+void script_ingame_menu_load_game_cancel(Script *a1)
 {
 	script_433640(a1, SCRIPT_TYPE_DA000001, 0, 153, 3);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_816, 1, 0))

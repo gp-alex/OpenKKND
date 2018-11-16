@@ -2109,7 +2109,6 @@ char *fmv_lvl = "fmv.lvl";
 char *aSFmvS = "%s\\FMV\\%s";
 char *aEvolvout_vbc = "evolvout.vbc";
 char *aSurvout_vbc = "survout.vbc";
-char *aLoadgamestateF = "LoadGameState() failed\n";
 char *aUnit_initFaile = "UNIT_Init() failed\n";
 char *aSpriteLoadFail = "sprite load failed\n";
 CustomMission custom_missions[20] =

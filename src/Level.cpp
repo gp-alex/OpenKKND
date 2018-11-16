@@ -118,7 +118,7 @@ void GAME_PrepareLevel()
             LVL_Deinit();
             netz_deinit();
             GAME_Deinit();
-            log(aLoadgamestateF);
+            log("GAME_Load() failed");
             exit(0);
         }
         game_state = GAME_STATE::MainMenu;
