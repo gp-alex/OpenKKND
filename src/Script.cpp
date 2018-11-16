@@ -10,6 +10,8 @@
 #include "src/Pathfind.h"
 #include "src/Map.h"
 
+#include "src/Application/Scripts/GameMenu.h"
+
 #include "src/Engine/Entity.h"
 
 /* 359 */

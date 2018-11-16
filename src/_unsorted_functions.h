@@ -465,37 +465,6 @@ void script_431F10_ingame_menu(Script *a1); // idb
 void script_4321A0_ingame_menu(Script *a1);
 void script_ingame_menu_mission_briefing(Script *script);
 
-// =========== IN-GAME LOAD dialog scripts ===================
-// main dialog script
-void script_ingame_menu_create_load_dialog(Script *a1);
-// control with savegames list 
-void script_ingame_menu_load_game_list(Script *);
-// load btn
-void script_ingame_menu_load_game_load(Script *a1); // idb
-// cancel btn
-void script_ingame_menu_load_game_cancel(Script *a1); // idb
-// up arrow
-void script_ingame_menu_load_game_up(Script *a1); // idb
-// down arrow
-void script_ingame_menu_load_game_down(Script *a1); // idb
-// =======
-
-
-// =========== IN-GAME SAVE dialog scripts ===================
-// main dialog script
-void script_ingame_menu_create_save_dialog(Script *a1);
-// control with savegames list 
-void script_ingame_menu_save_game_list(Script *a1);
-// save btn
-void script_ingame_menu_save_game_save(Script *a1);
-// cancel btn
-void script_ingame_menu_save_game_cancel(Script *a1);
-// up arrow
-void script_ingame_menu_save_game_up(Script *a1);
-// down arrow
-void script_ingame_menu_save_game_down(Script *a1);
-// =======
-
 void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load); // idb
 void script_432F00_ingame_menu(Script *a1); // idb
 void script_432400_ingame_menu_create_sprites(Script *a1);

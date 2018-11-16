@@ -542,15 +542,3 @@ LABEL_54:
     goto LABEL_56;
 }
 
-
-//----- (00432F30) --------------------------------------------------------
-void script_ingame_menu_save_game_list(Script *a1)
-{
-    script_ingame_menu_saveload(a1, 0, true);
-}
-
-//----- (00432F20) --------------------------------------------------------
-void script_ingame_menu_load_game_list(Script *a1)
-{
-    script_ingame_menu_saveload(a1, 0, false);
-}
