@@ -68,7 +68,7 @@ void script_mobd79_evt19__main_menu_load(Script *a1)
     Sprite *v3; // ebx@3
     Sprite *v4; // esi@3
 
-    _47C6D8_use__466098_cost_multipliers = 0;
+    is_demo_build = 0;
     single_player_game = 1;
     a1->sprite->y = 270 * 256;
     a1->sprite->z_index = 6;

@@ -139,9 +139,9 @@ void script_424CE0_mission_outcome_modal(Script *a1)
             script_408500_anim(v1);
             if (single_player_game)
             {
-                if (_47C6D8_use__466098_cost_multipliers)
+                if (is_demo_build)
                 {
-                    _47C6D8_use__466098_cost_multipliers = 0;
+                    is_demo_build = 0;
                     game_state = GAME_STATE::GAME_3;
                 }
                 else if (v9 == (void *)2)
@@ -589,7 +589,7 @@ void script_425400(Script *a1)
 
     dword_47A180 = 0;
     script_create_coroutine(SCRIPT_TYPE_INVALID, script_425BE0_check_special_victory_conditions, 0);
-    if (_47C6D8_use__466098_cost_multipliers)
+    if (is_demo_build)
     {
         v1 = a1;
         script_425F50_stru48_stru51_tech_bunkers(a1);
@@ -1298,7 +1298,7 @@ void script_425F50_stru48_stru51_tech_bunkers(Script *a1)
         v74 = v3;
         v67 += 6;
     } while (v3 - 1 < 6);
-    if (_47C6D8_use__466098_cost_multipliers)
+    if (is_demo_build)
     {
         v11 = 0;
         v12 = (char *)& _47A378_stru48_array[0]._8_sprite_cplc;
@@ -1373,7 +1373,7 @@ LABEL_28:
         *v75 = v68;
         ++v75;
     } while (v13 < 6);
-    if (_47C6D8_use__466098_cost_multipliers)
+    if (is_demo_build)
     {
         v24 = &_47A010_mapd_item_being_drawn[0]->draw_job->job_details;
         v25 = _47A378_stru48_array[*(_DWORD *)v77].sprite_y;

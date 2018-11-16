@@ -4117,7 +4117,7 @@ void _408550_multi_pal()
     PaletteEntry *v20 = v20_.entires;
 
     palette_4778A4 = GetSysPalette();
-    if (_47C6D8_use__466098_cost_multipliers)
+    if (is_demo_build)
     {
         sprintf(v19, aSLevelsMulti_p, game_data_installation_dir);
         v0 = fopen(v19, aR);

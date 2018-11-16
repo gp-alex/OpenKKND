@@ -93,7 +93,7 @@ bool sidebar_initialize()
     v6 = sidebar_list_create(0, 0, 288, 0, 0);
     v7 = 0;
     _47C914_sidebar = v6;
-    if (_47C6D8_use__466098_cost_multipliers)
+    if (is_demo_build)
     {
         if (_47C658_faction_index)
             goto LABEL_16;

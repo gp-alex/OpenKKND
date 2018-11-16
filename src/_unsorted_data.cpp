@@ -5452,7 +5452,7 @@ int dword_47C6C4; // weak
 int stru29_list_initialized; // weak
 int netz_modem_47C6CC_idx; // weak
 int netz_modem_list_used; // idb
-int _47C6D8_use__466098_cost_multipliers;
+int is_demo_build;
 int _47C6DC_dont_execute_unit_handlers; // weak
 Script *_47C6E0_task; // idb
 int dword_47C6E4; // weak

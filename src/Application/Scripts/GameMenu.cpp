@@ -249,3 +249,255 @@ void script_ingame_menu_create_save_dialog(Script *a1)
         task_47C028->param = v7;
     }
 }
+
+
+
+//----- (00433780) --------------------------------------------------------
+void script_ingame_menu_options(Script *a1)
+{
+    signed __int16 v1; // ax@2
+    Sprite *v2; // edi@6
+
+    if (!single_player_game || (v1 = 18, is_demo_build))
+        v1 = 66;
+    script_433640(a1, SCRIPT_TYPE_DA000002, -92, v1, 1);
+    if (script_434500(a1, CURSOR_MOBD_OFFSET_MISSION_ARROW_SW, 0, 0))
+    {
+        script_trigger_event(a1, EVT_CMD_ENTITY_MOVE, 0, task_47C028);
+        script_sleep(a1, 1);
+    }
+    v2 = a1->sprite;
+    sprite_list_remove((Sprite *)a1->param);
+    sprite_list_remove(v2);
+    script_terminate(a1);
+}
+
+
+//----- (00433A60) --------------------------------------------------------
+void script_ingame_menu_quit(Script *a1)
+{
+    signed __int16 v1; // ax@2
+    Sprite *v2; // edi@6
+
+    if (!single_player_game || (v1 = 162, is_demo_build))
+        v1 = 114;
+    script_433640(a1, SCRIPT_TYPE_DA000002, -92, v1, 7);
+    if (script_434500(a1, CURSOR_MOBD_OFFSET_828, 0, 0))
+    {
+        script_trigger_event(a1, EVT_CMD_ENTITY_ATTACK, 0, task_47C028);
+        script_sleep(a1, 1);
+    }
+    v2 = a1->sprite;
+    sprite_list_remove((Sprite *)a1->param);
+    sprite_list_remove(v2);
+    script_terminate(a1);
+}
+
+
+//----- (00433960) --------------------------------------------------------
+void script_ingame_menu_resume(Script *a1)
+{
+    signed __int16 v1; // ax@2
+    Sprite *v2; // edi@6
+
+    if (!single_player_game || (v1 = 114, is_demo_build))
+        v1 = 90;
+    script_433640(a1, SCRIPT_TYPE_DA000002, -92, v1, 5);
+    if (script_434500(a1, CURSOR_MOBD_OFFSET_BORDERLESS_CURSOR, 0, 0))
+    {
+        script_trigger_event(a1, EVT_MSG_1528_cancel, 0, task_47C028);
+        script_sleep(a1, 1);
+    }
+    v2 = a1->sprite;
+    sprite_list_remove((Sprite *)a1->param);
+    sprite_list_remove(v2);
+    script_terminate(a1);
+}
+
+
+//----- (004322D0) --------------------------------------------------------
+void script_ingame_menu_mission_briefing(Script *script)
+{
+    Script *temp_script_1; // esi@1
+    RenderString *render_string; // eax@1
+    int num_lines; // edi@2
+    int v4; // ebp@2
+    char *current_mission_briefing; // esi@4
+    int counter; // ecx@8
+    char current_letter; // al@9
+    Sprite *sprite; // eax@21
+    int loop_counter; // [sp+10h] [bp-6Ch]@6
+    Script *temp_script_2; // [sp+14h] [bp-68h]@1
+    char text_line[512]; // [sp+18h] [bp-64h]@11
+
+    temp_script_1 = script;
+    temp_script_2 = script;
+    script_trigger_event_group(script, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
+    render_string = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 120, 70, 42, 15, 0x200003E9, 14, 5);
+    _47C65C_render_string = render_string;
+    if (render_string)
+    {
+        num_lines = 0;
+        v4 = 5;
+        // get current level mission briefing
+        if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
+            current_mission_briefing = mission_briefings[current_level_idx];
+        else
+            current_mission_briefing = *(char **)&aNoFreeLinks[4 * current_level_idx + 12];
+
+        render_string_445AE0(render_string);
+        loop_counter = 0;
+        do
+        {
+            // if no mission briefing
+            if (!*current_mission_briefing)
+                break;
+
+            // extract line of text into array
+            counter = 0;
+            while (1)
+            {
+                current_letter = *current_mission_briefing;
+                if (*current_mission_briefing == '\n' || !current_letter)
+                    break;
+                text_line[counter++] = current_letter;
+                ++current_mission_briefing;
+            }
+            text_line[counter] = 0;
+
+            // skip new line character
+            if (*current_mission_briefing == '\n')
+                ++current_mission_briefing;
+
+            // render text line
+            _47C65C_render_string->field_18 = v4;
+            _47C65C_render_string->num_lines = num_lines;
+            render_string_443D80(_47C65C_render_string, text_line, 0);
+
+            // calculate line number
+            if (loop_counter)
+            {
+                ++num_lines;
+            }
+            else
+            {
+                num_lines += 2;
+                v4 = 0;
+            }
+            ++loop_counter;
+        } while (loop_counter < 11);
+        temp_script_1 = temp_script_2;
+    }
+    sprite = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, temp_script_1->sprite, script_433D20_ingame_menu, SCRIPT_COROUTINE, 0);
+    if (sprite)
+        sprite->script->field_1C = 1;
+    sprite_load_mobd(task_47C028->sprite, 12);
+}
+
+//----- (00432400) --------------------------------------------------------
+void script_ingame_menu_create_dialog(Script *a1)
+{
+    Sprite *v2; // eax@1
+    Sprite *v3; // eax@3
+    Sprite *v4; // eax@5
+    Sprite *v5; // eax@9
+    Sprite *v6; // eax@11
+    Sprite *v7; // eax@13
+    Sprite *v8; // eax@15
+
+    v2 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_options, SCRIPT_COROUTINE, 0);
+    if (v2)
+        v2->script->field_1C = 1;
+    v3 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_quit, SCRIPT_COROUTINE, 0);
+    if (v3)
+        v3->script->field_1C = 1;
+    v4 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_resume, SCRIPT_COROUTINE, 0);
+    if (v4)
+        v4->script->field_1C = 1;
+
+    if (single_player_game && !is_demo_build)
+    {
+        v5 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_save, SCRIPT_COROUTINE, 0);
+        if (v5)
+            v5->script->field_1C = 1;
+        v6 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_load, SCRIPT_COROUTINE, 0);
+        if (v6)
+            v6->script->field_1C = 1;
+        v7 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_restart, SCRIPT_COROUTINE, 0);
+        if (v7)
+            v7->script->field_1C = 1;
+        v8 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_ingame_menu_briefing, SCRIPT_COROUTINE, 0);
+        if (v8)
+            v8->script->field_1C = 1;
+    }
+    sprite_load_mobd(a1->sprite, 0);
+}
+
+
+//----- (00433810) --------------------------------------------------------
+void script_ingame_menu_load(Script *a1)
+{
+    Sprite *v1; // edi@3
+
+    script_433640(a1, SCRIPT_TYPE_DA000002, -92, 42, 2);
+    if (script_434500(a1, CURSOR_MOBD_OFFSET_888, 0, 0))
+    {
+        script_trigger_event(a1, EVT_MSG_1509_stru11, 0, task_47C028);
+        script_sleep(a1, 1);
+    }
+    v1 = a1->sprite;
+    sprite_list_remove((Sprite *)a1->param);
+    sprite_list_remove(v1);
+    script_terminate(a1);
+}
+
+//----- (00433880) --------------------------------------------------------
+void script_ingame_menu_save(Script *a1)
+{
+    Sprite *v1; // edi@3
+
+    script_433640(a1, SCRIPT_TYPE_DA000002, -92, 66, 3);
+    if (script_434500(a1, CURSOR_MOBD_OFFSET_900, 0, 0))
+    {
+        script_trigger_event(a1, EVT_MSG_1507_stru11, 0, task_47C028);
+        script_sleep(a1, 1);
+    }
+    v1 = a1->sprite;
+    sprite_list_remove((Sprite *)a1->param);
+    sprite_list_remove(v1);
+    script_terminate(a1);
+}
+
+//----- (004338F0) --------------------------------------------------------
+void script_ingame_menu_briefing(Script *a1)
+{
+    Sprite *v1; // edi@3
+
+    script_433640(a1, SCRIPT_TYPE_DA000002, -92, 90, 4);
+    if (script_434500(a1, CURSOR_MOBD_OFFSET_MISSION_ARROW_S_BLINK, 0, 0))
+    {
+        script_trigger_event(a1, EVT_MSG_1526_infiltrate, 0, task_47C028);
+        script_sleep(a1, 1);
+    }
+    v1 = a1->sprite;
+    sprite_list_remove((Sprite *)a1->param);
+    sprite_list_remove(v1);
+    script_terminate(a1);
+}
+
+//----- (004339F0) --------------------------------------------------------
+void script_ingame_menu_restart(Script *a1)
+{
+    Sprite *v1; // edi@3
+
+    script_433640(a1, SCRIPT_TYPE_DA000002, -92, 138, 6);
+    if (script_434500(a1, CURSOR_MOBD_OFFSET_876, 0, 0))
+    {
+        script_trigger_event(a1, EVT_MSG_1527, 0, task_47C028);
+        script_sleep(a1, 1);
+    }
+    v1 = a1->sprite;
+    sprite_list_remove((Sprite *)a1->param);
+    sprite_list_remove(v1);
+    script_terminate(a1);
+}

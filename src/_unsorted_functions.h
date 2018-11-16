@@ -467,7 +467,6 @@ void script_ingame_menu_mission_briefing(Script *script);
 
 void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load); // idb
 void script_432F00_ingame_menu(Script *a1); // idb
-void script_432400_ingame_menu_create_sprites(Script *a1);
 void script_432510_ingame_menu_create_sprites(Script *a1);
 void script_4325B0_ingame_menu_trigger_events(Script *a1);
 void script_432730_ingame_menu(Script *a1); // idb
@@ -476,13 +475,6 @@ void _41AC50_string_draw_handler(const char *a1, int a2);
 void script_433060_ingame_menu_DA000000(Script *a1);
 void script_433640(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offset, int z_index_offset);
 void script_4336E0(Script *script, enum SCRIPT_TYPE type, int x_offset, int y_offset, int z_index_offset);
-void script_433780_ingame_menu(Script *a1); // idb
-void script_433810_ingame_menu(Script *a1); // idb
-void script_433880_ingame_menu(Script *a1); // idb
-void script_4338F0_ingame_menu(Script *a1); // idb
-void script_433960_ingame_menu(Script *a1); // idb
-void script_4339F0_ingame_menu(Script *a1); // idb
-void script_433A60_ingame_menu(Script *a1); // idb
 void script_433AF0_ingame_menu(Script *a1); // idb
 void script_433BA0_ingame_menu(Script *a1); // idb
 void script_433C30_ingame_menu(Script *a1); // idb

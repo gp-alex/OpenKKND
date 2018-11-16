@@ -264,7 +264,7 @@ void tower_attack(Entity *a1, int a2)
                             show_message_ex(0, netz_47CA30);
                         }
                     }
-                    if (!_47C6D8_use__466098_cost_multipliers)
+                    if (!is_demo_build)
                     {
                         game_globals_cpu[0].cash[v2->player_side + 7 * *(_DWORD *)(*(_DWORD *)(v3 + 4) + 20)] = 0;
                         game_globals_cpu[0].cash[7 * v2->player_side + *(_DWORD *)(*(_DWORD *)(v3 + 4) + 20)] = 0;

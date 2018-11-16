@@ -618,7 +618,7 @@ extern int dword_47C6C4; // weak
 extern int stru29_list_initialized; // weak
 extern int netz_modem_47C6CC_idx; // weak
 extern int netz_modem_list_used; // idb
-extern int _47C6D8_use__466098_cost_multipliers;
+extern int is_demo_build;
 extern int _47C6DC_dont_execute_unit_handlers; // weak
 extern Script *_47C6E0_task; // idb
 extern int dword_47C6E4; // weak
