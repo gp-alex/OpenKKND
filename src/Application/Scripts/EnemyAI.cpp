@@ -2218,7 +2218,7 @@ stru24_EnemyNode **stru24_40B020(stru24 *a1, stru24_stru160 *a2)
     stru24_EnemyNode *v19; // [sp+18h] [bp-10h]@1
     int v20; // [sp+1Ch] [bp-Ch]@1
     stru24 *v21; // [sp+20h] [bp-8h]@1
-    int i; // [sp+24h] [bp-4h]@20
+    //int i; // [sp+24h] [bp-4h]@20
 
     v2 = a1;
     v3 = a2;
@@ -2285,12 +2285,14 @@ stru24_EnemyNode **stru24_40B020(stru24 *a1, stru24_stru160 *a2)
         v15 = (int)v3->_C_next;
         v3->field_24 = v7;
         v16 = (int)&v3->_C_next;
-        v21 = (stru24 *)result;
-        for (i = v14; v15 != v16; v15 = *(_DWORD *)v15)
+        _47CAF0_task_attachment1_attack_task _hidden_local;
+        _hidden_local.player_side = (int)result;
+        _hidden_local.target = (Entity *)v14;
+        for (; v15 != v16; v15 = *(_DWORD *)v15)
             result = (stru24_EnemyNode **)script_trigger_event(
                 0,
                 EVT_CMD_ENTITY_ATTACK,
-                &v21,
+                &_hidden_local,
                 *(Script **)(*(_DWORD *)(v15 + 12) + 12));
     }
     v17->field_28 = 0;
