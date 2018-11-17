@@ -235,8 +235,8 @@ ScriptDescType1 stru_46F8B8 = { MOBD_GORT,                      SCRIPT_DESC_HAND
 ScriptDescType1 stru_46F8E0 = { MOBD_PLASMA_TANK,               SCRIPT_DESC_HANDLER(UNIT_Handler_Vehicle), SCRIPT_FUNCTION, 0, 0, UNIT_STATS_PLASMA_TANK, 1, 0, 0, 0 };
 ScriptDescType1 stru_46F908 = { MOBD_MECH,                      SCRIPT_DESC_HANDLER(UNIT_Handler_Vehicle), SCRIPT_FUNCTION, 0, 0, UNIT_STATS_MECH, 1, 0, 0, 0 };
 ScriptDescType1 stru_46F930 = { MOBD_SENTINEL_DROID,            SCRIPT_DESC_HANDLER(UNIT_Handler_Vehicle), SCRIPT_FUNCTION, 0, 0, UNIT_STATS_SENTINEL_DROID, 1, 0, 0, 0 };
-ScriptDescType4 stru_46F958 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_441FC0_mobd45_evt8), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46F970 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_4421F0_mobd45_evt8), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46F958 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_main_menu_kaos_allies), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46F970 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_main_menu_kaos_difficulty), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46F988 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_43D740_mobd45_evt17), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46F9A0 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_43E470_mobd45_modems), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46F9B8 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_43E230_mobd45_modems), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
@@ -244,9 +244,9 @@ ScriptDescType4 stru_46F9D0 = { MOBD_45,                        SCRIPT_DESC_HAND
 ScriptDescType4 stru_46F9E8 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_43E670_mobd45), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FA00 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_43E7B0_mobd45), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FA18 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_43E820_mobd45), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46FA30 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_443000_mobd45), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46FA48 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_443140_mobd45), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46FA60 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_443290_mobd45), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46FA30 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_main_menu_play_mission_cancel), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46FA48 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_main_menu_play_mission_ok), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46FA60 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_main_menu_play_mission_faction_toggle), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FA78 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_43F670_mobd45), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FA90 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_43ED60_mobd45_modems), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FAA8 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_43F0E0_mobd45_modems), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
@@ -266,9 +266,9 @@ ScriptDescType4 stru_46FBE0 = { MOBD_45,                        SCRIPT_DESC_HAND
 ScriptDescType4 stru_46FBF8 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_4402A0_mobd45_evt5), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FC10 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_442580_mobd45_evt17), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FC28 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_4428C0_mobd45_evt6), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46FC40 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_4404D0_mobd45_evt8), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46FC58 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_441940_mobd45_evt17), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46FC70 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_441CE0_mobd45_evt8), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46FC40 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_main_menu_create_kaos_dialog), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46FC58 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_main_menu_kaos_cancel), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46FC70 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_main_menu_kaos_start), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FC88 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_4426D0_mobd45_evt6), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FCA0 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_main_menu_quit), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FCB8 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_main_menu_load), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
@@ -992,14 +992,14 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_ingame_menu_options_done), //options - sound settings
     MAKE_HANDLER_PTR(script_ingame_menu_options_volume_slider), //options - sound settings
 
-    MAKE_HANDLER_PTR(script_440810_mobd45),
-    MAKE_HANDLER_PTR(script_441780_mobd45_evt8),
-    MAKE_HANDLER_PTR(script_441470_mobd45_evt8),
-    MAKE_HANDLER_PTR(script_440CA0_mobd45_evt8),
-    MAKE_HANDLER_PTR(script_441050_mobd45_evt8),
-    MAKE_HANDLER_PTR(script_441680_mobd45_evt8),
-    MAKE_HANDLER_PTR(script_441260_mobd45_evt8),
-    MAKE_HANDLER_PTR(script_440ED0_mobd45_evt8),
+    MAKE_HANDLER_PTR(script_main_menu_kaos_player_name),
+    MAKE_HANDLER_PTR(script_main_menu_kaos_enemies),
+    MAKE_HANDLER_PTR(script_main_menu_kaos_starting_cash),
+    MAKE_HANDLER_PTR(script_main_menu_kaos_color),
+    MAKE_HANDLER_PTR(script_main_menu_kaos_map),
+    MAKE_HANDLER_PTR(script_main_menu_kaos_max_tech_level),
+    MAKE_HANDLER_PTR(script_main_menu_kaos_bunkers_toggle),
+    MAKE_HANDLER_PTR(script_main_menu_kaos_team),
 
     // ingame menu - save game
     MAKE_HANDLER_PTR(script_ingame_menu_save_game_list),

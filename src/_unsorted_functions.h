@@ -574,35 +574,19 @@ void script_43FAD0_mobd45_evt5(Script *a1); // idb
 void script_43FDE0_mobd45(Script *a1);
 void script_43FF30_mobd45(Script *a1);
 void script_4402A0_mobd45_evt5(Script *a1);
-void script_4404D0_mobd45_evt8(Script *a1);
 void input_get_string_440770_handler(const char *, int); // idb
-void script_440810_mobd45(Script *a1); // idb
-void script_440CA0_mobd45_evt8(Script *a1); // idb
-void script_440ED0_mobd45_evt8(Script *a1); // idb
-void script_441050_mobd45_evt8(Script *a1); // idb
 void script_441150_mobd45_evt8(Script *a1); // idb
 bool _441240_techbunker_should_create();
-void script_441260_mobd45_evt8(Script *a1); // idb
 void script_441340_mobd45_evt8(Script *a1); // idb
 int get_current_level_starting_cash();
-void script_441470_mobd45_evt8(Script *a1); // idb
 void script_441550_mobd45_evt8(Script *a1); // idb
 int _441630_get_current_level_field14__get_max_upgrade_level(int a1);
-void script_441680_mobd45_evt8(Script *a1); // idb
-void script_441780_mobd45_evt8(Script *a1); // idb
-void script_441940_mobd45_evt17(Script *a1);
-void script_441CE0_mobd45_evt8(Script *a1); // idb
 void netz_441EF0(int a1);
 void script_441F10(Script *a1); // idb
-void script_441FC0_mobd45_evt8(Script *a1); // idb
-void script_4421F0_mobd45_evt8(Script *a1); // idb
 void script_442580_mobd45_evt17(Script *task); // idb
 void script_4426D0_mobd45_evt6(Script *a1);
 void script_4428C0_mobd45_evt6(Script *a1);
 void script_442BB0_mobd46(Script *a1);
-void script_443000_mobd45(Script *a1);
-void script_443140_mobd45(Script *a1);
-void script_443290_mobd45(Script *a1);
 int script_443380(Script *a1, int lookup_table_offset, bool a3);
 int script_443570(Script *a1, int a2, int a3, int a4);
 int script_443780(Script *a1, int a2, int a3, int a4);
