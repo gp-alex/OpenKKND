@@ -250,14 +250,207 @@ Sprite *sprite_list_find_by_mobd_id(enum MOBD_ID mobd_id)
 //----- (00427020) --------------------------------------------------------
 void sprite_list_update_positions()
 {
-    Sprite *i; // esi@2
-    Script *v1; // eax@4
-    int v2; // eax@5
+    //Sprite *i; // esi@2
+    //Script *v1; // eax@4
+    //int v2; // eax@5
+
+    //if (currently_running_lvl_mobd_valid)
+    //{
+    //    bodx_404D50_sprite_list((Sprite *)&sprite_list_47A4A0);
+    //    for (i = sprite_list_47A4A0; (Sprite **)i != &sprite_list_47A4A0; i = i->next)
+    //    {
+    //        if (is_async_execution_supported && (v1 = i->script) != 0)
+    //            v2 = v1->field_1C & 1;
+    //        else
+    //            v2 = 1;
+    //        if (!v2)
+    //            continue;
+
+    //        i->x += i->x_speed;
+    //        if (i->x_speed > 0)
+    //            boxd_404F40_sprite(i, 0, 1);
+    //        else if (i->x_speed < 0)
+    //            boxd_404F40_sprite(i, 1, 1);
+
+    //        i->y += i->y_speed;
+    //        if (i->y_speed > 0)
+    //            boxd_404F40_sprite(i, 2, 1);
+    //        else if (i->y_speed < 0)
+    //            boxd_404F40_sprite(i, 3, 1);
+
+    //        i->z_index += i->z_speed;
+    //        if (i->x_speed == 0 && i->y_speed == 0)
+    //        {
+    //            boxd_404F40_sprite(i, 0, i->field_88_unused ? 1 : 0);
+    //        }
+
+    //        i->field_88_unused = 1;
+    //        if (i->x_speed < 0)
+    //        {
+    //            i->x_speed += i->x_speed_factor_1;
+    //            if (i->x_speed > 0)
+    //                i->x_speed = 0;
+    //        }
+    //        else
+    //        {
+    //            i->x_speed -= i->x_speed_factor_1;
+    //            if (i->x_speed < 0)
+    //                i->x_speed = 0;
+    //        }
+
+    //        if (i->x_speed_factor_2)
+    //        {
+    //            i->x_speed += i->x_speed_factor_2;
+    //            if (i->x_speed < 0)
+    //            {
+    //                if (i->x_speed < -i->x_speed_limit)
+    //                {
+    //                    i->x_speed = -i->x_speed_limit;
+    //                    if (i->script)
+    //                    {
+    //                        i->script->flags_20 |= SCRIPT_FLAGS_20_X_SPEED_LIMIT;
+    //                        i->script->flags_24 |= i->script->flags_20;
+    //                    }
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (i->x_speed > i->x_speed_limit)
+    //                {
+    //                    i->x_speed = i->x_speed_limit;
+    //                    if (i->script)
+    //                    {
+    //                        i->script->flags_20 |= SCRIPT_FLAGS_20_X_SPEED_LIMIT;
+    //                        i->script->flags_24 |= i->script->flags_20;
+    //                    }
+    //                }
+    //            }
+    //        }
+
+
+    //        if (i->y_speed < 0)
+    //        {
+    //            i->y_speed += i->y_speed_factor_1;
+    //            if (i->y_speed > 0)
+    //                i->y_speed = 0;
+    //        }
+    //        else
+    //        {
+    //            i->y_speed -= i->y_speed_factor_1;
+    //            if (i->y_speed < 0)
+    //                i->y_speed = 0;
+    //        }
+
+    //        if (i->y_speed_factor_2)
+    //        {
+    //            i->y_speed += i->y_speed_factor_2;
+    //            if (i->y_speed < 0)
+    //            {
+    //                if (i->y_speed < -i->y_speed_limit)
+    //                {
+    //                    i->y_speed = -i->y_speed_limit;
+    //                    if (i->script)
+    //                    {
+    //                        i->script->flags_20 |= SCRIPT_FLAGS_20_Y_SPEED_LIMIT;
+    //                        i->script->flags_24 |= i->script->flags_20;
+
+    //                    }
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (i->y_speed > i->y_speed_limit)
+    //                {
+    //                    i->y_speed = i->y_speed_limit;
+    //                    if (i->script)
+    //                    {
+    //                        i->script->flags_20 |= SCRIPT_FLAGS_20_Y_SPEED_LIMIT;
+    //                        i->script->flags_24 |= i->script->flags_20;
+    //                    }
+    //                }
+    //            }
+    //        }
+
+    //        if (i->z_speed < 0)
+    //        {
+    //            i->z_speed += i->z_speed_factor_1;
+    //            if (i->z_speed > 0)
+    //                i->z_speed = 0;
+    //        }
+    //        else
+    //        {
+    //            i->z_speed -= i->z_speed_factor_1;
+    //            if (i->z_speed < 0)
+    //                i->z_speed = 0;
+    //        }
+
+    //        if (i->z_speed_factor_2)
+    //        {
+    //            i->z_speed += i->z_speed_factor_2;
+    //            if (i->z_speed < 0)
+    //            {
+    //                if (i->z_speed < -i->z_speed_limit)
+    //                {
+    //                    i->z_speed = -i->z_speed_limit;
+    //                    if (i->script)
+    //                    {
+    //                        i->script->flags_20 |= SCRIPT_FLAGS_20_Z_SPEED_LIMIT;
+    //                        i->script->flags_24 |= i->script->flags_20;
+    //                    }
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (i->z_speed > i->z_speed_limit)
+    //                {
+    //                    i->z_speed = i->z_speed_limit;
+    //                    if (!i->script)
+    //                    {
+    //                        i->script->flags_20 |= SCRIPT_FLAGS_20_Z_SPEED_LIMIT;
+    //                        i->script->flags_24 |= i->script->flags_20;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
+
+    Sprite *i; // esi
+    Script *v1; // eax
+    int v2; // eax
+    int v3; // ecx
+    signed int v4; // eax
+    int v5; // ecx
+    int v6; // eax
+    int v7; // eax
+    int v8; // eax
+    int v9; // ecx
+    int v10; // eax
+    bool v11; // sf
+    int v12; // eax
+    int v13; // edx
+    int v14; // eax
+    int v15; // eax
+    int v16; // eax
+    int v17; // eax
+    int v18; // ecx
+    int v19; // eax
+    int v20; // eax
+    int v21; // edx
+    int v22; // eax
+    int v23; // eax
+    int v24; // eax
+    int v25; // eax
+    int v26; // ecx
+    int v27; // eax
+    int v28; // eax
+    int v29; // edx
+    int v30; // eax
 
     if (currently_running_lvl_mobd_valid)
     {
         bodx_404D50_sprite_list((Sprite *)&sprite_list_47A4A0);
-        for (i = sprite_list_47A4A0; (Sprite **)i != &sprite_list_47A4A0; i = i->next)
+        for (i = sprite_list_47A4A0; i != (Sprite *)&sprite_list_47A4A0; i = i->next)
         {
             if (is_async_execution_supported && (v1 = i->script) != 0)
                 v2 = v1->field_1C & 1;
@@ -265,156 +458,193 @@ void sprite_list_update_positions()
                 v2 = 1;
             if (!v2)
                 continue;
-
-            i->x += i->x_speed;
-            if (i->x_speed > 0)
-                boxd_404F40_sprite(i, 0, 1);
-            else if (i->x_speed < 0)
+            v3 = i->x_speed;
+            v4 = 0;
+            i->x += v3;
+            if (v3 <= 0)
+            {
+                if (i->x_speed >= 0)
+                    goto LABEL_13;
                 boxd_404F40_sprite(i, 1, 1);
-
-            i->y += i->y_speed;
-            if (i->y_speed > 0)
-                boxd_404F40_sprite(i, 2, 1);
-            else if (i->y_speed < 0)
+            }
+            else
+            {
+                boxd_404F40_sprite(i, 0, 1);
+            }
+            v4 = 1;
+        LABEL_13:
+            v5 = i->y_speed;
+            i->y += v5;
+            if (v5 <= 0)
+            {
+                if (i->y_speed >= 0)
+                    goto LABEL_18;
                 boxd_404F40_sprite(i, 3, 1);
-
+            }
+            else
+            {
+                boxd_404F40_sprite(i, 2, 1);
+            }
+            v4 = 1;
+        LABEL_18:
             i->z_index += i->z_speed;
-            if (i->x_speed == 0 && i->y_speed == 0)
+            if (!v4)
             {
-                boxd_404F40_sprite(i, 0, i->field_88_unused ? 1 : 0);
+                if (i->field_88_unused)
+                    boxd_404F40_sprite(i, 0, 1);
+                else
+                    boxd_404F40_sprite(i, 0, 0);
             }
-
+            v6 = i->x_speed;
             i->field_88_unused = 1;
-            if (i->x_speed < 0)
+            if (v6 < 0)
             {
-                i->x_speed += i->x_speed_factor_1;
-                if (i->x_speed > 0)
-                    i->x_speed = 0;
+                v8 = i->x_speed_factor_1 + i->x_speed;
+                i->x_speed = v8;
+                if (v8 <= 0)
+                    goto LABEL_27;
             }
             else
             {
-                i->x_speed -= i->x_speed_factor_1;
-                if (i->x_speed < 0)
-                    i->x_speed = 0;
+                v7 = v6 - i->x_speed_factor_1;
+                i->x_speed = v7;
+                if (v7 >= 0)
+                    goto LABEL_27;
             }
-
-            if (i->x_speed_factor_2)
+            i->x_speed = 0;
+        LABEL_27:
+            if (!i->x_speed_factor_2)
+                goto LABEL_35;
+            v9 = i->x_speed_factor_2;
+            v10 = i->x_speed;
+            v11 = v9 + v10 < 0;
+            v12 = v9 + v10;
+            i->x_speed = v12;
+            if (v11)
             {
-                i->x_speed += i->x_speed_factor_2;
-                if (i->x_speed < 0)
+                if (i->x_speed < -i->x_speed_limit)
                 {
-                    if (i->x_speed < -i->x_speed_limit)
+                    i->x_speed = -i->x_speed_limit;
+                    if (i->script)
                     {
-                        i->x_speed = -i->x_speed_limit;
-                        if (i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_X_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-                        }
+                    LABEL_34:
+                        i->script->flags_20 |= 0x8000000u;
+                        i->script->flags_24 |= i->script->flags_20;
+                        goto LABEL_35;
                     }
                 }
-                else
-                {
-                    if (i->x_speed > i->x_speed_limit)
-                    {
-                        i->x_speed = i->x_speed_limit;
-                        if (i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_X_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-                        }
-                    }
-                }
-            }
-
-
-            if (i->y_speed < 0)
-            {
-                i->y_speed += i->y_speed_factor_1;
-                if (i->y_speed > 0)
-                    i->y_speed = 0;
             }
             else
             {
-                i->y_speed -= i->y_speed_factor_1;
-                if (i->y_speed < 0)
-                    i->y_speed = 0;
-            }
-
-            if (i->y_speed_factor_2)
-            {
-                i->y_speed += i->y_speed_factor_2;
-                if (i->y_speed < 0)
+                v13 = v12;
+                v14 = i->x_speed_limit;
+                if (v13 > v14)
                 {
-                    if (i->y_speed < -i->y_speed_limit)
-                    {
-                        i->y_speed = -i->y_speed_limit;
-                        if (i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_Y_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-
-                        }
-                    }
-                }
-                else
-                {
-                    if (i->y_speed > i->y_speed_limit)
-                    {
-                        i->y_speed = i->y_speed_limit;
-                        if (i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_Y_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-                        }
-                    }
+                    i->x_speed = v14;
+                    if (i->script)
+                        goto LABEL_34;
                 }
             }
-
-            if (i->z_speed < 0)
+        LABEL_35:
+            v15 = i->y_speed;
+            if (v15 < 0)
             {
-                i->z_speed += i->z_speed_factor_1;
-                if (i->z_speed > 0)
-                    i->z_speed = 0;
+                v17 = i->y_speed_factor_1 + i->y_speed;
+                i->y_speed = v17;
+                if (v17 <= 0)
+                    goto LABEL_40;
             }
             else
             {
-                i->z_speed -= i->z_speed_factor_1;
-                if (i->z_speed < 0)
-                    i->z_speed = 0;
+                v16 = v15 - i->y_speed_factor_1;
+                i->y_speed = v16;
+                if (v16 >= 0)
+                    goto LABEL_40;
             }
-
+            i->y_speed = 0;
+        LABEL_40:
+            if (!i->y_speed_factor_2)
+                goto LABEL_48;
+            v18 = i->y_speed_factor_2;
+            v19 = i->y_speed;
+            v11 = v18 + v19 < 0;
+            v20 = v18 + v19;
+            i->y_speed = v20;
+            if (v11)
+            {
+                if (i->y_speed < -i->y_speed_limit)
+                {
+                    i->y_speed = -i->y_speed_limit;
+                    if (i->script)
+                    {
+                    LABEL_47:
+                        i->script->flags_20 |= 0x4000000u;
+                        i->script->flags_24 |= i->script->flags_20;
+                        goto LABEL_48;
+                    }
+                }
+            }
+            else
+            {
+                v21 = v20;
+                v22 = i->y_speed_limit;
+                if (v21 > v22)
+                {
+                    i->y_speed = v22;
+                    if (i->script)
+                        goto LABEL_47;
+                }
+            }
+        LABEL_48:
+            v23 = i->z_speed;
+            if (v23 < 0)
+            {
+                v25 = i->z_speed_factor_1 + i->z_speed;
+                i->z_speed = v25;
+                if (v25 <= 0)
+                    goto LABEL_53;
+            }
+            else
+            {
+                v24 = v23 - i->z_speed_factor_1;
+                i->z_speed = v24;
+                if (v24 >= 0)
+                    goto LABEL_53;
+            }
+            i->z_speed = 0;
+        LABEL_53:
             if (i->z_speed_factor_2)
             {
-                i->z_speed += i->z_speed_factor_2;
-                if (i->z_speed < 0)
+                v26 = i->z_speed_factor_2;
+                v27 = i->z_speed;
+                v11 = v26 + v27 < 0;
+                v28 = v26 + v27;
+                i->z_speed = v28;
+                if (v11)
                 {
-                    if (i->z_speed < -i->z_speed_limit)
-                    {
-                        i->z_speed = -i->z_speed_limit;
-                        if (i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_Z_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-                        }
-                    }
+                    if (i->z_speed >= -i->z_speed_limit)
+                        continue;
+                    i->z_speed = -i->z_speed_limit;
+                    if (!i->script)
+                        continue;
                 }
                 else
                 {
-                    if (i->z_speed > i->z_speed_limit)
-                    {
-                        i->z_speed = i->z_speed_limit;
-                        if (!i->script)
-                        {
-                            i->script->flags_20 |= SCRIPT_FLAGS_20_Z_SPEED_LIMIT;
-                            i->script->flags_24 |= i->script->flags_20;
-                        }
-                    }
+                    v29 = v28;
+                    v30 = i->z_speed_limit;
+                    if (v29 <= v30)
+                        continue;
+                    i->z_speed = v30;
+                    if (!i->script)
+                        continue;
                 }
+                i->script->flags_20 |= 0x2000000u;
+                i->script->flags_24 |= i->script->flags_20;
             }
         }
     }
 }
+
 
 //----- (004272A0) --------------------------------------------------------
 void sprite_load_mobd(Sprite *a1, int offset)
