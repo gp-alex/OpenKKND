@@ -60,6 +60,8 @@ struct task_428940_attach__cursors;
 struct task_428940_attach__cursors_2;
 struct Entity;
 
+typedef unsigned __int8 byte;
+
 
 #define SAVEGAME_LIST_APPEARANCE_INGAME_MENU 0
 #define SAVEGAME_LIST_APPEARANCE_MAIN_MENU 1
@@ -589,7 +591,7 @@ struct OilDepositSaveStruct
 /* 313 */
 struct EntitySaveStructIndex
 {
-	int entity_field_130;
+	int entity_id;
 	int entity_save_size;
 };
 
