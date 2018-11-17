@@ -219,9 +219,9 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
                 {
                     show_message_ex(0, aCommencingUpgrade);
                     if (is_player_faction_evolved())
-                        sound_play(SOUND_MUTE_COMMENCING_UPGRADE, 0, _4690A8_unit_sounds_volume, 16, 0);
+                        sound_play(SOUND_MUTE_COMMENCING_UPGRADE, 0, _4690A8_sfx_volume, 16, 0);
                     else
-                        sound_play(SOUND_SURV_COMMENCING_UPGRADE, 0, _4690A8_unit_sounds_volume, 16, 0);
+                        sound_play(SOUND_SURV_COMMENCING_UPGRADE, 0, _4690A8_sfx_volume, 16, 0);
                 }
             }
             break;
@@ -233,17 +233,17 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
                 if (is_player_faction_evolved())
                 {
                     if ((char)kknd_rand() % -2)
-                        sound_play(SOUND_MUTE_UPGRADE_COMPLETE_2, 0, _4690A8_unit_sounds_volume, 16, 0);
+                        sound_play(SOUND_MUTE_UPGRADE_COMPLETE_2, 0, _4690A8_sfx_volume, 16, 0);
                     else
-                        sound_play(SOUND_MUTE_UPGRADE_COMPLETE_1, 0, _4690A8_unit_sounds_volume, 16, 0);
+                        sound_play(SOUND_MUTE_UPGRADE_COMPLETE_1, 0, _4690A8_sfx_volume, 16, 0);
                 }
                 else if ((char)kknd_rand() % -2)
                 {
-                    sound_play(SOUND_SURV_UPGRADE_COMPLETE_2, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_SURV_UPGRADE_COMPLETE_2, 0, _4690A8_sfx_volume, 16, 0);
                 }
                 else
                 {
-                    sound_play(SOUND_SURV_UPGRADE_COMPLETE_1, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_SURV_UPGRADE_COMPLETE_1, 0, _4690A8_sfx_volume, 16, 0);
                 }
             }
             break;
@@ -310,12 +310,12 @@ void entity_mode_researchlab_completed(Entity *a1)
         show_message_ex(0, aBuildingCompleted);
         if (is_player_faction_evolved())
         {
-            v4 = _4690A8_unit_sounds_volume;
+            v4 = _4690A8_sfx_volume;
             v3 = SOUND_MUTE_BUILDING_COMPLETED;
         }
         else
         {
-            v4 = _4690A8_unit_sounds_volume;
+            v4 = _4690A8_sfx_volume;
             v3 = SOUND_SURV_BUILDING_COMPLETED;
         }
         sound_play(v3, 0, v4, 16, 0);

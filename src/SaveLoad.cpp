@@ -1701,7 +1701,7 @@ bool GAME_Load_UnpackMiscInfo(void *save_data)
                 v13->_8_sprite->field_88_unused = 1;
                 v13->_8_sprite->y = 79872;
                 v13->_8_sprite->z_index = 3;
-                v13->_8_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+                v13->_8_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
                 if (v13->field_4 <= 1)
                     v13->_8_sprite->drawjob->flags |= 0x40000000u;
                 if (v13->field_4 > 0)

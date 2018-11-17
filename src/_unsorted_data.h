@@ -209,10 +209,10 @@ extern int dword_468FD4; // weak
 extern int dword_468FD8; // weak
 extern int dword_468FDC; // weak
 extern char *mission_briefings[30]; // weak
-extern int _4690A8_unit_sounds_volume;
-extern int _4690AC_level_wav_sound_offset; // idb
+extern int _4690A8_sfx_volume;
+extern int _4690AC_music_volume; // idb
 extern int _4690B0_sound_volume_previous; // weak
-extern int dword_4690B4; // weak
+extern int _4690B4_unk_volume; // weak
 extern char asc_46BB14[18];
 extern int _46BB60_dmg_handler_mobd_offsets[3];
 extern char aSGameD_sav[]; // idb
@@ -247,7 +247,6 @@ extern const char *player_colors[15];
 extern char *off_46C358[15]; // weak
 extern const char *difficulties[3];
 extern const char *sidebar_category_labels[11];
-extern char aSfxVolumeMusicVolume[28]; // weak
 extern char aAreYouSureYo_0[34]; // weak
 extern char aAreYouSureYouW[35]; // weak
 extern char aBuildingIsUnav[]; // idb

@@ -1,3 +1,5 @@
+#include "src/Application/Scripts/MainMenu.h"
+
 #include "src/_unsorted_functions.h"
 #include "src/_unsorted_data.h"
 #include "src/kknd.h"
@@ -9,7 +11,7 @@
 #include "src/Sprite.h"
 
 //----- (0043C0E0) --------------------------------------------------------
-void script_mobd79_evt1__main_menu_new_game(Script *a1)
+void script_main_menu_new_campaign(Script *a1)
 {
     Sprite *v1; // esi@1
     Sprite *v2; // eax@1
@@ -20,9 +22,9 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
     _47C65C_render_string = 0;
     a1->sprite->y = 240 * 256;
     a1->sprite->z_index = 4;
-    sprite_create_scripted(MOBD_79, a1->sprite, script_mobd79_evt1__main_menu_play_mission, SCRIPT_COROUTINE, 0);
-    sprite_create_scripted(MOBD_79, a1->sprite, script_mobd79_evt1__main_menu_new_missions, SCRIPT_COROUTINE, 0);
-    sprite_create_scripted(MOBD_79, a1->sprite, script_mobd79_evt1__main_menu_kaos_mode, SCRIPT_COROUTINE, 0);
+    sprite_create_scripted(MOBD_79, a1->sprite, script_main_menu_play_mission, SCRIPT_COROUTINE, 0);
+    sprite_create_scripted(MOBD_79, a1->sprite, script_main_menu_new_missions, SCRIPT_COROUTINE, 0);
+    sprite_create_scripted(MOBD_79, a1->sprite, script_main_menu_kaos_mode, SCRIPT_COROUTINE, 0);
     script_sleep(a1, 1);
     v1 = a1->sprite;
     v2 = sprite_create(MOBD_79, 0, v1);
@@ -61,7 +63,7 @@ void script_mobd79_evt1__main_menu_new_game(Script *a1)
 }
 
 //----- (0043C310) --------------------------------------------------------
-void script_mobd79_evt19__main_menu_load(Script *a1)
+void script_main_menu_load(Script *a1)
 {
     Sprite *v1; // esi@1
     Sprite *v2; // eax@1
@@ -100,7 +102,7 @@ void script_mobd79_evt19__main_menu_load(Script *a1)
 }
 
 //----- (0043C430) --------------------------------------------------------
-void script_mobd79_evt1__main_menu_play_mission(Script *a1)
+void script_main_menu_play_mission(Script *a1)
 {
     Sprite *v1; // esi@1
     Sprite *v2; // eax@1
@@ -149,7 +151,7 @@ void script_mobd79_evt1__main_menu_play_mission(Script *a1)
 }
 
 //----- (0043CA10) --------------------------------------------------------
-void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
+void script_main_menu_multiplayer(Script *a1)
 {
     Sprite *v1; // esi@1
     Sprite *v2; // eax@1
@@ -197,7 +199,7 @@ void script_mobd79_evt1__main_menu_multiplayer(Script *a1)
 }
 
 //----- (0043C630) --------------------------------------------------------
-void script_mobd79_evt1__main_menu_new_missions(Script *a1)
+void script_main_menu_new_missions(Script *a1)
 {
     Sprite *v1; // esi@1
     Sprite *v2; // eax@1
@@ -245,7 +247,7 @@ void script_mobd79_evt1__main_menu_new_missions(Script *a1)
 }
 
 //----- (0043C820) --------------------------------------------------------
-void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
+void script_main_menu_kaos_mode(Script *a1)
 {
     Sprite *v1; // esi@1
     Sprite *v2; // eax@1
@@ -293,7 +295,7 @@ void script_mobd79_evt1__main_menu_kaos_mode(Script *a1)
 }
 
 //----- (0043CC00) --------------------------------------------------------
-void script_mobd79_evt1__main_menu_quit(Script *a1)
+void script_main_menu_quit(Script *a1)
 {
     Sprite *v1; // esi@1
     Sprite *v2; // eax@1
@@ -325,7 +327,7 @@ void script_mobd79_evt1__main_menu_quit(Script *a1)
     }
     script_408500_anim(a1);
     stru29_list_remove_all(a1);
-    game_state = GAME_STATE::GAME_3;
+    game_state = GAME_STATE::GAME_3_quit_mission;
 }
 
 
@@ -354,7 +356,7 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
     v14 = 18000;
     v17 = v2;
     sprite_load_mobd(v2, 312);
-    v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+    v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
     v2->z_index = 2560;
     dword_47C6F0 = 0;
     dword_47C6EC = 1;
@@ -430,7 +432,7 @@ void script_mobd79__main_menu_mouse_handler(Script *a1)
                         {
                             script_408500_anim(v1);
                             stru29_list_remove_all(v1);
-                            game_state = GAME_STATE::GAME_3;
+                            game_state = GAME_STATE::GAME_3_quit_mission;
                             sprite_list_remove(v1->sprite);
                             script_terminate(v1);
                         }

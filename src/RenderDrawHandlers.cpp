@@ -190,7 +190,7 @@ void drawjob_update_handler_448580_entity_aircraft_turret(Sprite *sprite, DrawJo
 }
 
 //----- (004483E0) --------------------------------------------------------
-void drawjob_update_handler_4483E0_sidebar(Sprite *a1, DrawJob *a2)
+void drawjob_update_handler_4483E0_ui(Sprite *a1, DrawJob *a2)
 {
     DataMobdItem_stru0 *v2; // eax@1
 

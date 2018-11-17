@@ -196,7 +196,7 @@ LABEL_17:
     _47C96C_mobd_1F_sidebar_empty_blocks = v23;
     if (v23)
     {
-        v23->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+        v23->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
         sprite_load_mobd(_47C96C_mobd_1F_sidebar_empty_blocks, 72);
         _47C96C_mobd_1F_sidebar_empty_blocks->field_88_unused = 1;
         _47C96C_mobd_1F_sidebar_empty_blocks->x = (render_width - 32) << 8;
@@ -283,7 +283,7 @@ void sidebar_button_handler_infantry_open(SidebarButton *a1)
                 if (v4)
                 {
                     v1->sprite = v4;
-                    v4->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+                    v4->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
                     v5 = v4->y;
                     v4->field_88_unused = 1;
                     v4->y = v5 - 1024;
@@ -375,7 +375,7 @@ void sidebar_button_handler_vehicles_open(SidebarButton *a1)
                 if (v4)
                 {
                     v1->sprite = v4;
-                    v4->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+                    v4->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
                     v5 = v4->y;
                     v4->field_88_unused = 1;
                     v4->y = v5 - 1024;
@@ -637,7 +637,7 @@ Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int heig
         v5->sprite_height_step = sidebar_horizontal == 0 ? v8 : 0;
         if (!v6)
             v5->sprite = sprite_create(MOBD_SIDEBAR_BUTTONS, v5->script, 0);
-        v5->sprite->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+        v5->sprite->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_ui;
         v5->sprite->field_88_unused = 1;
         v5->sprite->x = v5->x;
         v5->sprite->field_88_unused = 1;
@@ -1183,7 +1183,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
                         lookup_idx = 15 * (v11 - *(_DWORD *)v4) / v11;
                     if (v10)
                     {
-                        v10->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+                        v10->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_ui;
                         v13 = *(_DWORD *)(v4 + 4);
                         if (v13 <= 1)
                         {
@@ -1209,7 +1209,7 @@ void script_40FC10_sidebar_button_4(Script *a1)
                     }
                     if (v9)
                     {
-                        v9->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+                        v9->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_ui;
                         sprite_4272E0_load_mobd_item(v9, 2312, lookup_idx);
                         v16 = v9->x + 256;
                         v17 = v9->z_index + 2;
@@ -1480,7 +1480,7 @@ SidebarButton *sidebar_add_buttton_internal(
         v8->ptr_1C = 0;
         v14 = sprite_create(MOBD_SIDEBAR_BUTTONS, v13, 0);
         v8->sprite = v14;
-        v14->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+        v14->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_ui;
         v8->sprite->param = v8;
         if (v10)
         {

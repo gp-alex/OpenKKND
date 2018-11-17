@@ -242,7 +242,7 @@ void script_439050_explosions(Script *a1)
     v10 = 0;
     if (!v1->param)
         v1->param = &v2;
-    sprite_408800_play_sound(v1, SOUND_3, _4690A8_unit_sounds_volume, 0);
+    sprite_408800_play_sound(v1, SOUND_3, _4690A8_sfx_volume, 0);
     sprite_load_mobd(v1, 144);
     script_yield(a1, SCRIPT_FLAGS_20_10000000, 0);
     if (num_explosions > 0)

@@ -495,7 +495,7 @@ bool mapd_init_fog_of_war()
                             v40 = sprite_create_scripted(MOBD_MUTE_ALCHEMY_HALL, 0, script_44A500_fog_of_war, SCRIPT_COROUTINE, 0);
                             _47CB58_minimap_sprite = v40;
                             v40->_54_inside_mobd_ptr4 = &_4705B0_minimap;
-                            _47CB58_minimap_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+                            _47CB58_minimap_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
                             _47CB58_minimap_sprite->script->script_type = SCRIPT_TYPE_47802_fog_of_war;
                             _47CB58_minimap_sprite->drawjob->flags |= 0x40000000u;
                             _47CB98_fow_map_x2 = _47CB88_fow_map_x2;

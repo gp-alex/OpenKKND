@@ -123,18 +123,18 @@ void script_424CE0_mission_outcome_modal(Script *a1)
             v7 = 7;
             do
             {
-                sound_play(SOUND_MISSION_OUTCOME_LETTER_APPEARING, 0, _4690A8_unit_sounds_volume, 16, 0);
+                sound_play(SOUND_MISSION_OUTCOME_LETTER_APPEARING, 0, _4690A8_sfx_volume, 16, 0);
                 script_sleep(v1, 8);
                 --v7;
             } while (v7);
             script_sleep(v1, 30);
             sprite_load_mobd(v3, v6);
-            v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+            v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
             v3->x = (int)a1;
             v3->y = v8;
             v3->z_index = 999;
             script_yield(v1, SCRIPT_FLAGS_20_10000000, 0);
-            sound_play(SOUND_MISSION_OUTCOME_LETTER_APPEARING, 0, _4690A8_unit_sounds_volume, 16, 0);
+            sound_play(SOUND_MISSION_OUTCOME_LETTER_APPEARING, 0, _4690A8_sfx_volume, 16, 0);
             script_sleep(v1, 200);
             script_408500_anim(v1);
             if (single_player_game)
@@ -142,11 +142,11 @@ void script_424CE0_mission_outcome_modal(Script *a1)
                 if (is_demo_build)
                 {
                     is_demo_build = 0;
-                    game_state = GAME_STATE::GAME_3;
+                    game_state = GAME_STATE::GAME_3_quit_mission;
                 }
                 else if (v9 == (void *)2)
                 {
-                    game_state = GAME_STATE::GAME_2;
+                    game_state = GAME_STATE::GAME_2_restart_mission;
                 }
                 else if (current_level_idx < LEVEL_SURV_16 || current_level_idx > LEVEL_MUTE_25)
                 {
@@ -163,7 +163,7 @@ void script_424CE0_mission_outcome_modal(Script *a1)
                 }
                 else
                 {
-                    game_state = GAME_STATE::GAME_3;
+                    game_state = GAME_STATE::GAME_3_quit_mission;
                 }
             }
             else
@@ -534,7 +534,7 @@ void script_4252C0(Script *a1, void *param)
     v4 = v3;
     if (v3)
     {
-        v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+        v3->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
         sprite_load_mobd(v3, SPRITE_OUTCOME_MODAL_MOBD_OFFSET_LEFT);
         v4->x = 81920;
         v4->y = 61440;
@@ -545,7 +545,7 @@ void script_4252C0(Script *a1, void *param)
     if (v5)
     {
         sprite_load_mobd(v5, SPRITE_OUTCOME_MODAL_MOBD_OFFSET_RIGHT);
-        v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+        v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
         v6->x = 81920;
         v6->y = 61440;
         v6->z_index = 997;
@@ -555,7 +555,7 @@ void script_4252C0(Script *a1, void *param)
     if (v7)
     {
         sprite_load_mobd(v7, SPRITE_OUTCOME_MODAL_MOBD_OFFSET_MISSION);
-        v8->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+        v8->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
         v8->x = 81920;
         v8->y = 61440;
         v8->z_index = 998;
@@ -859,13 +859,13 @@ void entity_mode_425920_scout(Entity *a1)
             {
                 entity_scout = v1;
                 sprite_create_scripted(MOBD_CURSORS, v1->sprite, script_426710_mission_objectives_draw_x_mark, SCRIPT_COROUTINE, 0);
-                sound_play(SOUND_SURV_UNIT_SCOUT_192, 0, _4690A8_unit_sounds_volume, 16, 0);
+                sound_play(SOUND_SURV_UNIT_SCOUT_192, 0, _4690A8_sfx_volume, 16, 0);
             }
             else if (current_level_idx == LEVEL_MUTE_04_RAID_THE_FORT && !entity_scout)
             {
                 entity_scout = v1;
                 sprite_create_scripted(MOBD_CURSORS, v1->sprite, script_426710_mission_objectives_draw_x_mark, SCRIPT_COROUTINE, 0);
-                sound_play(SOUND_MobileOutpost_ClanhallWagon_Planted, 0, _4690A8_unit_sounds_volume, 16, 0);
+                sound_play(SOUND_MobileOutpost_ClanhallWagon_Planted, 0, _4690A8_sfx_volume, 16, 0);
             }
         }
     }
@@ -1647,7 +1647,7 @@ void script_426680_cursor_mobd(Script *a1)
     int v2; // ecx@1
 
     v1 = a1->sprite;
-    v1->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+    v1->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
     v1->z_index = 5;
     v1->field_88_unused = 1;
     v2 = render_width;

@@ -3836,7 +3836,7 @@ void script_42DA90_ai(Script *a2)
                     v20 = v2->entity;
                     v26 = v1->_2A0_player_side;
                     v27 = v19;
-                    script_trigger_event(v19->script, EVT_MSG_1527, &v26, v20->script);
+                    script_trigger_event(v19->script, EVT_MSG_1527_restart_level, &v26, v20->script);
                     v2->next->prev = v2->prev;
                     v2->prev->next = v2->next;
                     v2->next = (stru24_AttackerNode *)v4->struC->_C_param;

@@ -7,6 +7,7 @@ add_library(ApplicationScripts "")
 target_sources(ApplicationScripts
     PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/GameMenu.h"
+        "${CMAKE_CURRENT_LIST_DIR}/MainMenu.h"
     PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/Aircraft.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/Buildings.cpp"

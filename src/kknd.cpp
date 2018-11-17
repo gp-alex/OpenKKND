@@ -52,8 +52,6 @@ void nullsub_1(void) {}
 
 
 
-
-
 bool mobile_base_can_deploy(Entity *entity)
 {
     UNIT_ID unit_id = entity->unit_id;
@@ -248,7 +246,7 @@ void script_401C30_sidebar(Script *a1)
 			v2->field_88_unused = 1;
 			v2->y = 0x13800;
 			v2->z_index = 3;
-			v4->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+			v4->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_ui;
 			v2->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
 			v2->drawjob->flags |= 0x10000000u;
 			sprite_4272E0_load_mobd_item(v2, 2276, 0);
@@ -426,12 +424,12 @@ bool entity_sabotage(Entity *a1, void *param, void(*on_death_mode)(Entity *))
 			show_message_ex(v4, aBuildingSabotaged);
 			if (*(_DWORD *)(v3 + 16) == 10)
 			{
-				v12 = _4690A8_unit_sounds_volume;
+				v12 = _4690A8_sfx_volume;
 				v10 = SOUND_40_sabotage;
 			}
 			else
 			{
-				v12 = _4690A8_unit_sounds_volume;
+				v12 = _4690A8_sfx_volume;
 				v10 = SOUND_105_sabotage;
 			}
 		LABEL_13:
@@ -445,11 +443,11 @@ bool entity_sabotage(Entity *a1, void *param, void(*on_death_mode)(Entity *))
 		if (*(_DWORD *)(v3 + 16) == 10)
 		{
 			v10 = SOUND_26_sabotage;
-			v12 = _4690A8_unit_sounds_volume;
+			v12 = _4690A8_sfx_volume;
 		}
 		else
 		{
-			v12 = _4690A8_unit_sounds_volume;
+			v12 = _4690A8_sfx_volume;
 			v10 = SOUND_93_sabotage;
 		}
 		goto LABEL_13;
@@ -696,7 +694,7 @@ void EventHandler_Clanhall(Script *receiver, Script *sender, enum SCRIPT_EVENT e
 				if (v4->player_side == player_side)
 				{
 					show_message_ex(0, aUnitReady);
-					sound_play(SOUND_MUTE_UNIT_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+					sound_play(SOUND_MUTE_UNIT_READY, 0, _4690A8_sfx_volume, 16, 0);
 				}
 			}
 			else
@@ -862,7 +860,7 @@ void entity_mode_4042A0_clanhall(Entity *a1)
 	if (v2)
 		v2->turret_sprite->drawjob->flags &= 0xBFFFFFFF;
 	if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20)
-		sound_play(SOUND_MUTE_BUILDING_COMPLETED, 0, _4690A8_unit_sounds_volume, 16, 0);
+		sound_play(SOUND_MUTE_BUILDING_COMPLETED, 0, _4690A8_sfx_volume, 16, 0);
 	if (v1->sprite->cplc_ptr1_pstru20)
 	{
 		v1->SetMode(entity_mode_4034B0);
@@ -3087,9 +3085,9 @@ void entity_on_attacked_drillrig(Entity *e) {
     {
         e->_12C_prison_bunker_spawn_type = 1500;
         if (is_player_faction_evolved())
-            sound_play(SOUND_MUTE_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
+            sound_play(SOUND_MUTE_UNIT_DRILL_RIG, 0, _4690A8_sfx_volume, 16, 0);
         else
-            sound_play(SOUND_SURV_UNIT_DRILL_RIG, 0, _4690A8_unit_sounds_volume, 16, 0);
+            sound_play(SOUND_SURV_UNIT_DRILL_RIG, 0, _4690A8_sfx_volume, 16, 0);
     }
 }
 
@@ -3437,8 +3435,8 @@ void sprite_408800_play_sound(Sprite *a1, enum SOUND_ID sound, int volume, Scrip
 	}
 	if (v11 < 2)
 		v11 = 2;
-	if (v11 > _4690A8_unit_sounds_volume)
-		v11 = _4690A8_unit_sounds_volume;
+	if (v11 > _4690A8_sfx_volume)
+		v11 = _4690A8_sfx_volume;
 	if (script || v11)
 		sound_play(s0und, 0, v11, v10, script);
 }
@@ -6818,7 +6816,7 @@ void entity_4279E0_mobile_outpost_clanhall_wagon_plant(Entity *a1)
     a1->unit_id = a1->unit_id == UNIT_STATS_SURV_MOBILE_OUTPOST ? UNIT_STATS_SURV_OUTPOST : UNIT_STATS_MUTE_CLANHALL;
     a1->stru60.ptr_C->x_offset = -11776;
     a1->stru60.ptr_C->y_offset = -1280;
-	sprite_408800_play_sound(a1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_unit_sounds_volume, 0);
+	sprite_408800_play_sound(a1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_sfx_volume, 0);
 
 	if (entity_40DD00_boxd(a1))
 	{
@@ -8443,7 +8441,7 @@ void EventHandler_Outpost(Script *receiver, Script *sender, enum SCRIPT_EVENT ev
 				{
 					if (v4->player_side == player_side)
 					{
-						sound_play(SOUND_SURV_UNIT_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+						sound_play(SOUND_SURV_UNIT_READY, 0, _4690A8_sfx_volume, 16, 0);
 						show_message_ex(0, aUnitReady);
 					}
 				}
@@ -8619,7 +8617,7 @@ void entity_mode_431680_outpost_arrive(Entity *a1)
 	a1->mode_arrive = 0;
 	entity_mode_outpost_set_default_production(a1);
 	if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20 && !is_player_faction_evolved())
-		sound_play(SOUND_SURV_BUILDING_COMPLETED, 0, _4690A8_unit_sounds_volume, 16, 0);
+		sound_play(SOUND_SURV_BUILDING_COMPLETED, 0, _4690A8_sfx_volume, 16, 0);
 	v2 = v1->turret;
 	if (v2)
 		v2->turret_sprite->drawjob->flags &= 0xBFFFFFFF;
@@ -8778,7 +8776,7 @@ void script_431E60_mobd_20_input(Script *a1)
 	a1->field_1C = 1;
     script_sleep(a1, 2);
 	if (!script_create_coroutine(SCRIPT_TYPE_INVALID, script_425400, 0))
-		game_state = GAME_STATE::GAME_3;
+		game_state = GAME_STATE::GAME_3_quit_mission;
 	while (1)
 	{
         script_sleep(a1, 1);
@@ -8796,207 +8794,6 @@ void script_431E60_mobd_20_input(Script *a1)
 			if (v2 & INPUT_KEYBOARD_TAB_MASK)
 				script_44A700_minimap(a1);
 		}
-	}
-}
-
-//----- (00431F10) --------------------------------------------------------
-void script_431F10_ingame_menu(Script *a1)
-{
-	Sprite *v1; // edi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // ebx@1
-	void *v4; // eax@2
-	bool v5; // zf@4
-	int v6; // eax@4
-	ScriptEvent *i; // eax@9
-	int v8; // edx@10
-	int v9; // edx@13
-	int v10; // eax@19
-	int v11; // ecx@19
-	void *v12; // ecx@22
-	int v13; // eax@22
-	int v14; // ecx@23
-	__int64 v15; // rax@28
-	int sound_volume; // eax@28
-	int v17; // [sp+10h] [bp-10Ch]@1
-	int v18; // [sp+14h] [bp-108h]@1
-	//char name[260]; // [sp+18h] [bp-104h]@36
-
-	v1 = a1->sprite;
-	a1->script_type = SCRIPT_TYPE_DA000001;
-	v18 = 0;
-	v17 = 0;
-	v1->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_4483E0_sidebar;
-	v1->z_index += 768;
-	sprite_load_mobd(v1, 36);
-	v2 = sprite_create(MOBD_INGAME_MENU_CONTROLS, 0, 0);
-	v3 = v2;
-	if (v2)
-	{
-		v2->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_4483E0_sidebar;
-		sprite_load_mobd(v2, 48);
-		v4 = v1->param;
-		if (v4 == (void *)2)
-		{
-			v3->x = v1->x + dword_4690B4;
-		}
-		else
-		{
-			v5 = v4 == (void *)1;
-			v6 = _4690A8_unit_sounds_volume;
-			if (!v5)
-				v6 = _4690AC_level_wav_sound_offset;
-			v3->x = v1->x + ((v6 << 7) / 16 << 8);
-		}
-		v3->y = v1->y;
-		v3->z_index = v1->x + 256;
-	}
-	do
-	{
-		if (script_yield_any_trigger(a1, 1) & SCRIPT_FLAGS_20_EVENT_TRIGGER)
-		{
-			for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
-			{
-				v8 = i->event;
-				if (v8 > (int)EVT_MSG_SELECTED)
-				{
-					v9 = v8 - EVT_MSG_DESELECTED;
-					if (v9)
-					{
-						if (v9 == 16)
-							v18 = 1;
-					}
-					else
-					{
-						v17 = 0;
-					}
-				}
-				else if (v8 == EVT_MSG_SELECTED)
-				{
-					v17 = 1;
-				}
-				script_discard_event(i);
-			}
-		}
-		if (v17)
-		{
-			game_cursor_script->sprite->field_88_unused = 1;
-			v10 = game_cursor_script->sprite->x;
-			v3->x = v10;
-			v11 = v1->x;
-			if (v10 < v11 || (v11 += 0x8000, v10 > v11))
-				v3->x = v11;
-			v12 = v1->param;
-			v13 = v3->x;
-			if (v12 == (void *)2)
-			{
-				dword_4690B4 = v13 - v1->x;
-				v14 = 32 - (dword_4690B4 >> 8) / 4;
-				if (v14 < 1)
-					v14 = 1;
-				if (v14 >= 32)
-					LOWORD_HEXRAYS(v14) = 32;
-				input_428470(v14);
-			}
-			else
-			{
-				v15 = 16 * ((v13 - v1->x) >> 8);
-				sound_volume = ((BYTE4(v15) & 0x7F) + (int)v15) >> 7;
-				if (v12 == (void *)1)
-				{
-					_4690A8_unit_sounds_volume = sound_volume;
-				}
-				else
-				{
-					_4690AC_level_wav_sound_offset = sound_volume;
-                    if (sound_volume) 
-                    {
-                        goto LABEL_44;
-                    }
-					if (_4690B0_sound_volume_previous && _47C5D4_sound_threaded_snd_id)
-					{
-						sound_stop(_47C5D4_sound_threaded_snd_id);
-						sound_volume = _4690AC_level_wav_sound_offset;
-					}
-					if (sound_volume)
-					{
-                    LABEL_44:
-						if (!_4690B0_sound_volume_previous)
-						{
-							sound_play_threaded(levels[current_level_idx].wav_filename, 1, _4690AC_level_wav_sound_offset, 16, 0);
-							sound_volume = _4690AC_level_wav_sound_offset;
-						}
-						if (sound_volume) // sound volume in ingame menu
-						{
-							sound_threaded_set_volume(sound_volume);
-							sound_volume = _4690AC_level_wav_sound_offset;
-						}
-					}
-					_4690B0_sound_volume_previous = sound_volume;
-				}
-			}
-		}
-	} while (!v18);
-	sprite_list_remove(v3);
-	sprite_list_remove(v1);
-	script_terminate(a1);
-}
-
-//----- (004321A0) --------------------------------------------------------
-void script_4321A0_ingame_menu(Script *a1)
-{
-	Sprite *v1; // esi@1
-	Sprite *v2; // eax@1
-	Sprite *v3; // eax@3
-	Script *v4; // ecx@4
-	int v5; // ecx@4
-	Sprite *v6; // eax@5
-	Script *v7; // edx@6
-	int v8; // ecx@6
-
-	v1 = a1->sprite;
-	dword_47C6C4 = 1;
-	script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
-	_47C65C_render_string = render_string_create(
-		0,
-		currently_running_lvl_mobd[MOBD_FONT_ITALIC].items,
-		248,
-		88,
-		22,
-		8,
-		0x200003E9,
-		14,
-		5);
-	render_string_445AE0(_47C65C_render_string);
-	_47C65C_render_string->field_18 = 0;
-	_47C65C_render_string->num_lines = 0;
-	render_string_443D80(_47C65C_render_string, aSfxVolumeMusicVolume, 0);
-	v2 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1, script_433DB0_ingame_menu, SCRIPT_COROUTINE, 0);
-	if (v2)
-		v2->script->field_1C = 1;
-	v3 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1, script_431F10_ingame_menu, SCRIPT_COROUTINE, 0);
-	if (v3)
-	{
-		v4 = v3->script;
-		v3->param = (void *)1;
-		v4->field_1C = 1;
-		v5 = v3->y;
-		v3->x -= 12800;
-		v3->y = v5 + 18432;
-	}
-	v6 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1, script_431F10_ingame_menu, SCRIPT_COROUTINE, 0);
-	if (v6)
-	{
-		v7 = v6->script;
-		v6->param = 0;
-		v7->field_1C = 1;
-		v8 = v6->y;
-		v6->x -= 12800;
-		v6->y = v8 + 35840;
-	}
-	else
-	{
-		game_state = GAME_STATE::GAME_3;
 	}
 }
 
@@ -9032,65 +8829,6 @@ void script_4325B0_ingame_menu_trigger_events(Script *a1)
 // 47C6F8: using guessed type int dword_47C6F8;
 
 
-//----- (00432730) --------------------------------------------------------
-void script_432730_ingame_menu(Script *a1)
-{
-	Script *v1; // edi@1
-	Sprite *v2; // ebp@1
-	int v3; // ebx@2
-	int v4; // esi@2
-	ScriptEvent *v5; // eax@3
-	enum SCRIPT_EVENT v6; // ecx@4
-
-	v1 = a1;
-	v2 = a1->sprite;
-	a1 = (Script *)a1->param;
-	v2->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
-	sprite_load_mobd(v2, 696);
-	_47C668_ingame_menu_sprites[(int)a1] = v1->sprite;
-	while (1)
-	{
-		v3 = 0;
-		v4 = 0;
-		do
-		{
-            script_wait_event(v1);
-			v5 = script_get_next_event(v1);
-			if (v5)
-			{
-				while (1)
-				{
-					v6 = v5->event;
-					if (v6 != EVT_MOUSE_HOVER)
-					{
-						if (v6 == EVT_MSG_SELECTED)
-							goto LABEL_8;
-						if (v6 == EVT_MSG_1528_cancel)
-							break;
-					}
-				LABEL_9:
-					script_discard_event(v5);
-					v5 = script_get_next_event(v1);
-					if (!v5)
-						goto LABEL_10;
-				}
-				v3 = 1;
-			LABEL_8:
-				v4 = 1;
-				goto LABEL_9;
-			}
-		LABEL_10:
-			;
-		} while (!v4);
-		if (v3)
-			break;
-		script_trigger_event(v1, EVT_MSG_SELECTED, &a1, receiver);
-	}
-	_47C668_ingame_menu_sprites[(int)a1] = 0;
-	sprite_list_remove(v2);
-	script_terminate(v1);
-}
-
 //----- (00432800) --------------------------------------------------------
 void script_432800_ingame_menu(Script *a1)
 {
@@ -9106,7 +8844,7 @@ void script_432800_ingame_menu(Script *a1)
 	v2 = a1->sprite;
 	a1 = (Script *)a1->param;
 	v7 = v2;
-	v2->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+	v2->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_ui;
 	sprite_load_mobd(v2, 696);
 	_47C668_ingame_menu_sprites[(int)a1] = v1->sprite;
 	while (1)
@@ -9159,7 +8897,7 @@ void _41AC50_string_draw_handler(const char *a1, int cursor_pos)
 }
 
 //----- (00432990) --------------------------------------------------------
-void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
+void script_ingame_menu_saveload(Script *a1, int appearance, int mode)
 {
 	Sprite *v3; // esi@1
 	int v4; // edi@1
@@ -9188,7 +8926,7 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 	if (a2)
 		a1->script_type = SCRIPT_TYPE_DA000008;
 	else
-		a1->script_type = SCRIPT_TYPE_DA000001;
+		a1->script_type = SCRIPT_TYPE_UI_SLIDER;
 	receiver = a1;
 	v5 = render_string_create(
 		0,
@@ -9219,10 +8957,10 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 		v7 = (v4 + 14) << 8;
 		do
 		{
-			if (a2)
+			if (appearance == SAVEGAME_LIST_APPEARANCE_MAIN_MENU)
 				v8 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, 0, script_432800_ingame_menu, SCRIPT_COROUTINE, 0);
-			else
-				v8 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, 0, script_432730_ingame_menu, SCRIPT_COROUTINE, 0);
+			else if (appearance == SAVEGAME_LIST_APPEARANCE_INGAME_MENU)
+				v8 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, 0, script_ingame_menu_savegame_list_line, SCRIPT_COROUTINE, 0);
 			if (v8)
 			{
 				v8->script->field_1C = 1;
@@ -9230,21 +8968,21 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 				v8->x = 0xE800;
 				v8->y = v7;
 				v8->z_index = 2560;
-				if (a2)
+				if (appearance == SAVEGAME_LIST_APPEARANCE_MAIN_MENU)
 				{
 					v8->script->script_type = SCRIPT_TYPE_DA000008;
 					stru29_list_4439F0(v8, 0, 0, 1, 0);
 				}
 				else
 				{
-					v8->script->script_type = SCRIPT_TYPE_DA000001;
+					v8->script->script_type = SCRIPT_TYPE_UI_SLIDER;
 				}
 			}
 			++v6;
 			v7 += 4096;
 		} while (v6 < 5);
 	}
-	a1a->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_sidebar;
+	a1a->drawjob->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_ui;
 	a1a->z_index = 1280;
 
     bool loading = false;
@@ -9368,7 +9106,7 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 					script_terminate(a1);
 				}
 				_47C050_current_savegame_idx = v23 + v24;
-				if (true_save_false_load)
+				if (mode == SAVEGAME_LIST_MODE_SAVING)
 					break;
 				if ((v13 || loading) && _438740_update_save_lst_and_gamestate())
 				{
@@ -9381,7 +9119,7 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 					}
 					else
 					{
-						script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
+						script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_UI_SLIDER);
 						sprite_list_remove((Sprite *)task_47C028->param);
 						if (a1 != task_47C028)
 							script_trigger_event(a1, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
@@ -9428,272 +9166,12 @@ void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load)
 //----- (00432F00) --------------------------------------------------------
 void script_432F00_ingame_menu(Script *a1)
 {
-	script_ingame_menu_saveload(a1, 1, 0);
+	script_ingame_menu_saveload(a1, SAVEGAME_LIST_APPEARANCE_MAIN_MENU, SAVEGAME_LIST_MODE_LOADING);
 }
 
-//----- (00433060) --------------------------------------------------------
-void script_433060_ingame_menu_DA000000(Script *a1)
-{
-	Script *v1; // esi@1
-	signed __int16 v2; // bp@1
-	Sprite *v3; // edi@1
-	DrawJob *v4; // ecx@1
-	int v5; // eax@1
-	ScriptEvent *i; // eax@7
-	int v7; // edi@27
-	ScriptEvent *j; // ebp@29
-	Script *v9; // eax@33
-	Sprite *v10; // eax@54
-	Sprite *v11; // eax@56
-	Sprite *v12; // eax@58
-	Sprite *v13; // eax@60
-	int v14; // [sp+10h] [bp-8h]@1
-	Sprite *v15; // [sp+14h] [bp-4h]@1
-	int a1a; // [sp+1Ch] [bp+4h]@5
-
-	v1 = a1;
-	v2 = 1;
-	v3 = a1->sprite;
-	task_47C028 = a1;
-	a1->script_type = SCRIPT_TYPE_DA000000;
-	v4 = v3->drawjob;
-	v3->field_88_unused = 1;
-	v5 = render_width;
-	v3->field_88_unused = 1;
-	LOBYTE_HEXRAYS(v5) = v5 & 0xFE;
-	v3->y = 0x4000;
-	v3->x = v5 << 7;
-	v3->z_index = 1000;
-	v4->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
-	a1->field_1C = 1;
-	v14 = 0;
-	v15 = v3;
-	dword_47C030 = 0;
-	script_4084A0_animation(a1);
-	while (1)
-	{
-		if (single_player_game)
-		{
-			a1a = 0;
-			is_async_execution_supported = 0;
-			script_trigger_event(v1, EVT_MSG_1533, 0, game_cursor_script);
-			sub_408460();
-			sprite_load_mobd(v3, 60);
-		}
-		else
-		{
-			if (dword_47C030)
-			{
-                dword_47C030 = 0;
-				script_trigger_event(v1, EVT_MSG_1533, 0, game_cursor_script);
-				sprite_load_mobd(v3, 60);
-			}
-			a1a = 0;
-			sub_408460();
-		}
-		do
-		{
-            script_yield_any_trigger(v1, 1);
-			for (i = script_get_next_event(v1); i; i = script_get_next_event(v1))
-			{
-				if (i->event == EVT_MSG_1530_OPEN_GAME_MENU)
-				{
-					a1a = 1;
-				}
-				else if (i->event == 1531)
-				{
-					v14 = 1;
-				}
-				script_discard_event(i);
-			}
-			if (is_async_execution_supported)
-				a1a = 1;
-			if (v14)
-				a1a = 0;
-		} while (!a1a);
-		if (single_player_game)
-			break;
-		if (!is_async_execution_supported)
-		{
-			script_trigger_event(v1, EVT_MSG_1532, 0, game_cursor_script);
-			while (!is_async_execution_supported)
-                script_sleep(v1, 1);
-			if (dword_47050C == 1)
-			{
-				dword_47C030 = 1;
-			LABEL_26:
-				script_ingame_menu_create_dialog(v1);
-				goto LABEL_27;
-			}
-		}
-		dword_47C030 = 0;
-	LABEL_27:
-		_408410_dim_palette();
-		v7 = 1;
-		do
-		{
-			if (script_yield_any_trigger(v1, 1) & SCRIPT_FLAGS_20_EVENT_TRIGGER)
-			{
-				for (j = script_get_next_event(v1); j; j = script_get_next_event(v1))
-				{
-					switch (j->event)
-					{
-					case EVT_MSG_1530_OPEN_GAME_MENU:
-						switch (v7)
-						{
-						case 5:
-							script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
-							if (!_47C65C_render_string)
-								goto LABEL_45;
-							render_string_list_remove(_47C65C_render_string);
-							v9 = task_47C028;
-							if (v1 != task_47C028)
-								goto LABEL_46;
-							goto LABEL_47;
-						case 6:
-							script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
-							sprite_list_remove((Sprite *)task_47C028->param);
-							v9 = task_47C028;
-							if (v1 != task_47C028)
-								goto LABEL_46;
-							goto LABEL_47;
-						case 7:
-							script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
-							sprite_list_remove((Sprite *)task_47C028->param);
-							v9 = task_47C028;
-							if (v1 != task_47C028)
-								goto LABEL_46;
-							goto LABEL_47;
-						case 3:
-						case 4:
-							script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000003);
-							if (!_47C65C_render_string)
-								goto LABEL_45;
-							render_string_list_remove(_47C65C_render_string);
-							_47C65C_render_string = 0;
-							if (v1 == task_47C028)
-								goto LABEL_47;
-							script_trigger_event(v1, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
-							v7 = 1;
-							script_ingame_menu_create_dialog(v1);
-							goto LABEL_64;
-						case 2:
-							if (_47C65C_render_string)
-							{
-								render_string_list_remove(_47C65C_render_string);
-								_47C65C_render_string = 0;
-							}
-							script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
-						LABEL_45:
-							v9 = task_47C028;
-							if (v1 != task_47C028)
-								LABEL_46:
-							script_trigger_event(v1, EVT_MSG_1522_plan_building_construction, 0, v9);
-							goto LABEL_47;
-						case 1:
-							goto LABEL_51;
-						default:
-							goto LABEL_64;
-						}
-					case EVT_MSG_1522_plan_building_construction:
-					LABEL_47:
-						v7 = 1;
-						script_ingame_menu_create_dialog(v1);
-						break;
-					case EVT_MSG_1531:
-						v14 = 1;
-						a1a = 0;
-						break;
-					case EVT_CMD_ENTITY_MOVE:
-						v7 = 2;
-						script_4321A0_ingame_menu(v1);
-						break;
-					case EVT_MSG_1526_infiltrate:
-						v7 = 5;
-						script_ingame_menu_mission_briefing(v1);
-						break;
-					case EVT_MSG_1528_cancel:
-					LABEL_51:
-						if (single_player_game || dword_47C030)
-							a1a = 0;
-						break;
-					case EVT_MSG_1527:
-						v7 = 4;
-						script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
-						_47C65C_render_string = render_string_create(
-							0,
-							currently_running_lvl_mobd[MOBD_FONT_ITALIC].items,
-							256,
-							96,
-							22,
-							8,
-							0x200003E9,
-							14,
-							5);
-						render_string_445AE0(_47C65C_render_string);
-						_47C65C_render_string->field_18 = 0;
-						_47C65C_render_string->num_lines = 0;
-						render_string_443D80(_47C65C_render_string, aAreYouSureYouW, 0);
-						v10 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_433C30_ingame_menu, SCRIPT_COROUTINE, 0);
-						if (v10)
-							v10->script->field_1C = 1;
-						v11 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_433C90_ingame_menu, SCRIPT_COROUTINE, 0);
-						if (v11)
-							v11->script->field_1C = 1;
-						break;
-					case EVT_CMD_ENTITY_ATTACK:
-						v7 = 3;
-						script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
-						_47C65C_render_string = render_string_create(
-							0,
-							currently_running_lvl_mobd[MOBD_FONT_ITALIC].items,
-							256,
-							96,
-							22,
-							8,
-							0x200003E9,
-							14,
-							5);
-						render_string_445AE0(_47C65C_render_string);
-						_47C65C_render_string->field_18 = 0;
-						_47C65C_render_string->num_lines = 0;
-						render_string_443D80(_47C65C_render_string, aAreYouSureYo_0, 0);
-						v12 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_433AF0_ingame_menu, SCRIPT_COROUTINE, 0);
-						if (v12)
-							v12->script->field_1C = 1;
-						v13 = sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_433BA0_ingame_menu, SCRIPT_COROUTINE, 0);
-						if (v13)
-							v13->script->field_1C = 1;
-						break;
-					case EVT_MSG_1509_stru11:
-						v7 = 6;
-						script_ingame_menu_create_load_dialog(v1);
-						break;
-					case EVT_MSG_1507_stru11:
-						v7 = 7;
-						script_ingame_menu_create_save_dialog(v1);
-						break;
-					default:
-						break;
-					}
-				LABEL_64:
-					script_discard_event(j);
-				}
-				v2 = 1;
-			}
-			if (!is_async_execution_supported)
-				a1a = 0;
-		} while (a1a);
-		script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000002);
-		v3 = v15;
-	}
-	is_async_execution_supported = v2;
-	script_trigger_event(v1, EVT_MSG_1532, 0, game_cursor_script);
-	goto LABEL_26;
-}
 
 //----- (00433640) --------------------------------------------------------
-void script_433640(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offset, int z_index_offset)
+void script_433640_init_script_ui(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offset, int z_index_offset)
 {
 	Script *v5; // edi@1
 	Sprite *v6; // esi@1
@@ -9705,7 +9183,7 @@ void script_433640(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offse
 	v5 = a1;
 	v6 = a1->sprite;
 	a1->script_type = event;
-	v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+	v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
 	v7 = v6->parent;
 	v6->field_88_unused = 1;
 	v7->field_88_unused = 1;
@@ -9718,7 +9196,7 @@ void script_433640(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offse
 	v10 = sprite_create(MOBD_INGAME_MENU_CONTROLS, 0, 0);
 	if (v10)
 	{
-		v10->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+		v10->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
 		v10->x = v6->x;
 		v10->y = v6->y;
 		v10->z_index = v6->z_index + 256;
@@ -9739,7 +9217,7 @@ void script_4336E0(Script *script, enum SCRIPT_TYPE type, int x_offset, int y_of
 	v5 = script;
 	v6 = script->sprite;
 	script->script_type = type;
-	v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+	v6->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
 	v7 = v6->parent;
 	v6->field_88_unused = 1;
 	v7->field_88_unused = 1;
@@ -9752,150 +9230,13 @@ void script_4336E0(Script *script, enum SCRIPT_TYPE type, int x_offset, int y_of
 	v10 = sprite_create(MOBD_45, 0, 0);
 	if (v10)
 	{
-		v10->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+		v10->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
 		v10->x = v6->x;
 		v10->y = v6->y;
 		v10->z_index = v6->z_index + 256;
 		v5->param = v10;
 	}
 }
-
-//----- (00433AF0) --------------------------------------------------------
-void script_433AF0_ingame_menu(Script *a1)
-{
-	Sprite *v1; // edi@7
-
-	script_433640(a1, SCRIPT_TYPE_DA000003, -90, 120, 1);
-	if (script_434500(a1, CURSOR_MOBD_OFFSET_780, 1, 0))
-	{
-		if (!single_player_game)
-		{
-			if (netz_468B50_available_units_denom <= 2)
-				*(_DWORD *)&netz_47A740[2].str_0[0] = 1;
-			netz_449FF0();
-			is_async_execution_supported = 0;
-			dword_47C030 = -1;
-			dword_47050C = -1;
-			dword_47A738 = 0;
-			dword_47CB14 = -1;
-			dword_47A180 = 6;
-		}
-		script_408500_anim(a1);
-		script_47A3CC_die();
-		game_state = GAME_STATE::GAME_3;
-	}
-	v1 = a1->sprite;
-	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v1);
-	script_terminate(a1);
-}
-
-//----- (00433BA0) --------------------------------------------------------
-void script_433BA0_ingame_menu(Script *a1)
-{
-	Sprite *v1; // edi@6
-
-	script_433640(a1, SCRIPT_TYPE_DA000003, 0, 120, 1);
-	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_STILL, 1, 0))
-	{
-		script_trigger_event_group(0, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000003);
-		if (_47C65C_render_string)
-		{
-			render_string_list_remove(_47C65C_render_string);
-			_47C65C_render_string = 0;
-		}
-		if (task_47C028)
-			script_trigger_event(0, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
-	}
-	v1 = a1->sprite;
-	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v1);
-	script_terminate(a1);
-}
-
-//----- (00433C30) --------------------------------------------------------
-void script_433C30_ingame_menu(Script *a1)
-{
-	Sprite *v1; // edi@3
-
-	script_433640(a1, SCRIPT_TYPE_DA000003, -90, 120, 1);
-	if (script_434500(a1, CURSOR_MOBD_OFFSET_780, 1, 0))
-		game_state = GAME_STATE::GAME_2;
-	v1 = a1->sprite;
-	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v1);
-	script_terminate(a1);
-}
-
-//----- (00433C90) --------------------------------------------------------
-void script_433C90_ingame_menu(Script *a1)
-{
-	Sprite *v1; // edi@6
-
-	script_433640(a1, SCRIPT_TYPE_DA000003, 0, 120, 1);
-	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_STILL, 1, 0))
-	{
-		script_trigger_event_group(0, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000003);
-		if (_47C65C_render_string)
-		{
-			render_string_list_remove(_47C65C_render_string);
-			_47C65C_render_string = 0;
-		}
-		if (task_47C028)
-			script_trigger_event(0, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
-	}
-	v1 = a1->sprite;
-	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v1);
-	script_terminate(a1);
-}
-
-//----- (00433D20) --------------------------------------------------------
-void script_433D20_ingame_menu(Script *a1)
-{
-	Sprite *v1; // edi@6
-
-	script_433640(a1, SCRIPT_TYPE_DA000001, -55, 185, 3);
-	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_RUNNING, 1, 0))
-	{
-		script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
-		if (_47C65C_render_string)
-			render_string_list_remove(_47C65C_render_string);
-		if (a1 != task_47C028)
-			script_trigger_event(a1, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
-	}
-	v1 = a1->sprite;
-	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v1);
-	script_terminate(a1);
-}
-
-//----- (00433DB0) --------------------------------------------------------
-void script_433DB0_ingame_menu(Script *a1)
-{
-	Sprite *v1; // edi@6
-
-	script_433640(a1, SCRIPT_TYPE_DA000001, -200, 153, 3);
-    script_sleep(a1, 2);
-	dword_47C6C4 = 0;
-	if (script_434500(a1, CURSOR_MOBD_OFFSET_UPGRADE_4_RUNNING, 1, 0))
-	{
-		if (_47C65C_render_string)
-		{
-			render_string_list_remove(_47C65C_render_string);
-			_47C65C_render_string = 0;
-		}
-		script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000001);
-		if (a1 != task_47C028)
-			script_trigger_event(a1, EVT_MSG_1522_plan_building_construction, 0, task_47C028);
-	}
-	v1 = a1->sprite;
-	sprite_list_remove((Sprite *)a1->param);
-	sprite_list_remove(v1);
-	script_terminate(a1);
-}
-// 47C6C4: using guessed type int dword_47C6C4;
-
 
 //----- (00434220) --------------------------------------------------------
 void script_434220_ingame_menu(Script *a1)
@@ -9990,7 +9331,7 @@ void script_434460_DA000007(Script *a1)
 	v1 = 0;
 	v2 = a1->sprite;
 	a1->script_type = SCRIPT_TYPE_DA000007;
-	v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_sidebar;
+	v2->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
 	v3 = v2->y;
 	v4 = v2->z_index;
 	v2->x += 25600;
@@ -10264,12 +9605,12 @@ void entity_mode_powerstation_completed(Entity *a1)
 		show_message_ex(0, aBuildingCompleted);
 		if (is_player_faction_evolved())
 		{
-			v4 = _4690A8_unit_sounds_volume;
+			v4 = _4690A8_sfx_volume;
 			v3 = SOUND_MUTE_BUILDING_COMPLETED;
 		}
 		else
 		{
-			v4 = _4690A8_unit_sounds_volume;
+			v4 = _4690A8_sfx_volume;
 			v3 = SOUND_SURV_BUILDING_COMPLETED;
 		}
 		sound_play(v3, 0, v4, 16, 0);
@@ -12594,7 +11935,7 @@ __debugbreak();
 	stru29_list_4439F0(v1, 0, 0, 1, 0);
 	dword_47C5F8 = -1;
 	if (!script_create_coroutine(SCRIPT_TYPE_5, script_43FAD0_mobd45_evt5, 0))
-		game_state = GAME_STATE::GAME_3;
+		game_state = GAME_STATE::GAME_3_quit_mission;
 	while (1)
 	{
 		dword_46E3F0 = -2;
@@ -12770,7 +12111,7 @@ void script_4404D0_mobd45_evt8(Script *a1)
 	}
 	else
 	{
-		game_state = GAME_STATE::GAME_3;
+		game_state = GAME_STATE::GAME_3_quit_mission;
 	}
 	v11 = sprite_create_scripted(MOBD_45, v2, script_441470_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v11)
@@ -13703,7 +13044,7 @@ void script_441CE0_mobd45_evt8(Script *a1)
 	else
 	{
 		if (!script_create_coroutine(SCRIPT_TYPE_8, script_43F7C0, 0))
-			game_state = GAME_STATE::GAME_3;
+			game_state = GAME_STATE::GAME_3_quit_mission;
 		do
 		{
 			while (!script_443780(v1, 1872, dword_47C6B8, 0))
@@ -13854,7 +13195,7 @@ void script_441FC0_mobd45_evt8(Script *a1)
 	else
 	{
 		stru29_list_remove_all(a1);
-		game_state = GAME_STATE::GAME_3;
+		game_state = GAME_STATE::GAME_3_quit_mission;
 	}
 	v9 = sprite_create_scripted(MOBD_45, v5, (void(*)(Script *))script_440CA0_mobd45_evt8, SCRIPT_COROUTINE, 0);
 	if (v9)
@@ -13958,9 +13299,9 @@ void script_4421F0_mobd45_evt8(Script *a1)
 	a1->script_type = SCRIPT_TYPE_17;
 	stru29_list_4439F0(v5, 0, 1, 1, 0);
 	if (!script_create_coroutine(SCRIPT_TYPE_9, script_43F7C0, 0))
-		game_state = GAME_STATE::GAME_3;
+		game_state = GAME_STATE::GAME_3_quit_mission;
 	if (!script_create_coroutine(SCRIPT_TYPE_9, script_441F10, 0))
-		game_state = GAME_STATE::GAME_3;
+		game_state = GAME_STATE::GAME_3_quit_mission;
 	while (!script_443780(a1, 2044, 1, 0))
 		;
 	netz_44A220(68, 0, 0);
@@ -14454,7 +13795,7 @@ void script_443140_mobd45(Script *a1)
 	if (v2)
 		sprite_load_mobd(v2, 1048);
 	else
-		game_state = GAME_STATE::GAME_3;
+		game_state = GAME_STATE::GAME_3_quit_mission;
 	v3 = a1->sprite;
 	v4 = sprite_create(MOBD_45, 0, a1->sprite);
 	v3->mobd_id = MOBD_45;
@@ -16143,13 +15484,13 @@ void on_airstrike_ready()
 LABEL_10:
 	if (is_evolved)
 	{
-		v2 = _4690A8_unit_sounds_volume;
+		v2 = _4690A8_sfx_volume;
 		v1 = SOUND_MUTE_AIRSTRIKE_READY;
 	}
 	else
 	{
 		v1 = SOUND_SURV_AIRSTRIKE_READY;
-		v2 = _4690A8_unit_sounds_volume;
+		v2 = _4690A8_sfx_volume;
 	}
 	sound_play(v1, 0, v2, 16, 0);
 	if (_47CA2C_should_airstrike_mess_with_sidebar)
@@ -16684,7 +16025,7 @@ void script_44BE60_explosions(Script *a1)
 	v11 = 0;
 	if (!v1->param)
 		v1->param = &v3;
-	sprite_408800_play_sound(v1, SOUND_3, _4690A8_unit_sounds_volume, 0);
+	sprite_408800_play_sound(v1, SOUND_3, _4690A8_sfx_volume, 0);
 	v2 = v1->drawjob;
 	v1->z_index = 0;
 	v2->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4484A0_explosions;

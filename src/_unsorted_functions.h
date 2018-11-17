@@ -461,26 +461,15 @@ void entity_mode_outpost_on_death_update_production(Entity *a1);
 void _4318E0_free_building_production();
 void entity_mode_outpost_on_death(Entity *a1);
 void script_431E60_mobd_20_input(Script *a1);
-void script_431F10_ingame_menu(Script *a1); // idb
-void script_4321A0_ingame_menu(Script *a1);
-void script_ingame_menu_mission_briefing(Script *script);
 
-void script_ingame_menu_saveload(Script *a1, int a2, bool true_save_false_load); // idb
+void script_ingame_menu_saveload(Script *a1, int appearance, int mode);
 void script_432F00_ingame_menu(Script *a1); // idb
 void script_432510_ingame_menu_create_sprites(Script *a1);
 void script_4325B0_ingame_menu_trigger_events(Script *a1);
-void script_432730_ingame_menu(Script *a1); // idb
 void script_432800_ingame_menu(Script *a1); // idb
 void _41AC50_string_draw_handler(const char *a1, int a2);
-void script_433060_ingame_menu_DA000000(Script *a1);
-void script_433640(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offset, int z_index_offset);
+void script_433640_init_script_ui(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offset, int z_index_offset);
 void script_4336E0(Script *script, enum SCRIPT_TYPE type, int x_offset, int y_offset, int z_index_offset);
-void script_433AF0_ingame_menu(Script *a1); // idb
-void script_433BA0_ingame_menu(Script *a1); // idb
-void script_433C30_ingame_menu(Script *a1); // idb
-void script_433C90_ingame_menu(Script *a1); // idb
-void script_433D20_ingame_menu(Script *a1); // idb
-void script_433DB0_ingame_menu(Script *a1); // idb
 void script_434220_ingame_menu(Script *a1); // idb
 void script_4342A0_ingame_menu(Script *a1); // idb
 void script_434310_ingame_menu(Script *a1); // idb
@@ -760,12 +749,5 @@ _BYTE *sub_45A48E(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, in
 _BYTE *sub_45D3B8(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8, int a9);
 void script_mobd79__main_menu_mouse_handler(Script *a1); // idb
 void script_43C040_cursors_handler(Script *a1);
-void script_mobd79_evt1__main_menu_new_game(Script *a1);
-void script_mobd79_evt19__main_menu_load(Script *a1); // idb
-void script_mobd79_evt1__main_menu_play_mission(Script *a1); // idb
-void script_mobd79_evt1__main_menu_new_missions(Script *a1); // idb
-void script_mobd79_evt1__main_menu_kaos_mode(Script *a1); // idb
-void script_mobd79_evt1__main_menu_multiplayer(Script *a1); // idb
-void script_mobd79_evt1__main_menu_quit(Script *a1); // idb
 
 bool mobile_base_can_deploy(Entity *entity);

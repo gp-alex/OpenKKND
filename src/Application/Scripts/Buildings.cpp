@@ -24,9 +24,9 @@ void entity_on_attacked_building(Entity *e) {
     {
         e->_12C_prison_bunker_spawn_type = 2000;
         if (is_player_faction_evolved())
-            sound_play(SOUND_129, 0, _4690A8_unit_sounds_volume, 16, 0);
+            sound_play(SOUND_129, 0, _4690A8_sfx_volume, 16, 0);
         else
-            sound_play(SOUND_20, 0, _4690A8_unit_sounds_volume, 16, 0);
+            sound_play(SOUND_20, 0, _4690A8_sfx_volume, 16, 0);
     }
 }
 //----- (00402F30) --------------------------------------------------------
@@ -94,12 +94,12 @@ void EventHandler_DefaultBuildingsHandler(Script *receiver, Script *sender, enum
                     {
                         if (is_player_faction_evolved())
                         {
-                            v12 = _4690A8_unit_sounds_volume;
+                            v12 = _4690A8_sfx_volume;
                             v11 = SOUND_MUTE_UNIT_READY;
                         }
                         else
                         {
-                            v12 = _4690A8_unit_sounds_volume;
+                            v12 = _4690A8_sfx_volume;
                             v11 = SOUND_SURV_UNIT_READY;
                         }
                         sound_play(v11, 0, v12, 16, 0);
@@ -159,7 +159,7 @@ void script_403230_building_mini_explosion(Script *a1)
 
     v1 = a1->sprite;
     v1->pstru7 = &_479D48_stru7;
-    sprite_408800_play_sound(v1, SOUND_3, _4690A8_unit_sounds_volume, 0);
+    sprite_408800_play_sound(v1, SOUND_3, _4690A8_sfx_volume, 0);
     v1->field_88_unused = 1;
     v2 = kknd_rand_debug(__FILE__, __LINE__);
     v3 = v1->x;
@@ -183,7 +183,7 @@ void script_4032F0_building_grand_explosion(Script *a1)
     v1 = a1->sprite;
     v1->pstru7 = &_479D48_stru7;
     script_sleep(a1, 130);
-    sprite_408800_play_sound(v1, SOUND_3, _4690A8_unit_sounds_volume, 0);
+    sprite_408800_play_sound(v1, SOUND_3, _4690A8_sfx_volume, 0);
     sprite_load_mobd(v1, SPRITE_EXPLOSION_MOBD_OFFSET_BIG);
     v2 = v1->y + 2048;
     v1->field_88_unused = 1;
@@ -295,7 +295,7 @@ void entity_mode_403540(Entity *a1)
     v1 = a1;
     if (entity_find_player_entity_in_radius(a1, 300 * 256))
     {
-        sound_play(SOUND_MobileOutpost_ClanhallWagon_Planted, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_MobileOutpost_ClanhallWagon_Planted, 0, _4690A8_sfx_volume, 16, 0);
         entity_4258C0_init_palettes_inc_unit_counter(v1, player_side);
         building_limits_on_new_building(v1->unit_id);
         entity_410BE0_status_bar(v1);
@@ -368,11 +368,11 @@ void entity_mode_403720_on_prison_death__or__prolly_any_generic_building(Entity 
         if (is_player_faction_evolved())
         {
             v2 = SOUND_101;
-            v3 = _4690A8_unit_sounds_volume;
+            v3 = _4690A8_sfx_volume;
         }
         else
         {
-            v3 = _4690A8_unit_sounds_volume;
+            v3 = _4690A8_sfx_volume;
             v2 = SOUND_23;
         }
         sound_play(v2, 0, v3, 16, 0);
@@ -553,12 +553,12 @@ void entity_mode_437F30_repairstation(Entity *a1)
         show_message_ex(0, aBuildingCompleted);
         if (is_player_faction_evolved())
         {
-            v5 = _4690A8_unit_sounds_volume;
+            v5 = _4690A8_sfx_volume;
             v4 = SOUND_MUTE_BUILDING_COMPLETED;
         }
         else
         {
-            v5 = _4690A8_unit_sounds_volume;
+            v5 = _4690A8_sfx_volume;
             v4 = SOUND_SURV_BUILDING_COMPLETED;
         }
         sound_play(v4, 0, v5, 16, 0);

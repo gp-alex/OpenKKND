@@ -2467,10 +2467,10 @@ char *mission_briefings[30] =
 	"  THE FINAL ASSAULT\nSix of our Warlords head to the hills\nto meet with our Chieftain and discuss\nthe final battle.  The Symmetrics will\ntry to break up the meeting.  Protect\nall seven leaders from Symmetric\nattack.",
 	"    COUNTER ATTACK\nThe Symmetrics have been forced back\nto their main base. Destroy them,\ndestroy their base, and win the war\nfor the surface."
 }; // weak
-int _4690A8_unit_sounds_volume = 16;
-int _4690AC_level_wav_sound_offset = 16; // idb
+int _4690A8_sfx_volume = 16;
+int _4690AC_music_volume = 16; // idb
 int _4690B0_sound_volume_previous = 16; // weak
-int dword_4690B4 = 24576; // weak
+int _4690B4_unk_volume = 24576; // weak
 char asc_46BB14[18] = "                 ";
 int _46BB60_dmg_handler_mobd_offsets[3] = { 332, 364, 388 };
 char aSGameD_sav[] = "%s\\game%d.sav"; // idb
@@ -2552,7 +2552,6 @@ const char *sidebar_category_labels[11] =
 	"AIRSTRIKE",
 	"DECONSTRUCT"
 };
-char aSfxVolumeMusicVolume[28] = " SFX VOLUME\n\n\n\nMUSIC VOLUME"; // weak
 char aAreYouSureYo_0[34] = "Are you sure\nYou want to\n   quit?"; // weak
 char aAreYouSureYouW[35] = "Are you sure\nYou want to\n restart?"; // weak
 char aBuildingIsUnav[] = "Building is unavailable."; // idb

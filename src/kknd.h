@@ -60,11 +60,17 @@ struct task_428940_attach__cursors;
 struct task_428940_attach__cursors_2;
 struct Entity;
 
+
+#define SAVEGAME_LIST_APPEARANCE_INGAME_MENU 0
+#define SAVEGAME_LIST_APPEARANCE_MAIN_MENU 1
+#define SAVEGAME_LIST_MODE_LOADING 0
+#define SAVEGAME_LIST_MODE_SAVING 1
+
 enum class GAME_STATE : int {
     MainMenu = 0,
     Mission = 1,
-    GAME_2 = 2,
-    GAME_3 = 3,
+    GAME_2_restart_mission = 2,
+    GAME_3_quit_mission = 3,
 };
 extern GAME_STATE game_state; // weak
 

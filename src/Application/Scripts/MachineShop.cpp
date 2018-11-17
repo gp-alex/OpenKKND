@@ -92,7 +92,7 @@ void EventHandler_MachineShop(Script *receiver, Script *sender, enum SCRIPT_EVEN
             {
                 if (player_side == v4->player_side)
                 {
-                    sound_play(SOUND_SURV_UNIT_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_SURV_UNIT_READY, 0, _4690A8_sfx_volume, 16, 0);
                     show_message_ex(0, aUnitReady);
                 }
             }
@@ -288,7 +288,7 @@ void entity_mode_4223A0_machineshop(Entity *a1)
     a1->mode_arrive = 0;
     entity_mode_machineshop_set_default_production(a1);
     if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20 && !is_player_faction_evolved())
-        sound_play(SOUND_SURV_BUILDING_COMPLETED, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_SURV_BUILDING_COMPLETED, 0, _4690A8_sfx_volume, 16, 0);
     v2 = v1->turret;
     if (v2)
         v2->turret_sprite->drawjob->flags &= 0xBFFFFFFF;

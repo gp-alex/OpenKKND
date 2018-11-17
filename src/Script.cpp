@@ -11,6 +11,7 @@
 #include "src/Map.h"
 
 #include "src/Application/Scripts/GameMenu.h"
+#include "src/Application/Scripts/MainMenu.h"
 
 #include "src/Engine/Entity.h"
 
@@ -154,7 +155,7 @@ ScriptDescType4 stru_46ED00 = { MOBD_FONT_ITALIC,               SCRIPT_DESC_HAND
 ScriptDescType4 stru_46ED18 = { MOBD_FONT_ITALIC,               SCRIPT_DESC_HANDLER(script_credits_or_custom_mission_briefing_loop), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46ED30 = { MOBD_20,                        SCRIPT_DESC_HANDLER(script_431E60_mobd_20_input), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46ED48 = { MOBD_20,                        SCRIPT_DESC_HANDLER(script_443D40_mobd20), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46ED60 = { MOBD_INGAME_MENU_CONTROLS,      SCRIPT_DESC_HANDLER(script_433060_ingame_menu_DA000000), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46ED60 = { MOBD_INGAME_MENU_CONTROLS,      SCRIPT_DESC_HANDLER(script_ingame_menu_master_script), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46ED78 = { MOBD_SIDEBAR_BUTTONS,           SCRIPT_DESC_HANDLER(script_446ED0_sidebar_buttons), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46ED90 = { MOBD_MISSION_OUTCOME_MODAL,     SCRIPT_DESC_HANDLER(script_424CE0_mission_outcome_modal), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46EDA8 = { MOBD_CURSORS,                   SCRIPT_DESC_HANDLER(script_game_cursor_handler), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
@@ -269,10 +270,10 @@ ScriptDescType4 stru_46FC40 = { MOBD_45,                        SCRIPT_DESC_HAND
 ScriptDescType4 stru_46FC58 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_441940_mobd45_evt17), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FC70 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_441CE0_mobd45_evt8), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FC88 = { MOBD_45,                        SCRIPT_DESC_HANDLER(script_4426D0_mobd45_evt6), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46FCA0 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_mobd79_evt1__main_menu_quit), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46FCB8 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_mobd79_evt19__main_menu_load), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46FCD0 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_mobd79_evt1__main_menu_multiplayer), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
-ScriptDescType4 stru_46FCE8 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_mobd79_evt1__main_menu_new_game), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46FCA0 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_main_menu_quit), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46FCB8 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_main_menu_load), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46FCD0 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_main_menu_multiplayer), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
+ScriptDescType4 stru_46FCE8 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_main_menu_new_campaign), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 
 ScriptDescType4 *scripts[] = {
     (ScriptDescType4 *)&stru_46E5B0,
@@ -595,7 +596,7 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
     MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
     MAKE_HANDLER_PTR(UNIT_Handler_GuardTower),
-    MAKE_HANDLER_PTR(script_433060_ingame_menu_DA000000),
+    MAKE_HANDLER_PTR(script_ingame_menu_master_script),
     MAKE_HANDLER_PTR(script_424CE0_mission_outcome_modal),
     MAKE_HANDLER_PTR(script_425400),
     MAKE_HANDLER_PTR(UNIT_Handler_General),
@@ -952,9 +953,9 @@ int get_handler_id(void *function) {
 }
 
 ScriptHandler other_unsorted_handlers[] = {
-    MAKE_HANDLER_PTR(script_mobd79_evt1__main_menu_play_mission),
-    MAKE_HANDLER_PTR(script_mobd79_evt1__main_menu_new_missions),
-    MAKE_HANDLER_PTR(script_mobd79_evt1__main_menu_kaos_mode),
+    MAKE_HANDLER_PTR(script_main_menu_play_mission),
+    MAKE_HANDLER_PTR(script_main_menu_new_missions),
+    MAKE_HANDLER_PTR(script_main_menu_kaos_mode),
     MAKE_HANDLER_PTR(script_mobd79__main_menu_mouse_handler),
     MAKE_HANDLER_PTR(script_sidebar),
     MAKE_HANDLER_PTR(script_40F5D0_sidebar_button_1_2),
@@ -973,7 +974,7 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_4342A0_ingame_menu),
     MAKE_HANDLER_PTR(script_434460_DA000007),
     MAKE_HANDLER_PTR(script_432800_ingame_menu),
-    MAKE_HANDLER_PTR(script_432730_ingame_menu),
+    MAKE_HANDLER_PTR(script_ingame_menu_savegame_list_line),
 
     // menu in game (esc)
     MAKE_HANDLER_PTR(script_ingame_menu_options),
@@ -983,13 +984,13 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_ingame_menu_load),
     MAKE_HANDLER_PTR(script_ingame_menu_restart),
     MAKE_HANDLER_PTR(script_ingame_menu_briefing),
-    MAKE_HANDLER_PTR(script_433AF0_ingame_menu),
-    MAKE_HANDLER_PTR(script_433BA0_ingame_menu),
-    MAKE_HANDLER_PTR(script_433C30_ingame_menu),
-    MAKE_HANDLER_PTR(script_433C90_ingame_menu),
-    MAKE_HANDLER_PTR(script_433D20_ingame_menu), //mission briefing
-    MAKE_HANDLER_PTR(script_433DB0_ingame_menu), //options - sound settings
-    MAKE_HANDLER_PTR(script_431F10_ingame_menu), //options - sound settings
+    MAKE_HANDLER_PTR(script_ingame_menu_quit_yes),
+    MAKE_HANDLER_PTR(script_ingame_menu_quit_no),
+    MAKE_HANDLER_PTR(script_ingame_menu_restart_yes),
+    MAKE_HANDLER_PTR(script_ingame_menu_restart_no),
+    MAKE_HANDLER_PTR(script_ingame_menu_briefing_done), //mission briefing
+    MAKE_HANDLER_PTR(script_ingame_menu_options_done), //options - sound settings
+    MAKE_HANDLER_PTR(script_ingame_menu_options_volume_slider), //options - sound settings
 
     MAKE_HANDLER_PTR(script_440810_mobd45),
     MAKE_HANDLER_PTR(script_441780_mobd45_evt8),

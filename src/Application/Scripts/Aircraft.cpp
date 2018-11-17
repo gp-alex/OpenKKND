@@ -182,7 +182,7 @@ void entity_mode_401480_aircraft(Entity *a1)
     if (v2->z_index <= 0)
     {
         v2->z_index = 255;
-        sprite_408800_play_sound(v2, SOUND_GENERIC_PROJECTILE_DMG, _4690A8_unit_sounds_volume, 0);
+        sprite_408800_play_sound(v2, SOUND_GENERIC_PROJECTILE_DMG, _4690A8_sfx_volume, 0);
         v2->mobd_id = MOBD_EXPLOSIONS;
         sprite_load_mobd(v2, SPRITE_EXPLOSION_MOBD_OFFSET_BIG);
         v2->_60_mobd_anim_speed = 0x20000000;
@@ -445,7 +445,7 @@ void Task_context_1_BomberDmgHandler_401D30(Task_context_1_BomberDmgHandler *a1)
     if (*((_DWORD *)v3 + 3) != -1)
     {
         v2->z_index = 255;
-        sprite_408800_play_sound(v2, SOUND_GENERIC_PROJECTILE_DMG_2, _4690A8_unit_sounds_volume, 0);
+        sprite_408800_play_sound(v2, SOUND_GENERIC_PROJECTILE_DMG_2, _4690A8_sfx_volume, 0);
         v2->mobd_id = MOBD_EXPLOSIONS;
         sprite_load_mobd(v2, *((_DWORD *)v3 + 3));
         v2->_60_mobd_anim_speed = 0x20000000;
@@ -477,7 +477,7 @@ void Task_context_1_BomberDmgHandler_401DE0(Task_context_1_BomberDmgHandler *a1)
     v2->z_speed = 512;
     v2->z_speed_limit = 512;
     v2->z_speed_factor_2 = -34;
-    sprite_408800_play_sound(v2, SOUND_163, _4690A8_unit_sounds_volume, 0);
+    sprite_408800_play_sound(v2, SOUND_163, _4690A8_sfx_volume, 0);
     v1->handler = Task_context_1_BomberDmgHandler_401DC0;
 }
 

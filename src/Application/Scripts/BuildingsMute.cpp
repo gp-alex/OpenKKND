@@ -61,19 +61,19 @@ void EventHandler_BeastEnclosure(Script *receiver, Script *sender, enum SCRIPT_E
                 switch ((int)param)
                 {
                 case UNIT_STATS_MUTE_DIRE_WOLF:     // Dire Wolf
-                    sound_play(SOUND_MUTE_UNIT_DIRE_WOLF_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_MUTE_UNIT_DIRE_WOLF_READY, 0, _4690A8_sfx_volume, 16, 0);
                     break;
                 case UNIT_STATS_MUTE_GIANT_BEETLE:  // Giant Beetle
-                    sound_play(SOUND_MUTE_UNIT_GIANT_BEETLE_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_MUTE_UNIT_GIANT_BEETLE_READY, 0, _4690A8_sfx_volume, 16, 0);
                     break;
                 case UNIT_STATS_MUTE_GIANT_SCORPION:// Giant Scorpion
-                    sound_play(SOUND_MUTE_UNIT_GIANT_SCORPION_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_MUTE_UNIT_GIANT_SCORPION_READY, 0, _4690A8_sfx_volume, 16, 0);
                     break;
                 case UNIT_STATS_MUTE_MISSILE_CRAB:  // Missile Crab
-                    sound_play(SOUND_MUTE_UNIT_MISSILE_CRAB_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_MUTE_UNIT_MISSILE_CRAB_READY, 0, _4690A8_sfx_volume, 16, 0);
                     break;
                 case UNIT_STATS_MUTE_WAR_MASTADONT: // War Mastadont
-                    sound_play(SOUND_MUTE_UNIT_WAR_MASTADONT_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_MUTE_UNIT_WAR_MASTADONT_READY, 0, _4690A8_sfx_volume, 16, 0);
                     break;
                 default:
                     return;
@@ -334,7 +334,7 @@ void entity_mode_402440_beastenclosure(Entity *a1)
     if (v2)
         v2->turret_sprite->drawjob->flags &= 0xBFFFFFFF;
     if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20)
-        sound_play(SOUND_MUTE_BUILDING_COMPLETED, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_MUTE_BUILDING_COMPLETED, 0, _4690A8_sfx_volume, 16, 0);
     v1->script->event_handler = EventHandler_BeastEnclosure;
     v1->script->script_type = SCRIPT_MUTE_BEAST_ENCLOSURE_HANDLER;
     if (v1->sprite->cplc_ptr1_pstru20)
@@ -426,7 +426,7 @@ void MessageHandler_Blacksmith(Script *receiver, Script *sender, enum SCRIPT_EVE
             {
                 if (player_side == *((_DWORD *)v6 + 5))
                 {
-                    sound_play(SOUND_MUTE_UNIT_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_MUTE_UNIT_READY, 0, _4690A8_sfx_volume, 16, 0);
                     show_message_ex(0, aUnitReady);
                 }
             }
@@ -561,7 +561,7 @@ void entity_mode_402870_blacksmith(Entity *a1)
     if (v2)
         v2->turret_sprite->drawjob->flags &= 0xBFFFFFFF;
     if (player_side == v1->player_side && !v1->sprite->cplc_ptr1_pstru20)
-        sound_play(SOUND_MUTE_BUILDING_COMPLETED, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_MUTE_BUILDING_COMPLETED, 0, _4690A8_sfx_volume, 16, 0);
     v1->script->script_type = SCRIPT_MUTE_BLACKSMITH_HANDLER;
     if (v1->sprite->cplc_ptr1_pstru20)
     {
