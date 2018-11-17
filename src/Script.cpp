@@ -1016,6 +1016,11 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_ingame_menu_load_game_cancel),
     MAKE_HANDLER_PTR(script_ingame_menu_load_game_up),
     MAKE_HANDLER_PTR(script_ingame_menu_load_game_down),
+
+    //kaos mode
+    MAKE_HANDLER_PTR(script_40FC10_sidebar_button_4),
+    MAKE_HANDLER_PTR(script_408370),
+    MAKE_HANDLER_PTR(script_439050_explosions)
 };
 
 
