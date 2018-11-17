@@ -13,6 +13,8 @@
 #include "src/ScriptEvent.h"
 #include "src/Sprite.h"
 
+#include "src/Infrastructure/PlatformSpecific/OsTools.h"
+
 
 #define MOBD_45_NEW_CAMPAIGN_FACTION_LOGO   1380
 #define MOBD_45_NEW_CAMPAIGN_CANCEL         2044
