@@ -219,9 +219,9 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
                 {
                     show_message_ex(0, aCommencingUpgrade);
                     if (is_player_faction_evolved())
-                        sound_play(SOUND_MUTE_COMMENCING_UPGRADE, 0, _4690A8_unit_sounds_volume, 16, 0);
+                        sound_play(SOUND_MUTE_COMMENCING_UPGRADE, 0, _4690A8_sfx_volume, 16, 0);
                     else
-                        sound_play(SOUND_SURV_COMMENCING_UPGRADE, 0, _4690A8_unit_sounds_volume, 16, 0);
+                        sound_play(SOUND_SURV_COMMENCING_UPGRADE, 0, _4690A8_sfx_volume, 16, 0);
                 }
             }
             break;
@@ -233,17 +233,17 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
                 if (is_player_faction_evolved())
                 {
                     if ((char)kknd_rand() % -2)
-                        sound_play(SOUND_MUTE_UPGRADE_COMPLETE_2, 0, _4690A8_unit_sounds_volume, 16, 0);
+                        sound_play(SOUND_MUTE_UPGRADE_COMPLETE_2, 0, _4690A8_sfx_volume, 16, 0);
                     else
-                        sound_play(SOUND_MUTE_UPGRADE_COMPLETE_1, 0, _4690A8_unit_sounds_volume, 16, 0);
+                        sound_play(SOUND_MUTE_UPGRADE_COMPLETE_1, 0, _4690A8_sfx_volume, 16, 0);
                 }
                 else if ((char)kknd_rand() % -2)
                 {
-                    sound_play(SOUND_SURV_UPGRADE_COMPLETE_2, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_SURV_UPGRADE_COMPLETE_2, 0, _4690A8_sfx_volume, 16, 0);
                 }
                 else
                 {
-                    sound_play(SOUND_SURV_UPGRADE_COMPLETE_1, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_SURV_UPGRADE_COMPLETE_1, 0, _4690A8_sfx_volume, 16, 0);
                 }
             }
             break;
@@ -310,12 +310,12 @@ void entity_mode_researchlab_completed(Entity *a1)
         show_message_ex(0, aBuildingCompleted);
         if (is_player_faction_evolved())
         {
-            v4 = _4690A8_unit_sounds_volume;
+            v4 = _4690A8_sfx_volume;
             v3 = SOUND_MUTE_BUILDING_COMPLETED;
         }
         else
         {
-            v4 = _4690A8_unit_sounds_volume;
+            v4 = _4690A8_sfx_volume;
             v3 = SOUND_SURV_BUILDING_COMPLETED;
         }
         sound_play(v3, 0, v4, 16, 0);
@@ -347,57 +347,4 @@ void entity_mode_researchlab_on_death(Entity *a1)
         *v2 = 0;
     }
     entity_mode_building_on_death_default(v1);
-}
-
-//----- (00438630) --------------------------------------------------------
-int _438630_read_save_lst()
-{
-    FILE *v0; // ebx@1
-    stru175 *v1; // eax@2
-    stru175 *v2; // edx@3
-    int v3; // eax@4
-    int v4; // eax@7
-    int v5; // edx@10
-    int v7; // [sp+Ch] [bp-18h]@7
-    stru175 *v8; // [sp+10h] [bp-14h]@10
-    enum LEVEL_ID v9; // [sp+14h] [bp-10h]@7
-    char v10[12]; // [sp+18h] [bp-Ch]@7
-
-    sprintf(byte_47C230, aSSave_lst, game_data_installation_dir);
-    v0 = fopen(byte_47C230, aR);
-    if (v0)
-    {
-        _47C050_array_idx = 0;
-        v1 = _47C050_array;
-        do
-        {
-            v2 = v1;
-            ++v1;
-            *(_DWORD *)&v2->str_0[0] = 0;
-            *(_DWORD *)&v2->str_0[4] = 0;
-            *(_DWORD *)&v2->str_0[8] = 0;
-        } while ((int)v1 < (int)byte_47C230);
-        v3 = fscanf(v0, aActiveslotD, &_47C050_array_idx);
-        if (!v3)
-            _47C050_array_idx = 0;
-        if (v3 != -1)
-        {
-            while (1)
-            {
-                v10[0] = 0;
-                v4 = fscanf(v0, "Slot %d = %s %d\n", &v7, v10, &v9);
-                if (!v4 || v4 == -1)
-                    break;
-                if (v7 <= 19)
-                {
-                    v5 = v7;
-                    v8 = &_47C050_array[v7];
-                    strcpy(_47C050_array[v7].str_0, v10);
-                    _47C050_array[v5].level_id = v9;
-                }
-            }
-        }
-        fclose(v0);
-    }
-    return 0;
 }

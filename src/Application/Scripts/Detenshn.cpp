@@ -225,14 +225,14 @@ void entity_407690_techbunker_spawn(Entity *a1)
 
     v1 = a1;
     v2 = (enum PLAYER_SIDE)(int)a1->_128_spawn_param;
-    if (!single_player_game || _47C6D8_use__466098_cost_multipliers)
+    if (!single_player_game || is_demo_build)
         a1->_12C_prison_bunker_spawn_type = 9;
     entity_load_move_mobd(a1);
     if (v1->_12C_prison_bunker_spawn_type == 9)
     {
         v3 = kknd_rand_debug(__FILE__, __LINE__) % 6;
         v1->_12C_prison_bunker_spawn_type = v3;
-        if (_47C6D8_use__466098_cost_multipliers)
+        if (is_demo_build)
         {
             if (v3 == 4)
                 v1->_12C_prison_bunker_spawn_type = 3;
@@ -345,7 +345,7 @@ void entity_mode_407950_techbunker_spawn_generic(Entity *a1)
         if (v3)
         {
             v1->_128_spawn_param = (void *)v3->player_side;
-            sprite_408800_play_sound(v1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_unit_sounds_volume, 0);
+            sprite_408800_play_sound(v1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_sfx_volume, 0);
             v1->SetMode(entity_mode_407870_techbubker);
         }
     }
@@ -382,7 +382,7 @@ void entity_mode_4079F0_techbunker_spawn10_surv18_lvl(Entity *a1)
         {
             v1->_12C_prison_bunker_spawn_type = 10;
             v1->_128_spawn_param = (void *)v3->player_side;
-            sprite_408800_play_sound(v1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_unit_sounds_volume, 0);
+            sprite_408800_play_sound(v1->sprite, SOUND_MobileOutpost_ClanhallWagon_Planted, _4690A8_sfx_volume, 0);
             v1->SetMode(entity_mode_407870_techbubker);
         }
     }
@@ -405,7 +405,7 @@ void entity_mode_407A90_techbunker(Entity *a1)
         v1->SetMode(entity_mode_4079F0_techbunker_spawn10_surv18_lvl);
     else
         v1->SetMode(entity_mode_407950_techbunker_spawn_generic);
-    if (!single_player_game || _47C6D8_use__466098_cost_multipliers)
+    if (!single_player_game || is_demo_build)
         v1->_134_param__unitstats_after_mobile_outpost_plant = kknd_rand_debug(__FILE__, __LINE__) % 25200 + 28800;
     else
         v1->_134_param__unitstats_after_mobile_outpost_plant = 5;
@@ -454,7 +454,7 @@ void entity_mode_407C20_on_death_tech_bunker(Entity *a1)
     Entity *v1; // esi@1
 
     v1 = a1;
-    sound_play(SOUND_23, 0, _4690A8_unit_sounds_volume, 16, 0);
+    sound_play(SOUND_23, 0, _4690A8_sfx_volume, 16, 0);
     entity_40DDD0_boxd(v1);
     sprite_list_remove(v1->sprite);
     script_terminate(v1->script);

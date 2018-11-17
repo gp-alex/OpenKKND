@@ -96,9 +96,9 @@ void GAME_PrepareLevel()
     }
     stru37_stru38_list_alloc();
     nullsub_3();
-    if (_4690AC_level_wav_sound_offset)
+    if (_4690AC_music_volume)
     {
-        _47A01C_sound_id = sound_play_threaded(levels[current_level_idx].wav_filename, 1, _4690AC_level_wav_sound_offset, 16, 0);
+        _47A01C_sound_id = sound_play_threaded(levels[current_level_idx].wav_filename, 1, _4690AC_music_volume, 16, 0);
     }
     render_default_stru1->field_8 &= 0xBFFFFFFF;
     _47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, 0);
@@ -118,7 +118,7 @@ void GAME_PrepareLevel()
             LVL_Deinit();
             netz_deinit();
             GAME_Deinit();
-            log(aLoadgamestateF);
+            log("GAME_Load() failed");
             exit(0);
         }
         game_state = GAME_STATE::MainMenu;
@@ -266,7 +266,7 @@ bool on_level_finished()
     per_player_sprite_palettes_47DC88_free();
     boxd_40EA30_cleanup();
     sidebar_list_free();
-    if (game_state != GAME_STATE::GAME_2 || current_level_idx >= LEVEL_SURV_16 && current_level_idx <= LEVEL_MUTE_25)
+    if (game_state != GAME_STATE::GAME_2_restart_mission || current_level_idx >= LEVEL_SURV_16 && current_level_idx <= LEVEL_MUTE_25)
     {
         LVL_Deinit();
         sound_free_sounds();
@@ -290,7 +290,7 @@ bool on_level_finished()
     }
     if (game_state != GAME_STATE::Mission)
     {
-        if (game_state != GAME_STATE::GAME_2)
+        if (game_state != GAME_STATE::GAME_2_restart_mission)
             return 0;
         return 1;
     }
@@ -382,7 +382,7 @@ void script_custom_mission_briefing_loop(Script *a1)
 LABEL_12:
     sprite_list_remove(a1->sprite);
     script_408500_anim(a1);
-    game_state = GAME_STATE::GAME_3;
+    game_state = GAME_STATE::GAME_3_quit_mission;
 }
 
 //----- (00423C60) --------------------------------------------------------

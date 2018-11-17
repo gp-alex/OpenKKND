@@ -149,21 +149,14 @@ struct CursorHandler
 #define CURSOR_MOBD_OFFSET_MOVE_CLICK               508 // issue move order
 #define CURSOR_MOBD_OFFSET_DRILL                    572 //
 #define CURSOR_MOBD_OFFSET_UPGRADE_3_STILL          732
-#define CURSOR_MOBD_OFFSET_744                      744
 #define CURSOR_MOBD_OFFSET_UPGRADE_4_RUNNING        756
 #define CURSOR_MOBD_OFFSET_UPGRADE_4_STILL          768
-#define CURSOR_MOBD_OFFSET_780                      780
 #define CURSOR_MOBD_OFFSET_UPGRADE_5_RUNNING        792
 #define CURSOR_MOBD_OFFSET_UPGRADE_5_FLASHING       804
-#define CURSOR_MOBD_OFFSET_816                      816
-#define CURSOR_MOBD_OFFSET_828                      828
 #define CURSOR_MOBD_OFFSET_BORDERLESS_CURSOR        840 // borderless default arrow
 #define CURSOR_MOBD_OFFSET_MISSION_ARROW_S_BLINK    852
 #define CURSOR_MOBD_OFFSET_MISSION_ARROW_SW         864
 #define CURSOR_MOBD_OFFSET_MISSION_ARROW_SW_BLINK   868
-#define CURSOR_MOBD_OFFSET_876                      876
-#define CURSOR_MOBD_OFFSET_888                      888
-#define CURSOR_MOBD_OFFSET_900                      900
 #define CURSOR_MOBD_OFFSET_1728                     1728
 #define CURSOR_MOBD_OFFSET_1740                     1740
 #define CURSOR_MOBD_OFFSET_1752                     1752

@@ -1,6 +1,7 @@
 #pragma once
 #include "src/kknd.h"
 
+int savegame_fix_name(int slot);
 void stru28_list_free();
 void UNIT_AttachHandler_DockPoint(Script *self);
 void EntityTowerAttachment_handler_4010C0(EntityTurret *a1);
@@ -460,45 +461,14 @@ void entity_mode_outpost_on_death_update_production(Entity *a1);
 void _4318E0_free_building_production();
 void entity_mode_outpost_on_death(Entity *a1);
 void script_431E60_mobd_20_input(Script *a1);
-void script_431F10_ingame_menu(Script *a1); // idb
-void script_4321A0_ingame_menu(Script *a1);
-void script_ingame_menu_mission_briefing(Script *script);
-void script_432400_ingame_menu_create_sprites(Script *a1);
-void script_432510_ingame_menu_create_sprites(Script *a1);
+
+void script_ingame_menu_saveload(Script *a1, int appearance, int mode);
+void script_432F00_ingame_menu(Script *a1); // idb
 void script_4325B0_ingame_menu_trigger_events(Script *a1);
-void script_432620_ingame_menu(Script *a1);
-void script_432730_ingame_menu(Script *a1); // idb
 void script_432800_ingame_menu(Script *a1); // idb
 void _41AC50_string_draw_handler(const char *a1, int a2);
-void script_432990_ingame_menu_read_keyboard_input(Script *a1, int a2, int a3); // idb
-void script_432F00_ingame_menu(Script *a1); // idb
-void script_432F20_ingame_menu_read_keyboard_input(Script *);
-void script_432F30_ingame_menu_read_keyboard_input(Script *a1); // idb
-void script_432F40_ingame_menu(Script *a1);
-void script_433060_ingame_menu_DA000000(Script *a1);
-void script_433640(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offset, int z_index_offset);
+void script_433640_init_script_ui(Script *a1, enum SCRIPT_TYPE event, int x_offset, int y_offset, int z_index_offset);
 void script_4336E0(Script *script, enum SCRIPT_TYPE type, int x_offset, int y_offset, int z_index_offset);
-void script_433780_ingame_menu(Script *a1); // idb
-void script_433810_ingame_menu(Script *a1); // idb
-void script_433880_ingame_menu(Script *a1); // idb
-void script_4338F0_ingame_menu(Script *a1); // idb
-void script_433960_ingame_menu(Script *a1); // idb
-void script_4339F0_ingame_menu(Script *a1); // idb
-void script_433A60_ingame_menu(Script *a1); // idb
-void script_433AF0_ingame_menu(Script *a1); // idb
-void script_433BA0_ingame_menu(Script *a1); // idb
-void script_433C30_ingame_menu(Script *a1); // idb
-void script_433C90_ingame_menu(Script *a1); // idb
-void script_433D20_ingame_menu(Script *a1); // idb
-void script_433DB0_ingame_menu(Script *a1); // idb
-void script_433E60_ingame_menu(Script *a1); // idb
-void script_433ED0_ingame_menu(Script *a1); // idb
-void script_433F40_ingame_menu(Script *a1); // idb
-void script_433FB0_ingame_menu(Script *a1); // idb
-void script_434040_ingame_menu_load_game_related(Script *a1); // idb
-void script_4340B0_ingame_menu(Script *a1); // idb
-void script_434120_ingame_menu(Script *a1); // idb
-void script_434190_ingame_menu(Script *a1); // idb
 void script_434220_ingame_menu(Script *a1); // idb
 void script_4342A0_ingame_menu(Script *a1); // idb
 void script_434310_ingame_menu(Script *a1); // idb
@@ -543,8 +513,8 @@ void UNIT_Handler_ResearchBuilding(Script *a1);
 void entity_mode_researchlab_completed(Entity *a1);
 void entity_mode_researchlab_on_death(Entity *); // idb
 int _438630_read_save_lst();
-bool _438740_save_lst();
-bool _438840_save_lst();
+bool _438740_update_save_lst_and_gamestate();
+bool _438840_update_save_lst();
 int stru28_list_alloc();
 void _4389A0_prolly_create_map_damage_decal(int x, int y); // idb
 void _438B40_reset_explosions();
@@ -571,13 +541,6 @@ int nullsub_3(void);
 Script *netz_43BA90_create_script_43BA70();
 void sub_43BAA0();
 void _43BAB0_move_cursor(Sprite *a1);
-void script_43CD20_mobd45_begin_surv_campaign(Script *a1);
-void script_43CE30_mobd45_begin_mute_campaign(Script *a1);
-void script_43CF50_mobd45(Script *a1);
-void script_43D090_mobd45_directx_ipx(Script *a1);
-void script_43D270_mobd45_directx_serial(Script *a1);
-void script_43D430_mobd45_directx_modem(Script *a1);
-void script_43D5F0_mobd45(Script *a1);
 void script_43D740_mobd45_evt17(Script *a1);
 void script_43D890_mobd45(Script *a1);
 void input_get_string_43D9E0_handler(const char *, int); // idb
@@ -607,35 +570,19 @@ void script_43FAD0_mobd45_evt5(Script *a1); // idb
 void script_43FDE0_mobd45(Script *a1);
 void script_43FF30_mobd45(Script *a1);
 void script_4402A0_mobd45_evt5(Script *a1);
-void script_4404D0_mobd45_evt8(Script *a1);
 void input_get_string_440770_handler(const char *, int); // idb
-void script_440810_mobd45(Script *a1); // idb
-void script_440CA0_mobd45_evt8(Script *a1); // idb
-void script_440ED0_mobd45_evt8(Script *a1); // idb
-void script_441050_mobd45_evt8(Script *a1); // idb
 void script_441150_mobd45_evt8(Script *a1); // idb
 bool _441240_techbunker_should_create();
-void script_441260_mobd45_evt8(Script *a1); // idb
 void script_441340_mobd45_evt8(Script *a1); // idb
 int get_current_level_starting_cash();
-void script_441470_mobd45_evt8(Script *a1); // idb
 void script_441550_mobd45_evt8(Script *a1); // idb
 int _441630_get_current_level_field14__get_max_upgrade_level(int a1);
-void script_441680_mobd45_evt8(Script *a1); // idb
-void script_441780_mobd45_evt8(Script *a1); // idb
-void script_441940_mobd45_evt17(Script *a1);
-void script_441CE0_mobd45_evt8(Script *a1); // idb
 void netz_441EF0(int a1);
 void script_441F10(Script *a1); // idb
-void script_441FC0_mobd45_evt8(Script *a1); // idb
-void script_4421F0_mobd45_evt8(Script *a1); // idb
 void script_442580_mobd45_evt17(Script *task); // idb
 void script_4426D0_mobd45_evt6(Script *a1);
 void script_4428C0_mobd45_evt6(Script *a1);
 void script_442BB0_mobd46(Script *a1);
-void script_443000_mobd45(Script *a1);
-void script_443140_mobd45(Script *a1);
-void script_443290_mobd45(Script *a1);
 int script_443380(Script *a1, int lookup_table_offset, bool a3);
 int script_443570(Script *a1, int a2, int a3, int a4);
 int script_443780(Script *a1, int a2, int a3, int a4);
@@ -778,12 +725,5 @@ _BYTE *sub_45A48E(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, in
 _BYTE *sub_45D3B8(unsigned __int16 a1, __int16 a2, _BYTE *a3, int a4, int a5, int a6, int a7, int a8, int a9);
 void script_mobd79__main_menu_mouse_handler(Script *a1); // idb
 void script_43C040_cursors_handler(Script *a1);
-void script_mobd79_evt1__main_menu_new_game(Script *a1);
-void script_mobd79_evt19__main_menu_load(Script *a1); // idb
-void script_mobd79_evt1__main_menu_play_mission(Script *a1); // idb
-void script_mobd79_evt1__main_menu_new_missions(Script *a1); // idb
-void script_mobd79_evt1__main_menu_kaos_mode(Script *a1); // idb
-void script_mobd79_evt1__main_menu_multiplayer(Script *a1); // idb
-void script_mobd79_evt1__main_menu_quit(Script *a1); // idb
 
 bool mobile_base_can_deploy(Entity *entity);

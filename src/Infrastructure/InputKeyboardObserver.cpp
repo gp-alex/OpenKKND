@@ -24,7 +24,7 @@ void InputKeyboardObserver::OnCharUp(int key, bool ctrl_status, bool alt_status)
 
     if (combo_pressed_vk) {
         log->Info(
-            "Pressed: %c\tCTRL=%s (param=%d)\tALT=%s",
+            "Pressed: %c\t\tCTRL=%s (param=%d)\tALT=%s",
             (char)input_combo_pressed_vk,
             ctrl_status ? "true" : "false",
             combo_pressed_vk_param,
@@ -53,8 +53,8 @@ void InputKeyboardObserver::OnSpecialKeyUp(int key, bool ctrl_status, bool alt_s
 
     if (combo_pressed_vk) {
         log->Info(
-            "Pressed: %c\tCTRL=%s (param=%d)\tALT=%s",
-            (char)input_combo_pressed_vk,
+            "Pressed: special: %d\tCTRL=%s (param=%d)\tALT=%s",
+            (int)input_combo_pressed_vk,
             ctrl_status ? "true" : "false",
             combo_pressed_vk_param,
             alt_status ? "true" : "false"

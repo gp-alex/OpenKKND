@@ -2109,7 +2109,6 @@ char *fmv_lvl = "fmv.lvl";
 char *aSFmvS = "%s\\FMV\\%s";
 char *aEvolvout_vbc = "evolvout.vbc";
 char *aSurvout_vbc = "survout.vbc";
-char *aLoadgamestateF = "LoadGameState() failed\n";
 char *aUnit_initFaile = "UNIT_Init() failed\n";
 char *aSpriteLoadFail = "sprite load failed\n";
 CustomMission custom_missions[20] =
@@ -2468,14 +2467,11 @@ char *mission_briefings[30] =
 	"  THE FINAL ASSAULT\nSix of our Warlords head to the hills\nto meet with our Chieftain and discuss\nthe final battle.  The Symmetrics will\ntry to break up the meeting.  Protect\nall seven leaders from Symmetric\nattack.",
 	"    COUNTER ATTACK\nThe Symmetrics have been forced back\nto their main base. Destroy them,\ndestroy their base, and win the war\nfor the surface."
 }; // weak
-int _4690A8_unit_sounds_volume = 16;
-int _4690AC_level_wav_sound_offset = 16; // idb
+int _4690A8_sfx_volume = 16;
+int _4690AC_music_volume = 16; // idb
 int _4690B0_sound_volume_previous = 16; // weak
-int dword_4690B4 = 24576; // weak
+int _4690B4_unk_volume = 24576; // weak
 char asc_46BB14[18] = "                 ";
-char aD_1[] = "%d:"; // idb
-char aD_0[5] = " %d:"; // weak
-char aD[6] = "  %d:"; // weak
 int _46BB60_dmg_handler_mobd_offsets[3] = { 332, 364, 388 };
 char aSGameD_sav[] = "%s\\game%d.sav"; // idb
 char aActiveslotD[] = "ActiveSlot=%d\n"; // idb
@@ -2556,7 +2552,6 @@ const char *sidebar_category_labels[11] =
 	"AIRSTRIKE",
 	"DECONSTRUCT"
 };
-char aSfxVolumeMusicVolume[28] = " SFX VOLUME\n\n\n\nMUSIC VOLUME"; // weak
 char aAreYouSureYo_0[34] = "Are you sure\nYou want to\n   quit?"; // weak
 char aAreYouSureYouW[35] = "Are you sure\nYou want to\n restart?"; // weak
 char aBuildingIsUnav[] = "Building is unavailable."; // idb
@@ -5417,9 +5412,9 @@ Script *task_47C028; // idb
 int dword_47C030; // weak
 int _47C048_num_attack_projectile_sprites; // weak
 int _47C04C_num_explosions_max20; // weak
-stru175 _47C050_array[20];
+stru175_savegame _47C050_savegames[savegames_max];
 char byte_47C230[256]; // idb
-int _47C050_array_idx; // idb
+int _47C050_current_savegame_idx; // idb
 stru28 *stru28_list_47C338;
 stru28 *stru28_list_47C33C;
 stru28 *stru28_list;
@@ -5456,7 +5451,7 @@ int dword_47C6C4; // weak
 int stru29_list_initialized; // weak
 int netz_modem_47C6CC_idx; // weak
 int netz_modem_list_used; // idb
-int _47C6D8_use__466098_cost_multipliers;
+int is_demo_build;
 int _47C6DC_dont_execute_unit_handlers; // weak
 Script *_47C6E0_task; // idb
 int dword_47C6E4; // weak
@@ -5464,7 +5459,7 @@ int dword_47C6E8; // weak
 int dword_47C6EC; // idb
 int dword_47C6F0; // weak
 int dword_47C6F4; // weak
-int dword_47C6F8; // weak
+int _47C6F8_main_menu_load_initialized; // weak
 int dword_47C700; // weak
 Script *script_list_free_pool;
 void(*task_creation_handler)(Script *);

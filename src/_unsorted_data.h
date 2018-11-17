@@ -116,7 +116,6 @@ extern char *fmv_lvl;
 extern char *aSFmvS;
 extern char *aEvolvout_vbc;
 extern char *aSurvout_vbc;
-extern char *aLoadgamestateF;
 extern char *aUnit_initFaile;
 extern char *aSpriteLoadFail;
 extern CustomMission custom_missions[20];
@@ -210,14 +209,11 @@ extern int dword_468FD4; // weak
 extern int dword_468FD8; // weak
 extern int dword_468FDC; // weak
 extern char *mission_briefings[30]; // weak
-extern int _4690A8_unit_sounds_volume;
-extern int _4690AC_level_wav_sound_offset; // idb
+extern int _4690A8_sfx_volume;
+extern int _4690AC_music_volume; // idb
 extern int _4690B0_sound_volume_previous; // weak
-extern int dword_4690B4; // weak
+extern int _4690B4_unk_volume; // weak
 extern char asc_46BB14[18];
-extern char aD_1[]; // idb
-extern char aD_0[5]; // weak
-extern char aD[6]; // weak
 extern int _46BB60_dmg_handler_mobd_offsets[3];
 extern char aSGameD_sav[]; // idb
 extern char aActiveslotD[]; // idb
@@ -251,7 +247,6 @@ extern const char *player_colors[15];
 extern char *off_46C358[15]; // weak
 extern const char *difficulties[3];
 extern const char *sidebar_category_labels[11];
-extern char aSfxVolumeMusicVolume[28]; // weak
 extern char aAreYouSureYo_0[34]; // weak
 extern char aAreYouSureYouW[35]; // weak
 extern char aBuildingIsUnav[]; // idb
@@ -582,9 +577,10 @@ extern Script *task_47C028; // idb
 extern int dword_47C030; // weak
 extern int _47C048_num_attack_projectile_sprites; // weak
 extern int _47C04C_num_explosions_max20; // weak
-extern stru175 _47C050_array[20];
+const int savegames_max = 20;
+extern stru175_savegame _47C050_savegames[savegames_max];
 extern char byte_47C230[256]; // idb
-extern int _47C050_array_idx; // idb
+extern int _47C050_current_savegame_idx; // idb
 extern stru28 *stru28_list_47C338;
 extern stru28 *stru28_list_47C33C;
 extern stru28 *stru28_list;
@@ -621,7 +617,7 @@ extern int dword_47C6C4; // weak
 extern int stru29_list_initialized; // weak
 extern int netz_modem_47C6CC_idx; // weak
 extern int netz_modem_list_used; // idb
-extern int _47C6D8_use__466098_cost_multipliers;
+extern int is_demo_build;
 extern int _47C6DC_dont_execute_unit_handlers; // weak
 extern Script *_47C6E0_task; // idb
 extern int dword_47C6E4; // weak
@@ -629,7 +625,7 @@ extern int dword_47C6E8; // weak
 extern int dword_47C6EC; // idb
 extern int dword_47C6F0; // weak
 extern int dword_47C6F4; // weak
-extern int dword_47C6F8; // weak
+extern int _47C6F8_main_menu_load_initialized; // weak
 extern int dword_47C700; // weak
 extern Script *script_list_free_pool;
 extern void(*task_creation_handler)(Script *);

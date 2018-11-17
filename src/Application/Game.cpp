@@ -85,7 +85,7 @@ void Game::Run() {
             current_level_idx = get_saveload_level_id();
             set_player_side_by_level();
         }
-        if (game_state != GAME_STATE::GAME_3)
+        if (game_state != GAME_STATE::GAME_3_quit_mission)
         {
             while (1)
             {
@@ -137,7 +137,7 @@ void Game::Run() {
                     if (_47DCF4_wm_quit_received)
                         break;
                 }
-                //%current_level_idx = LEVEL_SURV_02_BUILD_AN_OUTPOST;
+                current_level_idx = LEVEL_SURV_02_BUILD_AN_OUTPOST;
                 GAME_PrepareLevel();
                 is_mission_running = true;
                 //create_script(196);
@@ -163,7 +163,7 @@ void Game::Run() {
                         sound_threaded_set_volume(0);
                         if (!GAME_Save())
                             GAME_OnSaveFailed();
-                        sound_threaded_set_volume(_4690AC_level_wav_sound_offset);
+                        sound_threaded_set_volume(_4690AC_music_volume);
                     }
                 } while (!_47DCF4_wm_quit_received && game_state == GAME_STATE::MainMenu);
                 is_mission_running = false;

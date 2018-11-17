@@ -4125,11 +4125,11 @@ void entity_mode_418B30(Entity *a1)
                     if (v1->unit_id == UNIT_STATS_SURV_TECHNICIAN)
                     {
                         v16 = SOUND_28_technician;
-                        v21 = _4690A8_unit_sounds_volume;
+                        v21 = _4690A8_sfx_volume;
                     }
                     else
                     {
-                        v21 = _4690A8_unit_sounds_volume;
+                        v21 = _4690A8_sfx_volume;
                         v16 = SOUND_108_mekanik;
                     }
                     sound_play(v16, 0, v21, 16, 0);
@@ -4610,13 +4610,13 @@ void entity_419560_on_death(Entity *a1)
     {
         if (v1->veterancy_level)
         {
-            v11 = _4690A8_unit_sounds_volume;
+            v11 = _4690A8_sfx_volume;
             v5 = kknd_rand_debug(__FILE__, __LINE__);
             v6 = 6;
         }
         else
         {
-            v11 = _4690A8_unit_sounds_volume;
+            v11 = _4690A8_sfx_volume;
             v5 = kknd_rand_debug(__FILE__, __LINE__);
             v6 = 5;
         }
@@ -4634,7 +4634,7 @@ void entity_419560_on_death(Entity *a1)
     }
     if (v1->unit_id == UNIT_STATS_MUTE_DIRE_WOLF)
     {
-        v8 = _4690A8_unit_sounds_volume;
+        v8 = _4690A8_sfx_volume;
         v9 = kknd_rand_debug(__FILE__, __LINE__);
         sprite_408800_play_sound(v1->sprite, _465988_sounds[v9 % 5], v8, 0);
         v1->sprite->mobd_id = MOBD_MUTE_DIRE_WOLF;
@@ -4717,7 +4717,7 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
         case EVT_CMD_ENTITY_ATTACK:
             entity_attack(v4, (_47CAF0_task_attachment1_attack_task *)param);
             break;
-        case EVT_MSG_1528:
+        case EVT_MSG_1528_cancel:
             entity_41A890_evt1528(v4);
             break;
         case EVT_MSG_1525:
@@ -4742,7 +4742,7 @@ void EventHandler_Infantry(Script *receiver, Script *sender, enum SCRIPT_EVENT e
                 entity_mode_move_attack(v4);
             }
             break;
-        case EVT_MSG_1527:
+        case EVT_MSG_1527_restart_level:
             if (v4->player_side == *(_DWORD *)param && (Entity *)*((_DWORD *)param + 1) != v4->_E8_entity)
             {
                 script_sleep(v4->script, 1);

@@ -264,11 +264,11 @@ void entity_mode_4446B0_oiltanker_load_oil(Entity *a1)
                 {
                     if (!is_player_faction_evolved())
                     {
-                        sound_play(SOUND_SURV_LOW_OIL_WARNING, 0, _4690A8_unit_sounds_volume, 16, 0);
+                        sound_play(SOUND_SURV_LOW_OIL_WARNING, 0, _4690A8_sfx_volume, 16, 0);
                         v1->SetMode(entity_mode_4446B0_oiltanker_load_oil);
                         goto LABEL_22;
                     }
-                    sound_play(SOUND_MUTE_LOW_OIL_WARNING, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_MUTE_LOW_OIL_WARNING, 0, _4690A8_sfx_volume, 16, 0);
                 }
                 v1->SetMode(entity_mode_4446B0_oiltanker_load_oil);
                 goto LABEL_22;
@@ -504,7 +504,7 @@ void entity_mode_444B40_oiltanker_unload_oil(Entity *a1)
         v1->SetMode(entity_mode_444B40_oiltanker_unload_oil);
         v2->_0_oil_loaded -= 20;
         if (v1->player_side == player_side)
-            sound_play(SOUND_TANKER_OIL_UNLOADING, 0, _4690A8_unit_sounds_volume, 16, 0);
+            sound_play(SOUND_TANKER_OIL_UNLOADING, 0, _4690A8_sfx_volume, 16, 0);
         add_integer((int *)&game_globals_per_player + v1->player_side, 20);
         entity_4107B0_oiltanker_oil_bar(v1);
         script_sleep(v1->script, 20);
@@ -655,9 +655,9 @@ void entity_on_attacked_tanker(Entity *a1) {
     {
         a1->_12C_prison_bunker_spawn_type = 1000;
         if (is_player_faction_evolved())
-            sound_play(SOUND_132, 0, _4690A8_unit_sounds_volume, 16, 0);
+            sound_play(SOUND_132, 0, _4690A8_sfx_volume, 16, 0);
         else
-            sound_play(SOUND_60, 0, _4690A8_unit_sounds_volume, 16, 0);
+            sound_play(SOUND_60, 0, _4690A8_sfx_volume, 16, 0);
     }
 }
 
@@ -701,7 +701,7 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
         case EVT_MSG_SHOW_UNIT_HINT:
             entity_show_hint(v5);
             break;
-        case EVT_MSG_1528:
+        case EVT_MSG_1528_cancel:
             v7 = (Entity *)*((_DWORD *)v6 + 1);
             if (v7 && v7->entity_id == *((_DWORD *)v6 + 6))
             {
@@ -776,9 +776,9 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
             if (v5->player_side == player_side)
             {
                 if (v5->unit_id == UNIT_STATS_MUTE_TANKER)
-                    sound_play(SOUND_131, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_131, 0, _4690A8_sfx_volume, 16, 0);
                 else
-                    sound_play(SOUND_49, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_49, 0, _4690A8_sfx_volume, 16, 0);
             }
             break;
         case EVT_MSG_1541_tanker_set_base:
@@ -800,9 +800,9 @@ void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT 
             if (v5->player_side == player_side)
             {
                 if (v5->unit_id == UNIT_STATS_MUTE_TANKER)
-                    sound_play(SOUND_133, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_133, 0, _4690A8_sfx_volume, 16, 0);
                 else
-                    sound_play(SOUND_43, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_43, 0, _4690A8_sfx_volume, 16, 0);
             }
             break;
         case EVT_MSG_1546_repair_at_station:

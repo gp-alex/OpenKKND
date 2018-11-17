@@ -11,7 +11,7 @@ void drawjob_update_draw_handler_aircraft(Entity *param, DrawJob *job);
 void drawjob_update_handler_448510_aircraft(Sprite *sprite, DrawJob *job);
 void drawjob_update_handler_448580_entity_aircraft_turret(Sprite *sprite, DrawJob *job);
 
-void drawjob_update_handler_4483E0_sidebar(Sprite *a1, DrawJob *a2);
+void drawjob_update_handler_4483E0_ui(Sprite *a1, DrawJob *a2);
 void drawjob_update_handler_cursors(Sprite *a1, DrawJob *a2);
 void drawjob_update_handler_mapd_menu(Bitmap *a1, DrawJob *a2);
 void drawjob_update_handler_426C40_mobd(Sprite *a1, DrawJob *a2);

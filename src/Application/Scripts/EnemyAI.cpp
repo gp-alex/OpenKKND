@@ -322,7 +322,7 @@ void EventHandler_4089B0_generic_ai(Script *receiver, Script *sender, enum SCRIP
         {
             if (*(_DWORD *)(*((_DWORD *)param + 6) + 80) != v4->_2A4_player_side
                 || (int)current_level_idx >= 48 && (int)current_level_idx <= 67
-                || _47C6D8_use__466098_cost_multipliers)
+                || is_demo_build)
             {
                 v8 = v4->enemy_list_free_pool;
                 if (v8)
@@ -1132,7 +1132,7 @@ LABEL_26:
                     v18 = 60 * unit_stats[v17].production_time;
                     if (v18 < 1)
                         v18 = 1;
-                    if (_47C6D8_use__466098_cost_multipliers)
+                    if (is_demo_build)
                         v19 = _466098_cost_multiplier[_466098_cost_multiplier_idx] * unit_stats[v17].cost;
                     else
                         v19 = levels[current_level_idx]._12_cost_multiplier_idx * unit_stats[v17].cost;
@@ -1170,7 +1170,7 @@ LABEL_26:
                     if (v35 == -1)
                         goto LABEL_79;
                 }
-                if (_47C6D8_use__466098_cost_multipliers)
+                if (is_demo_build)
                 {
                     v36 = v14->unit_id;
                     v37 = _466098_cost_multiplier[_466098_cost_multiplier_idx] * unit_stats[v36].cost;
@@ -1230,7 +1230,7 @@ LABEL_26:
     else if (!v25->_20_ai_importance)
     {
         v26 = v25->unit_id;
-        if (_47C6D8_use__466098_cost_multipliers)
+        if (is_demo_build)
         {
             v27 = v26;
             v28 = _466098_cost_multiplier[_466098_cost_multiplier_idx] * unit_stats[v26].cost;
@@ -1350,7 +1350,7 @@ LABEL_97:
                     if ((signed int)v63 < 52 || (signed int)v63 > 57)
                     {
                         v65 = v63;
-                        if (_47C6D8_use__466098_cost_multipliers)
+                        if (is_demo_build)
                             v66 = _466098_cost_multiplier[_466098_cost_multiplier_idx] * unit_stats[4 * v65 / 0x64].cost;
                         else
                             v66 = levels[current_level_idx]._12_cost_multiplier_idx * unit_stats[4 * v65 / 0x64].cost;
@@ -3136,7 +3136,7 @@ int UNIT_InitAiPlayers()
                 v6 = (char *)&game_globals_per_player.cash[v78 + 1];
                 v5->_2A0_player_side = (PLAYER_SIDE)v75;
                 v5->_2A8_p_globals_cash = &game_globals_per_player.cash[v78 + 1];
-                if (_47C6D8_use__466098_cost_multipliers)
+                if (is_demo_build)
                 {
                     v7 = v5->_2A0_player_side;
                     if (v7 != player_side)
@@ -3836,7 +3836,7 @@ void script_42DA90_ai(Script *a2)
                     v20 = v2->entity;
                     v26 = v1->_2A0_player_side;
                     v27 = v19;
-                    script_trigger_event(v19->script, EVT_MSG_1527, &v26, v20->script);
+                    script_trigger_event(v19->script, EVT_MSG_1527_restart_level, &v26, v20->script);
                     v2->next->prev = v2->prev;
                     v2->prev->next = v2->next;
                     v2->next = (stru24_AttackerNode *)v4->struC->_C_param;

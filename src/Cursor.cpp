@@ -940,9 +940,9 @@ LABEL_82:
             }
             else if (v47 == SCRIPT_TYPE_47802_fog_of_war
                 || v47 == SCRIPT_TYPE_48059
-                || v47 == SCRIPT_TYPE_DA000002
-                || v47 == SCRIPT_TYPE_DA000003
-                || v47 == SCRIPT_TYPE_DA000001)
+                || v47 == SCRIPT_TYPE_INGAME_MENU_BUTTON
+                || v47 == SCRIPT_TYPE_INGAME_MENU_YESNO
+                || v47 == SCRIPT_TYPE_UI_SLIDER)
             {
                 v2->cursor_target_ai = v46;
                 v2->_18_script = v46;
@@ -1069,7 +1069,7 @@ void cursor_on_unit_group_selection(CursorHandler *v3)
                 v26 = _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
             }
         LABEL_57:
-            sound_play(v26, 0, _4690A8_unit_sounds_volume, 16, 0);
+            sound_play(v26, 0, _4690A8_sfx_volume, 16, 0);
             break;
         case UNIT_STATS_TANKER_CONVOY:
             break;
@@ -1081,11 +1081,11 @@ void cursor_play_infiltrate_order_response(CursorHandler *a1, Entity *entity)
 {
     if (entity->unit_id == UNIT_STATS_SURV_SABOTEUR)
     {
-        sound_play(SOUND_45_surv_saboteur, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_45_surv_saboteur, 0, _4690A8_sfx_volume, 16, 0);
     }
     else if (entity->unit_id == UNIT_STATS_MUTE_VANDAL)
     {
-        sound_play(SOUND_124_mute_saboteur, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_124_mute_saboteur, 0, _4690A8_sfx_volume, 16, 0);
     }
 }
 
@@ -1093,11 +1093,11 @@ void cursor_play_repair_order_response(CursorHandler *a1, Entity *entity)
 {
     if (entity->unit_id == UNIT_STATS_SURV_TECHNICIAN)
     {
-        sound_play(SOUND_45_surv_saboteur, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_45_surv_saboteur, 0, _4690A8_sfx_volume, 16, 0);
     }
     else if (entity->unit_id == UNIT_STATS_MUTE_MEKANIK)
     {
-        sound_play(SOUND_124_mute_saboteur, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_124_mute_saboteur, 0, _4690A8_sfx_volume, 16, 0);
     }
 }
 
@@ -1120,7 +1120,7 @@ void cursor_play_attack_order_response(CursorHandler *a1)
     sound_play(
         get_unit_attack_confirmation_sound(unit_id, experienced),
         0,
-        _4690A8_unit_sounds_volume,
+        _4690A8_sfx_volume,
         16,
         nullptr
     );
@@ -1132,27 +1132,27 @@ void cursor_play_selection_response(CursorHandler *a1, Entity *entity)
     switch (entity->unit_id)
     {
     case UNIT_STATS_MUTE_DIRE_WOLF:
-        sound_play(SOUND_MUTE_UNIT_DIRE_WOLF_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_MUTE_UNIT_DIRE_WOLF_READY, 0, _4690A8_sfx_volume, 16, 0);
         break;
 
     case UNIT_STATS_MUTE_GIANT_BEETLE:
-        sound_play(SOUND_MUTE_UNIT_GIANT_BEETLE_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_MUTE_UNIT_GIANT_BEETLE_READY, 0, _4690A8_sfx_volume, 16, 0);
         break;
 
     case UNIT_STATS_MUTE_GIANT_SCORPION:
-        sound_play(SOUND_MUTE_UNIT_GIANT_SCORPION_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_MUTE_UNIT_GIANT_SCORPION_READY, 0, _4690A8_sfx_volume, 16, 0);
         break;
 
     case UNIT_STATS_MUTE_MISSILE_CRAB:
-        sound_play(SOUND_MUTE_UNIT_MISSILE_CRAB_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_MUTE_UNIT_MISSILE_CRAB_READY, 0, _4690A8_sfx_volume, 16, 0);
         break;
 
     case UNIT_STATS_MUTE_WAR_MASTADONT:
-        sound_play(SOUND_MUTE_UNIT_WAR_MASTADONT_READY, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play(SOUND_MUTE_UNIT_WAR_MASTADONT_READY, 0, _4690A8_sfx_volume, 16, 0);
         break;
 
     case UNIT_STATS_SURV_SCOUT:
-        sound_play((SOUND_ID)192, 0, _4690A8_unit_sounds_volume, 16, 0);
+        sound_play((SOUND_ID)192, 0, _4690A8_sfx_volume, 16, 0);
         break;
 
     case UNIT_STATS_GORT:
@@ -1164,7 +1164,7 @@ void cursor_play_selection_response(CursorHandler *a1, Entity *entity)
         sound_play(
             _4689A8_sound_ids[(((unsigned __int64)v9 >> 32) ^ abs(v9) & 1) - ((unsigned __int64)v9 >> 32)],
             0,
-            _4690A8_unit_sounds_volume,
+            _4690A8_sfx_volume,
             16,
             0);
     }
@@ -1201,7 +1201,7 @@ void cursor_play_selection_response(CursorHandler *a1, Entity *entity)
             {
                 v7 = _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
             }
-            sound_play(v7, 0, _4690A8_unit_sounds_volume, 16, 0);
+            sound_play(v7, 0, _4690A8_sfx_volume, 16, 0);
         }
     }
     break;
@@ -2247,7 +2247,7 @@ void sub_4297D0(CursorHandler *a1, int a2)
         {
             sound_play(
                 get_unit_seletion_sound(v2->_48_highest_ranking_selected_unit),
-                0, _4690A8_unit_sounds_volume, 16, 0
+                0, _4690A8_sfx_volume, 16, 0
             );
         }
 
@@ -2342,7 +2342,7 @@ void _42AFD0_vehicle_repair_station_handler(CursorHandler *a1, Entity *a2)
                 sound_play(
                     get_unit_ready_sound(v3->_68_selected_moveable_entity->unit_id),
                     0,
-                    _4690A8_unit_sounds_volume,
+                    _4690A8_sfx_volume,
                     16,
                     nullptr
                 );
@@ -2388,7 +2388,7 @@ void cursor_unit_move_confirmation(CursorHandler *a1)
                     v7->veterancy_level != 0
                 ),
                 0,
-                _4690A8_unit_sounds_volume,
+                _4690A8_sfx_volume,
                 16,
                 nullptr
             );
@@ -2497,9 +2497,9 @@ public:
                 }
                 else if (v47 == SCRIPT_TYPE_47802_fog_of_war
                     || v47 == SCRIPT_TYPE_48059
-                    || v47 == SCRIPT_TYPE_DA000002
-                    || v47 == SCRIPT_TYPE_DA000003
-                    || v47 == SCRIPT_TYPE_DA000001)
+                    || v47 == SCRIPT_TYPE_INGAME_MENU_BUTTON
+                    || v47 == SCRIPT_TYPE_INGAME_MENU_YESNO
+                    || v47 == SCRIPT_TYPE_UI_SLIDER)
                 {
                     pointedEntity = (Entity *)pointedAi->param;
                     v62.cursor_target_ai = pointedAi;
@@ -3054,7 +3054,7 @@ void script_game_cursor_handler(Script *a1)
                 }
                 if (v23)
                 {
-                    sound_play(SOUND_193, 0, _4690A8_unit_sounds_volume, 16, 0);
+                    sound_play(SOUND_193, 0, _4690A8_sfx_volume, 16, 0);
 
                     _47A714._stru209.type = stru209_TYPE_9_spawn_unit;
                     ((short *)&_47A714._stru209.param)[0] = *(_WORD *)v62._78_msg1522_param;
