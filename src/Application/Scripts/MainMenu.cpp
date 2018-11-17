@@ -1715,6 +1715,7 @@ void script_main_menu_kaos_player_name(Script *a1)
         {
             j_netz_430670((int)netz_default_player_name);
         }
+        __debugbreak(); // decompiation error: 4695939 is an absolute address in original exe
         strcpy((char *)(28 * (_DWORD)__47CA80_array_idx_and_netz_player_side + 4695939), netz_default_player_name);
         render_string_445AE0(_47C65C_render_string);
         _47C65C_render_string->field_18 = 0;

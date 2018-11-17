@@ -8905,10 +8905,10 @@ void script_ingame_menu_saveload(Script *a1, int appearance, int mode)
 
 	v3 = a1->sprite;
 	a1a = a1->sprite;
-	v4 = a2 != 0 ? 256 : 96;
+	v4 = appearance == SAVEGAME_LIST_APPEARANCE_MAIN_MENU ? 256 : 96;
 	v26 = 0;
-	v30 = a2 != 0 ? 256 : 96;
-	if (a2)
+	v30 = appearance == SAVEGAME_LIST_APPEARANCE_MAIN_MENU ? 256 : 96;
+	if (appearance == SAVEGAME_LIST_APPEARANCE_MAIN_MENU)
 		a1->script_type = SCRIPT_TYPE_DA000008;
 	else
 		a1->script_type = SCRIPT_TYPE_UI_SLIDER;
@@ -8917,7 +8917,7 @@ void script_ingame_menu_saveload(Script *a1, int appearance, int mode)
 		0,
 		currently_running_lvl_mobd[MOBD_FONT_ITALIC].items,
 		216,
-		a2 != 0 ? 240 : 80,
+        appearance == SAVEGAME_LIST_APPEARANCE_MAIN_MENU ? 240 : 80,
 		22,
 		10,
 		0x200007D0,
@@ -9095,7 +9095,7 @@ void script_ingame_menu_saveload(Script *a1, int appearance, int mode)
 					break;
 				if ((v13 || loading) && _438740_update_save_lst_and_gamestate())
 				{
-					if (a2)
+					if (appearance == SAVEGAME_LIST_APPEARANCE_MAIN_MENU)
 					{
 						sub_43BAA0();
 						script_deinit(_47C6E0_task);
@@ -9145,8 +9145,6 @@ void script_ingame_menu_saveload(Script *a1, int appearance, int mode)
 		}
 	}
 }
-// 47C6C4: using guessed type int dword_47C6C4;
-// 432990: using guessed type char var_28[40];
 
 //----- (00432F00) --------------------------------------------------------
 void script_432F00_ingame_menu(Script *a1)
