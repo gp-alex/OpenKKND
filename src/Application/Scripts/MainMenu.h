@@ -35,6 +35,14 @@ void script_main_menu_play_mission_cancel(Script *a1);
 // =======
 
 
+// =========== MAIN MENU MULTIPLAYER dialog scripts ===================
+void script_main_menu_multiplayer_ipx(Script *a1);
+void script_main_menu_multiplayer_serial(Script *a1);
+void script_main_menu_multiplayer_modem(Script *a1);
+void script_main_menu_multiplayer_cancel(Script *a1);
+// =======
+
+
 
 // =========== MAIN MENU KAOS dialog scripts ===================
 void script_main_menu_create_kaos_dialog(Script *a1);

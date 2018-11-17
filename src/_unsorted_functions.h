@@ -541,10 +541,6 @@ int nullsub_3(void);
 Script *netz_43BA90_create_script_43BA70();
 void sub_43BAA0();
 void _43BAB0_move_cursor(Sprite *a1);
-void script_43D090_mobd45_directx_ipx(Script *a1);
-void script_43D270_mobd45_directx_serial(Script *a1);
-void script_43D430_mobd45_directx_modem(Script *a1);
-void script_43D5F0_mobd45(Script *a1);
 void script_43D740_mobd45_evt17(Script *a1);
 void script_43D890_mobd45(Script *a1);
 void input_get_string_43D9E0_handler(const char *, int); // idb
