@@ -10,6 +10,16 @@
 #include "src/ScriptEvent.h"
 #include "src/Sprite.h"
 
+
+#define MOBD_45_NEW_CAMPAIGN_FACTION_LOGO   1380
+#define MOBD_45_NEW_CAMPAIGN_CANCEL         2044
+
+#define MOBD_79_PLAY_MISSION    416
+#define MOBD_79_LOAD            448
+#define MOBD_79_BUTTON_PRESSED  464
+
+
+
 //----- (0043C0E0) --------------------------------------------------------
 void script_main_menu_new_campaign(Script *a1)
 {
@@ -33,7 +43,7 @@ void script_main_menu_new_campaign(Script *a1)
     v2->z_index = v1->z_index - 1;
     a1->script_type = SCRIPT_TYPE_1;
     v1->_80_entity__stru29__sprite__initial_hitpoints = stru29_list_4439F0(v1, 0, 0, 1, 1);
-    while (!script_443380(a1, 464, 0))
+    while (!script_443380(a1, MOBD_79_BUTTON_PRESSED, 0))
     {
         v3 = a1->sprite;
         v4 = v3->parent;
@@ -41,7 +51,7 @@ void script_main_menu_new_campaign(Script *a1)
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
         stru29_list_set_bit_by_sprite(v3, 1);
-        script_443380(a1, 464, 0);
+        script_443380(a1, MOBD_79_BUTTON_PRESSED, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
         v4->pstru7 = _4640E0_stru7_array;
@@ -84,21 +94,33 @@ void script_main_menu_load(Script *a1)
     v1->_80_entity__stru29__sprite__initial_hitpoints = stru29_list_4439F0(v1, 0, 0, 1, 1);
     while (1)
     {
-        while (!script_443380(a1, 448, 0))
+        while (!script_443380(a1, MOBD_79_LOAD, 0))
             ;
         script_trigger_event_group(a1, EVT_MSG_1546_repair_at_station, 0, SCRIPT_TYPE_1);
-        script_432510_ingame_menu_create_sprites(a1);
+        script_main_menu_create_load_dialog(a1);
         v3 = a1->sprite;
         v4 = v3->parent;
         v3->drawjob->flags |= 0x40000000u;
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
         stru29_list_set_bit_by_sprite(v3, 1);
-        script_443380(a1, 464, 0);
+        script_443380(a1, MOBD_79_BUTTON_PRESSED, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
         v4->pstru7 = _4640E0_stru7_array;
     }
+}
+
+//----- (00432510) --------------------------------------------------------
+void script_main_menu_create_load_dialog(Script *a1)
+{
+    sprite_create_scripted(MOBD_FONT_ITALIC, a1->sprite, script_432F00_ingame_menu, SCRIPT_COROUTINE, 0);
+    sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_434390_ingame_menu, SCRIPT_COROUTINE, 0);
+    sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_434220_ingame_menu, SCRIPT_COROUTINE, 0);
+    sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_434310_ingame_menu, SCRIPT_COROUTINE, 0);
+    sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, a1->sprite, script_4342A0_ingame_menu, SCRIPT_COROUTINE, 0);
+    sprite_create_scripted(MOBD_45, a1->sprite, script_434460_DA000007, SCRIPT_COROUTINE, 0);
+    _47C6F8_main_menu_load_initialized = 1;
 }
 
 //----- (0043C430) --------------------------------------------------------
@@ -120,7 +142,7 @@ void script_main_menu_play_mission(Script *a1)
     v2->z_index = v1->z_index - 1;
     a1->script_type = SCRIPT_TYPE_1;
     v1->_80_entity__stru29__sprite__initial_hitpoints = stru29_list_4439F0(v1, 0, 0, 1, 1);
-    while (!script_443380(a1, 416, 0))
+    while (!script_443380(a1, MOBD_79_PLAY_MISSION, 0))
     {
         v3 = a1->sprite;
         v4 = v3->parent;
@@ -128,7 +150,7 @@ void script_main_menu_play_mission(Script *a1)
         v4->drawjob->flags |= 0x40000000u;
         v4->pstru7 = &_479D48_stru7;
         stru29_list_set_bit_by_sprite(v3, 1);
-        script_443380(a1, 464, 0);
+        script_443380(a1, MOBD_79_BUTTON_PRESSED, 0);
         v3->drawjob->flags &= 0xBFFFFFFF;
         v4->drawjob->flags &= 0xBFFFFFFF;
         v4->pstru7 = _4640E0_stru7_array;
@@ -544,3 +566,139 @@ LABEL_54:
     goto LABEL_56;
 }
 
+
+
+//----- (0043CD20) --------------------------------------------------------
+void script_main_menu_new_campaign_surv(Script *a1)
+{
+    Sprite *v1; // eax@1
+    Sprite *v2; // esi@1
+    int v3; // ebx@1
+    ScriptEvent *i; // eax@2
+    enum SCRIPT_EVENT v5; // edx@3
+
+    v1 = a1->sprite;
+    v1->x = 48640;
+    v1->y = 43008;
+    v2 = a1->sprite;
+    v2->parent = 0;
+    a1->script_type = SCRIPT_TYPE_15;
+    stru29_list_4439F0(v2, 0, 0, 0, 0);
+    sprite_load_mobd(v2, MOBD_45_NEW_CAMPAIGN_FACTION_LOGO);
+    v3 = 0;
+    do
+    {
+        script_wait_event(a1);
+        for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
+        {
+            v5 = i->event;
+            switch (v5)
+            {
+            case EVT_MOUSE_HOVER:
+                stru29_list_443AE0_find_by_sprite(a1->sprite);
+                break;
+            case EVT_MSG_SELECTED:
+                v3 = 1;
+                break;
+            case EVT_MSG_1528_cancel:
+                v3 = 1;
+                break;
+            }
+            script_discard_event(i);
+        }
+    } while (!v3);
+    player_side = SURVIVORS;
+    current_level_idx = LEVEL_SURV_01_THE_NEXT_GENERATION;
+    script_408500_anim(a1);
+    is_demo_build = 0;
+    single_player_game = 1;
+    netz_42E7F0();
+    stru29_list_remove_all(a1);
+    game_state = GAME_STATE::Mission;
+    script_deinit(_47C6E0_task);
+    _47C6E0_task = 0;
+}
+
+//----- (0043CE30) --------------------------------------------------------
+void script_main_menu_new_campaign_mute(Script *a1)
+{
+    Sprite *v1; // eax@1
+    Sprite *v2; // esi@1
+    int v3; // ebx@1
+    ScriptEvent *i; // eax@2
+    enum SCRIPT_EVENT v5; // edx@3
+
+    v1 = a1->sprite;
+    v1->x = 0x1AC00;
+    v1->y = 0xA800;
+    v2 = a1->sprite;
+    v2->parent = 0;
+    a1->script_type = SCRIPT_TYPE_15;
+    stru29_list_4439F0(v2, 0, 0, 0, 0);
+    sprite_load_mobd(v2, MOBD_45_NEW_CAMPAIGN_FACTION_LOGO);
+    v3 = 0;
+    do
+    {
+        script_wait_event(a1);
+        for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
+        {
+            v5 = i->event;
+            switch (v5)
+            {
+            case EVT_MOUSE_HOVER:
+                stru29_list_443AE0_find_by_sprite(a1->sprite);
+            case EVT_MSG_SELECTED:
+                v3 = 1;
+                break;
+            case EVT_MSG_1528_cancel:
+                v3 = 1;
+                break;
+            }
+            script_discard_event(i);
+        }
+    } while (!v3);
+    player_side = EVOLVED;
+    current_level_idx = LEVEL_MUTE_01;
+    script_408500_anim(a1);
+    is_demo_build = 0;
+    single_player_game = 1;
+    netz_42E7F0();
+    stru29_list_remove_all(a1);
+    game_state = GAME_STATE::Mission;
+    script_deinit(_47C6E0_task);
+    _47C6E0_task = 0;
+}
+
+//----- (0043CF50) --------------------------------------------------------
+void script_main_menu_new_campaign_cancel(Script *a1)
+{
+    Sprite *v1; // edi@1
+    Sprite *v2; // eax@1
+    DataMapd *v5; // eax@7
+
+    v1 = a1->sprite;
+    v2 = sprite_create(MOBD_45, 0, a1->sprite);
+    v1->mobd_id = MOBD_45;
+    v1->parent = v2;
+    v2->parent = 0;
+    v2->z_index = 0;
+    v1->z_index = 1;
+    a1->script_type = SCRIPT_TYPE_17;
+    stru29_list_4439F0(v1, 0, 1, 1, 0);
+    while (!script_443780(a1, MOBD_45_NEW_CAMPAIGN_CANCEL, 1, 0))
+        ;
+    netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
+    netz_47C6C0_mapd_idx = 0;
+    script_408500_anim(a1);
+    stru29_list_realloc(a1);
+    bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
+    script_sleep(a1, 3);
+    v5 = LVL_FindMapd();
+    _40E400_set_palette(v5->items->GetPalette());
+    _47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
+    cplc_select(0);
+    cplc_406320();
+    script_sleep(a1, 1);
+    script_4084A0_animation(a1);
+    script_terminate(a1);
+}

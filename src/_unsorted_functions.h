@@ -464,7 +464,6 @@ void script_431E60_mobd_20_input(Script *a1);
 
 void script_ingame_menu_saveload(Script *a1, int appearance, int mode);
 void script_432F00_ingame_menu(Script *a1); // idb
-void script_432510_ingame_menu_create_sprites(Script *a1);
 void script_4325B0_ingame_menu_trigger_events(Script *a1);
 void script_432800_ingame_menu(Script *a1); // idb
 void _41AC50_string_draw_handler(const char *a1, int a2);
@@ -542,9 +541,6 @@ int nullsub_3(void);
 Script *netz_43BA90_create_script_43BA70();
 void sub_43BAA0();
 void _43BAB0_move_cursor(Sprite *a1);
-void script_43CD20_mobd45_begin_surv_campaign(Script *a1);
-void script_43CE30_mobd45_begin_mute_campaign(Script *a1);
-void script_43CF50_mobd45(Script *a1);
 void script_43D090_mobd45_directx_ipx(Script *a1);
 void script_43D270_mobd45_directx_serial(Script *a1);
 void script_43D430_mobd45_directx_modem(Script *a1);

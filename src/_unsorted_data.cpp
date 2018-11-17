@@ -5459,7 +5459,7 @@ int dword_47C6E8; // weak
 int dword_47C6EC; // idb
 int dword_47C6F0; // weak
 int dword_47C6F4; // weak
-int dword_47C6F8; // weak
+int _47C6F8_main_menu_load_initialized; // weak
 int dword_47C700; // weak
 Script *script_list_free_pool;
 void(*task_creation_handler)(Script *);

@@ -625,7 +625,7 @@ extern int dword_47C6E8; // weak
 extern int dword_47C6EC; // idb
 extern int dword_47C6F0; // weak
 extern int dword_47C6F4; // weak
-extern int dword_47C6F8; // weak
+extern int _47C6F8_main_menu_load_initialized; // weak
 extern int dword_47C700; // weak
 extern Script *script_list_free_pool;
 extern void(*task_creation_handler)(Script *);

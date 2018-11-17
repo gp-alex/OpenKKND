@@ -8797,28 +8797,13 @@ void script_431E60_mobd_20_input(Script *a1)
 	}
 }
 
-//----- (00432510) --------------------------------------------------------
-void script_432510_ingame_menu_create_sprites(Script *a1)
-{
-	Script *v1; // esi@1
-
-	v1 = a1;
-	sprite_create_scripted(MOBD_FONT_ITALIC, a1->sprite, script_432F00_ingame_menu, SCRIPT_COROUTINE, 0);
-	sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_434390_ingame_menu, SCRIPT_COROUTINE, 0);
-	sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_434220_ingame_menu, SCRIPT_COROUTINE, 0);
-	sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_434310_ingame_menu, SCRIPT_COROUTINE, 0);
-	sprite_create_scripted(MOBD_INGAME_MENU_CONTROLS, v1->sprite, script_4342A0_ingame_menu, SCRIPT_COROUTINE, 0);
-	sprite_create_scripted(MOBD_45, v1->sprite, script_434460_DA000007, SCRIPT_COROUTINE, 0);
-	dword_47C6F8 = 1;
-}
-
 //----- (004325B0) --------------------------------------------------------
 void script_4325B0_ingame_menu_trigger_events(Script *a1)
 {
 	Script *v1; // esi@1
 
 	v1 = a1;
-	dword_47C6F8 = 0;
+	_47C6F8_main_menu_load_initialized = 0;
 	stru29_list_443BF0_remove_some();
 	script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000006);
 	script_trigger_event_group(v1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000007);
@@ -8826,7 +8811,7 @@ void script_4325B0_ingame_menu_trigger_events(Script *a1)
 	script_trigger_event_group(v1, EVT_MSG_1546_repair_at_station, 0, SCRIPT_TYPE_1);
 	script_trigger_event_group(v1, EVT_MSG_1546_repair_at_station, 0, SCRIPT_TYPE_19);
 }
-// 47C6F8: using guessed type int dword_47C6F8;
+// 47C6F8: using guessed type int _47C6F8_main_menu_load_initialized;
 
 
 //----- (00432800) --------------------------------------------------------
@@ -9304,7 +9289,7 @@ void script_434390_ingame_menu(Script *a1)
 	stru29_list_4439F0(a1->sprite, 0, 1, 1, 0);
 	if (script_434500(a1, CURSOR_MOBD_OFFSET_1752, 1, 1))
 	{
-		dword_47C6F8 = 0;
+		_47C6F8_main_menu_load_initialized = 0;
 		stru29_list_443BF0_remove_some();
 		script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000006);
 		script_trigger_event_group(a1, EVT_MSG_1528_cancel, 0, SCRIPT_TYPE_DA000007);
@@ -9317,7 +9302,7 @@ void script_434390_ingame_menu(Script *a1)
 	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
-// 47C6F8: using guessed type int dword_47C6F8;
+// 47C6F8: using guessed type int _47C6F8_main_menu_load_initialized;
 
 //----- (00434460) --------------------------------------------------------
 void script_434460_DA000007(Script *a1)
@@ -10010,142 +9995,6 @@ void script_43C040_cursors_handler(Script *a1)
 	sprite_list_remove(a1->sprite);
 	script_terminate(a1);
 }
-
-//----- (0043CD20) --------------------------------------------------------
-void script_43CD20_mobd45_begin_surv_campaign(Script *a1)
-{
-	Sprite *v1; // eax@1
-	Sprite *v2; // esi@1
-	int v3; // ebx@1
-	ScriptEvent *i; // eax@2
-	enum SCRIPT_EVENT v5; // edx@3
-
-	v1 = a1->sprite;
-	v1->x = 48640;
-	v1->y = 43008;
-	v2 = a1->sprite;
-	v2->parent = 0;
-	a1->script_type = SCRIPT_TYPE_15;
-	stru29_list_4439F0(v2, 0, 0, 0, 0);
-	sprite_load_mobd(v2, 1380);
-	v3 = 0;
-	do
-	{
-        script_wait_event(a1);
-		for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
-		{
-			v5 = i->event;
-			switch (v5)
-			{
-			case EVT_MOUSE_HOVER:
-                stru29_list_443AE0_find_by_sprite(a1->sprite);
-				break;
-			case EVT_MSG_SELECTED:
-				v3 = 1;
-				break;
-			case EVT_MSG_1528_cancel:
-				v3 = 1;
-				break;
-			}
-			script_discard_event(i);
-		}
-	} while (!v3);
-	player_side = SURVIVORS;
-	current_level_idx = LEVEL_SURV_01_THE_NEXT_GENERATION;
-	script_408500_anim(a1);
-	is_demo_build = 0;
-	single_player_game = 1;
-	netz_42E7F0();
-	stru29_list_remove_all(a1);
-	game_state = GAME_STATE::Mission;
-	script_deinit(_47C6E0_task);
-	_47C6E0_task = 0;
-}
-
-//----- (0043CE30) --------------------------------------------------------
-void script_43CE30_mobd45_begin_mute_campaign(Script *a1)
-{
-	Sprite *v1; // eax@1
-	Sprite *v2; // esi@1
-	int v3; // ebx@1
-	ScriptEvent *i; // eax@2
-	enum SCRIPT_EVENT v5; // edx@3
-
-	v1 = a1->sprite;
-	v1->x = 0x1AC00;
-	v1->y = 0xA800;
-	v2 = a1->sprite;
-	v2->parent = 0;
-	a1->script_type = SCRIPT_TYPE_15;
-	stru29_list_4439F0(v2, 0, 0, 0, 0);
-	sprite_load_mobd(v2, 1380);
-	v3 = 0;
-	do
-	{
-        script_wait_event(a1);
-		for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
-		{
-			v5 = i->event;
-			switch (v5)
-			{
-			case EVT_MOUSE_HOVER:
-                stru29_list_443AE0_find_by_sprite(a1->sprite);
-			case EVT_MSG_SELECTED:
-				v3 = 1;
-				break;
-			case EVT_MSG_1528_cancel:
-				v3 = 1;
-				break;
-			}
-			script_discard_event(i);
-		}
-	} while (!v3);
-	player_side = EVOLVED;
-	current_level_idx = LEVEL_MUTE_01;
-	script_408500_anim(a1);
-	is_demo_build = 0;
-	single_player_game = 1;
-	netz_42E7F0();
-	stru29_list_remove_all(a1);
-	game_state = GAME_STATE::Mission;
-	script_deinit(_47C6E0_task);
-	_47C6E0_task = 0;
-}
-
-//----- (0043CF50) --------------------------------------------------------
-void script_43CF50_mobd45(Script *a1)
-{
-	Sprite *v1; // edi@1
-	Sprite *v2; // eax@1
-	DataMapd *v5; // eax@7
-
-	v1 = a1->sprite;
-	v2 = sprite_create(MOBD_45, 0, a1->sprite);
-	v1->mobd_id = MOBD_45;
-	v1->parent = v2;
-	v2->parent = 0;
-	v2->z_index = 0;
-	v1->z_index = 1;
-	a1->script_type = SCRIPT_TYPE_17;
-	stru29_list_4439F0(v1, 0, 1, 1, 0);
-	while (!script_443780(a1, 2044, 1, 0))
-		;
-	netz_47C6BC_mapd_idx = netz_47C6C0_mapd_idx;
-	netz_47C6C0_mapd_idx = 0;
-	script_408500_anim(a1);
-    stru29_list_realloc(a1);
-	bitmap_list_remove(_47A010_mapd_item_being_drawn[0]);
-    script_sleep(a1, 3);
-	v5 = LVL_FindMapd();
-	_40E400_set_palette(v5->items->GetPalette());
-	_47A010_mapd_item_being_drawn[0] = MAPD_Draw(MAPD_MAP, 0, -10);
-	cplc_select(0);
-	cplc_406320();
-    script_sleep(a1, 1);
-	script_4084A0_animation(a1);
-	script_terminate(a1);
-}
-// 47C6C8: using guessed type int stru29_list_initialized;
 
 //----- (0043D090) --------------------------------------------------------
 void script_43D090_mobd45_directx_ipx(Script *a1)
