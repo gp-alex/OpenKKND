@@ -1717,34 +1717,126 @@ bool GAME_Load_UnpackMiscInfo(void *save_data)
     return false;
 }
 
+
+bool GAME_Save_PrepareEntities(
+    const std::list<Entity *> &entities, std::list<EntitySaveStructIndex> &entity_save_index, byte **out_entity_data, int *out_max_entity_save_size
+) {
+    const int original_max_entities = 599;
+
+    entity_save_index.clear();
+    *out_entity_data = nullptr;
+    *out_max_entity_save_size = 0;
+
+    int num_entities = entities.size();
+    if (num_entities >= original_max_entities) {
+        log(
+            "GAME_Save: saving %d entities which is more than max %d, savegame will lose compatibility",
+            num_entities, original_max_entities
+        );
+    }
+
+    size_t total_entities_save_size = 0;
+    int max_entity_save_size = 0;
+    for (auto i : entities) {
+        if (i->destroyed) {
+            continue;
+        }
+
+        int entity_save_size = 0;
+
+        switch (i->unit_id)
+        {
+        case UNIT_STATS_SURV_TANKER:
+        case UNIT_STATS_MUTE_TANKER:
+            entity_save_size = 860;
+            break;
+        case UNIT_STATS_TANKER_CONVOY:
+            entity_save_size = 760;
+            break;
+        case UNIT_STATS_SURV_DRILL_RIG:
+        case UNIT_STATS_MUTE_DRILL_RIG:
+        case UNIT_STATS_SURV_POWER_STATION:
+        case UNIT_STATS_MUTE_POWER_STATION:
+        case UNIT_STATS_SURV_DETENTION_CENTER:
+        case UNIT_STATS_MUTE_HOLDING_PENS:
+        case UNIT_STATS_SURV_OUTPOST:
+        case UNIT_STATS_MUTE_CLANHALL:
+        case UNIT_STATS_SURV_MACHINE_SHOP:
+        case UNIT_STATS_MUTE_BLACKSMITH:
+        case UNIT_STATS_MUTE_BEAST_ENCLOSURE:
+        case UNIT_STATS_SURV_REPAIR_BAY:
+        case UNIT_STATS_MUTE_MENAGERIE:
+            entity_save_size = 776;
+            break;
+
+        case UNIT_STATS_SURV_RESEARCH_LAB:
+        case UNIT_STATS_MUTE_ALCHEMY_HALL:
+            entity_save_size = 776;
+            if (*((_DWORD *)i->state + 2))
+                entity_save_size = 868;
+            break;
+
+        default:
+            entity_save_size = 748;
+            break;
+        }
+
+        entity_save_index.push_back({ i->entity_id , entity_save_size });
+
+        total_entities_save_size += entity_save_size;
+        if (entity_save_size > max_entity_save_size)
+            max_entity_save_size = entity_save_size;
+    }
+
+    auto entity_save_data = new unsigned char[total_entities_save_size];
+    if (!entity_save_data)
+    {
+        game_save_in_progress = 0;
+        errmsg_save[0] = "Could not allocate buffer for units";
+        entity_save_index.clear();
+        return false;
+    }
+
+    auto entity_memory = entity_save_data;
+    for (unsigned int i = 0; i < entities.size(); ++i) {
+        auto entity = *std::next(entities.begin(), i);
+        auto entity_index = std::next(entity_save_index.begin(), i);
+
+        if (!entity->destroyed)
+        {
+            if (!GAME_Save_PackEntity(entity, (int)entity_memory, entity_index->entity_save_size))
+            {
+                entity_save_index.clear();
+                delete[] entity_save_data;
+                game_save_in_progress = 0;
+                errmsg_save[0] = "Could not save unit information";
+                return false;
+            }
+            entity_memory += entity_index->entity_save_size;
+        }
+    }
+
+    *out_entity_data = entity_save_data;
+    *out_max_entity_save_size = max_entity_save_size;
+    return true;
+}
+
 //----- (004211D0) --------------------------------------------------------
 int GAME_Save()
 {
-    EntitySaveStructIndex *entity_sAve_data_index; // ebp@1
     OilDepositSaveStruct *oil_save_data; // ebx@3
-    int entity_save_size; // eax@7
-    enum UNIT_ID v5; // ecx@9
-    void *entity_save_data; // eax@20
-    void *entity_sAve_data; // ebp@20
-    int entity_save_data_i; // edi@22
-    int *pentity_save_data_size; // ebx@23
+    //int entity_save_size; // eax@7
+    //int entity_save_data_i; // edi@22
     void *cpu_players; // esi@29
     char *production_info; // edi@31
     _BYTE *map_info; // ebx@34
     FILE *file; // eax@41
     FILE *fIle; // esi@41
-    int v17; // ebx@50
-    char *entity_offsets; // ebx@59
-    void *entity_indices; // edi@60
     int all_data_ok; // [sp+14h] [bp-44h]@1
-    void *entity_savE_data; // [sp+18h] [bp-40h]@1
     void *cpU_players; // [sp+1Ch] [bp-3Ch]@1
     char *productiOn_info; // [sp+20h] [bp-38h]@1
     void *v26; // [sp+24h] [bp-34h]@1
-    MiscSaveStruct *misc_info; // [sp+28h] [bp-30h]@1
-    int save; // [sp+2Ch] [bp-2Ch]@1
-    size_t total_entity_size; // [sp+30h] [bp-28h]@1
-    int max_entity_save_size; // [sp+34h] [bp-24h]@1
+    MiscSaveStruct *misc_info; // [sp+28h] [bp-30h]@17
     size_t oil_data_size; // [sp+38h] [bp-20h]@3
     size_t cpu_players_size; // [sp+3Ch] [bp-1Ch]@29
     size_t production_info_size; // [sp+40h] [bp-18h]@31
@@ -1753,22 +1845,18 @@ int GAME_Save()
     int minus_1; // [sp+4Ch] [bp-Ch]@1
     int mapd_cplc_dim[2]; // [sp+50h] [bp-8h]@3
 
-    entity_savE_data = 0;
     cpU_players = 0;
     productiOn_info = 0;
     v26 = 0;
     misc_info = 0;
     minus_1 = -1;
-    max_entity_save_size = 0;
     all_data_ok = 0;
-    total_entity_size = 0;
-    entity_sAve_data_index = (EntitySaveStructIndex *)malloc(0x12B8u);
-    save = (int)entity_sAve_data_index;
-    if (!entity_sAve_data_index)
-    {
-        errmsg_save[0] = aCouldnTAllocat;
-        return 0;
-    }
+
+    std::list<EntitySaveStructIndex> entity_save_index;
+    byte *entity_save_data = nullptr;
+    int max_entity_save_size = 0;
+    GAME_Save_PrepareEntities(entityRepo->FindAll(), entity_save_index, &entity_save_data, &max_entity_save_size);
+
     mapd_cplc_dim[1] = _47C380_mapd.mapd_cplc_render_y;
     mapd_cplc_dim[0] = _47C380_mapd.mapd_cplc_render_x;
     oil_save_data = GAME_Save_PackOilData(&oil_data_size);
@@ -1778,94 +1866,13 @@ int GAME_Save()
         goto LABEL_40;
     }
 
-    for (auto i : entityRepo->FindAll()) {
-        //for (i = entity_list_head; (Entity **)i != &entity_list_head; i = i->next)
-        //{
-        if (!i->destroyed)
-        {
-            entity_save_size = 748;
-            entity_sAve_data_index->entity_field_130 = i->entity_id;
-            if (i->destroyed)
-            {
-                entity_save_size = 0;
-            }
-            else
-            {
-                v5 = i->unit_id;
-                switch (v5)
-                {
-                case 0x17u:
-                case 0x18u:
-                    entity_save_size = 860;
-                    break;
-                case 0x19u:
-                    entity_save_size = 760;
-                    break;
-                case 0x2Eu:
-                case 0x2Fu:
-                case 0x30u:
-                case 0x31u:
-                case 0x32u:
-                case 0x33u:
-                case 0x3Au:
-                case 0x3Bu:
-                case 0x3Cu:
-                case 0x3Du:
-                case 0x3Eu:
-                case 0x3Fu:
-                case 0x40u:
-                case 0x41u:
-                case 0x42u:
-                    entity_save_size = 776;
-                    if ((v5 == 65 || v5 == 66) && *((_DWORD *)i->state + 2))
-                        entity_save_size = 868;
-                    break;
-                default:
-                    break;
-                }
-            }
-            entity_sAve_data_index->entity_save_size = entity_save_size;
-            total_entity_size += entity_save_size;
-            if (entity_save_size > max_entity_save_size)
-                max_entity_save_size = entity_save_size;
-            ++entity_sAve_data_index;
-        }
-    }
-    entity_save_data = malloc(total_entity_size);
-    entity_sAve_data = entity_save_data;
-    entity_savE_data = entity_save_data;
-    if (!entity_save_data)
-    {
-        errmsg_save[0] = aCouldNotAlloca;
-        free(oil_save_data);
-        goto LABEL_40;
-    }
-
-    entity_save_data_i = (int)entity_save_data;
-    pentity_save_data_size = (int *)(save + 4);
-    for (auto v8 : entityRepo->FindAll()) {
-        if (!v8->destroyed)
-        {
-            if (!GAME_Save_PackEntity(v8, entity_save_data_i, *pentity_save_data_size))
-            {
-                free(entity_sAve_data);
-                free(oil_save_data);
-                game_save_in_progress = 0;
-                errmsg_save[0] = aCouldNotSaveUn;
-                return 0;
-            }
-            entity_save_data_i += *pentity_save_data_size;
-            pentity_save_data_size += 2;
-        }
-    }
-
     cpu_players = GAME_Save_PackAiPlayers(&cpu_players_size);
     cpU_players = cpu_players;
     if (!cpu_players)
     {
         errmsg_save[0] = aCouldNotSaveCp;
     LABEL_33:
-        free(entity_sAve_data);
+        free(entity_save_data);
         free(oil_save_data);
         goto LABEL_40;
     }
@@ -1892,7 +1899,7 @@ int GAME_Save()
             free(map_info);
             free(production_info);
             free(cpu_players);
-            free(entity_sAve_data);
+            free(entity_save_data);
             free(oil_save_data);
         }
     }
@@ -1901,7 +1908,7 @@ int GAME_Save()
         errmsg_save[0] = aCouldNotSaveMa;
         free(production_info);
         free(cpu_players);
-        free(entity_sAve_data);
+        free(entity_save_data);
         free(oil_save_data);
     }
 
@@ -1910,7 +1917,6 @@ LABEL_40:
     {
     LABEL_80:
         game_save_in_progress = 0;
-        free((void *)save);
         return all_data_ok;
     }
     all_data_ok = 0;
@@ -1934,23 +1940,11 @@ LABEL_40:
     }
     free(oil_save_data);
 
-    v17 = save;
-    for (auto v16 : entityRepo->FindAll()) {
-        //if ((Entity **)entity_list_head != &entity_list_head)
-        if (!v16->destroyed)
-        {
-            if (!fwrite((void *)v17, 1u, 4u, fIle))
-            {
-                free(misc_info);
-                free(v26);
-                free(productiOn_info);
-                free(cpU_players);
-                free(entity_savE_data);
-                goto LABEL_68;
-            }
-            v17 += 8;
-        }
+
+    for (auto entity_index : entity_save_index) {
+        fwrite(&entity_index.entity_id, 1u, 4u, fIle);
     }
+
     if (!fwrite(&minus_1, 1u, 4u, fIle) || !fwrite(&max_entity_save_size, 1u, 4u, fIle))
     {
     LABEL_78:
@@ -1960,20 +1954,15 @@ LABEL_40:
         goto LABEL_80;
     }
 
-    entity_offsets = (char *)entity_savE_data;
-    entity_indices = (void *)(save + 4);
-    for (auto v18 : entityRepo->FindAll()) {
-        if (!v18->destroyed) {
-            if (fwrite(entity_indices, 1u, 4u, fIle) && fwrite(entity_offsets, 1u, *(_DWORD *)entity_indices, fIle)) {
-                entity_offsets += *(_DWORD *)entity_indices;
-                entity_indices = (char *)entity_indices + 8;
-            } else {
-                break;
-            }
-        }
+    auto entity_data = entity_save_data;
+    for (auto entity_index : entity_save_index) {
+        fwrite(&entity_index.entity_save_size, 1u, 4u, fIle);
+        fwrite(entity_data, 1u, entity_index.entity_save_size, fIle);
+        entity_data += entity_index.entity_save_size;
     }
+    delete[] entity_save_data;
 
-    free(entity_savE_data);
+
     if (fwrite(&cpu_players_size, 1u, 4u, fIle))
     {
         if (fwrite(cpU_players, 1u, cpu_players_size, fIle))
@@ -2004,13 +1993,11 @@ LABEL_40:
         }
     }
 
-    entity_indices = (void *)(save + 4);
-
     free(misc_info);
     free(v26);
     free(cpU_players);
     free(productiOn_info);
-    free(entity_savE_data);
+    free(entity_save_data);
     free(oil_save_data);
 
 LABEL_68:

@@ -93,16 +93,13 @@ extern char aUnitDS[]; // idb
 extern char aTaskIsWrongTyp[19]; // weak
 extern char aBadConstructs[15]; // weak
 extern char aBadMode[9]; // weak
-extern char aCouldNotSaveUn[32]; // weak
 extern char aCouldnTWriteTo[33]; // weak
 extern char aCouldnTOpenSav[29]; // weak
 extern char aCouldNotSaveMi[41]; // weak
 extern char aCouldNotSaveMa[31]; // weak
 extern char aCouldNotSavePr[38]; // weak
 extern char aCouldNotSaveCp[38]; // weak
-extern char aCouldNotAlloca[36]; // weak
 extern char aCouldNotSaveOi[31]; // weak
-extern char aCouldnTAllocat[35]; // weak
 extern char aSS_0[]; // idb
 extern int prev_level_idx; // weak
 extern const char *pKknd_sve;
