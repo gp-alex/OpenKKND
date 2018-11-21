@@ -1910,11 +1910,11 @@ void render_string_405A60(RenderString *a1, const char *str, DataMobdItem *custo
 //----- (00405B80) --------------------------------------------------------
 void script_credits_or_custom_mission_briefing_loop(Script *a1)
 {
-	int v1; // esi@3
+	int y; // esi@3
 	RenderString *v2; // eax@3
 	char **v3; // ebx@4
 	const char *v4; // edx@5
-	int v5; // edi@5
+	int special_line; // edi@5
 	int v6; // ebp@14
 	int v7; // edx@18
 	char **v8; // edi@18
@@ -1942,7 +1942,7 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
 	{
 		a1->script_type = SCRIPT_TYPE_17;
 		v21 = 0;
-		v1 = 480;
+		y = 480;
 		v2 = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 84, 84, 39, 19, 90, 14, 16);
 		_47C65C_render_string = v2;
 		dword_477410 = 0;
@@ -1952,29 +1952,59 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
 			v21 = 17;
 			_47C65C_render_string->field_18 = 0;
 			_47C65C_render_string->num_lines = 0;
-			v3 = credits;
+			
+            /*v3 = credits;
 			do
 			{
 				v4 = *v3;
-				v5 = 0;
+				special_line = 0;
 				if (**v3 == '%')
 				{
-					v5 = 1;
+					special_line = 1;
 					++v4;
 				}
-				if (v5 && v3 != credits)
+				if (special_line && v3 != credits)
 					v1 += 100;
 				render_string_405A60(_47C65C_render_string, v4, 0, v1);
 				render_string_405A60(_47C65C_render_string, asc_464C88, 0, v1);
-				if (v5)
+				if (special_line)
 					v1 += 30;
 				else
 					v1 += 20;
 				++v3;
-			} while ((int)v3 < (int)off_464ACC);
+			} while ((int)v3 < (int)off_464ACC);*/
+
+
+            for(int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
+            {
+                char *line = credits[i];
+
+                special_line = 0;
+                if (*line == '%')
+                {
+                    special_line = 1;
+                    ++line;
+                }
+                if (special_line)
+                {
+                    y += 100;
+                }
+
+                render_string_405A60(_47C65C_render_string, line, 0, y);
+                render_string_405A60(_47C65C_render_string, asc_464C88, 0, y);
+
+                if (special_line)
+                {
+                    y += 30;
+                }
+                else
+                {
+                    y += 20;
+                }
+            }
 		}
 		v6 = 16;
-		v20 = v1;
+		v20 = y;
 		v23 = 480;
 		v24 = 0;
 		while (!(script_yield_any_trigger(a1, 2) & SCRIPT_FLAGS_20_EVENT_TRIGGER))
@@ -2013,7 +2043,7 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
 						v11 = _47C65C_render_string;
 						v12 = _47C65C_render_string->field_C;
 						v13 = (char *) & _47C65C_render_string->field_C;
-						v1 = v20 - dword_477410;
+						y = v20 - dword_477410;
 						v14 = _47C65C_render_string->pstru8;
 						v15 = v12 * (v6 + 1) + 1;
 						if (v12 * (v6 + 1) != -1)
@@ -2030,16 +2060,16 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
 							do
 							{
 								++v16;
-								v14->drawjob->job_details.y = v1;
+								v14->drawjob->job_details.y = y;
 								v14 = v14->next;
 							} while (v16 < *(_DWORD *)v13);
 							v11 = _47C65C_render_string;
 						}
 						v11->field_18 = 0;
-						render_string_405A60(_47C65C_render_string, asc_464C60, 0, v1);
+						render_string_405A60(_47C65C_render_string, asc_464C60, 0, y);
 						_47C65C_render_string->field_18 = 0;
-						render_string_405A60(_47C65C_render_string, str, 0, v1);
-						render_string_405A60(_47C65C_render_string, asc_464C88, 0, v1);
+						render_string_405A60(_47C65C_render_string, str, 0, y);
+						render_string_405A60(_47C65C_render_string, asc_464C88, 0, y);
 						if (v22)
 							v17 = v20 + 30;
 						else
@@ -2055,7 +2085,7 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
 							v6 = 0;
 						_47C65C_render_string->num_lines = v6;
 						_47C65C_render_string->field_18 = 0;
-						render_string_405A60(_47C65C_render_string, asc_464C60, 0, v1);
+						render_string_405A60(_47C65C_render_string, asc_464C60, 0, y);
 					}
 				}
 				v7 = v27 + 1;
