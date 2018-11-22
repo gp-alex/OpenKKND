@@ -6,8 +6,63 @@
 #include "src/ScriptEvent.h"
 #include "src/Sprite.h"
 #include "src/RenderDrawHandlers.h"
+#include "src/Map.h"
 
 
+const char *sidebar_category_labels[11] =
+{
+    "RESOURCES",
+    "MAP",
+    "OPTIONS",
+    "INFORMATION",
+    "INFANTRY",
+    "VEHICLES",
+    "BUILDINGS",
+    "DEFENCES",
+    "AIRCRAFT",
+    "AIRSTRIKE",
+    "DECONSTRUCT"
+};
+int _4701A8_sidebar_mask_per_44_mobd_lookup_idx[] = { 1, 2, 4, 8 }; // idb
+void(*_470478_sidebar_button_open_handlers[5])(SidebarButton *) =
+{
+    &sidebar_button_handler_infantry_close,
+    &sidebar_button_handler_vehicles_close,
+    &sidebar_button_handler_buildings_close,
+    &sidebar_button_handler_towers_close,
+    &sidebar_button_handler_airstrike_close
+};
+void(*_470490_sidebar_button_close_handlers[5])(SidebarButton *) =
+{
+    &sidebar_button_handler_infantry_open,
+    &sidebar_button_handler_vehicles_open,
+    &sidebar_button_handler_buildings_open,
+    &sidebar_button_handler_towers_open,
+    &sidebar_button_handler_airstrike_open
+};
+int _4704A8_per_sidebar_button_mobd_lookup_table_offsets[2][11] =
+{
+    { 2920, 2944, 2928, 2936, 2464, 2648, 2480, 2472, 2268, 2252, 2252 },
+{ 2896, 2944, 2904, 2912, 2440, 2640, 2456, 2448, 2260, 2244, 2244 }
+};
+Sidebar *stru22_list_479548;
+Sidebar *stru22_list_47954C;
+Sidebar *sidebar_list;
+Sidebar *sidebar_list_head;
+SidebarButton *sidebar_button_list_4795A0;
+SidebarButton *sidebar_button_list_4795A4;
+SidebarButton *sidebar_button_list;
+SidebarButton *sidebar_button_list_head;
+int sidebar_button_list_sidebar_height; // weak
+int sidebar_button_list_item_width; // weak
+Script *_47A734_sidebar_tooltips_task; // idb
+Sidebar *_47C914_sidebar;
+Sprite *_47C96C_mobd_1F_sidebar_empty_blocks; // idb
+Script *_47C970_sidebar_task; // idb
+SidebarButton *_47CA08_sidebar_buttons[2];
+SidebarButton *_47CA10_sidebar_button_minimap;
+SidebarButton *_47CA18_sidebar_production_buttons[5];
+int _47CA2C_should_airstrike_mess_with_sidebar; // weak
 
 //----- (004469F0) --------------------------------------------------------
 bool sidebar_initialize()
@@ -236,6 +291,24 @@ void sidebar_button_handler_cash_close(SidebarButton *a1)
 {
     render_string_list_remove((RenderString *)a1->param);
     _47CA00_render_string = 0;
+}
+
+//----- (00446E70) --------------------------------------------------------
+void sidebar_button_handler_minimap_open(SidebarButton *a1)
+{
+    show_minimap_sprite();
+}
+
+//----- (00446E80) --------------------------------------------------------
+void sidebar_button_handler_minimap_close(SidebarButton *a1)
+{
+    hide_minimap_sprite();
+}
+
+//----- (004469D0) --------------------------------------------------------
+void sidebar_button_handler_options_open(SidebarButton *a1)
+{
+    script_trigger_event(0, EVT_MSG_1530_OPEN_GAME_MENU, 0, task_47C028);
 }
 
 //----- (00446E00) --------------------------------------------------------
@@ -1513,6 +1586,243 @@ SidebarButton *sidebar_add_buttton_internal(
         result = 0;
     }
     return result;
+}
+
+//----- (00446ED0) --------------------------------------------------------
+void script_446ED0_sidebar_buttons(Script *a1)
+{
+    SidebarButton **v1; // esi@1
+
+    _44A6B0_minimap(render_width - 32, 32);
+    script_sleep(a1, 2);
+    v1 = _47CA18_sidebar_production_buttons;
+    do
+    {
+        script_trigger_event(0, EVT_MSG_1548_sidebar, 0, (*v1)->task);
+        ++v1;
+    } while ((int)v1 < (int)& _47CA2C_should_airstrike_mess_with_sidebar);
+    script_trigger_event(0, EVT_MSG_1548_sidebar, 0, _47CA10_sidebar_button_minimap->task);
+    script_trigger_event(0, EVT_MSG_1548_sidebar, 0, _47CA08_sidebar_buttons[1]->task);
+    while (1)
+    {
+        if (_47CA00_render_string)
+        {
+            sprintf(asc_470198, a8d, game_globals_per_player.cash[player_side]);
+            _47CA00_render_string->field_18 = 0;
+            _47CA00_render_string->num_lines = 0;
+            render_string_445770(_47CA00_render_string, asc_470198, 0);
+        }
+        script_sleep(a1, 1);
+    }
+}
+
+//----- (0040F460) --------------------------------------------------------
+void script_sidebar(Script *a1)
+{
+    while (1)
+    {
+        while (!(script_yield(a1, 1, 0) & 1))
+            ;
+        script_terminate(a1);
+    }
+}
+
+//----- (00401C30) --------------------------------------------------------
+void script_401C30_sidebar(Script *a1)
+{
+    Task_context_0 *v1; // edi@1
+    Sprite *v2; // esi@3
+    Sprite *v3; // ebx@3
+    DrawJob *v4; // ecx@3
+
+    v1 = (Task_context_0 *)a1->param;
+    if (!v1)
+    {
+        v1 = (Task_context_0 *)script_create_local_object(a1, 20);
+        if (v1)
+        {
+            v2 = a1->sprite;
+            v3 = _47CA08_sidebar_buttons[1]->sprite;
+            a1->param = v1;
+            v1->sprite_1 = v3;
+            v1->field_4 = 0;
+            v1->sprite_2 = v2;
+            v1->task = a1;
+            v1->handler = Task_context_0_401A40;
+            a1->event_handler = EventHandler_401B80;
+            is_player_faction_evolved();
+            v3->x = 0x26000;
+            v3->field_88_unused = 1;
+            v3->y = 0x12000;
+            v3->z_index = 2;
+            v4 = v2->drawjob;
+            v2->x = 0x26400;
+            v2->field_88_unused = 1;
+            v2->y = 0x13800;
+            v2->z_index = 3;
+            v4->on_update_handler = (DrawUpdateHandler)drawjob_update_handler_4483E0_ui;
+            v2->drawjob->job_details.palette = per_player_sprite_palettes[player_sprite_color_by_player_side[player_side]];
+            v2->drawjob->flags |= 0x10000000u;
+            sprite_4272E0_load_mobd_item(v2, 2276, 0);
+        }
+    }
+    (v1->handler)(v1);
+}
+
+//----- (0042D030) --------------------------------------------------------
+void script_42D030_sidebar_tooltips(Script *a1)
+{
+    const char *v1; // edi@2
+    int v2; // esi@2
+    void *v3; // ebx@2
+    ScriptEvent *i; // eax@3
+    int v5; // eax@9
+    int v6; // eax@10
+    int v7; // edx@13
+    int v8; // eax@18
+    int v9; // esi@23
+    int v10; // eax@23
+    RenderString *v11; // esi@23
+    int v12; // edi@23
+    ScriptEvent *j; // eax@24
+    int v14; // [sp+10h] [bp-54h]@2
+    char v15[80]; // [sp+14h] [bp-50h]@21
+
+    dword_47A5A0 = 10;
+    _47A734_sidebar_tooltips_task = a1;
+    while (1)
+    {
+        v1 = 0;
+        v2 = 0;
+        v3 = 0;
+        v14 = 0;
+        do
+        {
+            script_wait_event(a1);
+            for (i = script_get_next_event(a1); i; i = script_get_next_event(a1))
+            {
+                if (i->event == EVT_MSG_SELECTED)
+                {
+                    v3 = i->param;
+                    v2 = 1;
+                }
+                script_discard_event(i);
+            }
+        } while (!v2);
+        if (v3)
+        {
+            v5 = *((_DWORD *)v3 + 2);
+            if (v5)
+            {
+                v6 = *(_DWORD *)(v5 + 60);
+                if (v6 >= 0)
+                {
+                    v7 = 1;
+                    if (v6 == 87)
+                    {
+                        // _447310_minimap inlined?
+                        if (*(DataMobdItem **)(*((_DWORD *)v3 + 9) + 76) == &currently_running_lvl_mobd[*(_DWORD *)(*((_DWORD *)v3 + 9) + 12)].items[165])
+                            v7 = 0;
+                        v1 = 0;
+                    }
+                    if (v7)
+                    {
+                        v8 = v6;
+                        v1 = unit_stats[v8].name;
+                        v14 = unit_stats[v8].cost;
+                    }
+                }
+                else if (v6 >= -11)
+                {
+                    v1 = sidebar_category_labels[-v6 - 1];
+                }
+            }
+        }
+        if (v1)
+        {
+            if (v14)
+                sprintf(v15, aSD, v1, v14);
+            else
+                strcpy(v15, v1);
+            v9 = _445C00_text(v15, 40);
+            v10 = _445C80_text(v15, 40);
+            *(_DWORD *)(*((_DWORD *)v3 + 9) + 136) = 1;
+            v11 = render_string_create(
+                0,
+                currently_running_lvl_mobd[MOBD_FONT_27].items,
+                (*(_DWORD *)(*((_DWORD *)v3 + 9) + 16) >> 8) - (8 * v10 + 8),
+                (*(_DWORD *)(*((_DWORD *)v3 + 9) + 20) >> 8) + 22,
+                v10 + 2,
+                v9 + 2,
+                0x20000005,
+                8,
+                8);
+            v12 = 0;
+            v11->field_18 = 0;
+            v11->num_lines = 0;
+            render_string_445770(v11, v15, 0);
+            do
+            {
+                script_wait_event(a1);
+                for (j = script_get_next_event(a1); j; j = script_get_next_event(a1))
+                {
+                    if (j->event == EVT_MSG_DESELECTED)
+                        v12 = 1;
+                    script_discard_event(j);
+                }
+            } while (!v12);
+            render_string_list_remove(v11);
+        }
+    }
+}
+// 47A5A0: using guessed type int dword_47A5A0;
+
+//----- (004471E0) --------------------------------------------------------
+void _4471E0_send_sidebar_buttons_message()
+{
+    int v0; // esi@1
+
+    v0 = 0;
+    do
+    {
+        if (v0 != -1)
+            script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47CA08_sidebar_buttons[v0]->task);
+        ++v0;
+    } while (v0 < 2);
+    script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47C970_sidebar_task);
+    script_trigger_event(0, EVT_MSG_DESELECTED, 0, _47CA08_sidebar_buttons[1]->task);
+    if (UNIT_num_player_units > 0)
+        --UNIT_num_player_units;
+}
+// 47DCC8: using guessed type int UNIT_num_player_units;
+
+//----- (00447340) --------------------------------------------------------
+void _447340_send_sidebar_buttons_message(int excluding_button_id)
+{
+    for (int i = 0; i < 2; ++i)
+    {
+        auto v3 = _47CA08_sidebar_buttons[i];
+        if (i != excluding_button_id)
+            script_trigger_event(0, EVT_MSG_DESELECTED, 0, v3->task);
+    }
+}
+
+//----- (0044CDC0) --------------------------------------------------------
+bool _44CDC0_sidebar_is_units_limit()
+{
+    int v0; // eax@2
+
+    if (single_player_game)
+        v0 = 549 / (_4778C8_singleplayer_available_units_denom + 1);
+    else
+        v0 = 549 / netz_468B50_available_units_denom;
+    return UNIT_num_player_units > v0;
+}
+
+//----- (00447310) --------------------------------------------------------
+Sprite *_447310_minimap()
+{
+    return (_47CA10_sidebar_button_minimap->sprite->_inside_mobd_item != &currently_running_lvl_mobd[_47CA10_sidebar_button_minimap->sprite->mobd_id].items->_[165]) ? _47CA10_sidebar_button_minimap->sprite : 0;
 }
 
 //----- (004102D0) --------------------------------------------------------

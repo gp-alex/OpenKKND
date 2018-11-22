@@ -243,7 +243,6 @@ extern char aUpgradeComplete[]; // idb
 extern const char *player_colors[15];
 extern char *off_46C358[15]; // weak
 extern const char *difficulties[3];
-extern const char *sidebar_category_labels[11];
 extern char aAreYouSureYo_0[34]; // weak
 extern char aAreYouSureYouW[35]; // weak
 extern char aBuildingIsUnav[]; // idb
@@ -269,12 +268,9 @@ extern char aS_0[4]; // idb
 extern char aCLevelsMute1_wav[20]; // weak
 
 extern char asc_470198[]; // idb
-extern int _4701A8_sidebar_mask_per_44_mobd_lookup_idx[]; // idb
+
 extern int _4701B8_mobd_lookups_per_ProductionGroup_field44[8];
 extern stru196 array_4701D8[28];
-extern void(*_470478_sidebar_button_open_handlers[5])(SidebarButton *);
-extern void(*_470490_sidebar_button_close_handlers[5])(SidebarButton *);
-extern int _4704A8_per_sidebar_button_mobd_lookup_table_offsets[2][11];
 extern char a8d[]; // idb
 extern enum PLAYER_SIDE player_side;
 extern int dword_47050C; // weak
@@ -416,16 +412,6 @@ extern int timer_delta_updated; // weak
 extern int timer_delta_ms; // weak
 extern int timer_time; // weak
 extern Entity *dword_478108[300];
-extern Sidebar *stru22_list_479548;
-extern Sidebar *stru22_list_47954C;
-extern Sidebar *sidebar_list;
-extern Sidebar *sidebar_list_head;
-extern SidebarButton *sidebar_button_list_4795A0;
-extern SidebarButton *sidebar_button_list_4795A4;
-extern SidebarButton *sidebar_button_list;
-extern SidebarButton *sidebar_button_list_head;
-extern int sidebar_button_list_sidebar_height; // weak
-extern int sidebar_button_list_item_width; // weak
 extern stru2 *stru2_list_4795D8;
 extern stru2 *stru2_list_4795DC;
 extern stru2 *stru2_list_free_pool;
@@ -534,7 +520,6 @@ extern int dword_47A6F0; // weak
 extern KeyboardInput _47A700_input; // idb
 extern int _47A660_array_num_items; // weak
 extern RenderString *_47A730_render_string; // idb
-extern Script *_47A734_sidebar_tooltips_task; // idb
 extern int dword_47A738; // weak
 extern int netz_47A828; // weak
 extern int netz_47A82C; // weak
@@ -646,13 +631,10 @@ extern ProductionGroup _47C830_buildings_pg;    // 47C830
 extern ProductionGroup _47C87C_towers_pg;       // 47C87C
 extern ProductionGroup _47C8C8_aircraft_pg;     // 47C8C8
 ProductionGroup *ProductionGroupAccessor(PRODUCTION_GROUP_ID group);
-extern Sidebar *_47C914_sidebar;
 extern ProductionGroup *production_group_list_47C918;
 extern ProductionGroup *production_group_list_47C91C;
 extern ProductionGroup *production_group_list;
 extern ProductionGroup *production_group_free_pool;
-extern Sprite *_47C96C_mobd_1F_sidebar_empty_blocks; // idb
-extern Script *_47C970_sidebar_task; // idb
 extern stru19production _47C978_production;
 extern stru19production _47C990_production;
 extern stru12_game_globals game_globals_per_player;
@@ -661,10 +643,6 @@ extern ProductionOption *production_option_list_47C9CC;
 extern ProductionOption *production_option_list;
 extern ProductionOption *production_option_list_free_pool;
 extern RenderString *_47CA00_render_string;
-extern SidebarButton *_47CA08_sidebar_buttons[2];
-extern SidebarButton *_47CA10_sidebar_button_minimap;
-extern SidebarButton *_47CA18_sidebar_production_buttons[5];
-extern int _47CA2C_should_airstrike_mess_with_sidebar; // weak
 extern char netz_47CA30[80]; // idb
 extern _47CA80_global _47CA80_array[7];
 extern Script *_47CAF0_tasks_evt39030[7];

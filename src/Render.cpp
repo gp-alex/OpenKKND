@@ -3479,17 +3479,17 @@ void render_draw_43B59F(
 //----- (0043B6B0) --------------------------------------------------------
 bool draw_list_alloc()
 {
-    draw_list = new DrawJob[3000];
+    draw_list = new DrawJob[6000];
     if (draw_list)
     {
         draw_list_free_pool = draw_list;
 
-        for (int i = 0; i < 3000; ++i)
+        for (int i = 0; i < 6000; ++i)
         {
             draw_list[i].next = &draw_list[i + 1];
         }
         draw_list[0].prev = (DrawJob *)&draw_list_free_pool;
-        draw_list[2999].next = (DrawJob *)&draw_list_free_pool;
+        draw_list[5999].next = (DrawJob *)&draw_list_free_pool;
 
         draw_list_47C5D8.prev = (DrawJob *)&draw_list_47C5D8;
         draw_list_47C5D8.next = (DrawJob *)&draw_list_47C5D8;

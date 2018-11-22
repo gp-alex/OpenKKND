@@ -2535,20 +2535,6 @@ char *off_46C358[15] =
 	"Black Ice"
 }; // weak
 const char *difficulties[3] = { "EASY  ", "NORMAL", "HARD  " };
-const char *sidebar_category_labels[11] =
-{
-	"RESOURCES",
-	"MAP",
-	"OPTIONS",
-	"INFORMATION",
-	"INFANTRY",
-	"VEHICLES",
-	"BUILDINGS",
-	"DEFENCES",
-	"AIRCRAFT",
-	"AIRSTRIKE",
-	"DECONSTRUCT"
-};
 char aAreYouSureYo_0[34] = "Are you sure\nYou want to\n   quit?"; // weak
 char aAreYouSureYouW[35] = "Are you sure\nYou want to\n restart?"; // weak
 char aBuildingIsUnav[] = "Building is unavailable."; // idb
@@ -2574,7 +2560,6 @@ char aS_0[4] = "%s\n"; // idb
 char aCLevelsMute1_wav[20] = "C:\\LEVELS\\MUTE1.WAV"; // weak
 
 char asc_470198[] = "        0"; // idb
-int _4701A8_sidebar_mask_per_44_mobd_lookup_idx[] = { 1, 2, 4, 8 }; // idb
 int _4701B8_mobd_lookups_per_ProductionGroup_field44[8] = { 146, 2016, 174, 2028, 169, 2004, 172, 2040 };
 stru196 array_4701D8[28] =
 {
@@ -2606,27 +2591,6 @@ stru196 array_4701D8[28] =
 	{ UNIT_WALL_2, 1, 1, 50, 5, -1 },
 	{ UNIT_WALL_4, 1, 1, 100, 10, -1 },
 	{ UNIT_INVALID, 0, 0, 0, 0, 0 }
-};
-void (*_470478_sidebar_button_open_handlers[5])(SidebarButton *) =
-{
-	&sidebar_button_handler_infantry_close,
-	&sidebar_button_handler_vehicles_close,
-	&sidebar_button_handler_buildings_close,
-	&sidebar_button_handler_towers_close,
-	&sidebar_button_handler_airstrike_close
-};
-void(*_470490_sidebar_button_close_handlers[5])(SidebarButton *) =
-{
-	&sidebar_button_handler_infantry_open,
-	&sidebar_button_handler_vehicles_open,
-	&sidebar_button_handler_buildings_open,
-	&sidebar_button_handler_towers_open,
-	&sidebar_button_handler_airstrike_open
-};
-int _4704A8_per_sidebar_button_mobd_lookup_table_offsets[2][11] =
-{
-	{ 2920, 2944, 2928, 2936, 2464, 2648, 2480, 2472, 2268, 2252, 2252 },
-	{ 2896, 2944, 2904, 2912, 2440, 2640, 2456, 2448, 2260, 2244, 2244 }
 };
 char a8d[] = " %8d"; // idb
 enum PLAYER_SIDE player_side = SURVIVORS;
@@ -5250,16 +5214,6 @@ int timer_delta_updated; // weak
 int timer_delta_ms; // weak
 int timer_time; // weak
 Entity *dword_478108[300];
-Sidebar *stru22_list_479548;
-Sidebar *stru22_list_47954C;
-Sidebar *sidebar_list;
-Sidebar *sidebar_list_head;
-SidebarButton *sidebar_button_list_4795A0;
-SidebarButton *sidebar_button_list_4795A4;
-SidebarButton *sidebar_button_list;
-SidebarButton *sidebar_button_list_head;
-int sidebar_button_list_sidebar_height; // weak
-int sidebar_button_list_item_width; // weak
 stru2 *stru2_list_4795D8;
 stru2 *stru2_list_4795DC;
 stru2 *stru2_list_free_pool;
@@ -5369,7 +5323,6 @@ int dword_47A6F0; // weak
 KeyboardInput _47A700_input; // idb
 int _47A660_array_num_items; // weak
 RenderString *_47A730_render_string; // idb
-Script *_47A734_sidebar_tooltips_task; // idb
 int dword_47A738; // weak
 int netz_47A828; // weak
 int netz_47A82C; // weak
@@ -5510,13 +5463,11 @@ ProductionGroup *ProductionGroupAccessor(PRODUCTION_GROUP_ID group) {
             __debugbreak();
     }
 }
-Sidebar *_47C914_sidebar;
+
 ProductionGroup *production_group_list_47C918;
 ProductionGroup *production_group_list_47C91C;
 ProductionGroup *production_group_list;
 ProductionGroup *production_group_free_pool;
-Sprite *_47C96C_mobd_1F_sidebar_empty_blocks; // idb
-Script *_47C970_sidebar_task; // idb
 stru19production _47C978_production;
 stru19production _47C990_production;
 stru12_game_globals game_globals_per_player;
@@ -5525,10 +5476,6 @@ ProductionOption *production_option_list_47C9CC;
 ProductionOption *production_option_list;
 ProductionOption *production_option_list_free_pool;
 RenderString *_47CA00_render_string;
-SidebarButton *_47CA08_sidebar_buttons[2];
-SidebarButton *_47CA10_sidebar_button_minimap;
-SidebarButton *_47CA18_sidebar_production_buttons[5];
-int _47CA2C_should_airstrike_mess_with_sidebar; // weak
 char netz_47CA30[80]; // idb
 _47CA80_global _47CA80_array[7];
 Script *_47CAF0_tasks_evt39030[7];
