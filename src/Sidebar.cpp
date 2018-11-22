@@ -9,6 +9,61 @@
 #include "src/Map.h"
 
 
+const char *sidebar_category_labels[11] =
+{
+    "RESOURCES",
+    "MAP",
+    "OPTIONS",
+    "INFORMATION",
+    "INFANTRY",
+    "VEHICLES",
+    "BUILDINGS",
+    "DEFENCES",
+    "AIRCRAFT",
+    "AIRSTRIKE",
+    "DECONSTRUCT"
+};
+int _4701A8_sidebar_mask_per_44_mobd_lookup_idx[] = { 1, 2, 4, 8 }; // idb
+void(*_470478_sidebar_button_open_handlers[5])(SidebarButton *) =
+{
+    &sidebar_button_handler_infantry_close,
+    &sidebar_button_handler_vehicles_close,
+    &sidebar_button_handler_buildings_close,
+    &sidebar_button_handler_towers_close,
+    &sidebar_button_handler_airstrike_close
+};
+void(*_470490_sidebar_button_close_handlers[5])(SidebarButton *) =
+{
+    &sidebar_button_handler_infantry_open,
+    &sidebar_button_handler_vehicles_open,
+    &sidebar_button_handler_buildings_open,
+    &sidebar_button_handler_towers_open,
+    &sidebar_button_handler_airstrike_open
+};
+int _4704A8_per_sidebar_button_mobd_lookup_table_offsets[2][11] =
+{
+    { 2920, 2944, 2928, 2936, 2464, 2648, 2480, 2472, 2268, 2252, 2252 },
+{ 2896, 2944, 2904, 2912, 2440, 2640, 2456, 2448, 2260, 2244, 2244 }
+};
+Sidebar *stru22_list_479548;
+Sidebar *stru22_list_47954C;
+Sidebar *sidebar_list;
+Sidebar *sidebar_list_head;
+SidebarButton *sidebar_button_list_4795A0;
+SidebarButton *sidebar_button_list_4795A4;
+SidebarButton *sidebar_button_list;
+SidebarButton *sidebar_button_list_head;
+int sidebar_button_list_sidebar_height; // weak
+int sidebar_button_list_item_width; // weak
+Script *_47A734_sidebar_tooltips_task; // idb
+Sidebar *_47C914_sidebar;
+Sprite *_47C96C_mobd_1F_sidebar_empty_blocks; // idb
+Script *_47C970_sidebar_task; // idb
+SidebarButton *_47CA08_sidebar_buttons[2];
+SidebarButton *_47CA10_sidebar_button_minimap;
+SidebarButton *_47CA18_sidebar_production_buttons[5];
+int _47CA2C_should_airstrike_mess_with_sidebar; // weak
+
 //----- (004469F0) --------------------------------------------------------
 bool sidebar_initialize()
 {
