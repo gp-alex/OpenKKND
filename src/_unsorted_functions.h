@@ -614,7 +614,7 @@ void entity_mode_444D10_oiltanker(Entity *a1);
 void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void _431C40_on_WM_ACTIVATEAPP_software_render(void *result);
 void coroutine_main();
-bool render_string_list_alloc(const int num_stru8s = 768, const int num_render_strings = 16);
+bool render_string_list_alloc(const int num_stru8s = 5616, const int num_render_strings = 117);
 void render_string_445770(RenderString *a1, const char *text, DataMobdItem *custom_font); // idb
 RenderString *render_string_create(stru1_draw_params *a1, DataMobdItem *custom_font, int a3, int a4, int a5, int a6, int z_index, int a8, int a9); // idb
 void render_string_list_remove(RenderString *a1);

@@ -1943,7 +1943,7 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
 		a1->script_type = SCRIPT_TYPE_17;
 		v21 = 0;
 		y = 480;
-		v2 = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 84, 84, 39, 19, 90, 14, 16);
+		v2 = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 84, 84, 39, 144, 90, 14, 16);
 		_47C65C_render_string = v2;
 		dword_477410 = 0;
 		if (v2)
@@ -1953,28 +1953,7 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
 			_47C65C_render_string->field_18 = 0;
 			_47C65C_render_string->num_lines = 0;
 			
-            /*v3 = credits;
-			do
-			{
-				v4 = *v3;
-				special_line = 0;
-				if (**v3 == '%')
-				{
-					special_line = 1;
-					++v4;
-				}
-				if (special_line && v3 != credits)
-					v1 += 100;
-				render_string_405A60(_47C65C_render_string, v4, 0, v1);
-				render_string_405A60(_47C65C_render_string, asc_464C88, 0, v1);
-				if (special_line)
-					v1 += 30;
-				else
-					v1 += 20;
-				++v3;
-			} while ((int)v3 < (int)off_464ACC);*/
-
-
+            // prepare render strings
             for(int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
             {
                 char *line = credits[i];
@@ -1990,11 +1969,6 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
                     y += 100;
                 }
 
-                if (_47C65C_render_string->num_lines >= v21)
-                {
-                    _47C65C_render_string->num_lines = 0;
-                }
-
                 render_string_405A60(_47C65C_render_string, line, 0, y);
                 render_string_405A60(_47C65C_render_string, asc_464C88, 0, y);
 
@@ -2008,96 +1982,18 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
                 }
             }
 		}
-		v6 = 16;
-		v20 = y;
-		v23 = 480;
-		v24 = 0;
+
+        // render onto screen
 		while (!(script_yield_any_trigger(a1, 2) & SCRIPT_FLAGS_20_EVENT_TRIGGER))
 		{
-			++dword_477410;
-			if (v24)
-			{
-				if (--v23 < 0)
-					break;
-			}
-			v7 = 0;
-			v27 = 0;
-			v8 = &credits[v21];
-			do
-			{
-				if (render_string_4059C0(_47C65C_render_string, v7, 0))
-				{
-					v9 = *v8;
-					v22 = 0;
-					if (*v8)
-					{
-						v10 = v8 + 1;
-						str = v9;
-						++v21;
-						v26 = v10;
-						if (*v9 == '%')
-						{
-							v22 = 1;
-							str = v9 + 1;
-						}
-						if (++v6 == 17)
-							v6 = 0;
-						_47C65C_render_string->num_lines = v6;
-						if (v22 && v10 != credits)
-							v20 += 100;
-						v11 = _47C65C_render_string;
-						v12 = _47C65C_render_string->field_C;
-						v13 = (char *) & _47C65C_render_string->field_C;
-						y = v20 - dword_477410;
-						v14 = _47C65C_render_string->pstru8;
-						v15 = v12 * (v6 + 1) + 1;
-						if (v12 * (v6 + 1) != -1)
-						{
-							do
-							{
-								v14 = v14->next;
-								--v15;
-							} while (v15);
-						}
-						v16 = 0;
-						if (v12 > 0)
-						{
-							do
-							{
-								++v16;
-								v14->drawjob->job_details.y = y;
-								v14 = v14->next;
-							} while (v16 < *(_DWORD *)v13);
-							v11 = _47C65C_render_string;
-						}
-						v11->field_18 = 0;
-						render_string_405A60(_47C65C_render_string, asc_464C60, 0, y);
-						_47C65C_render_string->field_18 = 0;
-						render_string_405A60(_47C65C_render_string, str, 0, y);
-						render_string_405A60(_47C65C_render_string, asc_464C88, 0, y);
-						if (v22)
-							v17 = v20 + 30;
-						else
-							v17 = v20 + 20;
-						v8 = v26;
-						v20 = v17;
-					}
-					else
-					{
-						++v6;
-						v24 = 1;
-						if (v6 == 17)
-							v6 = 0;
-						_47C65C_render_string->num_lines = v6;
-						_47C65C_render_string->field_18 = 0;
-						render_string_405A60(_47C65C_render_string, asc_464C60, 0, y);
-					}
-				}
-				v7 = v27 + 1;
-				v19 = __OFSUB__(v27 + 1, 17);
-				v18 = v27++ - 16 < 0;
-			} while (v18 ^ v19);
+            ++dword_477410;
+            for (int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
+            {
+                render_string_4059C0(_47C65C_render_string, i, 0);
+            }
 		}
+
+        // cleanup
 		render_string_list_remove(_47C65C_render_string);
 		_47C65C_render_string = 0;
 		a1->sprite->script = 0;
