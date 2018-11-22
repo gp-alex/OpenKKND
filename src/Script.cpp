@@ -1020,7 +1020,8 @@ ScriptHandler other_unsorted_handlers[] = {
     //kaos mode
     MAKE_HANDLER_PTR(script_40FC10_sidebar_button_4),
     MAKE_HANDLER_PTR(script_408370),
-    MAKE_HANDLER_PTR(script_439050_explosions)
+    MAKE_HANDLER_PTR(script_439050_explosions),
+    MAKE_HANDLER_PTR(script_438F50_explosions)
 };
 
 

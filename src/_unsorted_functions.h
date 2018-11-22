@@ -23,7 +23,6 @@ void Task_context_0_401A40(Task_context_0 *a1);
 void Task_context_0_401A80(Task_context_0 *a1);
 void Task_context_0_401AF0(Task_context_0 *a1);
 void EventHandler_401B80(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
-void script_401C30_sidebar(Script *a1);
 void Task_context_1_BomberDmgHandler_401D10(Task_context_1_BomberDmgHandler *a1);
 void Task_context_1_BomberDmgHandler_401D30(Task_context_1_BomberDmgHandler *a1);
 void Task_context_1_BomberDmgHandler_401DC0(Task_context_1_BomberDmgHandler *a1);
@@ -193,20 +192,6 @@ bool _40D860_prolly_sprite_distance(Sprite *a1, Sprite *a2, int a3); // idb
 int sprite_40D8B0_dmg(Sprite *a1, int a2); // idb
 int entity_40E000_boxd(Entity *a1, int a2, int a3);
 char *get_resource_res_subfolder();
-bool sidebar_button_list_alloc();
-void script_sidebar(Script *a1); // idb
-Sidebar *sidebar_list_create(Sprite *sprite, Script *script, int width, int height, int sidebar_horizontal); // idb
-void script_40F5D0_sidebar_button_1_2(Script *a1); // idb
-void script_40F8F0_sidebar_button_3(Script *a1); // idb
-void script_40FC10_sidebar_button_4(Script *a1);
-SidebarButton *sidebar_add_button_1(Sidebar *sidebar, int mobd_lookup_table_offset, void(*open_handler)(SidebarButton *), void *param, void *task_context); // idb
-SidebarButton *sidebar_add_button_2(Sidebar *sidebar, int mobd_lookup_table_offset, void(*button_open_handler)(SidebarButton *), void(*button_close_handler)(SidebarButton *), void *task_context); // idb
-SidebarButton *sidebar_add_button_3(Sidebar *sidebar, int mobd_lookup_table_offset, void(*button_open_handler)(SidebarButton *), void(*button_close_handler)(SidebarButton *), void *task_context); // idb
-SidebarButton *sidebar_add_button_4(Sidebar *sidebar, int mobd_lookup_table_offset, void(*button_open_handler)(SidebarButton *), int a4, int a5, void *param, enum UNIT_ID a7); // idb
-SidebarButton *sidebar_add_buttton_internal(Sidebar *a1, int mobd_lookup_table_offset, void(*task_routine)(Script *), void(*open_handler)(SidebarButton *), void(*close_handler)(SidebarButton *), void *param, void *task_context, enum SCRIPT_TYPE event); // idb
-void sidebar_remove_button(Sidebar *a1, SidebarButton *a2); // idb
-void sidebar_list_remove(Sidebar *a1);
-void sidebar_list_free();
 bool stru2_list_alloc(const int num_stru2s = 16);
 stru2 *stru2_list_create(int hunk);
 int stru2_list_init_elements();
@@ -427,7 +412,6 @@ bool stru13construct_list_saveload_unpack(int save_data, int save_data_size);
 bool is_building_or_tower_available(enum UNIT_ID unit_id);
 bool sub_42C810(Sprite **sprite_list, int x, int y, int a4, int map_x, int a6, int a7);
 void sub_42C9C0(Sprite **sprite_list);
-void script_42D030_sidebar_tooltips(Script *a1);
 void _41AC50_read_keyboard_input___42D220_handler(const char *a1, int a2);
 char render_string_42D260(RenderString *a1, const char *a2, DataMobdItem *custom_font); // idb
 void script_42D390_cursors(Script *a1); // idb
@@ -614,7 +598,7 @@ void entity_mode_444D10_oiltanker(Entity *a1);
 void EventHandler_OilTanker(Script *receiver, Script *sender, enum SCRIPT_EVENT event, void *param);
 void _431C40_on_WM_ACTIVATEAPP_software_render(void *result);
 void coroutine_main();
-bool render_string_list_alloc(const int num_stru8s = 768, const int num_render_strings = 16);
+bool render_string_list_alloc(const int num_stru8s = 5616, const int num_render_strings = 117);
 void render_string_445770(RenderString *a1, const char *text, DataMobdItem *custom_font); // idb
 RenderString *render_string_create(stru1_draw_params *a1, DataMobdItem *custom_font, int a3, int a4, int a5, int a6, int z_index, int a8, int a9); // idb
 void render_string_list_remove(RenderString *a1);
@@ -623,42 +607,15 @@ void render_string_list_free();
 int _445C00_text(const char *str, int num_bytes);
 int _445C80_text(const char *a1, int a2); // idb
 bool entity_check_type(Entity *a1, int a2); // idb
-void sidebar_button_handler_infantry_open(SidebarButton *a1);
-void sidebar_button_handler_order_unit_click(SidebarButton *a1);
-void sidebar_button_handler_infantry_close(SidebarButton *a1);
-void sidebar_button_handler_vehicles_open(SidebarButton *a1);
-void sidebar_button_handler_vehicles_close(SidebarButton *a1);
-void sidebar_button_handler_airstrike_open(SidebarButton *a1);
-void sidebar_button_handler_airstrike_close(SidebarButton *a1);
-void sidebar_button_handler_446190_open(SidebarButton *a1);
-void sidebar_button_handler_4461E0_close(SidebarButton *a1);
-void sidebar_button_handler_buildings_open(SidebarButton *a1);
-void sidebar_button_handler_order_building_click(SidebarButton *a1);
-void sidebar_button_handler_buildings_close(SidebarButton *a1);
-void sidebar_button_handler_towers_open(SidebarButton *a1);
-void sidebar_button_handler_towers_close(SidebarButton *a1);
 ProductionGroup *entity_building_create_production_group(Entity *a1, enum PRODUCTION_GROUP_ID production_group); // idb
 void production_group_enable(ProductionGroup *a1, enum UNIT_ID unit_id, int mobd_lookup_table_offset); // idb
 void production_group_disable(ProductionGroup *a1, enum UNIT_ID unit_id); // idb
 void production_group_4467E0(ProductionGroup *a1, enum UNIT_ID unit_id); // idb
 void production_group_446860(ProductionGroup *a1);
-void sidebar_button_handler_options_open(SidebarButton *a1);
-bool sidebar_initialize();
-void sidebar_button_handler_cash_open(SidebarButton *a1);
-void sidebar_button_handler_cash_close(SidebarButton *a1);
-void sidebar_button_handler_help_open(SidebarButton *a1);
-void sidebar_button_handler_help_close(SidebarButton *a1);
-void sidebar_button_handler_minimap_open(SidebarButton *a1);
-void sidebar_button_handler_minimap_close(SidebarButton *a1);
-void sidebar_deinit();
-void script_446ED0_sidebar_buttons(Script *a1);
 bool is_player_faction_evolved();
 void attempt_unlock_aircraft();
 void on_airstrike_ready();
-void _4471E0_send_sidebar_buttons_message();
 void _447250_toggle_aircraft();
-Sprite *_447310_minimap();
-void _447340_send_sidebar_buttons_message(int excluding_button_id);
 void UNIT_Handler_GuardTower(Script *a1);
 void UNIT_Handler_Towers(Script *a1);
 void entity_mode_4474D0_towers(Entity *);
@@ -712,7 +669,6 @@ bool show_message_ex(Entity *a1, const char *text);
 bool show_message(const char *text);
 int mobd_advance_anim(int *src_lookup_id, int dst, int step); // idb
 void script_show_message_ex(Script *a1); // idb
-bool _44CDC0_sidebar_is_units_limit();
 bool is_enemy(enum PLAYER_SIDE player_side, Entity *a2);
 bool sub_44CE40(enum PLAYER_SIDE player_side, Entity *a2);
 void script_show_message(Script *a1);
