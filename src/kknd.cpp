@@ -1990,6 +1990,11 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
                     y += 100;
                 }
 
+                if (_47C65C_render_string->num_lines >= v21)
+                {
+                    _47C65C_render_string->num_lines = 0;
+                }
+
                 render_string_405A60(_47C65C_render_string, line, 0, y);
                 render_string_405A60(_47C65C_render_string, asc_464C88, 0, y);
 
