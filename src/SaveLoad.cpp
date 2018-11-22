@@ -1718,7 +1718,7 @@ bool GAME_Load_UnpackMiscInfo(void *save_data)
 }
 
 
-bool GAME_Save_PrepareEntities(
+bool GAME_Save_PackEntities(
     const std::list<Entity *> &entities, std::list<EntitySaveStructIndex> &entity_save_index, byte **out_entity_data, int *out_max_entity_save_size
 ) {
     const int original_max_entities = 599;
@@ -1821,6 +1821,25 @@ bool GAME_Save_PrepareEntities(
     return true;
 }
 
+#define ABORT_SAVEGAME(condition, reason) { \
+if ((condition)) { \
+    if (misc_info) { free(misc_info); misc_info = nullptr; } \
+    if (map_info) { free(map_info); map_info = nullptr; } \
+    if (cpu_players) { free(cpu_players); cpu_players = nullptr; } \
+    if (production_info) { free(production_info); production_info = nullptr; } \
+    if (entity_save_data) { delete[] entity_save_data; entity_save_data = nullptr; } \
+    if (oil_save_data) { free(oil_save_data); oil_save_data = nullptr; } \
+    if (file) { fclose(file); file = nullptr; } \
+    game_save_in_progress = 0; \
+    if (reason) { errmsg_save[0] = reason; } \
+    return 0; \
+} \
+}
+
+#define ABORT_SAVEGAME_FWRITE(operation) ABORT_SAVEGAME(!operation, aCouldnTWriteTo)
+
+#define CLEANUP_SAVEGAME() ABORT_SAVEGAME(true, nullptr)
+
 //----- (004211D0) --------------------------------------------------------
 int GAME_Save()
 {
@@ -1830,12 +1849,11 @@ int GAME_Save()
     void *cpu_players; // esi@29
     char *production_info; // edi@31
     _BYTE *map_info; // ebx@34
-    FILE *file; // eax@41
-    FILE *fIle; // esi@41
-    int all_data_ok; // [sp+14h] [bp-44h]@1
-    void *cpU_players; // [sp+1Ch] [bp-3Ch]@1
-    char *productiOn_info; // [sp+20h] [bp-38h]@1
-    void *v26; // [sp+24h] [bp-34h]@1
+    FILE *file; // eax@41v
+    //int all_data_ok; // [sp+14h] [bp-44h]@1
+    //void *cpU_players; // [sp+1Ch] [bp-3Ch]@1
+    //char *productiOn_info; // [sp+20h] [bp-38h]@1
+    //void *v26; // [sp+24h] [bp-34h]@1
     MiscSaveStruct *misc_info; // [sp+28h] [bp-30h]@17
     size_t oil_data_size; // [sp+38h] [bp-20h]@3
     size_t cpu_players_size; // [sp+3Ch] [bp-1Ch]@29
@@ -1845,165 +1863,72 @@ int GAME_Save()
     int minus_1; // [sp+4Ch] [bp-Ch]@1
     int mapd_cplc_dim[2]; // [sp+50h] [bp-8h]@3
 
-    cpU_players = 0;
-    productiOn_info = 0;
-    v26 = 0;
     misc_info = 0;
     minus_1 = -1;
-    all_data_ok = 0;
 
-    std::list<EntitySaveStructIndex> entity_save_index;
     byte *entity_save_data = nullptr;
-    int max_entity_save_size = 0;
-    GAME_Save_PrepareEntities(entityRepo->FindAll(), entity_save_index, &entity_save_data, &max_entity_save_size);
+
+    //SetFileAttributesA(current_savegame_filename, 0x80u);
+    file = fopen(current_savegame_filename, "wb");
+    ABORT_SAVEGAME(!file, aCouldnTOpenSav);
 
     mapd_cplc_dim[1] = _47C380_mapd.mapd_cplc_render_y;
     mapd_cplc_dim[0] = _47C380_mapd.mapd_cplc_render_x;
+
+    ABORT_SAVEGAME_FWRITE(fwrite(&player_side, 1u, 4u, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(&game_globals_per_player, 1u, 0x1Cu, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(game_globals_cpu, 1u, 0xC4u, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(mapd_cplc_dim, 1u, 8u, file));
+
     oil_save_data = GAME_Save_PackOilData(&oil_data_size);
-    if (!oil_save_data)
-    {
-        errmsg_save[0] = aCouldNotSaveOi;
-        goto LABEL_40;
-    }
+    ABORT_SAVEGAME(!oil_save_data, aCouldNotSaveOi);
+    ABORT_SAVEGAME_FWRITE(fwrite(&oil_data_size, 1u, 4u, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(oil_save_data, 1u, oil_data_size, file));
 
-    cpu_players = GAME_Save_PackAiPlayers(&cpu_players_size);
-    cpU_players = cpu_players;
-    if (!cpu_players)
-    {
-        errmsg_save[0] = aCouldNotSaveCp;
-    LABEL_33:
-        free(entity_save_data);
-        free(oil_save_data);
-        goto LABEL_40;
-    }
-    production_info = GAME_Save_PackProductionInfo(&production_info_size);
-    productiOn_info = production_info;
-    if (!production_info)
-    {
-        errmsg_save[0] = aCouldNotSavePr;
-        free(cpu_players);
-        goto LABEL_33;
-    }
-    map_info = GAME_Save_PackMapInfo((int *)&map_info_size);
-    v26 = map_info;
-    if (map_info)
-    {
-        misc_info = GAME_Save_PackMiscInfo(&misc_info_size);
-        if (misc_info)
-        {
-            all_data_ok = 1;
-        }
-        else
-        {
-            errmsg_save[0] = aCouldNotSaveMi;
-            free(map_info);
-            free(production_info);
-            free(cpu_players);
-            free(entity_save_data);
-            free(oil_save_data);
-        }
-    }
-    else
-    {
-        errmsg_save[0] = aCouldNotSaveMa;
-        free(production_info);
-        free(cpu_players);
-        free(entity_save_data);
-        free(oil_save_data);
-    }
-
-LABEL_40:
-    if (!all_data_ok)
-    {
-    LABEL_80:
-        game_save_in_progress = 0;
-        return all_data_ok;
-    }
-    all_data_ok = 0;
-    //SetFileAttributesA(current_savegame_filename, 0x80u);
-    file = fopen(current_savegame_filename, "wb");
-    fIle = file;
-    if (!file)
-    {
-        game_save_in_progress = 0;
-        errmsg_save[0] = aCouldnTOpenSav;
-        return 0;
-    }
-    if (!fwrite(&player_side, 1u, 4u, file)
-        || !fwrite(&game_globals_per_player, 1u, 0x1Cu, fIle)
-        || !fwrite(game_globals_cpu, 1u, 0xC4u, fIle)
-        || !fwrite(mapd_cplc_dim, 1u, 8u, fIle)
-        || !fwrite(&oil_data_size, 1u, 4u, fIle)
-        || !fwrite(oil_save_data, 1u, oil_data_size, fIle))
-    {
-        goto LABEL_78;
-    }
-    free(oil_save_data);
+    std::list<EntitySaveStructIndex> entity_save_index;
+    int max_entity_save_size = 0;
+    GAME_Save_PackEntities(entityRepo->FindAll(), entity_save_index, &entity_save_data, &max_entity_save_size);
 
 
     for (auto entity_index : entity_save_index) {
-        fwrite(&entity_index.entity_id, 1u, 4u, fIle);
+        ABORT_SAVEGAME_FWRITE(fwrite(&entity_index.entity_id, 1u, 4u, file));
     }
 
-    if (!fwrite(&minus_1, 1u, 4u, fIle) || !fwrite(&max_entity_save_size, 1u, 4u, fIle))
-    {
-    LABEL_78:
-        fclose(fIle);
-        if (!all_data_ok)
-            errmsg_save[0] = aCouldnTWriteTo;
-        goto LABEL_80;
-    }
+    ABORT_SAVEGAME_FWRITE(fwrite(&minus_1, 1u, 4u, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(&max_entity_save_size, 1u, 4u, file));
 
     auto entity_data = entity_save_data;
     for (auto entity_index : entity_save_index) {
-        fwrite(&entity_index.entity_save_size, 1u, 4u, fIle);
-        fwrite(entity_data, 1u, entity_index.entity_save_size, fIle);
+        ABORT_SAVEGAME_FWRITE(fwrite(&entity_index.entity_save_size, 1u, 4u, file));
+        ABORT_SAVEGAME_FWRITE(fwrite(entity_data, 1u, entity_index.entity_save_size, file));
         entity_data += entity_index.entity_save_size;
     }
-    delete[] entity_save_data;
 
 
-    if (fwrite(&cpu_players_size, 1u, 4u, fIle))
-    {
-        if (fwrite(cpU_players, 1u, cpu_players_size, fIle))
-        {
-            free(cpU_players);
-            if (fwrite(&production_info_size, 1u, 4u, fIle))
-            {
-                if (fwrite(productiOn_info, 1u, production_info_size, fIle))
-                {
-                    free(productiOn_info);
-                    if (fwrite(&map_info_size, 1u, 4u, fIle))
-                    {
-                        if (fwrite(v26, 1u, map_info_size, fIle))
-                        {
-                            free(v26);
-                            if (fwrite(&misc_info_size, 1u, 4u, fIle))
-                            {
-                                if (fwrite(misc_info, 1u, misc_info_size, fIle))
-                                {
-                                    free(misc_info);
-                                    all_data_ok = 1;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
-    free(misc_info);
-    free(v26);
-    free(cpU_players);
-    free(productiOn_info);
-    free(entity_save_data);
-    free(oil_save_data);
+    cpu_players = GAME_Save_PackAiPlayers(&cpu_players_size);
+    ABORT_SAVEGAME(!cpu_players, aCouldNotSaveCp);
 
-LABEL_68:
-    fclose(fIle);
-    game_save_in_progress = 0;
-    return 0;
+    production_info = GAME_Save_PackProductionInfo(&production_info_size);
+    ABORT_SAVEGAME(!production_info, aCouldNotSavePr);
+
+    map_info = GAME_Save_PackMapInfo((int *)&map_info_size);
+    ABORT_SAVEGAME(!map_info, aCouldNotSaveMa);
+
+    misc_info = GAME_Save_PackMiscInfo(&misc_info_size);
+    ABORT_SAVEGAME(!misc_info, aCouldNotSaveMi);
+
+
+    ABORT_SAVEGAME_FWRITE(fwrite(&cpu_players_size, 1u, 4u, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(cpu_players, 1u, cpu_players_size, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(&production_info_size, 1u, 4u, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(production_info, 1u, production_info_size, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(&map_info_size, 1u, 4u, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(map_info, 1u, map_info_size, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(&misc_info_size, 1u, 4u, file));
+    ABORT_SAVEGAME_FWRITE(fwrite(misc_info, 1u, misc_info_size, file));
+
+    CLEANUP_SAVEGAME();
 }
 
 //----- (004218B0) --------------------------------------------------------
