@@ -1911,45 +1911,19 @@ void render_string_405A60(RenderString *a1, const char *str, DataMobdItem *custo
 void script_credits_or_custom_mission_briefing_loop(Script *a1)
 {
 	int y; // esi@3
-	RenderString *v2; // eax@3
-	char **v3; // ebx@4
-	const char *v4; // edx@5
+	RenderString *render_string_list; // eax@3
 	int special_line; // edi@5
-	int v6; // ebp@14
-	int v7; // edx@18
-	char **v8; // edi@18
-	char *v9; // eax@20
-	char **v10; // edi@24
-	RenderString *v11; // edi@31
-	int v12; // ebx@31
-	char *v13; // edx@31
-	stru8 *v14; // ecx@31
-	int v15; // eax@31
-	int v16; // eax@33
-	int v17; // eax@37
-	bool v18; // sf@40
-	unsigned __int8 v19; // of@40
-	int v20; // [sp+0h] [bp-20h]@14
-	int v21; // [sp+4h] [bp-1Ch]@3
-	int v22; // [sp+8h] [bp-18h]@20
-	int v23; // [sp+Ch] [bp-14h]@14
-	int v24; // [sp+10h] [bp-10h]@14
-	char *str; // [sp+14h] [bp-Ch]@24
-	char **v26; // [sp+18h] [bp-8h]@24
-	int v27; // [sp+1Ch] [bp-4h]@18
-
+	
 	if (netz_47C6C0_mapd_idx == 12)
 	{
 		a1->script_type = SCRIPT_TYPE_17;
-		v21 = 0;
 		y = 480;
-		v2 = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 84, 84, 39, 144, 90, 14, 16);
-		_47C65C_render_string = v2;
+		render_string_list = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 84, 84, 39, 144, 90, 14, 16);
+		_47C65C_render_string = render_string_list;
 		dword_477410 = 0;
-		if (v2)
+		if (render_string_list)
 		{
-			render_string_445AE0(v2);
-			v21 = 17;
+			render_string_445AE0(render_string_list);
 			_47C65C_render_string->field_18 = 0;
 			_47C65C_render_string->num_lines = 0;
 			
