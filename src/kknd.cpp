@@ -567,7 +567,7 @@ void entity_clanhall_on_upgrade_complete(Script *receiver, Script *sender, enum 
 				production_group_enable(v7, UNIT_STATS_MUTE_PYROMANIAC, 2800);
 			if (can_unlock_towers)
 			{
-				sub_447000();
+                enable_minimap();
 				v10 = levels[current_level_idx].disabled_units_mask;
 				if (!(BYTE1(v10) & 8))
 					production_group_enable(_47B3B8_tower_production_group, UNIT_STATS_MUTE_MACHINEGUN_NEST, 2432);
@@ -8098,7 +8098,7 @@ void entity_outpost_on_upgrade_complete(Script *receiver, Script *sender, enum S
 				production_group_enable(v7, UNIT_STATS_SURV_FLAMER, 2880);
 			if (can_unlock_towers)
 			{
-				sub_447000();
+                enable_minimap();
 				v10 = levels[current_level_idx].disabled_units_mask;
 				if (!(BYTE1(v10) & 8))
 					production_group_enable(_47B3B8_tower_production_group, UNIT_STATS_SURV_GUARD_TOWER, 2400);

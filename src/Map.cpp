@@ -68,9 +68,9 @@ MapdScrlImageTile *fog_of_war_tile_2;
 
 
 //----- (00447000) --------------------------------------------------------
-void sub_447000()
+void enable_minimap()
 {
-    if (is_game_loading() || !_447310_minimap())
+    if (!is_game_loading() && _447310_minimap() != 0)
     {
         script_trigger_event(0, EVT_MSG_1514, 0, _47CA10_sidebar_button_minimap->task);
     }

@@ -508,7 +508,7 @@ Entity *EntityFactory::Unpack(EntitySerialized *save_data)
             *((_DWORD *)v56 + 1) = v60;
             v61 = v3->unit_id;
             if ((v61 == 58 || v61 == 59) && v3->player_side == player_side && v60 > 1)
-                sub_447000();
+                enable_minimap();
             a2a = (int *)((char *)v56 + 8);
             *((_DWORD *)v56 + 2) = v2[1].entity_task_event;
             *((_WORD *)v56 + 6) = v2[1].entity_task_handler_idx;
