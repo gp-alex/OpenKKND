@@ -36,6 +36,7 @@ extern char BOXD[];
 extern char aSSS[];
 extern Vec2 _464230_tankerconvoy_checkpoints_surv07[18];
 extern Vec2 _4642C0_tankerconvoy_checkpoints_mute08[30];
+extern const int numCredits;
 extern char *credits[117];
 extern char *off_464ACC[100]; // weak
 extern char asc_464C60[39];

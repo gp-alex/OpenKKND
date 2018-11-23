@@ -1868,25 +1868,24 @@ void render_string_405A60(RenderString *a1, const char *str, DataMobdItem *custo
 //----- (00405B80) --------------------------------------------------------
 void script_credits_or_custom_mission_briefing_loop(Script *a1)
 {
-	int y; // esi@3
-	RenderString *render_string_list; // eax@3
-	int special_line; // edi@5
-	
-	if (netz_47C6C0_mapd_idx == 12)
-	{
-		a1->script_type = SCRIPT_TYPE_17;
-		y = 480;
-		render_string_list = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 84, 84, 39, 144, 90, 14, 16);
-		_47C65C_render_string = render_string_list;
-		dword_477410 = 0;
-		if (render_string_list)
-		{
-			render_string_445AE0(render_string_list);
-			_47C65C_render_string->field_18 = 0;
-			_47C65C_render_string->num_lines = 0;
-			
+    int y; // esi@3
+    RenderString *render_string_list; // eax@3
+    int special_line; // edi@5
+    if (netz_47C6C0_mapd_idx == 12)
+    {
+        a1->script_type = SCRIPT_TYPE_17;
+        y = 480;
+        render_string_list = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 84, 84, 39, 144, 90, 14, 16);
+        _47C65C_render_string = render_string_list;
+        dword_477410 = 0;
+        if (render_string_list)
+        {
+            render_string_445AE0(render_string_list);
+            _47C65C_render_string->field_18 = 0;
+            _47C65C_render_string->num_lines = 0;
+
             // prepare render strings
-            for(int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
+            for (int i = 0; i < numCredits; i++)
             {
                 char *line = credits[i];
 
@@ -1913,29 +1912,29 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
                     y += 20;
                 }
             }
-		}
+        }
 
         // render onto screen
-		while (!(script_yield_any_trigger(a1, 2) & SCRIPT_FLAGS_20_EVENT_TRIGGER))
-		{
+        while (!(script_yield_any_trigger(a1, 2) & SCRIPT_FLAGS_20_EVENT_TRIGGER))
+        {
             ++dword_477410;
-            for (int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
+            for (int i = 0; i < numCredits; i++)
             {
                 render_string_4059C0(_47C65C_render_string, i, 0);
             }
-		}
+        }
 
         // cleanup
-		render_string_list_remove(_47C65C_render_string);
-		_47C65C_render_string = 0;
-		a1->sprite->script = 0;
-		sprite_list_remove(a1->sprite);
-		script_443C40(a1, 0);
-	}
-	else
-	{
-		script_custom_mission_briefing_loop(a1);
-	}
+        render_string_list_remove(_47C65C_render_string);
+        _47C65C_render_string = 0;
+        a1->sprite->script = 0;
+        sprite_list_remove(a1->sprite);
+        script_443C40(a1, 0);
+    }
+    else
+    {
+        script_custom_mission_briefing_loop(a1);
+    }
 }
 
 //----- (00405E60) --------------------------------------------------------
