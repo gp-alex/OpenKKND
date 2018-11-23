@@ -2894,8 +2894,7 @@ void UNIT_Handler_OilPatch(Script *a1)
 	Sprite *v1; // esi@1
 	DataCplcItem_ptr1 *v2; // eax@1
 	OilDeposit *v4; // edi@2
-	int v6; // eax@7
-	char *v7; // eax@7
+    char *v7; // eax@7
 
 	v1 = a1->sprite;
 	v1->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_448600_oilspot;
@@ -2914,7 +2913,7 @@ void UNIT_Handler_OilPatch(Script *a1)
 		v4->sprite = v1;
 		v4->drillrig = 0;
 		v4->drillrig_entity_id = 0;
-		v4->oil_left = 500 * LOWORD_HEXRAYS(v1->cplc_ptr1_pstru20->param_1C);
+		v4->oil_left = 500 * v1->cplc_ptr1_pstru20->param_1C;
 		v4->next = oilspot_list_head;
 		v4->prev = (OilDeposit *)&oilspot_list_head;
 		oilspot_list_head->prev = v4;
@@ -2924,9 +2923,9 @@ void UNIT_Handler_OilPatch(Script *a1)
 	{
 		v4 = (OilDeposit *)a1->param;
 	}
-	v6 = v1->y;
+
 	v1->field_88_unused = 1;
-	v7 = &boxd_get_tile(v1->x >> 13, v6 >> 13)->flags2;
+    v7 = &_478AA8_boxd_stru0_array[global2map(v1->x) + map_get_width() * global2map(v1->y)].flags2;
 	*v7 |= 0x80u;
 	script_yield(a1, 1, 0);
 	v1->drawjob->flags |= 0x40000000u;
