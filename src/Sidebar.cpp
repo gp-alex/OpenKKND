@@ -137,8 +137,6 @@ bool sidebar_initialize()
     production_group_list_47C918 = (ProductionGroup *)&production_group_list_47C918;
     production_group_list_47C91C = (ProductionGroup *)&production_group_list_47C918;
 
-    //v4 = (ProductionGroup *) & _47C798_infantry_production_group_first;
-    //do
     for (int i = PRODUCTION_GROUP_INFANTRY; i <= PRODUCTION_GROUP_AIRCRAFT; ++i)
     {
         v4 = ProductionGroupAccessor((PRODUCTION_GROUP_ID)i);
@@ -148,7 +146,7 @@ bool sidebar_initialize()
         v4->prev_option = (ProductionOption *)&v4->next_option;
         v5->next = v5;
     }
-    //while ((int)v4 < (int) & _47C914_sidebar);
+
     v6 = sidebar_list_create(0, 0, 288, 0, 0);
     v7 = 0;
     _47C914_sidebar = v6;

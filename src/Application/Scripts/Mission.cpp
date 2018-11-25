@@ -1069,20 +1069,28 @@ MISSION_RESULT script_425BE0_check_special_victory_conditions_surv18(Script *a1)
     while (true) {
         script_sleep(a1, 30);
 
-        auto presidente = entityRepo->FindSingle(
+        auto bunker = entityRepo->FindSingle(
             [&](Entity *e) {
-                return e->unit_id == UNIT_STATS_SURV_EL_PRESIDENTE;
+            return e->unit_id == UNIT_STATS_TECH_BUNKER; 
             }
         );
 
-        if (presidente == nullptr) {
+        auto presidente = entityRepo->FindSingle(
+            [&](Entity *e) {
+            return e->unit_id == UNIT_STATS_SURV_EL_PRESIDENTE;
+            }
+        );
+
+        if (bunker->_12C_prison_bunker_spawn_type == 0 && presidente == nullptr) {
             return MISSION_RESULT_FAILED;
         }
-
-        auto v19 = presidente->sprite;
-        v19->field_88_unused = 1;
-        if (v19->x >= 3386 * 256 && v19->y >= 1894 * 256) {
-            return MISSION_RESULT_ACCOMPLISHED;
+        if (bunker->_12C_prison_bunker_spawn_type == 0 && presidente != nullptr)
+        {
+            auto v19 = presidente->sprite;
+            v19->field_88_unused = 1;
+            if (v19->x >= 3386 * 256 && v19->y >= 1894 * 256) {
+                return MISSION_RESULT_ACCOMPLISHED;
+            }
         }
     }
 }

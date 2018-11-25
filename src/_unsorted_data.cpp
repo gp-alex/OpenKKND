@@ -118,6 +118,7 @@ Vec2 _4642C0_tankerconvoy_checkpoints_mute08[30] =
 	{ 1100, 918 },
 	{ 820, 1148 }
 };
+const int numCredits = 117;
 char *credits[117] =
 {
 	"%Publisher",
