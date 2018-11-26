@@ -567,7 +567,7 @@ void entity_clanhall_on_upgrade_complete(Script *receiver, Script *sender, enum 
 				production_group_enable(v7, UNIT_STATS_MUTE_PYROMANIAC, 2800);
 			if (can_unlock_towers)
 			{
-				sub_447000();
+                enable_minimap();
 				v10 = levels[current_level_idx].disabled_units_mask;
 				if (!(BYTE1(v10) & 8))
 					production_group_enable(_47B3B8_tower_production_group, UNIT_STATS_MUTE_MACHINEGUN_NEST, 2432);
@@ -1868,25 +1868,24 @@ void render_string_405A60(RenderString *a1, const char *str, DataMobdItem *custo
 //----- (00405B80) --------------------------------------------------------
 void script_credits_or_custom_mission_briefing_loop(Script *a1)
 {
-	int y; // esi@3
-	RenderString *render_string_list; // eax@3
-	int special_line; // edi@5
-	
-	if (netz_47C6C0_mapd_idx == 12)
-	{
-		a1->script_type = SCRIPT_TYPE_17;
-		y = 480;
-		render_string_list = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 84, 84, 39, 144, 90, 14, 16);
-		_47C65C_render_string = render_string_list;
-		dword_477410 = 0;
-		if (render_string_list)
-		{
-			render_string_445AE0(render_string_list);
-			_47C65C_render_string->field_18 = 0;
-			_47C65C_render_string->num_lines = 0;
-			
+    int y; // esi@3
+    RenderString *render_string_list; // eax@3
+    int special_line; // edi@5
+    if (netz_47C6C0_mapd_idx == 12)
+    {
+        a1->script_type = SCRIPT_TYPE_17;
+        y = 480;
+        render_string_list = render_string_create(0, currently_running_lvl_mobd[MOBD_FONT_ITALIC].items, 84, 84, 39, 144, 90, 14, 16);
+        _47C65C_render_string = render_string_list;
+        dword_477410 = 0;
+        if (render_string_list)
+        {
+            render_string_445AE0(render_string_list);
+            _47C65C_render_string->field_18 = 0;
+            _47C65C_render_string->num_lines = 0;
+
             // prepare render strings
-            for(int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
+            for (int i = 0; i < numCredits; i++)
             {
                 char *line = credits[i];
 
@@ -1913,29 +1912,29 @@ void script_credits_or_custom_mission_briefing_loop(Script *a1)
                     y += 20;
                 }
             }
-		}
+        }
 
         // render onto screen
-		while (!(script_yield_any_trigger(a1, 2) & SCRIPT_FLAGS_20_EVENT_TRIGGER))
-		{
+        while (!(script_yield_any_trigger(a1, 2) & SCRIPT_FLAGS_20_EVENT_TRIGGER))
+        {
             ++dword_477410;
-            for (int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
+            for (int i = 0; i < numCredits; i++)
             {
                 render_string_4059C0(_47C65C_render_string, i, 0);
             }
-		}
+        }
 
         // cleanup
-		render_string_list_remove(_47C65C_render_string);
-		_47C65C_render_string = 0;
-		a1->sprite->script = 0;
-		sprite_list_remove(a1->sprite);
-		script_443C40(a1, 0);
-	}
-	else
-	{
-		script_custom_mission_briefing_loop(a1);
-	}
+        render_string_list_remove(_47C65C_render_string);
+        _47C65C_render_string = 0;
+        a1->sprite->script = 0;
+        sprite_list_remove(a1->sprite);
+        script_443C40(a1, 0);
+    }
+    else
+    {
+        script_custom_mission_briefing_loop(a1);
+    }
 }
 
 //----- (00405E60) --------------------------------------------------------
@@ -2895,8 +2894,7 @@ void UNIT_Handler_OilPatch(Script *a1)
 	Sprite *v1; // esi@1
 	DataCplcItem_ptr1 *v2; // eax@1
 	OilDeposit *v4; // edi@2
-	int v6; // eax@7
-	char *v7; // eax@7
+    char *v7; // eax@7
 
 	v1 = a1->sprite;
 	v1->drawjob->on_update_handler = (DrawJobUpdateHandler)drawjob_update_handler_448600_oilspot;
@@ -2915,7 +2913,7 @@ void UNIT_Handler_OilPatch(Script *a1)
 		v4->sprite = v1;
 		v4->drillrig = 0;
 		v4->drillrig_entity_id = 0;
-		v4->oil_left = 500 * LOWORD_HEXRAYS(v1->cplc_ptr1_pstru20->param_1C);
+		v4->oil_left = 500 * v1->cplc_ptr1_pstru20->param_1C;
 		v4->next = oilspot_list_head;
 		v4->prev = (OilDeposit *)&oilspot_list_head;
 		oilspot_list_head->prev = v4;
@@ -2925,9 +2923,9 @@ void UNIT_Handler_OilPatch(Script *a1)
 	{
 		v4 = (OilDeposit *)a1->param;
 	}
-	v6 = v1->y;
+
 	v1->field_88_unused = 1;
-	v7 = &boxd_get_tile(v1->x >> 13, v6 >> 13)->flags2;
+    v7 = &_478AA8_boxd_stru0_array[global2map(v1->x) + map_get_width() * global2map(v1->y)].flags2;
 	*v7 |= 0x80u;
 	script_yield(a1, 1, 0);
 	v1->drawjob->flags |= 0x40000000u;
@@ -8099,7 +8097,7 @@ void entity_outpost_on_upgrade_complete(Script *receiver, Script *sender, enum S
 				production_group_enable(v7, UNIT_STATS_SURV_FLAMER, 2880);
 			if (can_unlock_towers)
 			{
-				sub_447000();
+                enable_minimap();
 				v10 = levels[current_level_idx].disabled_units_mask;
 				if (!(BYTE1(v10) & 8))
 					production_group_enable(_47B3B8_tower_production_group, UNIT_STATS_SURV_GUARD_TOWER, 2400);

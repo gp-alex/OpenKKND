@@ -2453,7 +2453,13 @@ void cursor_sidebar_handler(CursorHandler *a1)
         {
             v5 = v1->_18_script->sprite;
             if (v5)
-                script_trigger_event(0, EVT_MSG_SELECTED, v5->param, _47A734_sidebar_tooltips_task);
+            {
+                if (v5->mobd_id == MOBD_INGAME_MENU_CONTROLS) //fix for SFX volume - send zero param
+                    script_trigger_event(0, EVT_MSG_SELECTED, 0, _47A734_sidebar_tooltips_task);
+                else
+                    script_trigger_event(0, EVT_MSG_SELECTED, v5->param, _47A734_sidebar_tooltips_task);
+            }
+                
         }
     }
 }

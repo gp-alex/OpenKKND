@@ -91,7 +91,7 @@ void map_reveal_fog_around_entity(Entity *a1);
 void minimap_free();
 int sub_44BC80(int a1, int a2, int a3, int a4);
 int MAPD_44BD50_alter_tile_flags();
-void sub_447000();
+void enable_minimap();
 void disable_minimap();
 
 int map_adjust_entity_in_tile_x(Entity *entity, int x);
