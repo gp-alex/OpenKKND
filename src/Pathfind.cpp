@@ -2380,10 +2380,12 @@ void entity_log_pathing(Entity *e) {
 
 DataBoxd_stru0_per_map_unit *boxd_get_tile(int map_x, int map_y) {
     if (map_x < 0 || map_x >= map_get_width()) {
-        return nullptr;
+        log("boxd_get_tile - outside bounds - x=%d, map_width=%d", map_x, map_get_width());
+        //return nullptr;
     }
     if (map_y < 0 || map_y >= map_get_height()) {
-        return nullptr;
+        log("boxd_get_tile - outside bounds - y=%d, map_height=%d", map_y, map_get_height());
+        //return nullptr;
     }
 
     return &_478AA8_boxd_stru0_array[map_x + map_get_width() * map_y];
