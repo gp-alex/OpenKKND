@@ -276,7 +276,7 @@ SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id)
     case UNIT_STATS_GORT:
     case UNIT_STATS_PLASMA_TANK:
     case UNIT_STATS_SENTINEL_DROID:
-        return _4689A8_sound_ids[kknd_rand() % -2];
+        return _4689A8_sound_ids[rnd_capped(2)];
         break;
     case UNIT_STATS_MUTE_DIRE_WOLF:
         return (SOUND_ID)165;
@@ -296,11 +296,11 @@ SOUND_ID get_unit_seletion_sound(UNIT_ID unit_id)
     default:
         if (is_player_faction_evolved())
         {
-            return _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
+            return _468998_sound_ids[rnd_capped(4)];
         }
         else
         {
-            return _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
+            return _468988_sound_ids[rnd_capped(4)];
         }
         break;
     }
@@ -311,7 +311,7 @@ SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced)
 {
     if (is_21st_century(unit_id))
     {
-        return _4689C0_sound_ids[kknd_rand() % 22];
+        return _4689C0_sound_ids[rnd_capped(22)];
     }
     else if (unit_id == UNIT_STATS_SURV_SCOUT)
     {
@@ -343,24 +343,22 @@ SOUND_ID get_unit_move_confirmation_sound(UNIT_ID unit_id, bool experienced)
         {
             if (experienced)
             {
-                int v13 = kknd_rand();
-                return _468A48_sound_ids[(((unsigned __int64)v13 >> 32) ^ abs(v13) & 1) - ((unsigned __int64)v13 >> 32)];
+                return _468A48_sound_ids[rnd_capped(2)];
             }
             else
             {
-                return _468A28_sound_ids[kknd_rand() % 3];
+                return _468A28_sound_ids[rnd_capped(3)];
             }
         }
         else
         {
             if (experienced)
             {
-                int v14 = kknd_rand();
-                return _468A50_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 1) - ((unsigned __int64)v14 >> 32)];
+                return _468A50_sound_ids[rnd_capped(2)];
             }
             else
             {
-                return _468A38_sound_ids[kknd_rand() % 3];
+                return _468A38_sound_ids[rnd_capped(3)];
             }
         }
     }
@@ -371,7 +369,7 @@ SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced)
 {
     if (is_21st_century(unit_id))
     {
-        return _4689B0_sound_ids[kknd_rand() % 3];
+        return _4689B0_sound_ids[rnd_capped(3)];
     }
     else if (unit_id == UNIT_STATS_MUTE_MISSILE_CRAB)
     {
@@ -410,7 +408,7 @@ SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced)
         {
             if (!is_player_faction_evolved())
             {
-                if ((char)kknd_rand() % -2)
+                if (rnd_capped(2))
                 {
                     return SOUND_59;
                 }
@@ -421,7 +419,7 @@ SOUND_ID get_unit_attack_confirmation_sound(UNIT_ID unit_id, bool experienced)
             }
             else
             {
-                if ((char)kknd_rand() % -2)
+                if (rnd_capped(2))
                 {
                     return SOUND_92;
                 }
@@ -456,14 +454,13 @@ SOUND_ID get_unit_ready_sound(UNIT_ID unit_id)
 
     default:
     {
-        int v14 = kknd_rand();
         if (is_player_faction_evolved())
         {
-            return _468998_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 3) - ((unsigned __int64)v14 >> 32)];
+            return _468998_sound_ids[rnd_capped(4)];
         }
         else
         {
-            return _468988_sound_ids[(((unsigned __int64)v14 >> 32) ^ abs(v14) & 3) - ((unsigned __int64)v14 >> 32)];
+            return _468988_sound_ids[rnd_capped(4)];
         }
     }
     }

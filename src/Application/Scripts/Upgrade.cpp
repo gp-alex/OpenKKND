@@ -232,12 +232,12 @@ void EventHandler_ResearchBuilding(Script *receiver, Script *sender, enum SCRIPT
                 show_message_ex(0, aUpgradeComplete);
                 if (is_player_faction_evolved())
                 {
-                    if ((char)kknd_rand() % -2)
+                    if (rnd_capped(2))
                         sound_play(SOUND_MUTE_UPGRADE_COMPLETE_2, 0, _4690A8_sfx_volume, 16, 0);
                     else
                         sound_play(SOUND_MUTE_UPGRADE_COMPLETE_1, 0, _4690A8_sfx_volume, 16, 0);
                 }
-                else if ((char)kknd_rand() % -2)
+                else if (rnd_capped(2))
                 {
                     sound_play(SOUND_SURV_UPGRADE_COMPLETE_2, 0, _4690A8_sfx_volume, 16, 0);
                 }
