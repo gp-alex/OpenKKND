@@ -126,7 +126,7 @@ bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3);
 bool sound_stru_2_43A710(sound_stru_2 *a1, WAVEFORMATEX **a2, int *a3, unsigned int *out_buffer_size);
 void _439C10_sound_thread(Sound *a1); // idb
 void sound_list_remove(Sound *a1);
-
+void sound_cleanup(Sound *a1);
 
 
 void sound_start_video_playback() 
@@ -1360,8 +1360,11 @@ void sound_free_sounds()
     //}
     for (Sound *v0 : sound_list_free_pool)
     {
-        sound_list_remove(v0);
+        sound_cleanup(v0);
+        sound_list_head.push_front(v0);
     }
+    sound_list_free_pool.clear();
+
     _47C5C0_can_sound = 0;
     if (faction_slv)
     {
@@ -1447,8 +1450,11 @@ void sound_deinit()
     //}
     for (Sound *v0 : sound_list_free_pool)
     {
-        sound_list_remove(v0);
+        sound_cleanup(v0);
+        sound_list_head.push_front(v0);
     }
+    sound_list_free_pool.clear();
+
     _47C5C0_can_sound = 0;
     if (faction_slv)
     {
