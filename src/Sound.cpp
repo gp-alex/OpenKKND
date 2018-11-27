@@ -518,6 +518,12 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
             if (v9 != faction_slv && v9)
             {
                 //v10 = sound_list_head;
+                if (sound_list_head.empty()) {
+                    Sound *s = new Sound();
+                    memset(s, 0, sizeof(Sound));
+                    sound_list_head.push_front(s);
+                }
+
                 v10 = *sound_list_head.begin();
                 //if (sound_list_head)
                 //{
@@ -676,6 +682,12 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
     if (sound_initialized)
     {
         //v6 = sound_list_head;
+        if (sound_list_head.empty()) {
+            Sound *s = new Sound();
+            memset(s, 0, sizeof(Sound));
+            sound_list_head.push_front(s);
+        }
+
         v6 = *sound_list_head.begin();
         //if (!sound_list_head)
         if (sound_list_head.empty())
