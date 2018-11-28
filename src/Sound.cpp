@@ -59,7 +59,6 @@ IDirectSoundBuffer *video_477DE4_dsb;
 LPDIRECTSOUND pds; // idb
 
 std::list<Sound*> sound_list_free_pool;
-std::list<Sound*> sound_list;
 int sound_list_last_id; // weak
 int _47C5D4_sound_threaded_snd_id; // idb
 sound_stru_2 **_47C4E0_sounds;
@@ -151,7 +150,7 @@ void sound_video_stop()
 // Initialize game sound
 bool sound_initialize()
 {
-    Sound *sound; // ecx@9
+    //Sound *sound; // ecx@9
     BOOL result; // eax@10
  
     //init sound volumes & sound pans
@@ -446,12 +445,12 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
     bool v13; // zf@21
     unsigned int v14; // ecx@25
     void *v15; // eax@27
-    Sound *v16; // eax@33
-    Sound *v17; // eax@35
-    Sound *v18; // eax@37
-    Sound *v19; // eax@46
-    Sound *v20; // eax@48
-    Sound *v21; // eax@50
+    //Sound *v16; // eax@33
+    //Sound *v17; // eax@35
+    //Sound *v18; // eax@37
+    //Sound *v19; // eax@46
+    //Sound *v20; // eax@48
+    //Sound *v21; // eax@50
     int v22; // [sp+0h] [bp-3Ch]@3
     DSBUFFERDESC v23; // [sp+Ch] [bp-30h]@4
     int v24; // [sp+20h] [bp-1Ch]@1
@@ -478,14 +477,9 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
             v9 = _47C4E0_sounds[sound_id];
             if (v9 != faction_slv && v9)
             {
-                if (sound_list.empty()) {
-                    Sound *s = new Sound();
-                    memset(s, 0, sizeof(Sound));
-                    sound_list.push_front(s);
-                }
-
-                v10 = *sound_list.begin();
+                v10 = new Sound();
                 memset(v10, 0, sizeof(Sound));
+                    
                 if (!++sound_list_last_id)
                 {
                     sound_list_last_id = 1;
@@ -505,7 +499,6 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
                     v23.dwFlags = 232;
                     if (pds->CreateSoundBuffer(&v23, &v10->pdsb, 0))
                     {
-                        sound_list.push_front(v10);
                         result = 0;
                     }
                     else
@@ -520,7 +513,6 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
                             || v12->Lock(0, v23.dwBufferBytes, &v26, (LPDWORD)&script, (LPVOID *)&v27, (LPDWORD)&v28, 0))
                         {
                             (*v11)->Release();
-                            sound_list.push_front(v10);
                             result = 0;
                         }
                         else
@@ -574,7 +566,7 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
 {
     int result; // eax@2
     Sound *v6; // ebx@3
-    Sound *v7; // eax@6
+    //Sound *v7; // eax@6
     int v8; // eax@10
     int v9; // esi@11
     int v10; // eax@11
@@ -596,17 +588,7 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
     v16 = name;
     if (sound_initialized)
     {
-        if (sound_list.empty()) {
-            Sound *s = new Sound();
-            memset(s, 0, sizeof(Sound));
-            sound_list.push_front(s);
-        }
-
-        v6 = *sound_list.begin();
-        if (sound_list.empty())
-            goto LABEL_18;
-        sound_list.pop_front();
-        
+        v6 = new Sound();
         memset(v6, 0, sizeof(Sound));
         if (!++sound_list_last_id) 
         {
@@ -643,7 +625,6 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
         }
         else
         {
-        LABEL_18:
             result = 0;
         }
     }
@@ -736,7 +717,6 @@ void _439C10_sound_thread(Sound *a1)
     {
         v1->file->close();
         v1->flags = v1->flags & 0xFFFFFFF7 | 0x40;
-        sound_list.push_front(v1);
         _endthread();
     }
     v1->field_40 = a3;
@@ -749,7 +729,6 @@ void _439C10_sound_thread(Sound *a1)
     {
         v1->file->close();
         v1->flags = v1->flags & 0xFFFFFFF7 | 0x40;
-        sound_list.push_front(v1);
         _endthread();
     }
     (*v5)->SetPan(sound_pans[v1->sound_pan_offset]);
@@ -833,7 +812,16 @@ void _439C10_sound_thread(Sound *a1)
     do
     {
         if (v1->flags & 0x20)
-            goto LABEL_89;
+        {
+            v1->pdsb->Stop();
+            v1->file->close();
+            v41 = v1->flags;
+            v1->file = 0;
+            LOBYTE_HEXRAYS(v41) = v41 | 0x40;
+            v1->flags = v41;
+            _endthread();
+            return;
+        }
         while (!v18)
         {
             v19 = v1->flags;
@@ -972,7 +960,7 @@ void _439C10_sound_thread(Sound *a1)
             ++v35;
         } while (v35 < 50);
     }
-LABEL_89:
+
     v1->pdsb->Stop();
     v1->file->close();
     v41 = v1->flags;
@@ -1144,11 +1132,11 @@ void _43A370_process_sound()
                             }
                             ++v7;
                             ++v6;
-                            if ((int)v7 >= (int)&sound_list)
-                            {
-                                v6 = v20;
-                                break;
-                            }
+                            //if ((int)v7 >= (int)&sound_list)
+                            //{
+                            //    v6 = v20;
+                            //    break;
+                            //}
                         }
                         v9 = v0->pdsb;
                         v10 = v0->field_24 + v6;
@@ -1179,11 +1167,11 @@ void _43A370_process_sound()
                             }
                             ++v15;
                             ++v14;
-                            if ((int)v15 >= (int)&sound_list.begin())
-                            {
-                                v14 = v20;
-                                break;
-                            }
+                            //if ((int)v15 >= (int)&sound_list.begin())
+                            //{
+                            //    v14 = v20;
+                            //    break;
+                            //}
                         }
                         v17 = v0->pdsb;
                         v18 = v0->field_30 + v14;
@@ -1219,7 +1207,7 @@ void sound_free_sounds()
     for (Sound *v0 : sound_list_free_pool)
     {
         sound_cleanup(v0);
-        sound_list.push_front(v0);
+        //sound_list.push_front(v0);
     }
     sound_list_free_pool.clear();
 
@@ -1242,7 +1230,7 @@ void sound_list_remove(Sound *a1)
     {
         sound_cleanup(v1);
         sound_list_free_pool.remove(v1);
-        sound_list.push_front(v1);
+        //sound_list.push_front(v1);
     }
 }
 
@@ -1294,7 +1282,7 @@ void sound_deinit()
     for (Sound *v0 : sound_list_free_pool)
     {
         sound_cleanup(v0);
-        sound_list.push_front(v0);
+        //sound_list.push_front(v0);
     }
     sound_list_free_pool.clear();
 
@@ -1309,7 +1297,7 @@ void sound_deinit()
         sound_initialized = 0;
         pds->Release();
         pds = 0;
-        sound_list.clear();
+        //sound_list.clear();
     }
 }
 
