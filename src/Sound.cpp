@@ -991,7 +991,7 @@ void sound_threaded_set_volume(int sound_volume)
         }
         else  //find sound by id - look through list
         {
-            for(Sound *sound : sound_list_free_pool)
+            for (auto sound : sound_list_free_pool)
             {
                 if (sound->id == _47C5D4_sound_threaded_snd_id)
                 {
@@ -1042,7 +1042,7 @@ void sound_stop(int sound_id)
         }
         else //find sound by id - look through list
         {
-            for (Sound *sound : sound_list_free_pool)
+            for (auto sound : sound_list_free_pool)
             {
                 if (sound->id == sound_id) 
                 {
@@ -1196,6 +1196,7 @@ void _43A370_process_sound()
     //remove from sound_list_free_pool & clear remove_list
     for (auto i : remove_list) {
         sound_list_free_pool.remove(i);
+        delete i;
     }
     remove_list.clear();
 }
@@ -1204,9 +1205,10 @@ void _43A370_process_sound()
 //----- (0043A320) --------------------------------------------------------
 void sound_free_sounds()
 {
-    for (Sound *v0 : sound_list_free_pool)
+    for (auto v0 : sound_list_free_pool)
     {
         sound_cleanup(v0);
+        delete v0;
         //sound_list.push_front(v0);
     }
     sound_list_free_pool.clear();
@@ -1279,9 +1281,10 @@ void sound_cleanup(Sound *a1)
 //----- (0043A510) --------------------------------------------------------
 void sound_deinit()
 {
-    for (Sound *v0 : sound_list_free_pool)
+    for (auto v0 : sound_list_free_pool)
     {
         sound_cleanup(v0);
+        delete v0;
         //sound_list.push_front(v0);
     }
     sound_list_free_pool.clear();
