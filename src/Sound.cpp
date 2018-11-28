@@ -150,7 +150,6 @@ void sound_video_stop()
 // Initialize game sound
 bool sound_initialize()
 {
-    //Sound *sound; // ecx@9
     BOOL result; // eax@10
  
     //init sound volumes & sound pans
@@ -445,12 +444,6 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
     bool v13; // zf@21
     unsigned int v14; // ecx@25
     void *v15; // eax@27
-    //Sound *v16; // eax@33
-    //Sound *v17; // eax@35
-    //Sound *v18; // eax@37
-    //Sound *v19; // eax@46
-    //Sound *v20; // eax@48
-    //Sound *v21; // eax@50
     int v22; // [sp+0h] [bp-3Ch]@3
     DSBUFFERDESC v23; // [sp+Ch] [bp-30h]@4
     int v24; // [sp+20h] [bp-1Ch]@1
@@ -566,7 +559,6 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
 {
     int result; // eax@2
     Sound *v6; // ebx@3
-    //Sound *v7; // eax@6
     int v8; // eax@10
     int v9; // esi@11
     int v10; // eax@11
@@ -1132,11 +1124,6 @@ void _43A370_process_sound()
                             }
                             ++v7;
                             ++v6;
-                            //if ((int)v7 >= (int)&sound_list)
-                            //{
-                            //    v6 = v20;
-                            //    break;
-                            //}
                         }
                         v9 = v0->pdsb;
                         v10 = v0->field_24 + v6;
@@ -1167,11 +1154,6 @@ void _43A370_process_sound()
                             }
                             ++v15;
                             ++v14;
-                            //if ((int)v15 >= (int)&sound_list.begin())
-                            //{
-                            //    v14 = v20;
-                            //    break;
-                            //}
                         }
                         v17 = v0->pdsb;
                         v18 = v0->field_30 + v14;
@@ -1209,7 +1191,6 @@ void sound_free_sounds()
     {
         sound_cleanup(v0);
         delete v0;
-        //sound_list.push_front(v0);
     }
     sound_list_free_pool.clear();
 
@@ -1232,7 +1213,7 @@ void sound_list_remove(Sound *a1)
     {
         sound_cleanup(v1);
         sound_list_free_pool.remove(v1);
-        //sound_list.push_front(v1);
+        delete v1;
     }
 }
 
@@ -1285,7 +1266,6 @@ void sound_deinit()
     {
         sound_cleanup(v0);
         delete v0;
-        //sound_list.push_front(v0);
     }
     sound_list_free_pool.clear();
 
@@ -1300,7 +1280,6 @@ void sound_deinit()
         sound_initialized = 0;
         pds->Release();
         pds = 0;
-        //sound_list.clear();
     }
 }
 
