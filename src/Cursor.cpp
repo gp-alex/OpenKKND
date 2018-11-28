@@ -166,6 +166,7 @@ void cursor_drag_selection(CursorHandler *a1, int x, int y)
     a1->_40_is_infantry_or_vehicle_selected = 0;
     a1->_40_is_infantry_or_vehicle_selected = UNIT_STATS_SURV_RIFLEMAN;
     a1->_44_is_combat_unit_selected = 0;
+    a1->_48_highest_ranking_selected_unit = UNIT_STATS_SURV_RIFLEMAN;
 
     Sprite *drag_frame_x = sprite_create(MOBD_CURSORS, 0, 0);
 	sprite_load_mobd(drag_frame_x, CURSOR_MOBD_OFFSET_DRAG_FRAME_X);
