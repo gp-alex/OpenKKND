@@ -31,8 +31,6 @@ struct Sound
     int field_2C;
     int field_30;
     int flags;
-    Sound *next;
-    Sound *prev;
     int field_40;
     char filename[32];
     char gap64[42];
@@ -61,11 +59,7 @@ IDirectSoundBuffer *video_477DE4_dsb;
 LPDIRECTSOUND pds; // idb
 
 std::list<Sound*> sound_list_free_pool;
-std::list<Sound*> sound_list_head;
-//Sound *sound_list_free_pool;
-//Sound *sound_list_free_pool_end; // weak
-//Sound *sound_list;
-//Sound *sound_list_head;
+std::list<Sound*> sound_list;
 int sound_list_last_id; // weak
 int _47C5D4_sound_threaded_snd_id; // idb
 sound_stru_2 **_47C4E0_sounds;
@@ -168,10 +162,6 @@ bool sound_initialize()
 
     sound_initialized = 0;
     sound_list_last_id = 0;
-    //sound_list_free_pool_end = 0;
-
-    //sound_list_free_pool = sound_list_free_pool_end;
-    //sound_list_head = 0;
 
     if (DirectSoundCreate(0, &pds, 0))
         return 1;
@@ -184,37 +174,8 @@ bool sound_initialize()
         return 1;
     }
     
-    //generate 7 empty Sound objects
-    //sound_list = (Sound *)malloc(0xA40u);
-    //memset(sound_list, 0, 0xA40u);
-    //sound = sound_list;
-    //if (sound_list)
-    if (true)
-    {
-    //    int counter = 0;
-    //    while (1)
-    //    {
-    //        sound[counter].next = &sound[counter + 1];
-    //        ++counter;
-    //        if (counter >= 7)
-    //            break;
-    //        sound = sound_list;
-    //    }
-    //    sound_list[7].next = 0;
-
-        //sound_list_free_pool_end = 0;
-        //sound_list_free_pool = sound_list_free_pool_end;
-        //sound_list_head = sound_list;
-
-        sound_initialized = 1;
-        result = 1;
-    }
-    else
-    {
-        pds->Release();
-        pds = 0;
-        result = 1;
-    }
+    sound_initialized = 1;
+    result = 1;
     return result;
 }
 
@@ -517,46 +478,21 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
             v9 = _47C4E0_sounds[sound_id];
             if (v9 != faction_slv && v9)
             {
-                //v10 = sound_list_head;
-                if (sound_list_head.empty()) {
+                if (sound_list.empty()) {
                     Sound *s = new Sound();
                     memset(s, 0, sizeof(Sound));
-                    sound_list_head.push_front(s);
+                    sound_list.push_front(s);
                 }
 
-                v10 = *sound_list_head.begin();
-                //if (sound_list_head)
-                //{
-                    //sound_list_head = sound_list_head->next;
-                    memset(v10, 0, sizeof(Sound));
-                    if (!++sound_list_last_id)
-                    {
-                        sound_list_last_id = 1;
-                    }
-                        
-                    //if (sound_list_last_id == 1) 
-                    //{
-                        //sound_list_free_pool_end = sound_list_free_pool;
-                    //}
-                    v10->id = sound_list_last_id;
-                    sound_list_free_pool.push_front(v10);
-                    //if (sound_list_free_pool == 0) 
-                    //{
-                    //    sound_list_free_pool = v10;
-                    //    v10->next = 0;
-                    //    v10->prev = 0;
-                    //    sound_list_free_pool_end = sound_list_free_pool;
-                    //}
-                    //else 
-                    //{
-                    //    v7 = sound_list_free_pool;
-                    //    v10->next = sound_list_free_pool;
-                    //    v10->prev = 0;
-                    //    sound_list_free_pool->prev = v10;
-                    //    sound_list_free_pool = v10;
-                    //}
-                //}
-
+                v10 = *sound_list.begin();
+                memset(v10, 0, sizeof(Sound));
+                if (!++sound_list_last_id)
+                {
+                    sound_list_last_id = 1;
+                }   
+                v10->id = sound_list_last_id;
+                sound_list_free_pool.push_front(v10);
+                    
                 if (v10)
                 {
                     v10->task = script;
@@ -569,17 +505,7 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
                     v23.dwFlags = 232;
                     if (pds->CreateSoundBuffer(&v23, &v10->pdsb, 0))
                     {
-                        //v16 = v10->next;
-                        //if (v16)
-                        //    v16->prev = v10->prev;
-                        //v17 = v10->prev;
-                        //if (v17)
-                        //    v17->next = v10->next;
-                        sound_list_head.push_front(v10);
-                        //v18 = sound_list_head;
-                        //v10->next = sound_list_head;
-                        //sound_list_head = v10;
-
+                        sound_list.push_front(v10);
                         result = 0;
                     }
                     else
@@ -594,18 +520,7 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
                             || v12->Lock(0, v23.dwBufferBytes, &v26, (LPDWORD)&script, (LPVOID *)&v27, (LPDWORD)&v28, 0))
                         {
                             (*v11)->Release();
-                            //v19 = v10->next;
-                            //*v11 = 0;
-                            //if (v19)
-                            //    v19->prev = v10->prev;
-                            //v20 = v10->prev;
-                            //if (v20)
-                            //    v20->next = v10->next;
-                            sound_list_head.push_front(v10);
-                            //v21 = sound_list_head;
-                            //v10->next = sound_list_head;
-                            //sound_list_head = v10;
-
+                            sound_list.push_front(v10);
                             result = 0;
                         }
                         else
@@ -681,20 +596,17 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
     v16 = name;
     if (sound_initialized)
     {
-        //v6 = sound_list_head;
-        if (sound_list_head.empty()) {
+        if (sound_list.empty()) {
             Sound *s = new Sound();
             memset(s, 0, sizeof(Sound));
-            sound_list_head.push_front(s);
+            sound_list.push_front(s);
         }
 
-        v6 = *sound_list_head.begin();
-        //if (!sound_list_head)
-        if (sound_list_head.empty())
+        v6 = *sound_list.begin();
+        if (sound_list.empty())
             goto LABEL_18;
-        sound_list_head.pop_front();
-        //sound_list_head = sound_list_head->next;
-
+        sound_list.pop_front();
+        
         memset(v6, 0, sizeof(Sound));
         if (!++sound_list_last_id) 
         {
@@ -702,20 +614,6 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
         }
         v6->id = sound_list_last_id;
         sound_list_free_pool.push_front(v6);
-        //if (sound_list_free_pool == 0) 
-        //{
-        //    sound_list_free_pool = v6;
-        //    v6->next = 0;
-        //    v6->prev = 0;
-        //    sound_list_free_pool_end = sound_list_free_pool;
-        //} 
-        //else {
-        //    v7 = sound_list_free_pool;
-        //    v6->next = sound_list_free_pool;
-        //    v6->prev = 0;
-        //    sound_list_free_pool->prev = v6;
-        //    sound_list_free_pool = v6;
-        //}
         
         if (v6)
         {
@@ -837,16 +735,8 @@ void _439C10_sound_thread(Sound *a1)
     if (!v4 || !file_read_wav(v4, &out_data, &a3))
     {
         v1->file->close();
-        //v44 = v1->next;
         v1->flags = v1->flags & 0xFFFFFFF7 | 0x40;
-        //if (v44)
-        //    v44->prev = v1->prev;
-        //v45 = v1->prev;
-        //if (v45)
-        //    v45->next = v1->next;
-        sound_list_head.push_front(v1);
-        //v1->next = sound_list_head;
-        //sound_list_head = v1;
+        sound_list.push_front(v1);
         _endthread();
     }
     v1->field_40 = a3;
@@ -858,16 +748,8 @@ void _439C10_sound_thread(Sound *a1)
     if (pds->CreateSoundBuffer(&v57, &v1->pdsb, 0))
     {
         v1->file->close();
-        //v42 = v1->next;
         v1->flags = v1->flags & 0xFFFFFFF7 | 0x40;
-        //if (v42)
-        //    v42->prev = v1->prev;
-        //v43 = v1->prev;
-        //if (v43)
-        //    v43->next = v1->next;
-        sound_list_head.push_front(v1);
-        //v1->next = sound_list_head;
-        //sound_list_head = v1;
+        sound_list.push_front(v1);
         _endthread();
     }
     (*v5)->SetPan(sound_pans[v1->sound_pan_offset]);
@@ -1121,10 +1003,8 @@ void sound_threaded_set_volume(int sound_volume)
         }
         else  //find sound by id - look through list
         {
-            //while (sound != sound_list_free_pool_end)
             for(Sound *sound : sound_list_free_pool)
             {
-                // sound = sound->next;
                 if (sound->id == _47C5D4_sound_threaded_snd_id)
                 {
                     sound_buffer = sound->pdsb;
@@ -1174,10 +1054,8 @@ void sound_stop(int sound_id)
         }
         else //find sound by id - look through list
         {
-            //while (sound != sound_list_free_pool_end)
             for (Sound *sound : sound_list_free_pool)
             {
-                //sound = sound->next;
                 if (sound->id == sound_id) 
                 {
                     if (sound->field_14 == -3)
@@ -1232,8 +1110,6 @@ void _43A370_process_sound()
     int v20; // [sp+20h] [bp-4h]@9
     std::list<Sound*> remove_list;
 
-    //v0 = sound_list_free_pool;
-    //for (i = 0; v0 != sound_list_free_pool_end; v0 = v0->next)
     for (auto v0 : sound_list_free_pool)
     {
         if (!v0)
@@ -1268,7 +1144,7 @@ void _43A370_process_sound()
                             }
                             ++v7;
                             ++v6;
-                            if ((int)v7 >= (int)&sound_list_head)
+                            if ((int)v7 >= (int)&sound_list)
                             {
                                 v6 = v20;
                                 break;
@@ -1303,8 +1179,7 @@ void _43A370_process_sound()
                             }
                             ++v15;
                             ++v14;
-                            //if ((int)v15 >= (int)&sound_list)
-                            if ((int)v15 >= (int)&sound_list_head.begin())
+                            if ((int)v15 >= (int)&sound_list.begin())
                             {
                                 v14 = v20;
                                 break;
@@ -1323,16 +1198,14 @@ void _43A370_process_sound()
                 }
                 else
                 {
-                    //v2 = v0->next;
-                    //sound_list_free_pool.remove(v0);
+                    // add to remove list
                     remove_list.push_front(v0);
-                    //v0 = v2;
                 }
             }
         }
     }
 
-    //remove from sound_list_free_pool
+    //remove from sound_list_free_pool & clear remove_list
     for (auto i : remove_list) {
         sound_list_free_pool.remove(i);
     }
@@ -1343,25 +1216,10 @@ void _43A370_process_sound()
 //----- (0043A320) --------------------------------------------------------
 void sound_free_sounds()
 {
-    //Sound *v0; // ecx@1
-    //Sound *v1; // esi@3
-
-    //v0 = sound_list_free_pool;
-    //if (sound_list_free_pool)
-    //{
-    //    do
-    //    {
-    //        //if (v0 == sound_list_free_pool_end)
-    //        //break;
-    //        v1 = v0->next;
-    //        sound_list_remove(v0);
-    //        v0 = v1;
-    //    } while (v1);
-    //}
     for (Sound *v0 : sound_list_free_pool)
     {
         sound_cleanup(v0);
-        sound_list_head.push_front(v0);
+        sound_list.push_front(v0);
     }
     sound_list_free_pool.clear();
 
@@ -1384,7 +1242,7 @@ void sound_list_remove(Sound *a1)
     {
         sound_cleanup(v1);
         sound_list_free_pool.remove(v1);
-        sound_list_head.push_front(v1);
+        sound_list.push_front(v1);
     }
 }
 
@@ -1433,25 +1291,10 @@ void sound_cleanup(Sound *a1)
 //----- (0043A510) --------------------------------------------------------
 void sound_deinit()
 {
-    Sound *v0; // ecx@1
-    Sound *v1; // esi@3
-
-    //v0 = sound_list_free_pool;                    // INLINED 43A320
-    //if (sound_list_free_pool)
-    //{
-    //    do
-    //    {
-    //        //if (v0 == sound_list_free_pool_end)
-    //        //    break;
-    //        v1 = v0->next;
-    //        sound_list_remove(v0);
-    //        v0 = v1;
-    //    } while (v1);
-    //}
     for (Sound *v0 : sound_list_free_pool)
     {
         sound_cleanup(v0);
-        sound_list_head.push_front(v0);
+        sound_list.push_front(v0);
     }
     sound_list_free_pool.clear();
 
@@ -1466,8 +1309,7 @@ void sound_deinit()
         sound_initialized = 0;
         pds->Release();
         pds = 0;
-        //free(sound_list);
-        sound_list_head.clear();
+        sound_list.clear();
     }
 }
 
