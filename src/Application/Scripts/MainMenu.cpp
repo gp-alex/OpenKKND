@@ -1883,10 +1883,10 @@ void script_main_menu_kaos_start(Script *a1)
         _47C6DC_dont_execute_unit_handlers = 1;
         single_player_game = 1;
         netz_42E7F0();
-        v10 = kknd_rand();
-        player_side = (PLAYER_SIDE)(2 * (v10 % 3) + 2);
+        v10 = rnd_capped(3);
+        player_side = (PLAYER_SIDE)(2 * v10 + 2);
         if (!_47C658_faction_index)
-            player_side = (PLAYER_SIDE)(2 * (v10 % 3) + 1);
+            player_side = (PLAYER_SIDE)(2 * v10 + 1);
         current_level_idx = (LEVEL_ID)(SBYTE3(_46E420_starting_cash_idx) + 30);
         game_state = GAME_STATE::Mission;
         if (_47C6E0_task)
