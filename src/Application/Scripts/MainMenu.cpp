@@ -652,6 +652,7 @@ void script_main_menu_new_campaign_mute(Script *a1)
             {
             case EVT_MOUSE_HOVER:
                 stru29_list_443AE0_find_by_sprite(a1->sprite);
+                break;
             case EVT_MSG_SELECTED:
                 v3 = 1;
                 break;
