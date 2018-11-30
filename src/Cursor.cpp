@@ -461,7 +461,7 @@ void cursor_process_user_actions(CursorHandler *a1, int a2)
     v3 = stru13construct_list_47A638;
     v96 = a2;
     if ((stru13construct **)stru13construct_list_47A638 != &stru13construct_list_47A638)
-    {
+    { // building is being built
         while (1)
         {
             v4 = v3->_18_cost;

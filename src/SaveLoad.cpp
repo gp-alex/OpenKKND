@@ -1889,7 +1889,6 @@ int GAME_Save()
     int max_entity_save_size = 0;
     GAME_Save_PackEntities(entityRepo->FindAll(), entity_save_index, &entity_save_data, &max_entity_save_size);
 
-
     for (auto entity_index : entity_save_index) {
         ABORT_SAVEGAME_FWRITE(fwrite(&entity_index.entity_id, 1u, 4u, file));
     }
@@ -1904,8 +1903,6 @@ int GAME_Save()
         entity_data += entity_index.entity_save_size;
     }
 
-
-
     cpu_players = GAME_Save_PackAiPlayers(&cpu_players_size);
     ABORT_SAVEGAME(!cpu_players, aCouldNotSaveCp);
 
@@ -1917,7 +1914,6 @@ int GAME_Save()
 
     misc_info = GAME_Save_PackMiscInfo(&misc_info_size);
     ABORT_SAVEGAME(!misc_info, aCouldNotSaveMi);
-
 
     ABORT_SAVEGAME_FWRITE(fwrite(&cpu_players_size, 1u, 4u, file));
     ABORT_SAVEGAME_FWRITE(fwrite(cpu_players, 1u, cpu_players_size, file));
