@@ -166,6 +166,7 @@ void cursor_drag_selection(CursorHandler *a1, int x, int y)
     a1->_40_is_infantry_or_vehicle_selected = 0;
     a1->_40_is_infantry_or_vehicle_selected = UNIT_STATS_SURV_RIFLEMAN;
     a1->_44_is_combat_unit_selected = 0;
+    a1->_48_highest_ranking_selected_unit = UNIT_STATS_SURV_RIFLEMAN;
 
     Sprite *drag_frame_x = sprite_create(MOBD_CURSORS, 0, 0);
 	sprite_load_mobd(drag_frame_x, CURSOR_MOBD_OFFSET_DRAG_FRAME_X);
@@ -1042,7 +1043,7 @@ void cursor_on_unit_group_selection(CursorHandler *v3)
         case UNIT_STATS_PLASMA_TANK:
         case UNIT_STATS_SENTINEL_DROID:
         case UNIT_STATS_MECH:
-            v26 = _4689A8_sound_ids[kknd_rand() % -2];
+            v26 = _4689A8_sound_ids[rnd_capped(2)];
             goto LABEL_57;
         case UNIT_STATS_MUTE_DIRE_WOLF:
             v26 = (SOUND_ID)165;
@@ -1062,11 +1063,11 @@ void cursor_on_unit_group_selection(CursorHandler *v3)
         default:
             if (is_player_faction_evolved())
             {
-                v26 = _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
+                v26 = _468998_sound_ids[rnd_capped(4)];
             }
             else
             {
-                v26 = _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
+                v26 = _468988_sound_ids[rnd_capped(4)];
             }
         LABEL_57:
             sound_play(v26, 0, _4690A8_sfx_volume, 16, 0);
@@ -1160,9 +1161,8 @@ void cursor_play_selection_response(CursorHandler *a1, Entity *entity)
     case UNIT_STATS_SENTINEL_DROID:
     case UNIT_STATS_MECH:
     {
-        auto v9 = kknd_rand();
         sound_play(
-            _4689A8_sound_ids[(((unsigned __int64)v9 >> 32) ^ abs(v9) & 1) - ((unsigned __int64)v9 >> 32)],
+            _4689A8_sound_ids[rnd_capped(2)],
             0,
             _4690A8_sfx_volume,
             16,
@@ -1186,20 +1186,20 @@ void cursor_play_selection_response(CursorHandler *a1, Entity *entity)
             {
                 if (v11)
                 {
-                    v7 = _468A18_sound_ids[kknd_rand() % -2];
+                    v7 = _468A18_sound_ids[rnd_capped(2)];
                 }
                 else
                 {
-                    v7 = _468988_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
+                    v7 = _468988_sound_ids[rnd_capped(4)];
                 }
             }
             else if (v11)
             {
-                v7 = _468A20_sound_ids[kknd_rand() % -2];
+                v7 = _468A20_sound_ids[rnd_capped(2)];
             }
             else
             {
-                v7 = _468998_sound_ids[(unsigned __int8)((char)kknd_rand() % -4)];
+                v7 = _468998_sound_ids[rnd_capped(4)];
             }
             sound_play(v7, 0, _4690A8_sfx_volume, 16, 0);
         }

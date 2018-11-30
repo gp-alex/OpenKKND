@@ -2925,7 +2925,8 @@ void UNIT_Handler_OilPatch(Script *a1)
 	}
 
 	v1->field_88_unused = 1;
-    v7 = &_478AA8_boxd_stru0_array[global2map(v1->x) + map_get_width() * global2map(v1->y)].flags2;
+    v7 = &boxd_get_tile(global2map(v1->x), global2map(v1->y))->flags2;
+    //v7 = &_478AA8_boxd_stru0_array[global2map(v1->x) + map_get_width() * global2map(v1->y)].flags2;
 	*v7 |= 0x80u;
 	script_yield(a1, 1, 0);
 	v1->drawjob->flags |= 0x40000000u;
