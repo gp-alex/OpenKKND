@@ -1108,7 +1108,7 @@ int netz_42E820(netz_stru_3 *a1)
             return 0;
         }
         v79 = 0;
-        v80 = kknd_rand() % 6;
+        v80 = rnd_capped(6);
         while (netz_47A740[v80 + 2].field_8)
         {
             if (++v80 == 6)

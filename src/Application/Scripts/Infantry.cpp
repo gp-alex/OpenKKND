@@ -4579,7 +4579,6 @@ void entity_419560_on_death(Entity *a1)
     Script *v2; // eax@1
     EntityTurret *v3; // eax@1
     UnitStat *v4; // edx@3
-    signed __int64 v5; // rax@5
     int v6; // ecx@5
     int v7; // edx@7
     int v8; // ST04_4@10
@@ -4611,16 +4610,14 @@ void entity_419560_on_death(Entity *a1)
         if (v1->veterancy_level)
         {
             v11 = _4690A8_sfx_volume;
-            v5 = kknd_rand_debug(__FILE__, __LINE__);
             v6 = 6;
         }
         else
         {
             v11 = _4690A8_sfx_volume;
-            v5 = kknd_rand_debug(__FILE__, __LINE__);
             v6 = 5;
         }
-        sprite_408800_play_sound(v1->sprite, _465988_sounds[(unsigned __int64)(v5 % v6)], v11, 0);
+        sprite_408800_play_sound(v1->sprite, _465988_sounds[rnd_capped(v6)], v11, 0);
         v1->sprite->mobd_id = MOBD_EXPLOSIONS;
         v7 = SPRITE_EXPLOSION_MOBD_OFFSET_UNIT_SURV_RIFLEMAN_DEATH;
         if (v1->stats->player_side != 1)

@@ -41,7 +41,6 @@ void UNIT_DmgHandler_Sapper(Script *a1)
     int v21; // ebp@7
     int v22; // eax@9
     int v23; // ST04_4@13
-    char v24; // al@13
     Sprite *v25; // eax@14
     int v26; // [sp+10h] [bp-14h]@3
     int v27; // [sp+10h] [bp-14h]@5
@@ -109,8 +108,7 @@ void UNIT_DmgHandler_Sapper(Script *a1)
     {
         v1->z_index = 255;
         v23 = _4690A8_sfx_volume;
-        v24 = kknd_rand_debug(__FILE__, __LINE__);
-        sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v24 % -2)], v23, 0);
+        sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[rnd_capped(2)], v23, 0);
         v1->mobd_id = MOBD_EXPLOSIONS;
         sprite_load_mobd(v1, *(_DWORD *)(v10 + 12));
         v1->_60_mobd_anim_speed = 0x20000000;
@@ -191,7 +189,6 @@ void UNIT_DmgHandler_Rocket(Script *a1)
     int v24; // edi@14
     int v25; // edi@15
     int v26; // ST04_4@22
-    char v27; // al@22
     DrawJob *v28; // ecx@23
     int i; // ebx@24
     int v32; // eax@29
@@ -286,8 +283,7 @@ void UNIT_DmgHandler_Rocket(Script *a1)
     if (*((_DWORD *)v34 + 3) != -1)
     {
         v26 = _4690A8_sfx_volume;
-        v27 = kknd_rand_debug(__FILE__, __LINE__);
-        sprite_408800_play_sound(v2, _46BB80_dmg_handler_sounds[(unsigned __int8)(v27 % -2)], v26, 0);
+        sprite_408800_play_sound(v2, _46BB80_dmg_handler_sounds[rnd_capped(2)], v26, 0);
         v2->mobd_id = MOBD_EXPLOSIONS;
         sprite_load_mobd(v2, *((_DWORD *)v34 + 3));
         v2->_60_mobd_anim_speed = 0x20000000;
@@ -623,7 +619,6 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     int v8; // ebx@1
     int v9; // eax@1
     int v10; // ST04_4@1
-    char v11; // al@1
     int v12; // [sp+10h] [bp-8h]@1
 
     v1 = a1->sprite;
@@ -647,8 +642,7 @@ void script_4368B0_plasma_tank_dmg_handler(Script *a1)
     v1->z_speed_factor_2 = 0;
     v1->z_index = 255;
     v10 = _4690A8_sfx_volume;
-    v11 = kknd_rand_debug(__FILE__, __LINE__);
-    sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v11 % -2)], v10, 0);
+    sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[rnd_capped(2)], v10, 0);
     v1->mobd_id = MOBD_PLASMA_TANK;
     sprite_load_mobd(v1, 2084);
     v1->_60_mobd_anim_speed = 0x20000000;
@@ -682,7 +676,6 @@ void UNIT_DmgHandler_Mech(Script *a1)
     int v16; // ebx@10
     int v17; // eax@10
     int v18; // ST04_4@11
-    char v19; // al@11
     DrawJob *v20; // ecx@11
     int v21; // ebp@13
     Sprite *v22; // ecx@13
@@ -707,7 +700,6 @@ void UNIT_DmgHandler_Mech(Script *a1)
     int v41; // edi@26
     int v42; // edi@27
     int v43; // ST04_4@34
-    char v44; // al@34
     DrawJob *v45; // ecx@35
     int i; // ebp@36
     int v49; // eax@41
@@ -774,8 +766,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         if (*(_DWORD *)(v55 + 12) != -1)
         {
             v18 = _4690A8_sfx_volume;
-            v19 = kknd_rand_debug(__FILE__, __LINE__);
-            sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v19 % -2)], v18, 0);
+            sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[rnd_capped(2)], v18, 0);
             v1->mobd_id = MOBD_EXPLOSIONS;
             sprite_load_mobd(v1, 2084);
             v20 = v1->drawjob;
@@ -861,8 +852,7 @@ void UNIT_DmgHandler_Mech(Script *a1)
         if (*(_DWORD *)(v55 + 12) != -1)
         {
             v43 = _4690A8_sfx_volume;
-            v44 = kknd_rand_debug(__FILE__, __LINE__);
-            sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[(unsigned __int8)(v44 % -2)], v43, 0);
+            sprite_408800_play_sound(v1, _46BB80_dmg_handler_sounds[rnd_capped(2)], v43, 0);
             v1->mobd_id = MOBD_EXPLOSIONS;
             sprite_load_mobd(v1, *(_DWORD *)(v55 + 12));
             v1->_60_mobd_anim_speed = 0x20000000;
@@ -1036,7 +1026,6 @@ void UNIT_DmgHandler_Rifle(Script *a1)
     int v11; // edx@14
     int v12; // eax@19
     int v13; // ST04_4@20
-    int v14; // eax@20
     enum UNIT_ID v15; // eax@21
     int v16; // esi@29
     int v18; // [sp+10h] [bp-8h]@1
@@ -1135,8 +1124,7 @@ void UNIT_DmgHandler_Rifle(Script *a1)
     if (!(kknd_rand_debug(__FILE__, __LINE__) % 3))
     {
         v13 = _4690A8_sfx_volume;
-        v14 = kknd_rand_debug(__FILE__, __LINE__);
-        sprite_408800_play_sound(v2, _46BB70_dmg_handler_sounds[v14 % 3], v13, 0);
+        sprite_408800_play_sound(v2, _46BB70_dmg_handler_sounds[rnd_capped(3)], v13, 0);
     }
     v15 = v3->unit_id;
     if ((v15 == UNIT_STATS_SURV_RIFLEMAN || v15 == UNIT_STATS_MUTE_SHOTGUNNER || v15 == UNIT_STATS_MUTE_DIRE_WOLF)
@@ -1420,7 +1408,7 @@ void UNIT_DmgHandler_Projectile(Script *a1)
         else
         {
             v21 = _4690A8_sfx_volume;
-            v22 = _46BB80_dmg_handler_sounds[(unsigned __int8)((char)kknd_rand_debug(__FILE__, __LINE__) % -2)];
+            v22 = _46BB80_dmg_handler_sounds[rnd_capped(2)];
             sprite_408800_play_sound(v1, v22, v21, 0);
         }
         v1->mobd_id = MOBD_EXPLOSIONS;
