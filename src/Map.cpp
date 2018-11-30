@@ -33,13 +33,13 @@ MapdScrlImageTile *dword_47CFC0; // weak
 MapdScrlImageTile *fog_of_war_tile_15;
 int __478AAC_map_height_plus4; // weak
 MapdScrlImage *fog_of_war_scrl_source;
-int __478AAC_map_height_x2; // weak
+int minimap_height; // weak
 MapdScrlImageTile *fog_of_war_tile_1;
 MapdScrlImageTile *fog_of_war_tile_10;
 MapdScrlImageTile *fog_of_war_tile_14;
 MapdScrlImageTile *fog_of_war_tile_4;
 MapdScrlImage *map_fog_of_war_scrl;
-int dword_47CB4C; // weak
+char minimap_fog_of_war_color; // weak
 char byte_47CB50[8];
 Sprite *_47CB58_minimap_sprite;
 MapdScrlImageTile *fog_of_war_tile_11;
@@ -48,16 +48,16 @@ MapdScrlImageTile *fog_of_war_tile_3;
 int dword_47CB68; // weak
 int dword_47CB6C; // weak
 MapdScrlImageTile *fog_of_war_tile_13;
-void *_47CB74_fow_map_x2; // idb
+void *minimap_revealed_pixels; // idb
 MapdScrlImageTile *fog_of_war_tile_6;
-int __4793F8_map_width_x2; // weak
+int minimap_width; // weak
 int __4793F8_map_width_plus4; // weak
 MapdScrlImageTile *fog_of_war_tile_8;
-void *_47CB88_fow_map_x2; // idb
+void *minimap_fog_of_war_pixels; // idb
 DrawHandlerData_Units *_47CB8C_fow;
 MapdScrlImageTile *fog_of_war_tile_5;
 MapdScrlImageTile *fog_of_war_tile_12;
-void *_47CB98_fow_map_x2;
+void *minimap_pixels;
 int dword_47CBAC; // weak
 Bitmap *fog_of_war_bitmap;
 MapdScrlImageTile **map_fog_of_war_scrl_tiles;
@@ -156,11 +156,11 @@ void hide_minimap_sprite()
 void _44A6B0_minimap(int x, int y)
 {
     _47CB58_minimap_sprite->field_88_unused = 1;
-    _47CB58_minimap_sprite->x = (x - __4793F8_map_width_x2 - 4) << 8;
+    _47CB58_minimap_sprite->x = (x - minimap_width - 4) << 8;
     _47CB58_minimap_sprite->field_88_unused = 1;
     _47CB58_minimap_sprite->y = y << 8;
 }
-// 47CB7C: using guessed type int __4793F8_map_width_x2;
+// 47CB7C: using guessed type int minimap_width;
 
 //----- (0044A700) --------------------------------------------------------
 void script_44A700_minimap(Script *a1)
@@ -197,13 +197,13 @@ _BYTE *_44A780_gof_of_war()
     _BYTE *v8; // eax@5
 
     v0 = map_get_width();
-    result = (char *)_47CB88_fow_map_x2;
-    v2 = (char *)_47CB74_fow_map_x2;
+    result = (char *)minimap_fog_of_war_pixels;
+    v2 = (char *)minimap_revealed_pixels;
     v3 = 0;
     v4 = &map_fog_of_war_scrl_tiles[2 * map_get_width() + 10];
     if (map_get_height() > 0)
     {
-        v5 = __4793F8_map_width_x2;
+        v5 = minimap_width;
         do
         {
             v6 = 0;
@@ -215,21 +215,21 @@ _BYTE *_44A780_gof_of_war()
                     {
                         result[v5] = v2[v5];
                         v8 = result + 1;
-                        v8[__4793F8_map_width_x2] = v2[__4793F8_map_width_x2 + 1];
+                        v8[minimap_width] = v2[minimap_width + 1];
                         *(v8 - 1) = *v2;
                         v7 = *v2;
                     }
                     else
                     {
-                        result[v5] = dword_47CB4C;
-                        result[__4793F8_map_width_x2 + 1] = dword_47CB4C;
-                        *result = dword_47CB4C;
-                        v7 = dword_47CB4C;
+                        result[v5] = minimap_fog_of_war_color;
+                        result[minimap_width + 1] = minimap_fog_of_war_color;
+                        *result = minimap_fog_of_war_color;
+                        v7 = minimap_fog_of_war_color;
                         v8 = result + 1;
                     }
                     *v8 = v7;
                     v0 = map_get_width();
-                    v5 = __4793F8_map_width_x2;
+                    v5 = minimap_width;
                     result = v8 + 1;
                     ++v6;
                     ++v4;
@@ -246,10 +246,9 @@ _BYTE *_44A780_gof_of_war()
 }
 
 //----- (0044A840) --------------------------------------------------------
-bool mapd_init_fog_of_war()
+bool minimap_init()
 {
     int v2; // eax@4
-    unsigned int v3; // ebp@6
     MapdScrlImageTile **v4; // ebx@6
     int v5; // esi@6
     char *v7; // edi@9
@@ -276,13 +275,11 @@ bool mapd_init_fog_of_war()
     char *v35; // eax@49
     int v36; // ecx@50
     int v37; // ecx@52
-    int *v38; // eax@52
     char v39; // dl@53
     Sprite *v40; // eax@54
     char *v41; // [sp+10h] [bp-24h]@9
     MapdScrlImageTile **v42; // [sp+14h] [bp-20h]@10
     char v44; // [sp+1Ch] [bp-18h]@17
-    int v49; // [sp+30h] [bp-4h]@6
     int v50; // [sp+30h] [bp-4h]@42
 
     DataMapd *v1 = LVL_FindMapd();
@@ -328,33 +325,32 @@ bool mapd_init_fog_of_war()
                 }
 
                 fog_of_war_bitmap->draw_job->job_details.image = map_fog_of_war_scrl;
-                LOBYTE_HEXRAYS(dword_47CB4C) = fog_of_war_tile_1->pixels[0];
-                __4793F8_map_width_x2 = 2 * map_get_width();
-                v3 = 2 * map_get_width() * 2 * map_get_height();
-                __478AAC_map_height_x2 = 2 * map_get_height();
-                v49 = 2 * map_get_width() * 2 * map_get_height();
+                minimap_fog_of_war_color = fog_of_war_tile_1->pixels[0];
+                minimap_width = 2 * map_get_width();
+                minimap_height = 2 * map_get_height();
+                int num_minimap_pixels = minimap_width * minimap_height;
                 v4 = v1->items[0].images[0]->tiles;
-                v5 = 4 * (2 * map_get_width() + 2 * map_get_height()) + 16;
-                _47CB74_fow_map_x2 = malloc(v3);
-                if (_47CB74_fow_map_x2)
+                v5 = 4 * (minimap_width + minimap_height) + 16;
+                minimap_revealed_pixels = malloc(num_minimap_pixels);
+                if (minimap_revealed_pixels)
                 {
-                    _47CB88_fow_map_x2 = malloc(v3);
-                    if (_47CB88_fow_map_x2)
+                    minimap_fog_of_war_pixels = malloc(num_minimap_pixels);
+                    if (minimap_fog_of_war_pixels)
                     {
-                        _47CB8C_fow = (DrawHandlerData_Units *)malloc(v5 + v3 + 12);
+                        _47CB8C_fow = (DrawHandlerData_Units *)malloc(v5 + num_minimap_pixels + 12);
                         if (_47CB8C_fow)
                         {
                             _47CB8C_fow->type = 0;
-                            v7 = (char *)_47CB74_fow_map_x2;
+                            v7 = (char *)minimap_revealed_pixels;
                             v41 = (char *)_47CB8C_fow->sprite_data;
-                            dword_47CBAC = (int)(&_47CB8C_fow[1].type + 2 * __4793F8_map_width_x2);
+                            dword_47CBAC = (int)(&_47CB8C_fow[1].type + 2 * minimap_width);
 
-                            for (int v8 = 0; v8 < __478AAC_map_height_x2; ++v8)
+                            for (int v8 = 0; v8 < minimap_height; ++v8)
                             {
                                 v42 = v4;
                                 v10 = 16 * (v8 & 1);
                                 v11 = (v8 & 1) << 9;
-                                for (int v9 = 0; v9 < __4793F8_map_width_x2; ++v9)
+                                for (int v9 = 0; v9 < minimap_width; ++v9)
                                 {
                                     v12 = 16 * (v9 & 1);
                                     v13 = &(*v42)->pixels[v11 + v12];
@@ -399,21 +395,20 @@ bool mapd_init_fog_of_war()
                                     v4 += map_get_width();
                                 }
                             }
-                            v3 = v49;
 
-                            memset(_47CB88_fow_map_x2, dword_47CB4C, v3);
-                            //memset32(_47CB88_fow_map_x2, v21, v3 >> 2);
+                            memset(minimap_fog_of_war_pixels, minimap_fog_of_war_color, num_minimap_pixels);
+                            //memset32(minimap_fog_of_war_pixels, v21, v3 >> 2);
                             //memset(&v20[4 * (v3 >> 2)], v4, v3 & 3);
-                            v22 = __4793F8_map_width_x2 + 4;
-                            v23 = __478AAC_map_height_x2 + 4;
-                            if (__4793F8_map_width_x2 + 4 <= 2)
+                            v22 = minimap_width + 4;
+                            v23 = minimap_height + 4;
+                            if (minimap_width + 4 <= 2)
                             {
                                 v24 = v41;
                             }
                             else
                             {
                                 v24 = v41;
-                                memset(v41, 0xA6u, __4793F8_map_width_x2 + 2);
+                                memset(v41, 0xA6u, minimap_width + 2);
                             }
                             v25 = v24;
                             if (v23 > 2)
@@ -421,7 +416,7 @@ bool mapd_init_fog_of_war()
                                 v26 = v23 - 2;
                                 do
                                 {
-                                    *v25 = -90;
+                                    *v25 = -90; // A6 = white viewport border
                                     v25 += v22;
                                     --v26;
                                 } while (v26);
@@ -435,7 +430,7 @@ bool mapd_init_fog_of_war()
                                 v29 = v23 - 3;
                                 do
                                 {
-                                    *v28 = -96;
+                                    *v28 = -96; // A0
                                     v28 += v22;
                                     --v29;
                                 } while (v29);
@@ -459,7 +454,7 @@ bool mapd_init_fog_of_war()
                             v34 = (int)&v41[v22 * (v23 - 2)];
                             if (v22 > 3)
                             {
-                                memset((void *)(v34 + 2), 0xA6u, v22 - 3);
+                                memset((void *)(v34 + 2), 0xA6u, v22 - 3); // A6 = white viewport border
                                 v31 = (char *)v50;
                             }
                             v35 = &v41[2 * v22 - 2] + v22;
@@ -468,7 +463,7 @@ bool mapd_init_fog_of_war()
                                 v36 = v23 - 3;
                                 do
                                 {
-                                    *v35 = -90;
+                                    *v35 = -90; // A6 = white viewport border
                                     v35 += v22;
                                     --v36;
                                 } while (v36);
@@ -478,27 +473,27 @@ bool mapd_init_fog_of_war()
                             v41[2 * v22 - 2] = -93;
                             *(_BYTE *)(v34 + 1) = -93;
                             *v31 = -93;
-                            v38 = &player_sprite_color_by_player_side[1];
+                            int v38 = 1;// &player_sprite_color_by_player_side[1];
                             do
                             {
-                                v39 = *(_BYTE *)v38;
+                                v39 = (_BYTE)player_sprite_color_by_player_side[v38];
                                 ++v38;
                                 byte_47CB50[v37++] = 16 * v39 + 12;
-                            } while ((int)v38 < (int)&UNIT_num_player_units);
-                            _47CB8C_fow->width = __4793F8_map_width_x2 + 4;
-                            _47CB8C_fow->height = __478AAC_map_height_x2 + 4;
+                            } while (v38 < 7);// ((int)v38 < (int)&UNIT_num_player_units);
+                            _47CB8C_fow->width = minimap_width + 4;
+                            _47CB8C_fow->height = minimap_height + 4;
                             _47CBA0_MobdSprtImage_fog_of_war.data = _47CB8C_fow;
-                            dword_470598 = (__4793F8_map_width_x2 + 4) << 8;
+                            dword_470598 = (minimap_width + 4) << 8;
                             _47CBA0_MobdSprtImage_fog_of_war.flags = 0;
                             _47CBA0_MobdSprtImage_fog_of_war.handler = render_sprt_draw_handler;
-                            dword_47059C = (__478AAC_map_height_x2 + 4) << 8;
+                            dword_47059C = (minimap_height + 4) << 8;
                             v40 = sprite_create_scripted(MOBD_MUTE_ALCHEMY_HALL, 0, script_44A500_fog_of_war, SCRIPT_COROUTINE, 0);
                             _47CB58_minimap_sprite = v40;
                             v40->_54_inside_mobd_ptr4 = &_4705B0_minimap;
                             _47CB58_minimap_sprite->drawjob->on_update_handler = (void(*)(void *, DrawJob *))drawjob_update_handler_4483E0_ui;
                             _47CB58_minimap_sprite->script->script_type = SCRIPT_TYPE_47802_fog_of_war;
                             _47CB58_minimap_sprite->drawjob->flags |= 0x40000000u;
-                            _47CB98_fow_map_x2 = _47CB88_fow_map_x2;
+                            minimap_pixels = minimap_fog_of_war_pixels;
                             return true;
                         }
                     }
@@ -544,13 +539,13 @@ void mapd_44AE30_fog_of_war()
 
     if (_47CB58_minimap_sprite->pstru58)
     {
-        v0 = __4793F8_map_width_x2;
-        v1 = (char *)_47CB98_fow_map_x2;
+        v0 = minimap_width;
+        v1 = (char *)minimap_pixels;
         v2 = 0;
         v29 = (unsigned int)(render_width - 32) >> 4;
         v30 = (unsigned int)render_height >> 4;
         v3 = (_BYTE *)dword_47CBAC;
-        for (i = __4793F8_map_width_x2 + 4; v2 < __478AAC_map_height_x2; v3 += 4)
+        for (i = minimap_width + 4; v2 < minimap_height; v3 += 4)
         {
             v5 = 0;
             if (v0 > 0)
@@ -558,11 +553,11 @@ void mapd_44AE30_fog_of_war()
                 do
                 {
                     *v3 = *v1;
-                    v0 = __4793F8_map_width_x2;
+                    v0 = minimap_width;
                     ++v3;
                     ++v1;
                     ++v5;
-                } while (v5 < __4793F8_map_width_x2);
+                } while (v5 < minimap_width);
             }
             ++v2;
         }
@@ -582,10 +577,10 @@ void mapd_44AE30_fog_of_war()
                     v8 = j->sprite;
                     v9 = 2 * (v8->x >> 13);
                     v10 = 2 * (v8->y >> 13);
-                    if (v9 >= 0 && v9 < __4793F8_map_width_x2 && v10 >= 0 && v10 < __478AAC_map_height_x2)
+                    if (v9 >= 0 && v9 < minimap_width && v10 >= 0 && v10 < minimap_height)
                     {
                         v11 = dword_47CBAC + v9 + i * v10;
-                        if (*(_BYTE *)v11 != (_BYTE)dword_47CB4C || *(_BYTE *)(v11 + 1) != (_BYTE)dword_47CB4C)
+                        if (*(_BYTE *)v11 != (_BYTE)minimap_fog_of_war_color || *(_BYTE *)(v11 + 1) != (_BYTE)minimap_fog_of_war_color)
                         {
                             v12 = 2;
                             do
@@ -616,10 +611,10 @@ void mapd_44AE30_fog_of_war()
                     v15 = k->sprite;
                     v16 = 2 * (v15->x >> 13);
                     v17 = 2 * (v15->y >> 13);
-                    if (v16 >= 0 && v16 < __4793F8_map_width_x2 && v17 >= 0 && v17 < __478AAC_map_height_x2)
+                    if (v16 >= 0 && v16 < minimap_width && v17 >= 0 && v17 < minimap_height)
                     {
                         v18 = dword_47CBAC + v16 + i * v17;
-                        if (*(_BYTE *)v18 != (_BYTE)dword_47CB4C || *(_BYTE *)(v18 + 1) != (_BYTE)dword_47CB4C)
+                        if (*(_BYTE *)v18 != (_BYTE)minimap_fog_of_war_color || *(_BYTE *)(v18 + 1) != (_BYTE)minimap_fog_of_war_color)
                         {
                             v19 = 2;
                             do
@@ -645,10 +640,10 @@ void mapd_44AE30_fog_of_war()
         if (dword_47CB68 >= 0 && dword_47CB6C >= 0)
         {
             v21 = v29;
-            if (dword_47CB68 <= __4793F8_map_width_x2 - v29)
+            if (dword_47CB68 <= minimap_width - v29)
             {
                 v22 = v30;
-                if (dword_47CB6C <= (int)(__478AAC_map_height_x2 - v30))
+                if (dword_47CB6C <= (int)(minimap_height - v30))
                 {
                     v23 = (_BYTE *)(dword_47CBAC + dword_47CB68 + dword_47CB6C * i);
                     if (v29 > 1)
@@ -810,16 +805,16 @@ void map_reveal_fog_around_entity(Entity *a1)
         else
             v8 = 0;
         v9 = v6 + v3;
-        if (v9 > __4793F8_map_width_x2)
-            v9 = __4793F8_map_width_x2;
-        v10 = __478AAC_map_height_x2;
+        if (v9 > minimap_width)
+            v9 = minimap_width;
+        v10 = minimap_height;
         v11 = v4 + v6;
-        if (v11 <= __478AAC_map_height_x2)
+        if (v11 <= minimap_height)
             v10 = v11;
-        v12 = __4793F8_map_width_x2 + v7 - v9;
-        v13 = v7 + __4793F8_map_width_x2 * v8;
-        v14 = (char *)_47CB88_fow_map_x2 + v13;
-        v15 = (char *)_47CB74_fow_map_x2 + v13;
+        v12 = minimap_width + v7 - v9;
+        v13 = v7 + minimap_width * v8;
+        v14 = (char *)minimap_fog_of_war_pixels + v13;
+        v15 = (char *)minimap_revealed_pixels + v13;
         if (v8 < v10)
         {
             v78 = v10 - v8;
@@ -1359,8 +1354,8 @@ void minimap_free()
     _47CB58_minimap_sprite->drawjob->job_details.image = 0;
     sprite_list_remove(_47CB58_minimap_sprite);
     free(_47CB8C_fow);
-    free(_47CB88_fow_map_x2);
-    free(_47CB74_fow_map_x2);
+    free(minimap_fog_of_war_pixels);
+    free(minimap_revealed_pixels);
     free(map_fog_of_war_scrl);
 }
 

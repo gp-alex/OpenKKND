@@ -84,7 +84,7 @@ void hide_minimap_sprite();
 void _44A6B0_minimap(int x, int y);
 void script_44A700_minimap(Script *a1);
 char *_44A780_gof_of_war();
-bool mapd_init_fog_of_war();
+bool minimap_init();
 void mapd_44AE30_fog_of_war();
 bool is_map_revealed_at(int x, int y); // idb
 void map_reveal_fog_around_entity(Entity *a1);
@@ -102,9 +102,9 @@ int map_get_entity_placement_inside_tile_x(Entity *a1, int a2); // idb
 int map_get_entity_placement_inside_tile_y(Entity *a1, int a2); // idb
 
 
-extern int __4793F8_map_width_x2; // weak
+extern int minimap_width; // weak
 extern int __4793F8_map_width_plus4; // weak
-extern int __478AAC_map_height_x2; // weak
+extern int minimap_height; // weak
 extern int __478AAC_map_height_plus4; // weak
 
 extern MapdScrlImageTile *fog_of_war_tile_15;
@@ -114,7 +114,7 @@ extern MapdScrlImageTile *fog_of_war_tile_10;
 extern MapdScrlImageTile *fog_of_war_tile_14;
 extern MapdScrlImageTile *fog_of_war_tile_4;
 extern MapdScrlImage *map_fog_of_war_scrl;
-extern int dword_47CB4C; // weak
+extern char minimap_fog_of_war_color; // weak
 extern char byte_47CB50[8];
 extern Sprite *_47CB58_minimap_sprite;
 extern MapdScrlImageTile *fog_of_war_tile_11;
@@ -123,14 +123,14 @@ extern MapdScrlImageTile *fog_of_war_tile_3;
 extern int dword_47CB68; // weak
 extern int dword_47CB6C; // weak
 extern MapdScrlImageTile *fog_of_war_tile_13;
-extern void *_47CB74_fow_map_x2; // idb
+extern void *minimap_revealed_pixels; // idb
 extern MapdScrlImageTile *fog_of_war_tile_6;
 extern MapdScrlImageTile *fog_of_war_tile_8;
-extern void *_47CB88_fow_map_x2; // idb
+extern void *minimap_fog_of_war_pixels; // idb
 extern DrawHandlerData_Units *_47CB8C_fow;
 extern MapdScrlImageTile *fog_of_war_tile_5;
 extern MapdScrlImageTile *fog_of_war_tile_12;
-extern void *_47CB98_fow_map_x2;
+extern void *minimap_pixels;
 extern int dword_47CBAC; // weak
 extern Bitmap *fog_of_war_bitmap;
 extern MapdScrlImageTile **map_fog_of_war_scrl_tiles;
