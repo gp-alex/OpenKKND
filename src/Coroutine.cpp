@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <list>
+#include <iterator>
 
 Coroutine::Coroutine() 
 {
@@ -24,6 +25,8 @@ Coroutine::~Coroutine()
 std::list<Coroutine*> coroutine_list;
 Coroutine *volatile coroutine_current = nullptr;
 int coroutine_current_stack = 0; // weak
+int coroutine_list_next = 0;
+const int max_coroutine_len = 2000;
 
 //----- (00402910) --------------------------------------------------------
 bool coroutine_list_alloc() 
@@ -38,10 +41,11 @@ bool coroutine_list_alloc()
     //coroutine_list_head = coroutine_list;
     //coroutine_list_next = coroutine_list + 1;
 
-    for (int i = 0; i < 2000; i++) {
+    for (int i = 0; i < max_coroutine_len; i++) {
         Coroutine *c = new Coroutine();
         coroutine_list.push_front(c);
     }
+    coroutine_list_next = 1;
     return true;
 }
 
@@ -56,6 +60,8 @@ void coroutine_list_free()
         coroutine_list_clear(coroutine);
     }
     coroutine_list.clear();
+
+    coroutine_list_next = 0;
 }
 
 void nullsub() {}
@@ -63,16 +69,20 @@ void nullsub() {}
 //----- (00402980) --------------------------------------------------------
 Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name) 
 {
-    //if (coroutine_list_next == nullptr) {
-    //return nullptr;
-    //}
+    if (coroutine_list_next >= (max_coroutine_len - 1)) {
+        return nullptr;
+    }
 
     size_t stack_size = 1048576;
     int *result = (int *)malloc(stack_size);
     if (result == nullptr) {
         return nullptr;
     }
-    Coroutine *coroutine = new Coroutine();
+
+    auto iterator = std::next(coroutine_list.begin(), coroutine_list_next);
+    Coroutine *coroutine = *iterator;
+    coroutine_list_next++;
+    
     
     /* Coroutine *coroutine = coroutine_list_next;
     coroutine_list_next = coroutine_list_next->next;*/
@@ -92,9 +102,9 @@ Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name)
 //----- (00402A00) --------------------------------------------------------
 void coroutine_list_remove(Coroutine *coroutine) 
 {
-    //if (coroutine == nullptr) {
-    //  return;
-    //}
+    if (coroutine == nullptr) {
+      return;
+    }
 
     if (coroutine->context) {
         free(coroutine->context);
@@ -108,9 +118,9 @@ void coroutine_list_remove(Coroutine *coroutine)
 
 void coroutine_list_clear(Coroutine *coroutine)
 {
-    //if (coroutine == nullptr) {
-    //  return;
-    //}
+    if (coroutine == nullptr) {
+      return;
+    }
 
     if (coroutine->context) {
         free(coroutine->context);
