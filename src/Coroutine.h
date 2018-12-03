@@ -12,7 +12,7 @@ class Coroutine {
   Coroutine *yield_to;
   int *context;
   int stack;
-  Coroutine *next;
+  // Coroutine *next;
 
   int         id;
   const char *debug_handler_name;
