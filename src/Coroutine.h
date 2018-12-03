@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 
 /* 290 */
 class Coroutine {
@@ -17,7 +18,8 @@ class Coroutine {
   const char *debug_handler_name;
 };
 
-extern Coroutine *coroutine_list_head;
+//extern Coroutine* coroutine_list_head;
+extern std::list<Coroutine*> coroutine_list;
 extern Coroutine *volatile coroutine_current;
 
 bool coroutine_list_alloc();
