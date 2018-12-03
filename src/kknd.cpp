@@ -14444,7 +14444,7 @@ int UNIT_Init()
 							{
 								if (!stru13construct_list_alloc())
 									return 0;
-								result = mapd_init_fog_of_war() != 0;
+								result = minimap_init() != 0;
 							}
 						}
 					}
