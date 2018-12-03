@@ -3,20 +3,21 @@
 #include <cstdlib>
 #include <list>
 
-Coroutine::Coroutine() {
-  static int _id = 0;
+Coroutine::Coroutine() 
+{
+    static int _id = 0;
 
-  id = _id++;
-  yield_to = nullptr;
-  context = nullptr;
-  stack = 0;
-  // next = nullptr;
-  debug_handler_name = nullptr;
+    id = _id++;
+    yield_to = nullptr;
+    context = nullptr;
+    stack = 0;
+    // next = nullptr;
+    debug_handler_name = nullptr;
 }
 
-Coroutine::~Coroutine() {
+Coroutine::~Coroutine()
+{
 }
-
 
 //std::list<Coroutine*> coroutine_list_next;
 // Coroutine* coroutine_list_head;
@@ -25,7 +26,8 @@ Coroutine *volatile coroutine_current = nullptr;
 int coroutine_current_stack = 0; // weak
 
 //----- (00402910) --------------------------------------------------------
-bool coroutine_list_alloc() {
+bool coroutine_list_alloc() 
+{
 
     // 
     //coroutine_list = new Coroutine[2000];
@@ -44,13 +46,14 @@ bool coroutine_list_alloc() {
 }
 
 //----- (00402A40) --------------------------------------------------------
-void coroutine_list_free() {
+void coroutine_list_free() 
+{
     //delete[] coroutine_list;
     //coroutine_list = nullptr;
     //coroutine_list_next = nullptr;
 
     for (auto coroutine : coroutine_list) {
-        coroutine_list_remove(coroutine);
+        coroutine_list_clear(coroutine);
     }
     coroutine_list.clear();
 }
@@ -58,7 +61,8 @@ void coroutine_list_free() {
 void nullsub() {}
 
 //----- (00402980) --------------------------------------------------------
-Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name) {
+Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name) 
+{
     //if (coroutine_list_next == nullptr) {
     //return nullptr;
     //}
@@ -86,7 +90,8 @@ Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name) 
 }
 
 //----- (00402A00) --------------------------------------------------------
-void coroutine_list_remove(Coroutine *coroutine) {
+void coroutine_list_remove(Coroutine *coroutine) 
+{
     //if (coroutine == nullptr) {
     //  return;
     //}
@@ -101,8 +106,21 @@ void coroutine_list_remove(Coroutine *coroutine) {
     coroutine_list.remove(coroutine);
 }
 
+void coroutine_list_clear(Coroutine *coroutine)
+{
+    //if (coroutine == nullptr) {
+    //  return;
+    //}
+
+    if (coroutine->context) {
+        free(coroutine->context);
+    }
+}
+
+
 //----- (00402A60) --------------------------------------------------------
-__declspec(naked) int coroutine_yield_asm(Coroutine *self) {
+__declspec(naked) int coroutine_yield_asm(Coroutine *self) 
+{
   __asm {
     push    ebp
     mov     ebp, esp
@@ -126,7 +144,17 @@ __declspec(naked) int coroutine_yield_asm(Coroutine *self) {
   }
 }
 
-int Coroutine::resume() {
+int Coroutine::resume() 
+{
   return coroutine_yield_asm(this);
 }
 
+Coroutine *coroutine_list_get_head()
+{
+    if (coroutine_list.empty())
+    {
+        return nullptr;
+    }
+
+    return *coroutine_list.begin();
+}

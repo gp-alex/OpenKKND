@@ -1068,7 +1068,7 @@ bool script_list_alloc(int coroutine_stack_size)
 
             coroutine_default_stack_size = coroutine_stack_size;
             // coroutine_current = coroutine_list_head;
-            coroutine_current = *coroutine_list.begin();
+            coroutine_current = coroutine_list_get_head();
             is_async_execution_supported = 0;
 
             return true;
@@ -1216,7 +1216,7 @@ int script_yield(Script *a1, int yield_flags, int param)
     if (a1->routine_type == SCRIPT_COROUTINE)
     {
         //coroutine_list_head->resume();
-        (*coroutine_list.begin())->resume();
+        (coroutine_list_get_head())->resume();
         a1->_28_yield_flags = 0;
         a1->field_2C = 0;
     }
@@ -1271,7 +1271,7 @@ void script_terminate(Script *a1)
     a1->flags_24 |= a1->flags_20;
     if (a1->routine_type == SCRIPT_COROUTINE) {
         //coroutine_list_head->resume();
-        (*coroutine_list.begin())->resume();
+        (coroutine_list_get_head())->resume();
     }
 }
 
@@ -1375,7 +1375,7 @@ void script_list_free()
     {
         v0 = script_execute_list_first();
         //if (coroutine_current == coroutine_list_head)
-        if (coroutine_current == *coroutine_list.begin())
+        if (coroutine_current == coroutine_list_get_head())
         {
             if (v0 != script_execute_list_end())
             {
