@@ -1,6 +1,7 @@
 #include <dsound.h>
 #include <process.h>    // _beginthread, _endthread
 #include <list>
+#include <thread>
 
 #include "src/Sound.h"
 #include "src/kknd.h"
@@ -17,40 +18,40 @@
 /* 262 */
 struct Sound
 {
-    int id;
-    IDirectSoundBuffer *pdsb;
-    Script *task;
-    File *file;
-    int hthread;
-    int field_14;
-    int field_18;
-    int sound_volume_offset;
-    int field_20;
-    int field_24;
-    int sound_pan_offset;
-    int field_2C;
-    int field_30;
-    int flags;
-    int field_40;
-    char filename[32];
-    char gap64[42];
-    char field_8E[100];
-    char field_F2[80];
-    char field_142;
-    char field_143;
-    char field_144;
-    char field_145;
-    char field_146;
-    char field_147;
+    int id = 0;
+    IDirectSoundBuffer *pdsb = nullptr;
+    Script *task = nullptr;
+    File *file = nullptr;
+    void *hthread_depricated; //int hthread = 0;
+    int field_14 = 0;
+    int field_18 = 0;
+    int sound_volume_offset = 0;
+    int field_20 = 0;
+    int field_24 = 0;
+    int sound_pan_offset = 0;
+    int field_2C = 0;
+    int field_30 = 0;
+    int flags = 0;
+    int field_40 = 0;
+    char filename[32] = { 0 };
+    char gap64[42] = { 0 };
+    char field_8E[100] = { 0 };
+    char field_F2[80] = { 0 };
+    char field_142 = '\0';
+    char field_143 = '\0';
+    char field_144 = '\0';
+    char field_145 = '\0';
+    char field_146 = '\0';
+    char field_147 = '\0';
 };
 
 /* 428 */
 struct sound_stru_2
 {
-    int riff_fourcc;
-    int riff_chunk_size;
-    int data_fourcc;
-    int data;
+    int riff_fourcc = 0;
+    int riff_chunk_size = 0;
+    int data_fourcc = 0;
+    int data = 0;
 };
 
 
@@ -58,7 +59,7 @@ DSBUFFERDESC video_477DE4_dsb_desc; // weak
 IDirectSoundBuffer *video_477DE4_dsb;
 LPDIRECTSOUND pds; // idb
 
-std::list<Sound*> sound_list_free_pool;
+std::list<std::shared_ptr<Sound>> sound_list_free_pool;
 int sound_list_last_id; // weak
 int _47C5D4_sound_threaded_snd_id; // idb
 sound_stru_2 **_47C4E0_sounds;
@@ -117,22 +118,22 @@ SOUND_ID _465988_sounds[5] = { SOUND_174, SOUND_175, SOUND_176, SOUND_177, SOUND
 
 bool file_read_wav(File *file, WAVEFORMATEX *out_data, unsigned int *a3);
 bool sound_stru_2_43A710(sound_stru_2 *a1, WAVEFORMATEX **a2, int *a3, unsigned int *out_buffer_size);
-void _439C10_sound_thread(Sound *snd); // idb
-void sound_list_remove(Sound *snd);
-void sound_cleanup(Sound *snd);
+void _439C10_sound_thread(std::shared_ptr<Sound> sound); // idb
+void sound_list_remove(std::shared_ptr<Sound> snd);
+void sound_cleanup(std::shared_ptr<Sound> snd);
 
 
-void sound_start_video_playback() 
+void sound_start_video_playback()
 {
 
 }
 
-void sound_end_video_playback() 
+void sound_end_video_playback()
 {
 
 }
 
-bool sound_video_get_position(int *play, int *write) 
+bool sound_video_get_position(int *play, int *write)
 {
     return S_OK == video_477DE4_dsb->GetCurrentPosition(
         (LPDWORD)play,
@@ -140,7 +141,7 @@ bool sound_video_get_position(int *play, int *write)
     );
 }
 
-void sound_video_stop() 
+void sound_video_stop()
 {
     video_477DE4_dsb->Stop();
     video_477DE4_dsb->Release();
@@ -172,7 +173,7 @@ bool sound_initialize()
         pds = 0;
         return 1;
     }
-    
+
     //sound initialation done
     sound_initialized = 1;
     return 1;
@@ -436,7 +437,7 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
 {
     int result; // eax@7
     sound_stru_2 *sound_structure_1; // esi@10
-    Sound *sound; // ebx@12
+    std::shared_ptr<Sound> sound; // ebx@12
     IDirectSoundBuffer **sound_buffer_1; // edi@20
     IDirectSoundBuffer *sound_buffer_2; // eax@21
     bool v13; // zf@21
@@ -466,18 +467,16 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
             sound_structure_1 = _47C4E0_sounds[sound_id];
             if (sound_structure_1 != faction_slv && sound_structure_1)
             {
-                sound = new Sound();
+                sound = std::make_shared<Sound>();
                 if (sound)
                 {
-                    memset(sound, 0, sizeof(Sound));
-                    
                     if (!++sound_list_last_id)
                     {
                         sound_list_last_id = 1;
-                    }   
+                    }
                     sound->id = sound_list_last_id;
                     sound_list_free_pool.push_front(sound);
-                    
+
                     sound->task = script;
                     sound->sound_volume_offset = volume_offset;
                     sound->sound_pan_offset = pan_offset;
@@ -554,7 +553,7 @@ int sound_play(enum SOUND_ID sound_id, int sound_flags, int volume_offset, int p
 int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int sound_pan_offset, Script *task)
 {
     int result; // eax@2
-    Sound *sound; // ebx@3
+    std::shared_ptr<Sound> sound; // ebx@3
     int flags; // esi@11
     int flags_2; // eax@11
     const char *file_name_2; // edi@13
@@ -574,17 +573,16 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
     file_name = name;
     if (sound_initialized)
     {
-        sound = new Sound();
+        sound = std::make_shared<Sound>();
         if (sound)
         {
-            memset(sound, 0, sizeof(Sound));
-            if (!++sound_list_last_id) 
+            if (!++sound_list_last_id)
             {
                 sound_list_last_id = 1;
             }
             sound->id = sound_list_last_id;
             sound_list_free_pool.push_front(sound);
-        
+
             flags = sound->flags | 8;
             sound->task = task;
             sound->field_14 = -3;
@@ -599,9 +597,13 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
             file_name_2 = file_name;
             sound->sound_pan_offset = sound_pan_offset;
             strcpy(sound->filename, file_name_2);
-            thread_ptr = _beginthread((_beginthread_proc_type)_439C10_sound_thread, 0x1000u, sound);
+
+            //start new thread
+            std::thread sound_worker(_439C10_sound_thread, sound); 
+            sound_worker.detach();
+
             sound_id = sound->id;
-            sound->hthread = thread_ptr;
+            //sound->hthread = thread_ptr;
             _47C5D4_sound_threaded_snd_id = sound_id;
             flags_3 = (void *)sound->flags;
             LOBYTE_HEXRAYS(flags_3) = (unsigned __int8)flags_3 | 8;
@@ -621,11 +623,11 @@ int sound_play_threaded(const char *name_, int a2, int sound_volume_offset, int 
     return result;
 }
 
+
 //----- (00439C10) --------------------------------------------------------
 // Background sound thread
-void _439C10_sound_thread(Sound *a1)
+void _439C10_sound_thread(std::shared_ptr<Sound> sound)
 {
-    Sound *sound; // esi@1
     char *v2; // ebp@1
     const char *v3; // ecx@1
     File *v4; // ecx@5
@@ -659,8 +661,6 @@ void _439C10_sound_thread(Sound *a1)
     int v32; // eax@67
     int v33; // eax@69
     File *v34; // ecx@71
-    int v35; // ebx@75
-    int v36; // eax@76
     DWORD v37; // eax@78
     char *v38; // edi@84
     char v39; // dl@85
@@ -678,8 +678,9 @@ void _439C10_sound_thread(Sound *a1)
     WAVEFORMATEX v55; // [sp+13Ch] [bp-3Ch]@71
     DSBCAPS v56; // [sp+150h] [bp-28h]@8
     DSBUFFERDESC v57; // [sp+164h] [bp-14h]@1
-    
-    sound = a1;
+
+    auto a1 = sound.get();
+
     v57.dwFlags = 0;
     v57.dwBufferBytes = 0;
     v2 = 0;
@@ -690,7 +691,7 @@ void _439C10_sound_thread(Sound *a1)
     v51 = 0;
     v57.dwSize = 0;
     v57.lpwfxFormat = 0;
-    if (a1 != (Sound *)0xFFFFFFBC && *v3)
+    if (true && *v3)
         sound->file = File::open(v3);
     else
         a1->file = 0;
@@ -699,7 +700,7 @@ void _439C10_sound_thread(Sound *a1)
     {
         sound->file->close();
         sound->flags = sound->flags & 0xFFFFFFF7 | 0x40;
-        _endthread();
+        return;
     }
     sound->field_40 = a3;
     sound_buffer = &sound->pdsb;
@@ -711,7 +712,7 @@ void _439C10_sound_thread(Sound *a1)
     {
         sound->file->close();
         sound->flags = sound->flags & 0xFFFFFFF7 | 0x40;
-        _endthread();
+        return;
     }
     (*sound_buffer)->SetPan(sound_pans[sound->sound_pan_offset]);
     (*sound_buffer)->SetVolume(sound_volumes[sound->sound_volume_offset]);
@@ -801,7 +802,6 @@ void _439C10_sound_thread(Sound *a1)
             sound->file = 0;
             LOBYTE_HEXRAYS(v41) = v41 | 0x40;
             sound->flags = v41;
-            _endthread();
             return;
         }
         while (!v18)
@@ -900,12 +900,14 @@ void _439C10_sound_thread(Sound *a1)
             }
         }
     } while (!v18);
+
+
     if (!(sound->flags & 0x20))
     {
-        v35 = 0;
+        auto v35 = 0;
         do
         {
-            v36 = sound->flags;
+            auto v36 = sound->flags;
             if (v36 & 0x20)
                 break;
             LOBYTE_HEXRAYS(v36) = v36 | 8;
@@ -949,7 +951,7 @@ void _439C10_sound_thread(Sound *a1)
     sound->file = 0;
     LOBYTE_HEXRAYS(v41) = v41 | 0x40;
     sound->flags = v41;
-    _endthread();
+    return;
 }
 
 
@@ -957,7 +959,7 @@ void _439C10_sound_thread(Sound *a1)
 // Set background sound volume
 void sound_threaded_set_volume(int sound_volume)
 {
-    Sound *sound; // eax@3
+    std::shared_ptr<Sound>sound; // eax@3
     IDirectSoundBuffer *sound_buffer; // edx@6
 
     if (_47C5D4_sound_threaded_snd_id && sound_initialized)
@@ -996,7 +998,7 @@ void sound_threaded_set_volume(int sound_volume)
 // Stop music playback
 void sound_stop(int sound_id)
 {
-    Sound *sound; // esi@3
+    std::shared_ptr<Sound> sound; // esi@3
     int flags; // eax@7
     int flags2; // eax@10
 
@@ -1082,7 +1084,7 @@ void _43A370_process_sound()
     int v18; // eax@25
     int i; // [sp+1Ch] [bp-8h]@1
     int v20; // [sp+20h] [bp-4h]@9
-    std::list<Sound*> remove_list;
+    std::list<std::shared_ptr<Sound>> remove_list;
 
     for (auto sound : sound_list_free_pool)
     {
@@ -1170,9 +1172,8 @@ void _43A370_process_sound()
     }
 
     //remove from sound_list_free_pool & clear remove_list
-    for (auto i : remove_list) {
-        sound_list_free_pool.remove(i);
-        delete i;
+    for (auto sound : remove_list) {
+        sound_list_free_pool.remove(sound);
     }
     remove_list.clear();
 }
@@ -1184,7 +1185,6 @@ void sound_free_sounds()
     for (auto sound : sound_list_free_pool)
     {
         sound_cleanup(sound);
-        delete sound;
     }
     sound_list_free_pool.clear();
 
@@ -1198,22 +1198,21 @@ void sound_free_sounds()
 
 
 //----- (0043A850) --------------------------------------------------------
-void sound_list_remove(Sound *snd)
+void sound_list_remove(std::shared_ptr<Sound> snd)
 {
-    Sound *sound; // esi@1
+    std::shared_ptr<Sound> sound; // esi@1
 
     sound = snd;
     if (snd)
     {
         sound_cleanup(sound);
         sound_list_free_pool.remove(sound);
-        delete sound;
     }
 }
 
-void sound_cleanup(Sound *snd)
+void sound_cleanup(std::shared_ptr<Sound> snd)
 {
-    Sound *sound; // esi@1
+    std::shared_ptr<Sound> sound; // esi@1
     int flags; // edx@5
     File *sound_file; // ecx@7
     IDirectSoundBuffer *sound_buffer; // eax@9
@@ -1259,7 +1258,6 @@ void sound_deinit()
     for (auto sound : sound_list_free_pool)
     {
         sound_cleanup(sound);
-        delete sound;
     }
     sound_list_free_pool.clear();
 
