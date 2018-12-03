@@ -11,7 +11,7 @@ Coroutine::Coroutine()
     yield_to = nullptr;
     context = nullptr;
     stack = 0;
-    // next = nullptr;
+    void *next_depricated = nullptr; // next = nullptr;
     debug_handler_name = nullptr;
 }
 
