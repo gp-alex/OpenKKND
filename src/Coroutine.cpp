@@ -2,7 +2,6 @@
 
 #include <cstdlib>
 #include <list>
-#include <memory>
 
 Coroutine::Coroutine() 
 {
@@ -22,7 +21,7 @@ Coroutine::~Coroutine()
 
 //std::list<Coroutine*> coroutine_list_next;
 // Coroutine* coroutine_list_head;
-std::list<std::shared_ptr<Coroutine>> coroutine_list;
+std::list<Coroutine*> coroutine_list;
 Coroutine *volatile coroutine_current = nullptr;
 int coroutine_current_stack = 0; // weak
 
@@ -40,7 +39,7 @@ bool coroutine_list_alloc()
     //coroutine_list_next = coroutine_list + 1;
 
     for (int i = 0; i < 2000; i++) {
-        std::shared_ptr<Coroutine> c = std::make_shared<Coroutine>();
+        Coroutine *c = new Coroutine();
         coroutine_list.push_front(c);
     }
     return true;
@@ -62,7 +61,7 @@ void coroutine_list_free()
 void nullsub() {}
 
 //----- (00402980) --------------------------------------------------------
-std::shared_ptr<Coroutine> couroutine_create(void(*function)(), const char *debug_handler_name)
+Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name) 
 {
     //if (coroutine_list_next == nullptr) {
     //return nullptr;
@@ -73,7 +72,7 @@ std::shared_ptr<Coroutine> couroutine_create(void(*function)(), const char *debu
     if (result == nullptr) {
         return nullptr;
     }
-    std::shared_ptr<Coroutine> coroutine = std::make_shared<Coroutine>();
+    Coroutine *coroutine = new Coroutine();
     
     /* Coroutine *coroutine = coroutine_list_next;
     coroutine_list_next = coroutine_list_next->next;*/
@@ -91,7 +90,7 @@ std::shared_ptr<Coroutine> couroutine_create(void(*function)(), const char *debu
 }
 
 //----- (00402A00) --------------------------------------------------------
-void coroutine_list_remove(std::shared_ptr<Coroutine> coroutine)
+void coroutine_list_remove(Coroutine *coroutine) 
 {
     //if (coroutine == nullptr) {
     //  return;
@@ -107,7 +106,7 @@ void coroutine_list_remove(std::shared_ptr<Coroutine> coroutine)
     coroutine_list.remove(coroutine);
 }
 
-void coroutine_list_clear(std::shared_ptr<Coroutine> coroutine)
+void coroutine_list_clear(Coroutine *coroutine)
 {
     //if (coroutine == nullptr) {
     //  return;
@@ -157,13 +156,5 @@ Coroutine *coroutine_list_get_head()
         return nullptr;
     }
 
-    std::shared_ptr<Coroutine> c = *coroutine_list.begin();
-    if (c != nullptr)
-    {
-        return c.get();
-    }
-    else
-    {
-        return nullptr;
-    }
+    return *coroutine_list.begin();
 }

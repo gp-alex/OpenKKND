@@ -1,6 +1,5 @@
 #pragma once
 #include <list>
-#include <memory>
 
 /* 290 */
 class Coroutine {
@@ -20,12 +19,12 @@ class Coroutine {
 };
 
 //extern Coroutine* coroutine_list_head;
-extern std::list<std::shared_ptr<Coroutine>> coroutine_list;
+extern std::list<Coroutine*> coroutine_list;
 extern Coroutine *volatile coroutine_current;
 
 bool coroutine_list_alloc();
-std::shared_ptr<Coroutine> couroutine_create(void(*function)(), const char *debug_handler_name);
-void coroutine_list_remove(std::shared_ptr<Coroutine> a1);
-void coroutine_list_clear(std::shared_ptr<Coroutine> coroutine);
+Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name);
+void coroutine_list_remove(Coroutine *a1);
+void coroutine_list_clear(Coroutine *coroutine);
 void coroutine_list_free();
 Coroutine *coroutine_list_get_head();
