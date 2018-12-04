@@ -1,7 +1,6 @@
 #include "src/Coroutine.h"
 
 #include <cstdlib>
-#include <list>
 #include <iterator>
 
 Coroutine::Coroutine() 
@@ -107,8 +106,6 @@ Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name)
     coroutine->context[SP - 3] = (int)function;
     coroutine->context[SP - 4] = (int)&coroutine->context[SP - 4];
     coroutine->stack = (int)&coroutine->context[SP - 7];
-
-
 
     return coroutine;
 }
