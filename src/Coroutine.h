@@ -18,13 +18,12 @@ class Coroutine {
   const char *debug_handler_name;
 };
 
-//extern Coroutine* coroutine_list_head;
 extern std::list<Coroutine*> coroutine_list;
 extern Coroutine *volatile coroutine_current;
 
 bool coroutine_list_alloc();
-Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name);
+void coroutine_list_free();
 void coroutine_list_remove(Coroutine *a1);
 void coroutine_list_clear(Coroutine *coroutine);
-void coroutine_list_free();
 Coroutine *coroutine_list_get_head();
+Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name);

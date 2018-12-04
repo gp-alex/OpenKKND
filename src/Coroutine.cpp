@@ -12,80 +12,92 @@ Coroutine::Coroutine()
     yield_to = nullptr;
     context = nullptr;
     stack = 0;
-    void *next_depricated = nullptr; // next = nullptr;
+    next_depricated = nullptr; // next = nullptr;
     debug_handler_name = nullptr;
 }
 
 Coroutine::~Coroutine()
 {
 }
-
-//std::list<Coroutine*> coroutine_list_next;
-// Coroutine* coroutine_list_head;
 std::list<Coroutine*> coroutine_list;
 Coroutine *volatile coroutine_current = nullptr;
 int coroutine_current_stack = 0; // weak
-int coroutine_list_next = 0;
-const int max_coroutine_len = 2000;
 
 //----- (00402910) --------------------------------------------------------
+// alloc coroutine list
 bool coroutine_list_alloc() 
 {
-
-    // 
-    //coroutine_list = new Coroutine[2000];
-    //for (int i = 0; i < 2000; ++i) {
-    //  coroutine_list[i].next = &coroutine_list[i + 1];
-    //}
-    //coroutine_list[1999].next = 0;
-    //coroutine_list_head = coroutine_list;
-    //coroutine_list_next = coroutine_list + 1;
-
-    for (int i = 0; i < max_coroutine_len; i++) {
-        Coroutine *c = new Coroutine();
-        coroutine_list.push_front(c);
-    }
-    coroutine_list_next = 1;
+    //add one empty coroutine to list
+    Coroutine *c = new Coroutine();
+    coroutine_list.push_back(c);
+   
     return true;
 }
 
 //----- (00402A40) --------------------------------------------------------
+// release all coroutine list elements and remove them from list
 void coroutine_list_free() 
 {
-    //delete[] coroutine_list;
-    //coroutine_list = nullptr;
-    //coroutine_list_next = nullptr;
-
     for (auto coroutine : coroutine_list) {
         coroutine_list_clear(coroutine);
     }
     coroutine_list.clear();
+}
 
-    coroutine_list_next = 0;
+//----- (00402A00) --------------------------------------------------------
+// release coroutine resource and remove it from list
+void coroutine_list_remove(Coroutine *coroutine)
+{
+    if (coroutine == nullptr) {
+        return;
+    }
+
+    if (coroutine->context) {
+        free(coroutine->context);
+    }
+
+    coroutine_list.remove(coroutine);
+}
+
+// release coroutine resource
+void coroutine_list_clear(Coroutine *coroutine)
+{
+    if (coroutine == nullptr) {
+        return;
+    }
+
+    if (coroutine->context) {
+        free(coroutine->context);
+    }
+}
+
+// get first element in coroutine list
+Coroutine *coroutine_list_get_head()
+{
+    if (coroutine_list.empty())
+    {
+        return nullptr;
+    }
+
+    return *coroutine_list.begin();
 }
 
 void nullsub() {}
-
 //----- (00402980) --------------------------------------------------------
-Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name) 
+// create coroutine instance
+Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name)
 {
-    if (coroutine_list_next >= (max_coroutine_len - 1)) {
+    Coroutine *coroutine = new Coroutine();
+    if (coroutine == nullptr) {
         return nullptr;
     }
+    coroutine_list.push_back(coroutine);
 
     size_t stack_size = 1048576;
     int *result = (int *)malloc(stack_size);
     if (result == nullptr) {
         return nullptr;
     }
-
-    auto iterator = std::next(coroutine_list.begin(), coroutine_list_next);
-    Coroutine *coroutine = *iterator;
-    coroutine_list_next++;
-    
-    
-    /* Coroutine *coroutine = coroutine_list_next;
-    coroutine_list_next = coroutine_list_next->next;*/
 
     coroutine->context = result;
     coroutine->debug_handler_name = debug_handler_name;
@@ -96,37 +108,10 @@ Coroutine *couroutine_create(void(*function)(), const char *debug_handler_name)
     coroutine->context[SP - 4] = (int)&coroutine->context[SP - 4];
     coroutine->stack = (int)&coroutine->context[SP - 7];
 
+
+
     return coroutine;
 }
-
-//----- (00402A00) --------------------------------------------------------
-void coroutine_list_remove(Coroutine *coroutine) 
-{
-    if (coroutine == nullptr) {
-      return;
-    }
-
-    if (coroutine->context) {
-        free(coroutine->context);
-    }
-
-    //coroutine->next = coroutine_list_next;
-    //coroutine_list_next = coroutine;
-
-    coroutine_list.remove(coroutine);
-}
-
-void coroutine_list_clear(Coroutine *coroutine)
-{
-    if (coroutine == nullptr) {
-      return;
-    }
-
-    if (coroutine->context) {
-        free(coroutine->context);
-    }
-}
-
 
 //----- (00402A60) --------------------------------------------------------
 __declspec(naked) int coroutine_yield_asm(Coroutine *self) 
@@ -159,12 +144,3 @@ int Coroutine::resume()
   return coroutine_yield_asm(this);
 }
 
-Coroutine *coroutine_list_get_head()
-{
-    if (coroutine_list.empty())
-    {
-        return nullptr;
-    }
-
-    return *coroutine_list.begin();
-}
