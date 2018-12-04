@@ -2653,8 +2653,8 @@ void entity_mode_move_to_target_416790(Entity *a1)
     LABEL_46:
         entity_414AD0_vehicle_collide_vehicle(v1);
 
-        if (v1->stats->field_4C == 128)
-        log("v18 = %d\tv23 = %d\tx_speed = %d\ty_speed = %d", v18, v23, v1->sprite->x_speed, v1->sprite->y_speed);
+        // if (v1->stats->field_4C == 128)
+        // log("v18 = %d\tv23 = %d\tx_speed = %d\ty_speed = %d", v18, v23, v1->sprite->x_speed, v1->sprite->y_speed);
         return;
     }
 
