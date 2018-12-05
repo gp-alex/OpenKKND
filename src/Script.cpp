@@ -1196,10 +1196,13 @@ void script_deinit(Script *a1)
         } while (v3);
     }
     script_discard_all_events(v1);
+
+    script_list_free_pool.remove(v1);
     //v1->prev->next = v1->next;
     //v1->next->prev = v1->prev;
     //v1->next = script_list_free_pool;
     //script_list_free_pool = v1;
+
     if (v1->routine_type == SCRIPT_COROUTINE)
         coroutine_list_remove((Coroutine *)v1->handler);
     v1->handler = 0;
@@ -1328,10 +1331,13 @@ void script_terminate_internal(Script *i) {
         } while (v3);
     }
     script_discard_all_events(v1);
+
+    script_list_free_pool.remove(v1);
     //v1->prev->next = v1->next;
     //v1->next->prev = v1->prev;
     //v1->next = script_list_free_pool;
     //script_list_free_pool = v1;
+
     if (v1->routine_type == SCRIPT_COROUTINE)
         coroutine_list_remove((Coroutine *)v1->handler);
     v1->handler = 0;
@@ -1434,10 +1440,13 @@ void script_list_free()
                         } while (v3);
                     }
                     script_discard_all_events(v1);
+
+                    script_list_free_pool.remove(v1);
                     //v1->prev->next = v1->next;
                     //v1->next->prev = v1->prev;
                     //v1->next = script_list_free_pool;
                     //script_list_free_pool = v1;
+                    
                     if (v1->routine_type == SCRIPT_COROUTINE)
                         coroutine_list_remove((Coroutine *)v1->handler);
                     v1->handler = 0;
