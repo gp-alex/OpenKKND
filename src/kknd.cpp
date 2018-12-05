@@ -10080,9 +10080,9 @@ void script_43DD90_mobd45_modem(Script *a1)
 		} while ((int)&v11[-20 - (_DWORD)v18] < 12);
 		*((_BYTE *)&v19 + v12) = 0;
 		v13 = v20;
-		a1a->next = v19;
+		//a1a->next = v19;
 		v14 = v21;
-		a1a->prev = (Script *)v13;
+		//a1a->prev = (Script *)v13;
 		a1a->locals_list = (ScriptLocalObject *)v14;
 		v15 = _47C6E0_task->sprite;
 		v16 = v15->y >> 8;
