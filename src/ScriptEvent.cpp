@@ -95,7 +95,7 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
                 }
                 self->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
                 self->flags_24 |= self->flags_20;
-                self = self->next;
+                //self = self->next;
             } //while ((Script **)self != &script_execute_list);
         }
     }
@@ -129,7 +129,7 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
                 self->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
                 self->flags_24 |= self->flags_20;
             }
-            self = self->next;
+            //self = self->next;
         } //while ((Script **)self != &script_execute_list);
     }
     return 1;

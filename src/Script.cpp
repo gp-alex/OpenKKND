@@ -474,10 +474,9 @@ ScriptDescType4 *scripts[] = {
     &stru_46FCE8,
 };
 
-
+std::list<Script*> script_list_free_pool;
 std::list<Script*> script_execute_list;
-
-
+std::list<Script*> script_list;
 
 Script *create_script(int script_id) {
     auto desc = scripts[script_id];
@@ -1042,7 +1041,6 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_438F50_explosions)
 };
 
-
 const char *get_handler_name(void *function) {
     int unit_handler_id = get_handler_id(function);
     if (unit_handler_id >= 0) {
@@ -1071,12 +1069,12 @@ const int script_pool_size = 2000;
 bool script_list_alloc(int coroutine_stack_size)
 {
     if (script_event_list_alloc()) {
-        script_list = new Script[script_pool_size];
-        for (int i = 0; i < script_pool_size - 1; ++i) {
-            script_list[i].next = &script_list[i + 1];
-        }
-        script_list[script_pool_size - 1].next = nullptr;
-        script_list_free_pool = script_list;
+        //script_list = new Script[script_pool_size];
+        //for (int i = 0; i < script_pool_size - 1; ++i) {
+        //    script_list[i].next = &script_list[i + 1];
+        //}
+        //script_list[script_pool_size - 1].next = nullptr;
+        //script_list_free_pool = script_list;
         // script_execute_list = (Script *)&script_execute_list;
 
         if (coroutine_list_alloc()) {
@@ -1391,7 +1389,8 @@ void script_list_free()
     ScriptLocalObject *v2; // eax@4
     ScriptLocalObject *v3; // edi@5
 
-    if (script_list)
+    //if (script_list)
+    if (!script_list.empty())
     {
         //v0 = script_execute_list_first();
         //if (coroutine_current == coroutine_list_head)
@@ -1425,8 +1424,9 @@ void script_list_free()
                     v1->handler = 0;
                 } //while ((Script **)v0 != &script_execute_list);
             }
-            free(script_list);
-            script_list = 0;
+            //free(script_list);
+            script_list.clear();
+            //script_list = 0;
             coroutine_list_free();
             script_event_list_free();
         }

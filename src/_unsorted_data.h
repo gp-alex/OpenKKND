@@ -610,14 +610,14 @@ extern int dword_47C6F0; // weak
 extern int dword_47C6F4; // weak
 extern int _47C6F8_main_menu_load_initialized; // weak
 extern int dword_47C700; // weak
-extern Script *script_list_free_pool;
+
 extern void(*task_creation_handler)(Script *);
 
 extern Script *script_list_47C714;
 extern size_t coroutine_default_stack_size; // idb
 extern Script *task_creation_handler_arg;
 extern __int16 is_async_execution_supported; // weak
-extern Script *script_list;
+
 extern int stru8_list_size; // weak
 extern int stru8_list_allocated; // weak
 extern stru8 *stru8_list;

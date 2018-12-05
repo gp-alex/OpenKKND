@@ -109,8 +109,8 @@ struct Script
         this->event_handler = eventHandler;
     }
 
-    //Script *next;
-    //Script *prev;
+    void *next_deprecated; //Script *next;
+    void *prev_deprecated; //Script *prev;
     ScriptLocalObject *locals_list;
     enum SCRIPT_TYPE script_type;
     int(*mode_turret)(int);
@@ -131,9 +131,9 @@ struct Script
     const char *debug_handler_name;
 };
 
-
+extern std::list<Script*> script_list_free_pool;
 extern std::list<Script*> script_execute_list;
-
+extern std::list<Script*> script_list;
 
 Script *script_execute_list_first();
 Script *script_execute_list_end();
