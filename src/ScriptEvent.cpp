@@ -59,16 +59,19 @@ bool script_trigger_event(Script *sender, enum SCRIPT_EVENT event, void *param, 
 //----- (004238C0) --------------------------------------------------------
 bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *param, enum SCRIPT_TYPE receiver_type)
 {
-    Script *self; // esi@1
+    //Script *self; // esi@1
     ScriptEvent *v7; // eax@3
     ScriptEvent *v9; // eax@12
 
-    self = script_execute_list;
+    //self = script_execute_list;
+    bool listEmpty = script_execute_list.empty();
     if (receiver_type == SCRIPT_TYPE_ANY)
     {
-        if ((Script **)script_execute_list != &script_execute_list)
+        //if ((Script **)script_execute_list != &script_execute_list)
+        if(!listEmpty)
         {
-            do
+            //do
+            for (auto self : script_execute_list)
             {
                 v7 = script_event_list_free_pool;
                 if (self->routine_type == SCRIPT_FUNCTION && self->event_handler)
@@ -93,12 +96,13 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
                 self->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
                 self->flags_24 |= self->flags_20;
                 self = self->next;
-            } while ((Script **)self != &script_execute_list);
+            } //while ((Script **)self != &script_execute_list);
         }
     }
-    else if ((Script **)script_execute_list != &script_execute_list)
+    else if (!listEmpty) //((Script **)script_execute_list != &script_execute_list)
     {
-        do
+        //do
+        for (auto self : script_execute_list)
         {
             if (self->script_type == receiver_type)
             {
@@ -126,7 +130,7 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
                 self->flags_24 |= self->flags_20;
             }
             self = self->next;
-        } while ((Script **)self != &script_execute_list);
+        } //while ((Script **)self != &script_execute_list);
     }
     return 1;
 }

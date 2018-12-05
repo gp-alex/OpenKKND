@@ -475,6 +475,10 @@ ScriptDescType4 *scripts[] = {
 };
 
 
+std::list<Script*> script_execute_list;
+
+
+
 Script *create_script(int script_id) {
     auto desc = scripts[script_id];
     if (desc->script_handler) {
@@ -547,23 +551,37 @@ const char *get_script_name(void *handler) {
 
 Script *script_execute_list_first()
 {
-    return script_execute_list;
+    if (script_execute_list.empty())
+    {
+        return nullptr;
+    }
+
+    return *script_execute_list.begin();
 }
 
 Script *script_execute_list_end()
 {
-    return (Script *)&script_execute_list;
+    if (script_execute_list.empty())
+    {
+        return nullptr;
+    }
+
+    return *script_execute_list.end();
 }
 
 bool script_execute_list_prepend(Script *script)
 {
-    auto head = script_execute_list_first();
-    head->prev = script;
+    if (script == nullptr)
+    {
+        return false;
+    }
 
-    script->next = head;
-    script->prev = script_execute_list_end();
-
-    script_execute_list = script;
+    script_execute_list.push_front(script);
+    //auto head = script_execute_list_first();
+    //head->prev = script;
+    //script->next = head;
+    //script->prev = script_execute_list_end();
+    //script_execute_list = script;
 
     return true;
 }
@@ -1059,7 +1077,7 @@ bool script_list_alloc(int coroutine_stack_size)
         }
         script_list[script_pool_size - 1].next = nullptr;
         script_list_free_pool = script_list;
-        script_execute_list = (Script *)&script_execute_list;
+        // script_execute_list = (Script *)&script_execute_list;
 
         if (coroutine_list_alloc()) {
             if (coroutine_stack_size <= 0) {
@@ -1319,7 +1337,8 @@ void script_list_update()
     int v9; // ecx@15
     int v10; // eax@16
 
-    for (i = script_execute_list_first(); i != script_execute_list_end(); i = i->next)
+    //for (i = script_execute_list_first(); i != script_execute_list_end(); i = i->next)
+    for (auto i : script_execute_list)
     {
         if (i->flags_20 & SCRIPT_FLAGS_20_TERMINATE) {
             log(
@@ -1329,8 +1348,9 @@ void script_list_update()
                 i->handler
             );
 
-            i = i->prev;
-            script_terminate_internal(i->next);
+            //i = i->prev;
+            //script_terminate_internal(i->next);
+            script_terminate_internal(i);
         }
         else {
             if (i->num_runs_to_skip > 0)
@@ -1366,20 +1386,22 @@ void script_list_update()
 //----- (004455A0) --------------------------------------------------------
 void script_list_free()
 {
-    Script *v0; // ebx@2
+    //Script *v0; // ebx@2
     Script *v1; // esi@4
     ScriptLocalObject *v2; // eax@4
     ScriptLocalObject *v3; // edi@5
 
     if (script_list)
     {
-        v0 = script_execute_list_first();
+        //v0 = script_execute_list_first();
         //if (coroutine_current == coroutine_list_head)
         if (coroutine_current == coroutine_list_get_head())
         {
-            if (v0 != script_execute_list_end())
+            if(!script_execute_list.empty())
+            //if (v0 != script_execute_list_end())
             {
-                do
+                for (auto v0 : script_execute_list)
+                //do
                 {
                     v1 = v0;
                     v0 = v0->next;
@@ -1401,7 +1423,7 @@ void script_list_free()
                     if (v1->routine_type == SCRIPT_COROUTINE)
                         coroutine_list_remove((Coroutine *)v1->handler);
                     v1->handler = 0;
-                } while ((Script **)v0 != &script_execute_list);
+                } //while ((Script **)v0 != &script_execute_list);
             }
             free(script_list);
             script_list = 0;
