@@ -1165,6 +1165,7 @@ void script_deinit(Script *a1)
 
     script_discard_all_events(v1);
     script_list_free_pool.remove(v1);
+    script_execute_list.remove(v1);
     script_free_handler(v1);
 }
 
@@ -1365,12 +1366,6 @@ void script_list_update()
         script_execute_list.remove(s);
     }
     remove_list.clear();
-
-    //script_execute_list.remove_if(
-    //    [&remove_list](Script *s) {
-    //    return std::find(remove_list.begin(), remove_list.end(), s) != remove_list.end();
-    //}
-    //);
 }
 
 //----- (004455A0) --------------------------------------------------------
@@ -1380,35 +1375,33 @@ void script_list_free()
     ScriptLocalObject *v2; // eax@4
     ScriptLocalObject *v3; // edi@5
 
-    if (!script_list.empty())
+    if (coroutine_current == coroutine_list_get_head())
     {
-        if (coroutine_current == coroutine_list_get_head())
+        if(!script_execute_list.empty())
         {
-            if(!script_execute_list.empty())
+            for (auto v0 : script_execute_list)
             {
-                for (auto v0 : script_execute_list)
+                v1 = v0;
+                v2 = v1->locals_list;
+                if (v2)
                 {
-                    v1 = v0;
-                    v2 = v1->locals_list;
-                    if (v2)
+                    do
                     {
-                        do
-                        {
-                            v3 = v2->next;
-                            free(v2);
-                            v2 = v3;
-                        } while (v3);
-                    }
-
-                    script_discard_all_events(v1);
-                    script_list_free_pool.remove(v1);
-                    script_free_handler(v1);
+                        v3 = v2->next;
+                        free(v2);
+                        v2 = v3;
+                    } while (v3);
                 }
-            }
 
-            script_list.clear();
-            coroutine_list_free();
-            script_event_list_free();
+                script_discard_all_events(v1);
+                script_list_free_pool.remove(v1);
+                script_free_handler(v1);
+            }
         }
+        script_list.clear();
+        script_list_free_pool.clear();
+        script_execute_list.clear();
+        coroutine_list_free();
+        script_event_list_free();
     }
 }
