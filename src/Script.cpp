@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "src/Script.h"
 
 #include "src/hexrays-defs.h"
@@ -1313,6 +1315,13 @@ void script_terminate(Script *a1)
     }
 }
 
+void script_free_handler(Script *s) {
+    if (s->routine_type == SCRIPT_COROUTINE) {
+        coroutine_list_remove((Coroutine *)s->handler);
+    }
+    s->handler = 0;
+}
+
 void script_terminate_internal(Script *i) {
     Script *v1;
     ScriptLocalObject *v2; // eax@3
@@ -1321,7 +1330,7 @@ void script_terminate_internal(Script *i) {
     //i = i->prev;
     //v1 = i->next;
     //v2 = i->next->locals_list;
-    if (v2)
+    if (v2 = i->locals_list)
     {
         do
         {
@@ -1330,17 +1339,15 @@ void script_terminate_internal(Script *i) {
             v2 = v3;
         } while (v3);
     }
-    script_discard_all_events(v1);
+    script_discard_all_events(i);
 
-    script_list_free_pool.remove(v1);
+    script_list_free_pool.remove(i);
     //v1->prev->next = v1->next;
     //v1->next->prev = v1->prev;
     //v1->next = script_list_free_pool;
     //script_list_free_pool = v1;
 
-    if (v1->routine_type == SCRIPT_COROUTINE)
-        coroutine_list_remove((Coroutine *)v1->handler);
-    v1->handler = 0;
+    script_free_handler(i);
 }
 
 //----- (00402A30) --------------------------------------------------------
@@ -1360,6 +1367,7 @@ void script_list_update()
     int v9; // ecx@15
     int v10; // eax@16
 
+    std::vector<Script *> remove_list;
     //for (i = script_execute_list_first(); i != script_execute_list_end(); i = i->next)
     for (auto i : script_execute_list)
     {
@@ -1374,6 +1382,7 @@ void script_list_update()
             //i = i->prev;
             //script_terminate_internal(i->next);
             script_terminate_internal(i);
+            remove_list.push_back(i);
         }
         else {
             if (i->num_runs_to_skip > 0)
@@ -1404,6 +1413,12 @@ void script_list_update()
             }
         }
     }
+
+    script_execute_list.remove_if(
+        [&remove_list](Script *s) {
+        return std::find(remove_list.begin(), remove_list.end(), s) != remove_list.end();
+    }
+    );
 }
 
 //----- (004455A0) --------------------------------------------------------
@@ -1446,7 +1461,7 @@ void script_list_free()
                     //v1->next->prev = v1->prev;
                     //v1->next = script_list_free_pool;
                     //script_list_free_pool = v1;
-                    
+
                     if (v1->routine_type == SCRIPT_COROUTINE)
                         coroutine_list_remove((Coroutine *)v1->handler);
                     v1->handler = 0;
