@@ -63,45 +63,37 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
     ScriptEvent *v7; // eax@3
     ScriptEvent *v9; // eax@12
 
-    //self = script_execute_list;
-    bool listEmpty = script_execute_list.empty();
     if (receiver_type == SCRIPT_TYPE_ANY)
     {
-        //if ((Script **)script_execute_list != &script_execute_list)
-        if(!listEmpty)
+        for (auto self : script_execute_list)
         {
-            //do
-            for (auto self : script_execute_list)
+            v7 = script_event_list_free_pool;
+            if (self->routine_type == SCRIPT_FUNCTION && self->event_handler)
             {
-                v7 = script_event_list_free_pool;
-                if (self->routine_type == SCRIPT_FUNCTION && self->event_handler)
-                {
-                    self->event_handler(self, sender, event, param);
-                }
-                else
-                {
-                    if (!script_event_list_free_pool)
-                        return 0;
-                    script_event_list_free_pool = script_event_list_free_pool->next;
-                    v7->next = 0;
-                    v7->sender = 0;
-                    v7->event = (SCRIPT_EVENT)0;
-                    v7->param = 0;
-                    v7->sender = sender;
-                    v7->param = param;
-                    v7->event = event;
-                    v7->next = self->event_list;
-                    self->event_list = v7;
-                }
-                self->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
-                self->flags_24 |= self->flags_20;
-                //self = self->next;
-            } //while ((Script **)self != &script_execute_list);
-        }
+                self->event_handler(self, sender, event, param);
+            }
+            else
+            {
+                if (!script_event_list_free_pool)
+                    return 0;
+                script_event_list_free_pool = script_event_list_free_pool->next;
+                v7->next = 0;
+                v7->sender = 0;
+                v7->event = (SCRIPT_EVENT)0;
+                v7->param = 0;
+                v7->sender = sender;
+                v7->param = param;
+                v7->event = event;
+                v7->next = self->event_list;
+                self->event_list = v7;
+            }
+            self->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
+            self->flags_24 |= self->flags_20;
+            //self = self->next;
+        } 
     }
-    else if (!listEmpty) //((Script **)script_execute_list != &script_execute_list)
+    else
     {
-        //do
         for (auto self : script_execute_list)
         {
             if (self->script_type == receiver_type)
@@ -129,8 +121,7 @@ bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *p
                 self->flags_20 |= SCRIPT_FLAGS_20_EVENT_TRIGGER;
                 self->flags_24 |= self->flags_20;
             }
-            //self = self->next;
-        } //while ((Script **)self != &script_execute_list);
+        }
     }
     return 1;
 }
