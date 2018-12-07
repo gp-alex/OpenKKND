@@ -1214,7 +1214,6 @@ int script_yield(Script *a1, int yield_flags, int param)
     a1->_28_yield_flags = yield_flags;
     if (a1->routine_type == SCRIPT_COROUTINE)
     {
-        //coroutine_list_head->resume();
         (coroutine_list_get_head())->resume();
         a1->_28_yield_flags = 0;
         a1->field_2C = 0;
@@ -1269,7 +1268,6 @@ void script_terminate(Script *a1)
     a1->flags_20 |= SCRIPT_FLAGS_20_TERMINATE;
     a1->flags_24 |= a1->flags_20;
     if (a1->routine_type == SCRIPT_COROUTINE) {
-        //coroutine_list_head->resume();
         (coroutine_list_get_head())->resume();
     }
 }
