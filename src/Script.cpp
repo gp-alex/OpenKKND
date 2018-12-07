@@ -1167,6 +1167,7 @@ void script_deinit(Script *a1)
     script_list_free_pool.remove(v1);
     script_execute_list.remove(v1);
     script_free_handler(v1);
+    delete v1;
 }
 
 // thread will awake after REPEATS attempts
@@ -1388,6 +1389,7 @@ void script_list_free()
                 script_discard_all_events(v1);
                 script_list_free_pool.remove(v1);
                 script_free_handler(v1);
+                delete v1;
             }
         }
         script_list.clear();
