@@ -1339,12 +1339,6 @@ void script_list_update()
             v9 = i->_28_yield_flags;
             if (!v9 || (v9 & v10) || i->field_2C & ~v10)
             {
-                if (i->handler == nullptr)
-                {
-                    //continue;
-                    __debugbreak();
-                }
-
                 switch (i->routine_type)
                 {
                 case SCRIPT_COROUTINE:
