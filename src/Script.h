@@ -1,11 +1,33 @@
 #pragma once
 #include <list>
 
+
+#define SCRIPT_FLAGS_20_1               0x00000001 // oil related
+#define SCRIPT_FLAGS_20_2               0x00000002
+#define SCRIPT_FLAGS_20_20000           0x00020000
+#define SCRIPT_FLAGS_20_40000           0x00040000
+#define SCRIPT_FLAGS_20_80000           0x00080000
+#define SCRIPT_FLAGS_20_100000          0x00100000
+#define SCRIPT_FLAGS_20_200000          0x00200000
+#define SCRIPT_FLAGS_20_400000          0x00400000
+#define SCRIPT_FLAGS_20_800000          0x00800000
+#define SCRIPT_FLAGS_20_1000000         0x01000000
+#define SCRIPT_FLAGS_20_Z_SPEED_LIMIT   0x02000000
+#define SCRIPT_FLAGS_20_Y_SPEED_LIMIT   0x04000000
+#define SCRIPT_FLAGS_20_X_SPEED_LIMIT   0x08000000
+#define SCRIPT_FLAGS_20_10000000        0x10000000  // turret-related
+#define SCRIPT_FLAGS_20_TERMINATE       0x20000000  // yield by 00445470 script_terminate 
+#define SCRIPT_FLAGS_20_EVENT_TRIGGER   0x40000000  // when script gets triggered by
+// script_trigger_event / script_trigger_event_group
+// or yielded via script_yield
+// with 0x40000000 flag
+#define SCRIPT_FLAGS_20_REPEATS_TRIGGER 0x80000000  // when script gets triggered by exhausting _14_num_repeats
+#define SCRIPT_FLAGS_20_ANY_TRIGGER     (SCRIPT_FLAGS_20_EVENT_TRIGGER | SCRIPT_FLAGS_20_REPEATS_TRIGGER)
+
+
 struct Sprite;
 
 struct ScriptEvent;
-
-
 
 /* 367 */
 enum SCRIPT_TYPE : unsigned __int32
@@ -72,28 +94,6 @@ struct ScriptLocalObject
     char data;
 };
 
-#define SCRIPT_FLAGS_20_1               0x00000001 // oil related
-#define SCRIPT_FLAGS_20_2               0x00000002
-#define SCRIPT_FLAGS_20_20000           0x00020000
-#define SCRIPT_FLAGS_20_40000           0x00040000
-#define SCRIPT_FLAGS_20_80000           0x00080000
-#define SCRIPT_FLAGS_20_100000          0x00100000
-#define SCRIPT_FLAGS_20_200000          0x00200000
-#define SCRIPT_FLAGS_20_400000          0x00400000
-#define SCRIPT_FLAGS_20_800000          0x00800000
-#define SCRIPT_FLAGS_20_1000000         0x01000000
-#define SCRIPT_FLAGS_20_Z_SPEED_LIMIT   0x02000000
-#define SCRIPT_FLAGS_20_Y_SPEED_LIMIT   0x04000000
-#define SCRIPT_FLAGS_20_X_SPEED_LIMIT   0x08000000
-#define SCRIPT_FLAGS_20_10000000        0x10000000  // turret-related
-#define SCRIPT_FLAGS_20_TERMINATE       0x20000000  // yield by 00445470 script_terminate 
-#define SCRIPT_FLAGS_20_EVENT_TRIGGER   0x40000000  // when script gets triggered by
-                                                    // script_trigger_event / script_trigger_event_group
-                                                    // or yielded via script_yield
-                                                    // with 0x40000000 flag
-#define SCRIPT_FLAGS_20_REPEATS_TRIGGER 0x80000000  // when script gets triggered by exhausting _14_num_repeats
-#define SCRIPT_FLAGS_20_ANY_TRIGGER     (SCRIPT_FLAGS_20_EVENT_TRIGGER | SCRIPT_FLAGS_20_REPEATS_TRIGGER)
-
 struct Script;
 typedef void (*ScriptEventHandler)(
     Script *receiver,
@@ -131,38 +131,28 @@ struct Script
     const char *debug_handler_name;
 };
 
-extern std::list<Script*> script_list_free_pool;
 extern std::list<Script*> script_execute_list;
-extern std::list<Script*> script_list;
-
-Script *script_execute_list_first();
-Script *script_execute_list_end();
-bool script_execute_list_prepend(Script *script);
-
-Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size);
-
-bool script_list_alloc(int coroutine_stack_size = 0);
-Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *));
-void script_deinit(Script *a1);
-int script_yield(Script *a1, int flags, int a3);
-int script_sleep(Script *a1, int num_turns);
-int script_wait_event(Script *a1);
-int script_yield_any_trigger(Script *a1, int repeats);
-void *script_create_local_object(Script *a1, int size);
-void script_free_local_object(Script *a1, void *data); // idb
-void script_terminate(Script *a1);
-void script_list_update();
-void script_list_free();
-
 
 Script *create_script(int script_id);
 int get_script_type(int script_id);
 enum UNIT_ID get_script_unit_id(int script_id);
 enum MOBD_ID get_script_mobd(int script_id);
 const char *get_script_name(int script_id);
-
 void *get_handler(int handler_id);
 int get_handler_id(void *function);
-
 const char *get_handler_name(int handler_id);
 const char *get_handler_name(void *function);
+
+bool script_list_alloc(int coroutine_stack_size = 0);
+Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size);
+Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *));
+void script_deinit(Script *a1);
+int script_sleep(Script *a1, int num_turns);
+int script_wait_event(Script *a1);
+int script_yield_any_trigger(Script *a1, int repeats);
+int script_yield(Script *a1, int flags, int a3);
+void *script_create_local_object(Script *a1, int size);
+void script_free_local_object(Script *a1, void *data); // idb
+void script_terminate(Script *a1);
+void script_list_update();
+void script_list_free();

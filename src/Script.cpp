@@ -1,7 +1,6 @@
 #include <vector>
 
 #include "src/Script.h"
-
 #include "src/hexrays-defs.h"
 #include "src/kknd.h"
 #include "src/_unsorted_functions.h"
@@ -11,11 +10,14 @@
 #include "src/Coroutine.h"
 #include "src/Pathfind.h"
 #include "src/Map.h"
-
 #include "src/Application/Scripts/GameMenu.h"
 #include "src/Application/Scripts/MainMenu.h"
-
 #include "src/Engine/Entity.h"
+
+#define SCRIPT_DESC_HANDLER(x) (void(*)(Script *))x, #x
+#define MAKE_HANDLER_PTR(x) { (x), #x }
+
+std::list<Script*> script_execute_list;
 
 /* 359 */
 struct ScriptDescType1
@@ -77,8 +79,12 @@ struct ScriptDescType4
     enum UNIT_ID stats_idx;
 };
 
+struct ScriptHandler 
+{
+    void *function;
+    const char *function_name;
+};
 
-#define SCRIPT_DESC_HANDLER(x) (void(*)(Script *))x, #x
 
 ScriptDescType1 stru_46E5B0 = { MOBD_20,                        SCRIPT_DESC_HANDLER(nullptr), SCRIPT_COROUTINE, 1, 0, UNIT_STATS_SURV_RIFLEMAN, 0, 0, 0, 0 };
 ScriptDescType2 stru_46E5D8 = { MOBD_20,                        SCRIPT_DESC_HANDLER(nullptr), SCRIPT_COROUTINE, 1, 0, UNIT_STATS_SURV_RIFLEMAN, 0x54, 0 };
@@ -277,7 +283,8 @@ ScriptDescType4 stru_46FCB8 = { MOBD_79,                        SCRIPT_DESC_HAND
 ScriptDescType4 stru_46FCD0 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_main_menu_multiplayer), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 ScriptDescType4 stru_46FCE8 = { MOBD_79,                        SCRIPT_DESC_HANDLER(script_main_menu_new_campaign), SCRIPT_COROUTINE, 0, 0, UNIT_STATS_SURV_RIFLEMAN };
 
-ScriptDescType4 *scripts[] = {
+ScriptDescType4 *scripts[] = 
+{
     (ScriptDescType4 *)&stru_46E5B0,
     (ScriptDescType4 *)&stru_46E5D8,
     (ScriptDescType4 *)&stru_46E5F8,
@@ -475,118 +482,6 @@ ScriptDescType4 *scripts[] = {
     &stru_46FCD0,
     &stru_46FCE8,
 };
-
-std::list<Script*> script_list_free_pool;
-std::list<Script*> script_execute_list;
-std::list<Script*> script_list;
-
-Script *create_script(int script_id) {
-    auto desc = scripts[script_id];
-    if (desc->script_handler) {
-        return (desc->script_type == SCRIPT_FUNCTION)
-            ? script_create_function(SCRIPT_TYPE_INVALID, desc->script_handler)
-            : script_create_coroutine(SCRIPT_TYPE_INVALID, desc->script_handler, 0);
-    }
-
-    return nullptr;
-}
-
-
-int get_script_type(int script_id) {
-    if (script_id >= 86 && script_id <= 156) {
-        return 1;
-    }
-
-    switch (script_id) {
-        case 0:
-            return 1;
-        case 1:
-        case 85:
-            return 2;
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-            return 3;
-
-        default:
-            return 4;
-    }
-}
-
-int get_num_scripts() {
-    return sizeof(scripts) / sizeof(*scripts);
-}
-
-
-UNIT_ID get_script_unit_id(int script_id) {
-    // Prison, Prison, Outpost, Clannhall
-    //if (script_id != 4 && script_id != 5 && script_id != 2 && script_id != 3) {
-    if (get_script_type(script_id) != 3) {
-        return scripts[script_id]->stats_idx;
-    }
-    else {
-        auto script_desc = (ScriptDescType3 *)scripts[script_id];
-        return script_desc->stats_idx;
-    }
-}
-
-MOBD_ID get_script_mobd(int script_id) {
-    return scripts[script_id]->mobd_id;
-}
-
-const char *get_script_name(int script_id) {
-    return scripts[script_id]->script_handler_name;
-}
-const char *get_script_name(void *handler) {
-    for (int i = 0; i < get_num_scripts(); ++i) {
-        if (scripts[i]->script_handler == handler) {
-            return scripts[i]->script_handler_name;
-        }
-    }
-    return nullptr;
-}
-
-
-
-
-Script *script_execute_list_first()
-{
-    if (script_execute_list.empty())
-    {
-        return nullptr;
-    }
-
-    return *script_execute_list.begin();
-}
-
-Script *script_execute_list_end()
-{
-    if (script_execute_list.empty())
-    {
-        return nullptr;
-    }
-
-    return *script_execute_list.end();
-}
-
-bool script_execute_list_prepend(Script *script)
-{
-    if (script == nullptr)
-    {
-        return false;
-    }
-
-    script_execute_list.push_front(script);
-    return true;
-}
-
-struct ScriptHandler {
-    void *function;
-    const char *function_name;
-};
-
-#define MAKE_HANDLER_PTR(x) { (x), #x }
 
 ScriptHandler script_handlers[] =
 {
@@ -943,28 +838,6 @@ ScriptHandler script_handlers[] =
     MAKE_HANDLER_PTR(MessageHandler_EntityScript),
 };
 
-int get_num_handlers() {
-    return sizeof(script_handlers) / sizeof(script_handlers[0]);
-}
-
-
-void *get_handler(int handler_id) {
-    return script_handlers[handler_id].function;
-}
-
-const char *get_handler_name(int handler_id) {
-    return script_handlers[handler_id].function_name;
-}
-
-int get_handler_id(void *function) {
-    for (int i = 0; i < get_num_handlers(); ++i) {
-        if (script_handlers[i].function == function) {
-            return i;
-        }
-    }
-    return -1;
-}
-
 ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_main_menu_play_mission),
     MAKE_HANDLER_PTR(script_main_menu_new_missions),
@@ -1037,19 +910,132 @@ ScriptHandler other_unsorted_handlers[] = {
     MAKE_HANDLER_PTR(script_438F50_explosions)
 };
 
-const char *get_handler_name(void *function) {
+
+
+Script *create_script(int script_id) 
+{
+    auto desc = scripts[script_id];
+    if (desc->script_handler)
+    {
+        return (desc->script_type == SCRIPT_FUNCTION)
+            ? script_create_function(SCRIPT_TYPE_INVALID, desc->script_handler)
+            : script_create_coroutine(SCRIPT_TYPE_INVALID, desc->script_handler, 0);
+    }
+
+    return nullptr;
+}
+
+int get_script_type(int script_id)
+{
+    if (script_id >= 86 && script_id <= 156) 
+    {
+        return 1;
+    }
+
+    switch (script_id) 
+    {
+        case 0:
+            return 1;
+        case 1:
+        case 85:
+            return 2;
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            return 3;
+
+        default:
+            return 4;
+    }
+}
+
+int get_num_scripts() 
+{
+    return sizeof(scripts) / sizeof(*scripts);
+}
+
+UNIT_ID get_script_unit_id(int script_id) 
+{
+    // Prison, Prison, Outpost, Clannhall
+    //if (script_id != 4 && script_id != 5 && script_id != 2 && script_id != 3) {
+    if (get_script_type(script_id) != 3) 
+    {
+        return scripts[script_id]->stats_idx;
+    }
+    else 
+    {
+        auto script_desc = (ScriptDescType3 *)scripts[script_id];
+        return script_desc->stats_idx;
+    }
+}
+
+MOBD_ID get_script_mobd(int script_id) 
+{
+    return scripts[script_id]->mobd_id;
+}
+
+const char *get_script_name(int script_id) 
+{
+    return scripts[script_id]->script_handler_name;
+}
+
+const char *get_script_name(void *handler) {
+    for (int i = 0; i < get_num_scripts(); ++i) 
+    {
+        if (scripts[i]->script_handler == handler) 
+        {
+            return scripts[i]->script_handler_name;
+        }
+    }
+    return nullptr;
+}
+
+int get_num_handlers() 
+{
+    return sizeof(script_handlers) / sizeof(script_handlers[0]);
+}
+
+void *get_handler(int handler_id) 
+{
+    return script_handlers[handler_id].function;
+}
+
+const char *get_handler_name(int handler_id) 
+{
+    return script_handlers[handler_id].function_name;
+}
+
+int get_handler_id(void *function) 
+{
+    for (int i = 0; i < get_num_handlers(); ++i) 
+    {
+        if (script_handlers[i].function == function) 
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+const char *get_handler_name(void *function) 
+{
     int unit_handler_id = get_handler_id(function);
-    if (unit_handler_id >= 0) {
+    if (unit_handler_id >= 0) 
+    {
         return script_handlers[unit_handler_id].function_name;
     }
 
     auto script_name = get_script_name(function);
-    if (script_name) {
+    if (script_name) 
+    {
         return script_name;
     }
 
-    for (int i = 0; i < sizeof(other_unsorted_handlers) / sizeof(*other_unsorted_handlers); ++i) {
-        if (other_unsorted_handlers[i].function == function) {
+    for (int i = 0; i < sizeof(other_unsorted_handlers) / sizeof(*other_unsorted_handlers); ++i) 
+    {
+        if (other_unsorted_handlers[i].function == function)
+        {
             return other_unsorted_handlers[i].function_name;
         }
     }
@@ -1059,14 +1045,15 @@ const char *get_handler_name(void *function) {
     return nullptr;
 }
 
-
-const int script_pool_size = 2000;
 //----- (00445170) --------------------------------------------------------
 bool script_list_alloc(int coroutine_stack_size)
 {
-    if (script_event_list_alloc()) {
-        if (coroutine_list_alloc()) {
-            if (coroutine_stack_size <= 0) {
+    if (script_event_list_alloc()) 
+    {
+        if (coroutine_list_alloc()) 
+        {
+            if (coroutine_stack_size <= 0)
+            {
                 coroutine_stack_size = 1 * 1024 * 1024; // 1M
             }
 
@@ -1083,62 +1070,63 @@ bool script_list_alloc(int coroutine_stack_size)
 //----- (00445210) --------------------------------------------------------
 Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*task_main)(Script *), int stack_size)
 {
-    Script *v3; // esi@1
-
-    v3 = new Script();
-    script_list_free_pool.push_back(v3);
-
-    memset(v3, 0, sizeof(Script));
-    v3->script_type = type;
-    v3->routine_type = SCRIPT_COROUTINE;
-
-    auto coroutine = couroutine_create(coroutine_main, get_handler_name(task_main));
-    v3->handler = (void(*)(Script *))coroutine;
-    v3->debug_handler_name = get_handler_name(task_main);
-
-    if (coroutine)
+    Script *v3 = new Script();
+    if (v3 != nullptr)
     {
-        task_creation_handler = task_main;
-        task_creation_handler_arg = v3;
+        memset(v3, 0, sizeof(Script));
+        v3->script_type = type;
+        v3->routine_type = SCRIPT_COROUTINE;
 
-        script_execute_list_prepend(v3);
+        auto coroutine = couroutine_create(coroutine_main, get_handler_name(task_main));
+        v3->handler = (void(*)(Script *))coroutine;
+        v3->debug_handler_name = get_handler_name(task_main);
 
-        // call coroutine_main to queue up execution of  task_creation_handler( task_creation_handler_arg )
-        coroutine->resume();
+        if (coroutine)
+        {
+            task_creation_handler = task_main;
+            task_creation_handler_arg = v3;
 
-        return v3;
+            //add script to script_execute_list head
+            script_execute_list.push_front(v3);
+
+            // call coroutine_main to queue up execution of  task_creation_handler( task_creation_handler_arg )
+            coroutine->resume();
+
+            return v3;
+        }
     }
-
+    
     return nullptr;
 }
 
 //----- (004452B0) --------------------------------------------------------
 Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *))
 {
-    Script *v2; // esi@1
-    Script *result; // eax@2
+    Script *v2 = new Script();
 
-    v2 = new Script();
-    script_list_free_pool.push_back(v2);
-
-    result = 0;
-    memset(v2, 0, sizeof(Script));
-    v2->script_type = type;
-    v2->routine_type = SCRIPT_FUNCTION;
-    v2->handler = function;
-    v2->debug_handler_name = get_handler_name(function);
-    if (function)
+    if (v2 != nullptr)
     {
-        script_execute_list_prepend(v2);
+        memset(v2, 0, sizeof(Script));
+        v2->script_type = type;
+        v2->routine_type = SCRIPT_FUNCTION;
+        v2->handler = function;
+        v2->debug_handler_name = get_handler_name(function);
+        if (function)
+        {
+            //add script to script_execute_list head
+            script_execute_list.push_front(v2);
 
-        result = v2;
+            return v2;
+        }
     }
-
-    return result;
+    
+    return nullptr;
 }
 
-void script_free_handler(Script *s) {
-    if (s->routine_type == SCRIPT_COROUTINE) {
+void script_free_handler(Script *s) 
+{
+    if (s->routine_type == SCRIPT_COROUTINE) 
+    {
         coroutine_list_remove((Coroutine *)s->handler);
     }
     s->handler = 0;
@@ -1164,23 +1152,25 @@ void script_deinit(Script *a1)
     }
 
     script_discard_all_events(v1);
-    script_list_free_pool.remove(v1);
     script_execute_list.remove(v1);
     script_free_handler(v1);
     delete v1;
 }
 
 // thread will awake after REPEATS attempts
-int script_sleep(Script *a1, int num_turns) {
+int script_sleep(Script *a1, int num_turns) 
+{
     return script_yield(a1, SCRIPT_FLAGS_20_REPEATS_TRIGGER, num_turns);
 }
 
 // thread will awake after receiving an event
-int script_wait_event(Script *a1) {
+int script_wait_event(Script *a1) 
+{
     return script_yield(a1, SCRIPT_FLAGS_20_EVENT_TRIGGER, 0);
 }
 
-int script_yield_any_trigger(Script *a1, int num_turns) {
+int script_yield_any_trigger(Script *a1, int num_turns) 
+{
     return script_yield(a1, SCRIPT_FLAGS_20_ANY_TRIGGER, num_turns);
 }
 
@@ -1195,7 +1185,9 @@ int script_yield(Script *a1, int yield_flags, int param)
     if (yield_flags & SCRIPT_FLAGS_20_REPEATS_TRIGGER)
     {
         if (param)
+        {
             a1->num_runs_to_skip = param;
+        }
         if (a1->num_runs_to_skip == 0)
         {
             // return immediately as 0 repeats elapsed
@@ -1255,11 +1247,17 @@ void script_free_local_object(Script *a1, void *data)
     v2 = CONTAINING_RECORD(data, ScriptLocalObject, data);
     prev = (ScriptLocalObject **)*((_DWORD *)data - 1);
     if (prev)
+    {
         *prev = v2->next;
+    }
     else
+    {
         a1->locals_list = v2->next;
+    }
     if (v2->next)
+    {
         v2->next->prev = v2->prev;
+    }
     free(v2);
 }
 
@@ -1268,12 +1266,14 @@ void script_terminate(Script *a1)
 {
     a1->flags_20 |= SCRIPT_FLAGS_20_TERMINATE;
     a1->flags_24 |= a1->flags_20;
-    if (a1->routine_type == SCRIPT_COROUTINE) {
+    if (a1->routine_type == SCRIPT_COROUTINE) 
+    {
         (coroutine_list_get_head())->resume();
     }
 }
 
-void script_terminate_internal(Script *i) {
+void script_terminate_internal(Script *i) 
+{
     Script *v1;
     ScriptLocalObject *v2; // eax@3
     ScriptLocalObject *v3; // ebx@4
@@ -1289,16 +1289,17 @@ void script_terminate_internal(Script *i) {
     }
 
     script_discard_all_events(i);
-    script_list_free_pool.remove(i);
     script_free_handler(i);
 }
 
 //----- (00402A30) --------------------------------------------------------
-void script_execute_function(Script *self) {
+void script_execute_function(Script *self) 
+{
     self->handler(self);
 }
 
-void script_execute_coroutine(Script *self) {
+void script_execute_coroutine(Script *self) 
+{
     auto coroutine = (Coroutine *)self->handler;
     coroutine->resume();
 }
@@ -1313,7 +1314,8 @@ void script_list_update()
     std::vector<Script *> remove_list;
     for (auto i : script_execute_list)
     {
-        if (i->flags_20 & SCRIPT_FLAGS_20_TERMINATE) {
+        if (i->flags_20 & SCRIPT_FLAGS_20_TERMINATE) 
+        {
             log(
                 "Script[%s] %s(%08X) terminated",
                 i->routine_type == SCRIPT_COROUTINE ? "Coroutine" : "Function",
@@ -1324,7 +1326,8 @@ void script_list_update()
             script_terminate_internal(i);
             remove_list.push_back(i);
         }
-        else {
+        else 
+        {
             if (i->num_runs_to_skip > 0)
             {
                 i->num_runs_to_skip -= 1;
@@ -1355,7 +1358,8 @@ void script_list_update()
     }
 
     //remove from script_execute_list & clear remove_list
-    for (auto s : remove_list) {
+    for (auto s : remove_list) 
+    {
         script_execute_list.remove(s);
     }
     remove_list.clear();
@@ -1387,13 +1391,10 @@ void script_list_free()
                 }
 
                 script_discard_all_events(v1);
-                script_list_free_pool.remove(v1);
                 script_free_handler(v1);
                 delete v1;
             }
         }
-        script_list.clear();
-        script_list_free_pool.clear();
         script_execute_list.clear();
         coroutine_list_free();
         script_event_list_free();
