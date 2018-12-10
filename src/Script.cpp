@@ -1051,26 +1051,52 @@ const char *get_handler_name(void *function)
     return nullptr;
 }
 
-//----- (00445170) --------------------------------------------------------
-bool script_list_alloc(int coroutine_stack_size)
+
+//----- (00445400) --------------------------------------------------------
+void *script_create_local_object(Script *s, int size)
 {
-    if (script_event_list_alloc()) 
+    Script *script; // esi@1
+    ScriptLocalObject *loc_object_1; // eax@1
+    ScriptLocalObject *loc_object_2; // ecx@2
+    ScriptLocalObject *loc_object_3; // ecx@2
+
+    script = s;
+    loc_object_1 = (ScriptLocalObject *)malloc(size + 8);
+    if (loc_object_1)
     {
-        if (coroutine_list_alloc()) 
-        {
-            if (coroutine_stack_size <= 0)
-            {
-                coroutine_stack_size = 1 * 1024 * 1024; // 1M
-            }
-
-            coroutine_default_stack_size = coroutine_stack_size;
-            coroutine_current = coroutine_list_get_head();
-            is_async_execution_supported = 0;
-
-            return true;
-        }
+        loc_object_2 = script->locals_list;
+        loc_object_1->prev = 0;
+        loc_object_1->next = loc_object_2;
+        loc_object_3 = script->locals_list;
+        if (loc_object_3)
+            loc_object_3->prev = loc_object_1;
+        script->locals_list = loc_object_1;
+        loc_object_1 = (ScriptLocalObject *)((char *)loc_object_1 + 8);
     }
-    return false;
+    return loc_object_1;
+}
+
+//----- (00445440) --------------------------------------------------------
+void script_free_local_object(Script *s, void *data)
+{
+    ScriptLocalObject *loc_object; // eax@1
+    ScriptLocalObject **prev_loc_object; // edx@1
+
+    loc_object = CONTAINING_RECORD(data, ScriptLocalObject, data);
+    prev_loc_object = (ScriptLocalObject **)*((_DWORD *)data - 1);
+    if (prev_loc_object)
+    {
+        *prev_loc_object = loc_object->next;
+    }
+    else
+    {
+        s->locals_list = loc_object->next;
+    }
+    if (loc_object->next)
+    {
+        loc_object->next->prev = loc_object->prev;
+    }
+    free(loc_object);
 }
 
 //----- (00445210) --------------------------------------------------------
@@ -1101,7 +1127,7 @@ Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*task_main)(Script *
             return script;
         }
     }
-    
+
     return nullptr;
 }
 
@@ -1124,42 +1150,30 @@ Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *))
             return script;
         }
     }
-    
+
     return nullptr;
 }
 
-void script_free_handler(Script *s) 
+//----- (00402A30) --------------------------------------------------------
+void script_execute_function(Script *s)
 {
-    if (s->routine_type == SCRIPT_COROUTINE) 
+    s->handler(s);
+}
+
+void script_execute_coroutine(Script *s)
+{
+    auto coroutine = (Coroutine *)s->handler;
+    coroutine->resume();
+}
+
+
+void script_free_handler(Script *s)
+{
+    if (s->routine_type == SCRIPT_COROUTINE)
     {
         coroutine_list_remove((Coroutine *)s->handler);
     }
     s->handler = 0;
-}
-
-//----- (00445310) --------------------------------------------------------
-void script_deinit(Script *s)
-{
-    Script *script; // edi@1
-    ScriptLocalObject *loc_object_1; // eax@1
-    ScriptLocalObject *loc_object_2; // esi@2
-
-    script = s;
-    loc_object_1 = s->locals_list;
-    if (loc_object_1)
-    {
-        do
-        {
-            loc_object_2 = loc_object_1->next;
-            free(loc_object_1);
-            loc_object_1 = loc_object_2;
-        } while (loc_object_2);
-    }
-
-    script_discard_all_events(script);
-    script_execute_list.remove(script);
-    script_free_handler(script);
-    delete script;
 }
 
 // thread will awake after REPEATS attempts
@@ -1219,53 +1233,6 @@ int script_yield(Script *s, int yield_flags, int param)
     return s->flags_20;
 }
 
-//----- (00445400) --------------------------------------------------------
-void *script_create_local_object(Script *s, int size)
-{
-    Script *script; // esi@1
-    ScriptLocalObject *loc_object_1; // eax@1
-    ScriptLocalObject *loc_object_2; // ecx@2
-    ScriptLocalObject *loc_object_3; // ecx@2
-
-    script = s;
-    loc_object_1 = (ScriptLocalObject *)malloc(size + 8);
-    if (loc_object_1)
-    {
-        loc_object_2 = script->locals_list;
-        loc_object_1->prev = 0;
-        loc_object_1->next = loc_object_2;
-        loc_object_3 = script->locals_list;
-        if (loc_object_3)
-            loc_object_3->prev = loc_object_1;
-        script->locals_list = loc_object_1;
-        loc_object_1 = (ScriptLocalObject *)((char *)loc_object_1 + 8);
-    }
-    return loc_object_1;
-}
-
-//----- (00445440) --------------------------------------------------------
-void script_free_local_object(Script *s, void *data)
-{
-    ScriptLocalObject *loc_object; // eax@1
-    ScriptLocalObject **prev_loc_object; // edx@1
-
-    loc_object = CONTAINING_RECORD(data, ScriptLocalObject, data);
-    prev_loc_object = (ScriptLocalObject **)*((_DWORD *)data - 1);
-    if (prev_loc_object)
-    {
-        *prev_loc_object = loc_object->next;
-    }
-    else
-    {
-        s->locals_list = loc_object->next;
-    }
-    if (loc_object->next)
-    {
-        loc_object->next->prev = loc_object->prev;
-    }
-    free(loc_object);
-}
-
 //----- (00445470) --------------------------------------------------------
 void script_terminate(Script *s)
 {
@@ -1296,16 +1263,51 @@ void script_terminate_internal(Script *s)
     script_free_handler(s);
 }
 
-//----- (00402A30) --------------------------------------------------------
-void script_execute_function(Script *s) 
+//----- (00445310) --------------------------------------------------------
+void script_deinit(Script *s)
 {
-    s->handler(s);
+    Script *script; // edi@1
+    ScriptLocalObject *loc_object_1; // eax@1
+    ScriptLocalObject *loc_object_2; // esi@2
+
+    script = s;
+    loc_object_1 = s->locals_list;
+    if (loc_object_1)
+    {
+        do
+        {
+            loc_object_2 = loc_object_1->next;
+            free(loc_object_1);
+            loc_object_1 = loc_object_2;
+        } while (loc_object_2);
+    }
+
+    script_discard_all_events(script);
+    script_execute_list.remove(script);
+    script_free_handler(script);
+    delete script;
 }
 
-void script_execute_coroutine(Script *s) 
+//----- (00445170) --------------------------------------------------------
+bool script_list_alloc(int coroutine_stack_size)
 {
-    auto coroutine = (Coroutine *)s->handler;
-    coroutine->resume();
+    if (script_event_list_alloc())
+    {
+        if (coroutine_list_alloc())
+        {
+            if (coroutine_stack_size <= 0)
+            {
+                coroutine_stack_size = 1 * 1024 * 1024; // 1M
+            }
+
+            coroutine_default_stack_size = coroutine_stack_size;
+            coroutine_current = coroutine_list_get_head();
+            is_async_execution_supported = 0;
+
+            return true;
+        }
+    }
+    return false;
 }
 
 //----- (004454A0) --------------------------------------------------------

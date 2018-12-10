@@ -143,16 +143,23 @@ int get_handler_id(void *function);
 const char *get_handler_name(int handler_id);
 const char *get_handler_name(void *function);
 
-bool script_list_alloc(int coroutine_stack_size = 0);
+void *script_create_local_object(Script *s, int size);
+void script_free_local_object(Script *s, void *data); // idb
+
 Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*handler)(Script *), int stack_size);
 Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *));
-void script_deinit(Script *s);
+void script_execute_function(Script *s);
+void script_execute_coroutine(Script *s);
+
+void script_free_handler(Script *s);
 int script_sleep(Script *s, int num_turns);
 int script_wait_event(Script *s);
 int script_yield_any_trigger(Script *s, int repeats);
 int script_yield(Script *s, int flags, int a3);
-void *script_create_local_object(Script *s, int size);
-void script_free_local_object(Script *s, void *data); // idb
 void script_terminate(Script *s);
+void script_terminate_internal(Script *s);
+void script_deinit(Script *s);
+
+bool script_list_alloc(int coroutine_stack_size = 0);
 void script_list_update();
 void script_list_free();
