@@ -1019,6 +1019,11 @@ int get_handler_id(void *function)
     return -1;
 }
 
+int get_num_other_unsorted_handlers()
+{
+    return sizeof(other_unsorted_handlers) / sizeof(*other_unsorted_handlers);
+}
+
 const char *get_handler_name(void *function) 
 {
     int unit_handler_id = get_handler_id(function);
@@ -1033,7 +1038,7 @@ const char *get_handler_name(void *function)
         return script_name;
     }
 
-    for (int i = 0; i < sizeof(other_unsorted_handlers) / sizeof(*other_unsorted_handlers); ++i) 
+    for (int i = 0; i < get_num_other_unsorted_handlers(); ++i)
     {
         if (other_unsorted_handlers[i].function == function)
         {
@@ -1104,7 +1109,6 @@ Script *script_create_coroutine(enum SCRIPT_TYPE type, void(*task_main)(Script *
 Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *))
 {
     Script *script = new Script();
-
     if (script != nullptr)
     {
         memset(script, 0, sizeof(Script));
@@ -1375,9 +1379,9 @@ void script_list_free()
     {
         if(!script_execute_list.empty())
         {
-            for (auto s : script_execute_list)
+            for (auto v0 : script_execute_list)
             {
-                script = s;
+                script = v0;
                 loc_object_1 = script->locals_list;
                 if (loc_object_1)
                 {
