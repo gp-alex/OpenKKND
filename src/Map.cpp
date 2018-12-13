@@ -1439,6 +1439,13 @@ void drawjob_update_handler_448390_fog_of_war(Sprite *, DrawJob *a2)
         a2->job_details.x = _47A010_mapd_item_being_drawn[0]->draw_job->job_details.x - 2 * map_fog_of_war_scrl->tile_x_size;
         a2->job_details.y = _47A010_mapd_item_being_drawn[0]->draw_job->job_details.y - 2 * map_fog_of_war_scrl->tile_y_size;
     }
+
+    // quick fix - minimap background
+    if (a2->job_details.x < -10000) 
+        a2->job_details.x = 0;
+    if (a2->job_details.y < -10000) 
+        a2->job_details.y = 0;
+
     a2->job_details.z_index = 0x10000000;
 }
 
