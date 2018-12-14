@@ -99,7 +99,7 @@ void script_44A500_fog_of_war(Script *a1)
         script_yield_any_trigger(a1, 1);
         for (i = script_get_next_event(a1); i; i = script_get_next_event(v1))
         {
-            if (i->event == 1511)
+            if (i->event == EVT_MSG_SELECTED)
             {
                 v3 = &_47A010_mapd_item_being_drawn[0]->draw_job->job_details;
                 input_get_mouse_state(&v6);
@@ -165,20 +165,20 @@ void _44A6B0_minimap(int x, int y)
 //----- (0044A700) --------------------------------------------------------
 void script_44A700_minimap(Script *a1)
 {
-    Script *v1; // edi@1
-    Sprite *v2; // esi@1
+    Script *script; // edi@1
+    Sprite *minimap_sprite; // esi@1
 
-    v1 = a1;
-    v2 = _447310_minimap();
-    if (v2)
+    script = a1;
+    minimap_sprite = _447310_minimap();
+    if (minimap_sprite)
     {
         if (_47CB58_minimap_sprite)
         {
-            script_trigger_event(0, EVT_MSG_SELECTED, 0, v2->script);
-            script_trigger_event(0, EVT_MOUSE_HOVER, 0, v2->script);
-            script_sleep(v1, 1);
-            script_trigger_event(0, EVT_MSG_DESELECTED, 0, v2->script);
-            script_trigger_event(0, EVT_MOUSE_HOVER, 0, v2->script);
+            script_trigger_event(0, EVT_MSG_SELECTED, 0, minimap_sprite->script);
+            script_trigger_event(0, EVT_MOUSE_HOVER, 0, minimap_sprite->script);
+            script_sleep(script, 1);
+            script_trigger_event(0, EVT_MSG_DESELECTED, 0, minimap_sprite->script);
+            script_trigger_event(0, EVT_MOUSE_HOVER, 0, minimap_sprite->script);
         }
     }
 }
@@ -507,13 +507,13 @@ bool minimap_init()
 //----- (0044AE30) --------------------------------------------------------
 void mapd_44AE30_fog_of_war()
 {
-    int v0; // edx@2
-    _BYTE *v1; // esi@2
-    int v2; // edi@2
-    _BYTE *v3; // eax@2
+    int tmp_minimap_width; // edx@2
+    _BYTE *source; // esi@2
+    int row_counter; // edi@2
+    _BYTE *destination; // eax@2
     int i; // ebp@2
-    int v5; // ecx@3
-    int v6; // eax@7
+    int line_counter; // ecx@3
+    int faction_main_building_level; // eax@7
     Sprite *v8; // eax@12
     int v9; // ecx@12
     int v10; // eax@12
@@ -539,33 +539,33 @@ void mapd_44AE30_fog_of_war()
 
     if (_47CB58_minimap_sprite->pstru58)
     {
-        v0 = minimap_width;
-        v1 = (char *)minimap_pixels;
-        v2 = 0;
+        tmp_minimap_width = minimap_width;
+        source = (char *)minimap_pixels;
+        row_counter = 0;
         v29 = (unsigned int)(render_width - 32) >> 4;
         v30 = (unsigned int)render_height >> 4;
-        v3 = (_BYTE *)dword_47CBAC;
-        for (i = minimap_width + 4; v2 < minimap_height; v3 += 4)
+        destination = (_BYTE *)dword_47CBAC;
+        for (i = minimap_width + 4; row_counter < minimap_height; destination += 4)
         {
-            v5 = 0;
-            if (v0 > 0)
+            line_counter = 0;
+            if (tmp_minimap_width > 0)
             {
                 do
                 {
-                    *v3 = *v1;
-                    v0 = minimap_width;
-                    ++v3;
-                    ++v1;
-                    ++v5;
-                } while (v5 < minimap_width);
+                    *destination = *source;
+                    tmp_minimap_width = minimap_width;
+                    ++destination;
+                    ++source;
+                    ++line_counter;
+                } while (line_counter < minimap_width);
             }
-            ++v2;
+            ++row_counter;
         }
         if (is_player_faction_evolved())
-            v6 = get_max_clanhall_level();
+            faction_main_building_level = get_max_clanhall_level();
         else
-            v6 = get_max_outpost_level();
-        switch (v6)
+            faction_main_building_level = get_max_outpost_level();
+        switch (faction_main_building_level)
         {
         case 1:
         case 2:
@@ -575,8 +575,8 @@ void mapd_44AE30_fog_of_war()
                 {
                     j->sprite->field_88_unused = 1;
                     v8 = j->sprite;
-                    v9 = 2 * (v8->x >> 13);
-                    v10 = 2 * (v8->y >> 13);
+                    v9 = 2 * global2map(v8->x);
+                    v10 = 2 * global2map(v8->y);
                     if (v9 >= 0 && v9 < minimap_width && v10 >= 0 && v10 < minimap_height)
                     {
                         v11 = dword_47CBAC + v9 + i * v10;
@@ -609,8 +609,8 @@ void mapd_44AE30_fog_of_war()
                 {
                     k->sprite->field_88_unused = 1;
                     v15 = k->sprite;
-                    v16 = 2 * (v15->x >> 13);
-                    v17 = 2 * (v15->y >> 13);
+                    v16 = 2 * global2map(v15->x);
+                    v17 = 2 * global2map(v15->y);
                     if (v16 >= 0 && v16 < minimap_width && v17 >= 0 && v17 < minimap_height)
                     {
                         v18 = dword_47CBAC + v16 + i * v17;
