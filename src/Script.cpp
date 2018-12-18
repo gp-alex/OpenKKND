@@ -1157,13 +1157,17 @@ Script *script_create_function(enum SCRIPT_TYPE type, void(*function)(Script *))
 //----- (00402A30) --------------------------------------------------------
 void script_execute_function(Script *s)
 {
-    s->handler(s);
+    if (s->routine_type == SCRIPT_FUNCTION) {
+        s->handler(s);
+    }
 }
 
 void script_execute_coroutine(Script *s)
 {
-    auto coroutine = (Coroutine *)s->handler;
-    coroutine->resume();
+    if (s->routine_type == SCRIPT_COROUTINE) {
+        auto coroutine = (Coroutine *)s->handler;
+        coroutine->resume();
+    }
 }
 
 
