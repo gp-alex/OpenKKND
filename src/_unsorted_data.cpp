@@ -5412,14 +5412,14 @@ int dword_47C6F0; // weak
 int dword_47C6F4; // weak
 int _47C6F8_main_menu_load_initialized; // weak
 int dword_47C700; // weak
-Script *script_list_free_pool;
+
 void(*task_creation_handler)(Script *);
-Script *script_execute_list;
+
 Script *script_list_47C714;
 size_t coroutine_default_stack_size; // idb
 Script *task_creation_handler_arg;
 __int16 is_async_execution_supported; // weak
-Script *script_list;
+
 int stru8_list_size; // weak
 int stru8_list_allocated; // weak
 stru8 *stru8_list;

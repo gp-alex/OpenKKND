@@ -72,8 +72,8 @@ struct ScriptEvent
 
 
 bool script_event_list_alloc();
-bool script_trigger_event(Script *sender, SCRIPT_EVENT event, void *param, Script *receiver);
-bool script_trigger_event_group(Script *sender, SCRIPT_EVENT event, void *param, SCRIPT_TYPE receiver_type);
+bool script_trigger_event(Script *sender, enum SCRIPT_EVENT event, void *param, Script *receiver);
+bool script_trigger_event_group(Script *sender, enum SCRIPT_EVENT event, void *param, enum SCRIPT_TYPE receiver_type);
 ScriptEvent *script_get_next_event(Script *a1);
 void script_discard_event(ScriptEvent *a1);
 void script_discard_all_events(Script *a1);
